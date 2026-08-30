@@ -2,7 +2,7 @@
 /_book/
 /.quarto/
 /_freeze/
-*.quarto_ipynb
+**/*.quarto_ipynb
 *.html
 
 # Jupyter
