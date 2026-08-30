@@ -11,7 +11,7 @@ QUARTO_ARGS ?=
 
 VENV_PYTHON := $(VENV)/bin/python
 
-.PHONY: help check-tools check render preview render-one install upgrade \
+.PHONY: help check-tools check render preview render-one install upgrade req \
 	packages publish clean clean-output clean-cache
 
 help: ## Show the available targets.
@@ -53,6 +53,17 @@ upgrade: $(VENV_PYTHON) ## Upgrade packages allowed by the requirements file.
 	@test -f "$(REQUIREMENTS)" || { \
 		echo "Error: requirements file not found: $(REQUIREMENTS)" >&2; exit 2; }
 	$(VENV_PYTHON) -m pip install --upgrade -r "$(REQUIREMENTS)"
+
+req: $(VENV_PYTHON) ## Freeze the selected environment into requirements.txt.
+	@if "$(VENV_PYTHON)" -c 'import pip' >/dev/null 2>&1; then \
+		"$(VENV_PYTHON)" -m pip freeze > "$(REQUIREMENTS)"; \
+	elif grep -q '^uv = ' "$(VENV)/pyvenv.cfg" 2>/dev/null && \
+		command -v uv >/dev/null 2>&1; then \
+		uv pip freeze --python "$(VENV_PYTHON)" > "$(REQUIREMENTS)"; \
+	else \
+		echo "Error: pip is unavailable in this environment." >&2; \
+		echo "Install pip or use uv for an environment created by uv." >&2; exit 2; \
+	fi
 
 packages: $(VENV_PYTHON) ## Print the installed Python package versions.
 	$(VENV_PYTHON) -m pip freeze
