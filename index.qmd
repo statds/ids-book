@@ -156,3 +156,5 @@ For presentations, introduce the problem and motivate why it matters. Give the
 audience a map of the talk, emphasize the main results, and conclude with the
 central takeaway. Original examples and careful attribution make an explanation
 both clearer and more trustworthy.
+
+## References {.unnumbered}
