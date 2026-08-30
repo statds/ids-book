@@ -1,0 +1,83 @@
+# Preliminaries {.unnumbered}
+
+## About These Notes
+
+These notes support STAT 3255/5255, Introduction to Data Science, at the
+University of Connecticut. They introduce the ideas, tools, and working habits
+needed to learn from data in a reproducible and responsible way.
+
+The notes are written as a Quarto book and use Python for computation. They are
+intended to remain useful across semesters and to develop over time into a
+textbook. The instructor-authored book is the authoritative source for the
+course content. Semester schedules, assignments, and student-contributed notes
+are maintained separately.
+
+## Sources and Acknowledgments
+
+The source for this book is available in its
+[GitHub repository](https://github.com/jun-yan/ids-book). Earlier versions of
+the course notes were developed with contributions from students in successive
+offerings of STAT 3255/5255. Those contributions helped identify useful
+examples, alternative explanations, common difficulties, and topics that
+deserved fuller treatment.
+
+Recent course archives include:
+
+- [Spring 2026](https://statds.github.io/ids-s26)
+- [Fall 2025](https://statds.github.io/ids-f25)
+- [Spring 2025](https://statds.github.io/ids-s25)
+- [Fall 2024](https://statds.github.io/ids-f24)
+- [Spring 2024](https://statds.github.io/ids-s24)
+- [Spring 2023](https://statds.github.io/ids-s23)
+- [Spring 2022](https://statds.github.io/ids-s22/)
+
+These archives document the evolution of the course and the perspectives of
+different student cohorts. The permanent book is independently authored and
+edited, even when lessons from those archives inform its revision.
+
+## Building the Book
+
+To build the notes locally:
+
+1. Clone the source repository.
+2. Create and activate a Python virtual environment in the repository root.
+3. Install the dependencies specified by the project environment files.
+4. Supply any credentials required by particular examples through the
+   documented local configuration. Never commit credentials to Git.
+5. Run `quarto render` from the repository root.
+
+Quarto writes the rendered book to `_book/`. Generated output and local caches
+are not tracked by Git; the source and environment specifications are.
+
+## Learning Data Science
+
+Data science requires learning new tools and ideas quickly. Effective
+practitioners do not memorize every command. They learn how to frame a problem,
+consult documentation and other reliable sources, test possible solutions, and
+evaluate whether the result makes sense.
+
+This habit is especially important when software, data formats, and computing
+environments change. Encountering an unfamiliar package, error message, data
+source, or hardware requirement is part of the work. The goal is to develop a
+repeatable way to investigate such problems rather than to accumulate isolated
+recipes.
+
+## Working Principles
+
+The examples and exercises in this book emphasize a few recurring principles:
+
+- Start with a clear question and understand the context of the data.
+- Keep raw data separate from derived data and analysis output.
+- Explore data interactively, then collect tested code into reproducible
+  scripts or documents.
+- Consider during data cleaning how each variable will be used later.
+- Use version control to make small, understandable changes.
+- Document data sources, assumptions, software dependencies, and decisions.
+- Check results for statistical, computational, and contextual plausibility.
+- Communicate the question, evidence, limitations, and conclusion—not merely
+  the code.
+
+For presentations, introduce the problem and motivate why it matters. Give the
+audience a map of the talk, emphasize the main results, and conclude with the
+central takeaway. Original examples and careful attribution make an explanation
+both clearer and more trustworthy.
