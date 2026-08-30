@@ -1,0 +1,362 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Introduction to Data Science",
+    "section": "",
+    "text": "Preliminaries",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#about-these-notes",
+    "href": "index.html#about-these-notes",
+    "title": "Introduction to Data Science",
+    "section": "About These Notes",
+    "text": "About These Notes\nThese notes support STAT 3255/5255, Introduction to Data Science, at the University of Connecticut. They introduce the ideas, tools, and working habits needed to learn from data in a reproducible and responsible way.\nThe book uses Quarto for publishing and Python for computation. This combination keeps prose, code, results, and citations together in a reproducible source.\nThe instructor-authored book is the permanent source for course content. It is intended to remain useful across semesters and to develop over time into a textbook. Semester schedules, assignments, and student-contributed notes are maintained separately.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#sources-and-acknowledgments",
+    "href": "index.html#sources-and-acknowledgments",
+    "title": "Introduction to Data Science",
+    "section": "Sources and Acknowledgments",
+    "text": "Sources and Acknowledgments\nThe GitHub repository contains the source for this book.\nEarlier course notes benefited from contributions by successive cohorts of STAT 3255/5255 students. Those contributions helped identify useful examples, alternative explanations, common difficulties, and topics that deserved fuller treatment.\nRecent course archives include:\n\nSpring 2026\nFall 2025\nSpring 2025\nFall 2024\nSpring 2024\nSpring 2023\nSpring 2022\n\nThese archives document the evolution of the course and the perspectives of different student cohorts. The permanent book is independently authored and edited, even when lessons from those archives inform its revision.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#building-the-book",
+    "href": "index.html#building-the-book",
+    "title": "Introduction to Data Science",
+    "section": "Building the Book",
+    "text": "Building the Book\nTo build the notes locally:\n\nClone the source repository.\nCreate and activate a Python virtual environment in the repository root.\nInstall the dependencies specified by the project environment files.\nSupply any credentials required by particular examples through the documented local configuration. Never commit credentials to Git.\nRun quarto render from the repository root.\n\nQuarto writes the rendered book to _book/. Generated output and local caches are not tracked by Git; the source and environment specifications are.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#learning-data-science-in-the-age-of-ai",
+    "href": "index.html#learning-data-science-in-the-age-of-ai",
+    "title": "Introduction to Data Science",
+    "section": "Learning Data Science in the Age of AI",
+    "text": "Learning Data Science in the Age of AI\nAI reduces the value of routine analytical production but increases the value of analytical judgment. AI systems can already write routine code, clean data, create visualizations, fit models, and draft reports. Consequently, a course that consists mainly of memorizing commands or reproducing standard analyses would offer diminishing value. The appropriate response is not to abandon data-science education, but to teach the knowledge and judgment needed to use increasingly capable tools well.\nCurrent labor evidence shows disruption and demand at the same time. In its 2025 survey, the World Economic Forum reported that 41 percent of employers expected to reduce their workforce where AI could automate tasks, while 77 percent planned to upskill their workers. The same report identified AI and big data as the fastest-growing skill area and analytical thinking as the most widely valued core skill (World Economic Forum, 2025). In the United States, the Bureau of Labor Statistics projects employment of data scientists to grow by about 34 percent from 2024 to 2034 (U.S. Bureau of Labor Statistics, 2025). Such projections are not a promise of a job, but they do show why students need a combination of technical knowledge and analytical judgment rather than less preparation.\nAI tends to amplify the capabilities of its user rather than make expertise irrelevant. A person with limited understanding may use AI to produce a weak analysis faster, more confidently, and in more polished language. A strong researcher can use the same technology to investigate more alternatives, challenge assumptions, detect errors, and undertake work that would previously have required much more time. The difference is not merely skill in writing prompts. It is the ability to conceive, direct, and evaluate an analysis.\nFirst, students need enough knowledge to recognize what is possible. A useful analysis begins before any code is written: someone must connect a substantive problem to data that could inform it, distinguish descriptive, predictive, causal, and decision questions, and recognize promising methods. Without this foundation, a user can ask AI only for familiar tasks and may not notice when a question cannot be answered from the available data. Knowledge expands both the range and the ambition of what a student can imagine doing.\nSecond, students must learn how to direct AI. A vague real-world concern must be translated into precise questions, variables, comparisons, and computational steps. The user must supply context, state constraints, decide what evidence would be relevant, and revise the approach as new problems emerge. These are central data-science skills. AI can assist with their execution, but it cannot compensate reliably for a poorly formulated problem.\nThird, students must be able to evaluate what AI produces. Plausible code may contain subtle errors; an attractive graph may conceal a misleading comparison; a highly accurate model may suffer from data leakage; and a fluent report may make a causal claim that the study design cannot support. Evaluation therefore requires understanding data provenance, measurement, variation, validation, uncertainty, reproducibility, and the context in which a result will be used. Because AI can make incorrect work appear polished and authoritative, these foundations become more important, not less.\nThis course prepares students to work with AI without surrendering judgment to it. Students learn enough about data, computation, statistical reasoning, and communication to formulate worthwhile questions, supervise computational work, verify results, explain limitations, and take responsibility for the conclusions they present. The goal is not to compete with AI at producing code quickly. It is to become the kind of informed practitioner whose abilities are made stronger by AI.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#adapting-to-rapid-skill-acquisition",
+    "href": "index.html#adapting-to-rapid-skill-acquisition",
+    "title": "Introduction to Data Science",
+    "section": "Adapting to Rapid Skill Acquisition",
+    "text": "Adapting to Rapid Skill Acquisition\nData science requires learning new tools and ideas quickly. VanderPlas (VanderPlas, 2016) emphasizes that effective practice depends less on memorizing every command than on locating and evaluating the information needed to solve an unfamiliar problem.\nEffective practitioners follow a disciplined process for resolving unfamiliar problems. They frame the problem, consult documentation and other reliable sources, test possible solutions, and evaluate whether the result makes sense.\nThis habit is especially important when software, data formats, and computing environments change. Encountering an unfamiliar package, error message, data source, or hardware requirement is part of the work. The goal is to develop a repeatable way to investigate such problems rather than to accumulate isolated recipes.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#working-principles",
+    "href": "index.html#working-principles",
+    "title": "Introduction to Data Science",
+    "section": "Working Principles",
+    "text": "Working Principles\nThe examples and exercises in this book emphasize a few recurring principles:\n\nStart with a clear question and understand the context of the data.\nKeep raw data separate from derived data and analysis output.\nExplore data interactively, then collect tested code into reproducible scripts or documents.\nConsider during data cleaning how each variable will be used later.\nUse version control to make small, understandable changes.\nDocument data sources, assumptions, software dependencies, and decisions.\nCheck results for statistical, computational, and contextual plausibility.\nCommunicate the question, evidence, limitations, and conclusion—not merely the code.\n\nEffective presentations guide the audience from motivation to conclusion. Introduce the problem and explain why it matters, provide a map of the talk, emphasize the main results, and conclude with the central takeaway.\nTrustworthy explanations distinguish original work from borrowed material. Original examples strengthen an explanation, while careful attribution allows the audience to evaluate its sources.",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Introduction to Data Science",
+    "section": "References",
+    "text": "References\n\n\n\n\nU.S. Bureau of Labor Statistics. (2025). Data scientists. Occupational Outlook Handbook. https://www.bls.gov/ooh/math/data-scientists.htm\n\n\nVanderPlas, J. (2016). Python data science handbook: Essential tools for working with data. O’Reilly Media, Inc. https://jakevdp.github.io/PythonDataScienceHandbook/\n\n\nWorld Economic Forum. (2025). The future of jobs report 2025. World Economic Forum. https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+    "crumbs": [
+      "Preliminaries"
+    ]
+  },
+  {
+    "objectID": "01-intro.html",
+    "href": "01-intro.html",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "1.1 What Is Data Science?\nData science is the practice of learning from data. It combines statistical reasoning, computation, and knowledge of the setting in which the data arose. None of these components is sufficient by itself. A technically sophisticated model can answer the wrong question; a sound statistical method can fail when implemented incorrectly; and efficient code cannot repair measurements that do not represent the phenomenon of interest.\nBin Yu’s \\(SDC^3\\) formulation captures this interdisciplinary breadth. In her 2014 presidential address to the Institute of Mathematical Statistics, she summarized the field as follows (Yu, 2014):\n\\[\n\\text{Data science} = S D C^3,\n\\]\nYu’s formulation gives each component of data science a distinct role. Here, \\(S\\) is statistics, \\(D\\) is domain or scientific knowledge, and the three \\(C\\)s are computing, collaboration, and communication. Statistics provides ways to reason from observations while accounting for variation and uncertainty. Domain knowledge connects an analysis to a meaningful question and helps us judge whether its assumptions are sensible. Computing makes it possible to acquire, organize, explore, and model data at useful scales.\nCollaboration and communication are not additions made after the technical work is complete. Data-science problems are commonly defined and solved by people with different forms of expertise. Their work becomes useful only when the question, evidence, assumptions, limitations, and conclusions can be understood by others. Data science is therefore both a technical and a social practice.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#the-data-science-workflow",
+    "href": "01-intro.html#the-data-science-workflow",
+    "title": "1  Introduction",
+    "section": "1.2 The Data-Science Workflow",
+    "text": "1.2 The Data-Science Workflow\nA data-science workflow organizes a project into seven recurring activities:\n\nFormulate a question. Identify the decision or phenomenon of interest and determine what kind of answer is needed.\nAcquire and understand data. Learn how the observations were generated, what each variable measures, and which population they represent.\nPrepare the data. Correct structural problems, handle missing values, combine sources, and record every transformation.\nExplore. Use summaries and visualizations to discover patterns, check assumptions, and refine the question.\nModel or quantify. Apply methods appropriate to the question and the way the data were collected.\nEvaluate. Check statistical, computational, and contextual validity; investigate alternative explanations; and describe uncertainty.\nCommunicate and act. Present the evidence and its limitations in a form that supports an informed decision.\n\nThese activities form a cycle rather than a one-way pipeline. Exploration may reveal a measurement problem, model checking may require different data, and discussion with a domain expert may change the original question. Reproducible records of the data, code, environment, and decisions make such revisions manageable and allow other people to inspect the work.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#goals-of-this-course",
+    "href": "01-intro.html#goals-of-this-course",
+    "title": "1  Introduction",
+    "section": "1.3 Goals of This Course",
+    "text": "1.3 Goals of This Course\nThis course develops the foundations needed to carry out that workflow. By the end of the course, students should be able to:\n\ntranslate a substantive problem into an answerable data-science question;\nuse Python to import, organize, explore, visualize, and model data;\nexplain the principles behind the methods they use and interpret their results in context;\ndistinguish descriptive, predictive, and causal claims;\nevaluate data quality, model performance, uncertainty, and possible sources of bias;\nuse Git to maintain a transparent history of a project and collaborate with others;\nuse Quarto to combine prose, code, results, and citations in a reproducible report;\ncommunicate findings clearly without overstating what the evidence supports; and\nidentify ethical concerns and take responsibility for analytical choices, including work performed with the assistance of AI.\n\nThe aim is not mastery of every available command or algorithm. Tools will change, and unfamiliar problems are unavoidable. The more durable goal is to learn how to select tools, investigate problems, verify results, and explain the reasoning that connects a question to a conclusion.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#computing-foundations",
+    "href": "01-intro.html#computing-foundations",
+    "title": "1  Introduction",
+    "section": "1.4 Computing Foundations",
+    "text": "1.4 Computing Foundations\nData science takes place in a computing environment: an operating system, a file system, a command-line shell, a Python installation, project-specific packages, and an editor or notebook interface. These components affect one another. A program that works in one environment may fail in another because a file is in a different location, a package version has changed, or a command is interpreted by a different shell. Understanding the environment is part of reproducible analysis.\n\n1.4.1 Operating Systems and Software\nLinux, macOS, and Windows all support data-science work but manage software differently. Installation instructions must therefore be read with the operating system in mind. Linux distributions commonly use system package managers such as APT or DNF; Homebrew is a widely used third-party package manager on macOS; and Windows provides tools such as Windows Package Manager as well as the Windows Subsystem for Linux (WSL).\nAn operating-system package manager and a Python package manager solve different problems. The former installs software for the operating system; the latter installs Python libraries into a Python environment. Mixing their roles without understanding which interpreter or environment is active is a common source of installation errors. For course work, use the documented project environment instead of installing packages into an unspecified global Python installation.\n\n\n1.4.2 Files, Paths, and Directories\nA file system organizes files into directories, also called folders. File Explorer on Windows, Finder on macOS, and a command-line shell are different ways of viewing and working with the same file system. A file downloaded in a web browser is not stored “in the browser”: it is saved somewhere in the file system.\n\n1.4.2.1 Finding Your Files\nThe home directory is the starting point for locating a user’s files. It contains familiar folders such as Desktop, Documents, and usually Downloads. A web browser normally saves a download in Downloads unless the user or browser chooses another location. To find a recent download:\n\nOpen the browser’s downloads list and use Show in folder, or open Downloads in File Explorer or Finder.\nCheck the file name and extension. A file called survey.csv is different from survey.csv.zip or survey (1).csv.\nMove course materials from Downloads into a deliberately named project folder. Do not let Downloads become the permanent organization for an analysis.\nIf the download is a .zip archive, extract it and identify the new folder before trying to run or edit its contents.\n\nFrom a Unix-like shell, ~ denotes the home directory. The following commands answer three basic questions:\npwd             # Where am I now?\nls              # What is here?\ncd ~/Downloads  # Move to my Downloads folder.\nThe graphical and command-line views should lead to the same location. Run pwd again after cd and compare its output with the location shown in File Explorer or Finder. Software Carpentry provides a guided introduction to this navigation process (Software Carpentry, n.d.).\n\n\n1.4.2.2 Absolute and Relative Paths\nA path identifies a location in the file-system hierarchy. An absolute path starts at the file-system root and identifies a location without reference to the current working directory. Examples include /home/lee/air-quality/data/raw.csv on Linux and C:\\Users\\Lee\\air-quality\\data\\raw.csv on Windows. Such a path is tied to a particular machine and user account.\nA relative path is interpreted from the current working directory. If the working directory is the project folder air-quality, then data/raw.csv identifies the same file without recording where the project is stored. The special path . denotes the current directory and .. denotes its parent. Software Carpentry provides diagrams and exercises for learning how absolute and relative paths are resolved (Software Carpentry, n.d.).\nFor files within a project, prefer paths relative to the project root. If the whole project directory is moved to a different computer, every internal relative path can remain valid; absolute paths containing a user’s home directory generally cannot. This is why project-relative paths are important for portability and reproducibility. Keep each project in its own directory, separate source data from generated results, and run the analysis with a known project root (Wilson et al., 2017).\n\n\n1.4.2.3 Naming Files and Folders\nGood file and folder names are readable by people and predictable for software. Follow these conventions:\n\nuse short, descriptive names such as survey-responses.csv and clean-data.py;\nuse lowercase letters, digits, hyphens, and underscores, and avoid spaces and characters that have special meanings in a shell;\nchoose one delimiter convention and apply it consistently;\nwrite dates in sortable YYYY-MM-DD order and zero-pad sequence numbers when ordering matters; and\nuse stable content-based names instead of names such as final-v2-revised; let version control record revisions.\n\nThe Windows directory C:\\Program Files illustrates an unfortunate naming convention for command-line work. The space is legal, but a shell may interpret it as the boundary between two arguments unless the entire path is quoted, as in \"C:\\Program Files\". Users must accommodate system paths they do not control, but should not copy this convention into data-science projects. Prefer air-quality to Air Quality Project. Software Carpentry gives the same recommendation because spaces and other shell-sensitive characters complicate commands, loops, and scripts (Software Carpentry, n.d.).\nPortable file handling requires attention to case, extensions, and hidden files. Names may be case-sensitive on one operating system but not another, and extensions such as .csv, .py, and .qmd signal different kinds of content. Hidden files often store configuration.\nEvery file operation should begin with a check of its source and destination. Before reading or writing a file, know the current working directory, the intended path, and whether the operation will replace an existing file.\n\n\n\n1.4.3 The Command Line\nThis book standardizes on Unix shell conventions for command-line work. Its basic commands work in Git Bash, Cygwin, WSL, macOS terminals, and Linux terminals. On Windows, use Git Bash, which is distributed with Git for Windows and provides a Bash emulation for running Git and Unix-style commands (Git for Windows, n.d.).\nDo not use PowerShell for the command-line examples in this book. PowerShell defines familiar names such as ls, cp, and rm as aliases for PowerShell cmdlets rather than the corresponding Unix programs. The names may appear to work while their options and behavior differ (Microsoft, n.d.). In this course, use PowerShell only when a Windows-specific software installation step explicitly requires it.\nThe following shell commands form a useful starting vocabulary:\n\npwd prints the current working directory;\nls lists directory contents;\ncd changes the current directory, with .. denoting its parent;\nmkdir creates a directory;\ncp copies files or directories;\nmv moves or renames files or directories; and\nrm removes files.\n\nOptions modify the behavior of a command. For example, ls -a includes hidden entries and ls -l displays additional details. Consult a command’s documentation before using unfamiliar options, and use tab completion to reduce typing errors.\nCommands that overwrite or remove data require special care. Check every path before running them; command-line deletion may not use a desktop trash folder.\nA short command list is only a starting point for shell fluency. The Software Carpentry lesson The Unix Shell provides a fuller introduction to navigating and modifying files, combining commands with pipes, automating repetition with loops, and writing shell scripts (Software Carpentry, n.d.).\n\n\n1.4.4 Python and Its Environment\nPython is the primary programming language used in this book. A working setup requires a supported Python 3 interpreter, an isolated environment containing the required packages, and an interface for editing and running code. The interface may be a notebook, an editor, or an integrated development environment; the underlying project should remain reproducible regardless of which interface is used.\nReadable code is easier to verify, revise, and share. Python’s principal style guide is PEP 8 (Van Rossum et al., 2001). For a start, follow three conventions:\n\nuse four spaces for each indentation level and do not mix tabs and spaces;\ngive variables and functions descriptive lower_case_with_underscores names; and\nuse whitespace consistently, keep statements on separate lines, and wrap long lines inside parentheses when they become difficult to read.\n\nConsistent style makes analytical code easier to inspect and trust. Clear code exposes assumptions and makes errors easier to find, but consistency within a project matters more than mechanically applying a rule that reduces readability.\nTwo freely available books provide broader instruction in the Python data-science ecosystem. The Python Data Science Handbook (VanderPlas, 2016) covers NumPy, pandas, visualization, and machine learning, while Python for Data Analysis (McKinney, 2022) develops data manipulation with pandas in greater depth.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#tools-for-reproducible-data-science",
+    "href": "01-intro.html#tools-for-reproducible-data-science",
+    "title": "1  Introduction",
+    "section": "1.5 Tools for Reproducible Data Science",
+    "text": "1.5 Tools for Reproducible Data Science\nCoursework should produce artifacts that remain useful after the semester ends. When an assignment is written in Quarto, its clear prose, executable analysis, figures, citations, and reproducible source can be revised into a research memo, portfolio sample, lab report, or presentation for another audience. Students should therefore treat homework as practice for professional communication, not as a disposable file submitted only for a grade; attractive output is valuable because it helps readers understand trustworthy work, not because appearance can substitute for sound reasoning (Quarto Developers, 2025).\n\n1.5.1 Installing Quarto\nQuarto is the publishing tool used throughout this book, so install it before you try to render a .qmd file. Follow the official Quarto installation guide for your operating system, then verify the installation from Git Bash, WSL, macOS Terminal, or a Linux shell:\nquarto --version\nquarto check\nThe quarto command must be available on your PATH. If the shell reports command not found, finish the installation or reopen the shell so it reloads the updated PATH. Chapter 3 combines Quarto with Python and Jupyter to produce executable documents (Quarto Developers, 2025).\n\n\n1.5.2 Installing Git\nGit is the version-control tool used throughout this book, so install it before you begin the collaboration exercises. Follow the official Git installation instructions, or install Git for Windows and use Git Bash on Windows. Verify the installation and identity from your shell:\ngit --version\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@example.com\"\ngit config --list --show-origin\nChapter 2 explains repositories, commits, branches, remotes, and pull requests. Chapter 1 only asks you to install and verify Git; do not install project packages globally.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#responsible-practice",
+    "href": "01-intro.html#responsible-practice",
+    "title": "1  Introduction",
+    "section": "1.6 Responsible Practice",
+    "text": "1.6 Responsible Practice\nEthical questions occur throughout a project, not only when results are published. Data may have been collected without meaningful consent, omit groups affected by a decision, encode historical inequities, or reveal private information when combined with other sources. A model may distribute errors unevenly, and a technically correct analysis may still be used for a harmful or unjustified purpose.\nResponsible practice begins by asking who created the data, who is represented, who is missing, who benefits from the analysis, and who bears the risks. Collect and retain only what is needed; protect sensitive information; document provenance and transformations; examine performance across relevant groups; and communicate limitations. Legal compliance is necessary in regulated settings, but it is not a substitute for ethical judgment.\nAccountability remains with the people conducting and deploying an analysis. This is especially important when AI generates code, models, or prose. The apparent fluency of an output is not evidence that the data were appropriate, the computation was correct, or the conclusion was justified. Every result must be examined with the same statistical, computational, contextual, and ethical scrutiny regardless of how it was produced.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#communicating-data-science",
+    "href": "01-intro.html#communicating-data-science",
+    "title": "1  Introduction",
+    "section": "1.7 Communicating Data Science",
+    "text": "1.7 Communicating Data Science\nAn analysis has little value if its audience cannot understand what was learned or decide how to respond. Effective communication begins with the question and the main finding, then supplies the evidence needed to support that finding. Tables and graphics should have a clear purpose, informative labels, honest scales, and enough context to be interpreted without guesswork.\nGood communication also makes uncertainty and limitations visible. Report what the data cover, distinguish observed patterns from explanations, and avoid causal language when the design supports only association. Provide enough information about data sources, software, and analytical choices for others to inspect or reproduce the work. The objective is not to make a result sound certain; it is to make the reasoning transparent and useful.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#exercises",
+    "href": "01-intro.html#exercises",
+    "title": "1  Introduction",
+    "section": "Exercises",
+    "text": "Exercises\n\nPrepare your computer for this course.\n\nInstall Git and Quarto, record your operating system and the outputs of git --version, quarto --version, and quarto check, and configure and verify your Git identity.\nExplain one installation problem and its solution in a short .qmd report.\nRender the report to HTML and state which commands produced it.\n\nFind and describe a file without relying on a graphical application’s recent- files list.\n\nUse pwd, ls, and cd to locate your home directory and Downloads.\nDescribe that folder with both an absolute path and a path relative to your project directory, and explain why the relative path is more portable.\nRender the explanation to HTML.\n\nEstablish naming and organization conventions for a new project.\n\nCreate a practice directory containing three files with recommended names and one deliberately difficult name.\nExplain why the difficult name causes trouble in a shell, rename it, and show the commands and directory listing.\nWrite a short .qmd essay explaining why professionals use the command line, why Linux and Windows organize software differently, and why source files should be separated from generated or binary files. Include one collaboration problem caused by spaces in names, lines longer than 80 characters, or untracked output.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#references",
+    "href": "01-intro.html#references",
+    "title": "1  Introduction",
+    "section": "References",
+    "text": "References\n\n\n\n\nGit for Windows. (n.d.). Git for windows. https://gitforwindows.org/\n\n\nMcKinney, W. (2022). Python for data analysis: Data wrangling with pandas, NumPy, and jupyter (3rd ed.). O’Reilly Media, Inc. https://wesmckinney.com/book/\n\n\nMicrosoft. (n.d.). Using aliases. Microsoft Learn. https://learn.microsoft.com/en-us/powershell/scripting/learn/shell/using-aliases\n\n\nQuarto Developers. (2025). Quarto guide. https://quarto.org/docs/guide/\n\n\nSoftware Carpentry. (n.d.). The unix shell. https://swcarpentry.github.io/shell-novice/\n\n\nVan Rossum, G., Warsaw, B., & Coghlan, A. (2001). PEP 8 – style guide for python code. Python Software Foundation. https://peps.python.org/pep-0008/\n\n\nVanderPlas, J. (2016). Python data science handbook: Essential tools for working with data. O’Reilly Media, Inc. https://jakevdp.github.io/PythonDataScienceHandbook/\n\n\nWilson, G., Bryan, J., Cranston, K., Kitzes, J., Nederbragt, L., & Teal, T. K. (2017). Good enough practices in scientific computing. PLOS Computational Biology, 13(6), e1005510. https://doi.org/10.1371/journal.pcbi.1005510\n\n\nYu, B. (2014). Let us own data science. IMS Bulletin, 43(7). https://imstat.org/2014/10/01/ims-presidential-address-let-us-own-data-science/",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html",
+    "href": "02-git.html",
+    "title": "2  Project Management",
+    "section": "",
+    "text": "2.1 The Git Model\nGit records the history of a project so that an analyst can work reproducibly, recover from mistakes, and collaborate without exchanging unnamed copies of files. GitHub and similar services host Git repositories online; they add backup, discussion, and review around Git’s local history. This chapter introduces the ideas and commands needed for the projects in this book. The free Pro Git book provides a fuller reference (Chacon & Straub, 2014).\nSeveral hands-on resources complement this chapter. The Git and GitHub for Beginners crash course provides a visual overview, Git Exercises offers short command-line practice, and Oh My Git! teaches Git through an open-source game. Version control is useful beyond Git because it preserves history, supports recovery, and coordinates work across collaborators. Hofert’s beginner-friendly tutorial compares the fundamentals of Git and Subversion and is a useful additional reading (Hofert, 2025). Use all of these resources for practice, but check each command against git status and the repository’s documentation.\nGitHub is one hosting service for Git repositories; Bitbucket and GitLab offer similar services. Hosting a repository online provides a backup of committed work and makes collaboration with classmates and coworkers easier.\nA Git repository is a project directory together with a database of its history. The working tree contains files being edited, the staging area records changes intended for the next snapshot, and a commit stores that snapshot with an author, time, and message. Thinking in these three states prevents the common mistake of treating git add as a backup or git commit as an upload.\nThe staging area makes a commit a deliberate unit of work. You can inspect a change, stage only the part that belongs together, and then commit a coherent snapshot. A good commit should explain one change in the imperative mood, such as content: clarify relative paths; generated files, credentials, and large local data should not be committed.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#installing-and-configuring-git",
+    "href": "02-git.html#installing-and-configuring-git",
+    "title": "2  Project Management",
+    "section": "2.2 Installing and Configuring Git",
+    "text": "2.2 Installing and Configuring Git\nInstall Git before creating a repository. Use Git for Windows on Windows, and use the package manager or installer appropriate for macOS or Linux; the official Git downloads page lists current options (Git Project, 2025). On Windows, open Git Bash for the Unix-style commands used in this book.\nGit needs an identity so that each commit records who made it, and a remote account provides a place to share those commits. Set your local name and email once on a computer, then verify the values:\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@example.com\"\ngit config --global init.defaultBranch main\ngit config --list --show-origin\nAn account on GitHub is separate from a local Git installation. Set up GitHub by creating an account, generating an SSH key if you do not already have one, and adding the key’s public half to your GitHub account; HTTPS authentication is an alternative. GitHub’s onboarding guide explains account setup and authentication (GitHub, 2025b).",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#a-first-local-workflow",
+    "href": "02-git.html#a-first-local-workflow",
+    "title": "2  Project Management",
+    "section": "2.3 A First Local Workflow",
+    "text": "2.3 A First Local Workflow\nThe safest beginner workflow is to inspect, stage, inspect again, and then commit. Start by cloning an existing repository or initializing a new one:\ngit clone https://github.com/OWNER/REPOSITORY.git\ncd REPOSITORY\n\n# For a new local project instead:\ngit init\ngit status is the most useful diagnostic command. It reports the current branch, changed files, staged files, and files Git is ignoring. Run it before and after each logical operation rather than guessing what Git will do. The following sequence records a small change:\ngit status\ngit diff                 # changes not yet staged\ngit add path/to/file.qmd\ngit diff --staged        # changes that will enter the commit\ngit commit -m \"content: explain the Git workflow\"\ngit status\ngit add copies the selected version into the staging area; it does not send anything to GitHub. git commit saves the staged snapshot locally; it does not publish it. git push is the operation that sends local commits to a remote. This distinction is the foundation of a reliable backup and collaboration workflow.\nBeginners should avoid git add . because it stages every unignored change below the current directory, including files they may not have inspected or intended to commit. Stage named files, such as git add 02-git.qmd, and review git diff --staged before committing. Use git add . only when you have deliberately checked every change in the directory.\nThe seven commands used most often in this book are git clone, git pull, git status, git add, git rm, git commit, and git push. The first clones a repository using an HTTPS URL or an SSH key; pull downloads and integrates updates; status reports changed, staged, and untracked files and whether the local branch is ahead of or behind its remote; add stages selected changes; rm removes a file from the index and working tree; commit records a snapshot with a message; and push sends commits to a remote. The commands git diff, git branch, and git reset are useful for more advanced work; use git reset only after learning how it changes history.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#inspecting-and-recovering-history",
+    "href": "02-git.html#inspecting-and-recovering-history",
+    "title": "2  Project Management",
+    "section": "2.4 Inspecting and Recovering History",
+    "text": "2.4 Inspecting and Recovering History\nGit’s history commands let you understand a change before trying to undo it. Use a compact log for the sequence of commits and a diff for exact lines:\ngit log --oneline --decorate --graph --all\ngit show COMMIT\ngit diff HEAD~1 HEAD\nDifferent recovery commands have different safety implications. git restore path/to/file discards unstaged edits, git restore --staged path/to/file unstages a file without changing its contents, and git revert COMMIT creates a new commit that reverses an earlier published commit. Avoid git reset on a shared branch until you understand how it changes history.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#branches-and-remotes",
+    "href": "02-git.html#branches-and-remotes",
+    "title": "2  Project Management",
+    "section": "2.5 Branches and Remotes",
+    "text": "2.5 Branches and Remotes\nA branch is a movable name for a line of commits. Branches let you develop and review an idea without changing the shared default branch:\ngit switch -c improve-introduction\n# edit files, then add and commit\ngit switch main\ngit pull --ff-only\ngit switch improve-introduction\nA remote is a name for another repository, usually an online copy called origin. These commands inspect and synchronize it:\ngit remote -v\ngit fetch origin\ngit pull --ff-only origin main\ngit push -u origin improve-introduction\ngit fetch downloads remote history without changing working files; git pull fetches and then integrates the selected branch. Pull before starting work when others may have pushed changes, and push completed commits so that a second copy exists.\nGit reports a conflict when two changes cannot be integrated automatically. Use this sequence to resolve one:\ngit status                         # list conflicted files\n# open each conflicted file and choose the intended content\n# remove the &lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, and &gt;&gt;&gt;&gt;&gt;&gt;&gt; markers\ngit add path/to/resolved-file.qmd\ngit diff --staged                  # inspect the resolution\ngit commit                         # finish the merge, if Git requests it\nDo not choose a side blindly. Ask the contributor who made the other change when the intended result is unclear, and run the project’s checks after the resolution. If you need to abandon an unfinished merge, use git merge --abort before making further edits.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#github-and-pull-requests",
+    "href": "02-git.html#github-and-pull-requests",
+    "title": "2  Project Management",
+    "section": "2.6 GitHub and Pull Requests",
+    "text": "2.6 GitHub and Pull Requests\nGitHub is a hosting and collaboration service, not a replacement for Git. A repository on GitHub can store the canonical source, while each contributor works in a local clone and exchanges commits through a remote.\nA pull request proposes merging a branch into another branch. It gives reviewers a place to inspect the diff, discuss design and evidence, and run checks before the change is merged.\nSmall pull requests are easier to review and less likely to conceal an accidental change. Include the motivation, files affected, and checks you ran; do not include rendered _book/ output when it is generated by the project.\nGitHub’s pull-request process is easiest to follow as a sequence of checks:\n\nFork the upstream repository and synchronize the fork if it is out of date.\nClone your fork and confirm that you can open the project in your editor.\nRun git status to verify that the working tree is clean.\nCreate a descriptive branch, make the change, and run the relevant checks.\nRun git status and inspect the diff before staging and committing.\nPush the branch, open the pull request, and describe the change for reviewers.\n\nGitHub provides a short pull requests in 100 seconds video, and its documentation explains the full workflow (GitHub, 2025a).\nFor a class-notes contribution, the concrete command-line sequence looks like this:\ngit clone https://github.com/GitHub_Username/ids-book.git\ncd ids-book\ngit status\ngit switch -c branch-name\n# edit a file, for example index.qmd, and save it\ngit status\ngit add index.qmd\ngit diff --staged\ngit commit -m \"content: add a useful example\"\ngit push -u origin branch-name\nReplace GitHub_Username and branch-name with your own values. On GitHub, open the fork, click Compare & pull request, describe the change, and click Create pull request. If you are on the wrong branch, use git switch existing-branch; use git branch to list branches and identify the current one. Before beginning work, use Sync fork on GitHub when the fork is behind the upstream repository.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#practical-recommendations",
+    "href": "02-git.html#practical-recommendations",
+    "title": "2  Project Management",
+    "section": "2.7 Practical Recommendations",
+    "text": "2.7 Practical Recommendations\nThe following checklist turns the chapter’s concepts into everyday repository habits:\n\nUse the command-line interface instead of the web interface for Git operations, such as uploading files to GitHub.\nMake frequent small commits instead of rare large commits.\nMake commit messages informative and meaningful.\nName files and folders with lowercase letters and no spaces.\nKeep the repository clean by not tracking generated files.\nCreate and maintain a .gitignore file for generated output, caches, local environments, and secrets.\nKeep source lines under 80 characters so that diffs remain readable.\nRun git status before and after important operations.\nInspect a diff before staging and inspect the staged diff before committing.\nPull before starting work when collaborators may have pushed changes, and push completed commits so that a second copy exists.\n\nGit tracks text changes well but is not a data warehouse. Keep reproducible scripts, small instructional data, and environment specifications under version control; keep credentials, huge raw datasets, and generated results out of the repository. Record where excluded data came from and how to obtain it so another analyst can reproduce the work.\nUse this file-level rule when deciding what belongs in a repository:\n\nTrack: source code (.py, .qmd, and .R), documentation, small example data, configuration needed to reproduce the project, environment specifications, and .gitignore.\nDo not track: passwords, API keys, private keys, personal data, huge raw datasets, downloaded installers, temporary files, caches, virtual environments, rendered _book/ output, or other files generated from the tracked source.\n\nPut the exclusion rule in .gitignore before creating files that should not be tracked. If sensitive information is accidentally committed, deleting the file in a later commit does not remove it from the earlier history; change the exposed credential and seek help to remove the history safely.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#exercises",
+    "href": "02-git.html#exercises",
+    "title": "2  Project Management",
+    "section": "Exercises",
+    "text": "Exercises\n\nEstablish a usable GitHub project from the command line.\n\nCreate an account if necessary and configure SSH authentication, or explain why you selected HTTPS.\nFork statds/ids-book, clone your fork, configure your name and email, and verify the remote, identity, and a clean git status.\nRecord what failed and how you fixed it; do not omit an obstacle merely because you eventually solved it.\n\nMake and review a reproducible contribution in your fork.\n\nCreate and check out a descriptive branch, make a small documented change to a practice file, and make at least ten small commits with informative messages.\nInspect both git diff and git diff --staged as you work, then push the branch to your fork.\nOpen a pull request against the repository from which you forked, describe the change clearly, respond to one review comment with a follow-up commit, and submit the link. Include enough setup information that another student can clone the fork and reproduce the result on their own computer.\n\nExplain the conventions you used in a complete-paragraph .qmd report.\n\nExplain why a professional workflow uses the command line rather than web uploads, why binary and generated files stay out of Git, and why a homework PDF belongs in a GitHub release.\nExplain why this course requires lowercase names, 80-character source lines, and multiple small commits, using examples from your repository.\nVerify the final state with git status and include the commands and links needed for another student to inspect it.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "02-git.html#references",
+    "href": "02-git.html#references",
+    "title": "2  Project Management",
+    "section": "References",
+    "text": "References\n\n\n\n\nChacon, S., & Straub, B. (2014). Pro git (2nd ed.). Apress. https://git-scm.com/book/en/v2\n\n\nGit Project. (2025). Git downloads. https://git-scm.com/downloads\n\n\nGitHub. (2025a). About pull requests. https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests\n\n\nGitHub. (2025b). Getting started with GitHub. https://docs.github.com/en/get-started\n\n\nHofert, M. (2025). Version control systems: Fundamentals for beginners. Journal of Data Science. https://doi.org/10.6339/25-JDS1202",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Project Management</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html",
+    "href": "03-quarto.html",
+    "title": "3  Reproducible Data Science",
+    "section": "",
+    "text": "3.1 A Minimal Quarto Document\nQuarto turns plain-text source into reproducible documents that combine explanation, computation, results, figures, and references. A data-science analysis should be reproducible because readers need to inspect how evidence was produced, not merely see a final picture or a pasted table. Quarto supports Python, R, Julia, and Observable and can publish articles, reports, websites, books, and presentations in several output formats (Quarto Developers, 2025b).\nThis chapter is a jump start, not a replacement for the complete Quarto Guide. Use the guide when you need options not covered here, and consult the Python documentation, Markdown reference, and presentation documentation for detailed examples (Quarto Developers, 2025d, 2025a, 2025c).\nA Quarto document is a text file whose .qmd extension combines YAML metadata, Markdown prose, equations, citations, and executable code chunks. The following small document is a better starting point than a code-only hello-world: it produces a numerical result, a table, and a figure from the same code that explains them.\nCreate a file named hello.qmd with YAML metadata like this:\nThe document can then combine prose, equations, and executable code. Equation punctuation follows ordinary sentence punctuation. The mean of observations \\(x_1,\\ldots,x_n\\) is given by Equation 3.1.\nThe source syntax for this numbered equation is:\n\\[\n\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i.\n\\tag{3.1}\\]\nA cases display can continue a sentence with a comma, as shown in Equation 3.2:\n\\[\ng(x) =\n\\begin{cases}\n  0, & x &lt; 0,\\\\\n  1, & x \\ge 0.\n\\end{cases}\n\\tag{3.2}\\]\nThe comma after the first case and the period after the final case are part of one grammatical statement. The code below generates a table and a figure from the same observations:\nimport matplotlib.pyplot as plt\nimport pandas as pd\nfrom matplotlib_inline.backend_inline import set_matplotlib_formats\n\nset_matplotlib_formats(\"svg\")\n\nscores = pd.DataFrame({\"student\": [\"A\", \"B\", \"C\"],\n                       \"score\": [82, 91, 87]})\nscores[\"score\"].mean()\nscores\n\nfig, ax = plt.subplots()\nax.bar(scores[\"student\"], scores[\"score\"])\nax.set(xlabel=\"Student\", ylabel=\"Score\", title=\"Scores\")\nplt.show()\n\n\n\n\n\n\n\nFigure 3.1: Scores for three students\nThe resulting table and Figure Figure 3.1 summarize the observations above. Quarto itself is documented in the Quarto Guide (Quarto Developers, 2025b).\nThe opening and closing lines between --- define YAML metadata. Headings use one or more # characters, ordinary text forms paragraphs, dollar signs mark LaTeX equations, and a fenced code chunk begins with ```{python}. The jupyter: python3 setting tells Quarto which Jupyter kernel should execute Python chunks. Expressions whose values are displayed, such as scores, and figures returned by the chunk become part of the rendered document.\nRender the document from its directory:\nQuarto writes hello.html by default. Open that file in a browser, or use quarto preview hello.qmd while editing to render again after each save. Keep the .qmd source under version control; treat the rendered HTML as generated output.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#a-minimal-quarto-document",
+    "href": "03-quarto.html#a-minimal-quarto-document",
+    "title": "3  Reproducible Data Science",
+    "section": "",
+    "text": "---\ntitle: \"Hello, Quarto\"\nauthor: \"Your Name\"\nformat: html\njupyter: python3\nbibliography: references.bib\n---\n\n\nThe mean ... is given by @eq-mean.\n\n$$\n\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i.\n$$ {#eq-mean}\n\n\n\n\n\n\n\n\nquarto render hello.qmd",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#markdown-essentials",
+    "href": "03-quarto.html#markdown-essentials",
+    "title": "3  Reproducible Data Science",
+    "section": "3.2 Markdown Essentials",
+    "text": "3.2 Markdown Essentials\nMarkdown provides the readable structure around an analysis. The following constructs cover the structures needed in early assignments:\n# Chapter title\n## Section heading\n\n**bold**, *italic*, and [a link](https://quarto.org/)\n\n- an unordered list\n- another item\n\n1. a numbered step\n2. another step\n\n`inline code` and a code block:\n\n```python\nprint(\"This block is displayed, not executed by Quarto.\")\n```\n\n&gt; A block quote highlights a definition or key point.\n\n| quantity | value |\n|:--|--:|\n| observations | 3 |\n| mean | 86.7 |\n\n![A descriptive caption](figures/scores.png)\n\nSee the Quarto Guide [@quarto2025guide] and @eq-mean.\nUse a heading hierarchy rather than bold text to organize a document. Put a blank line around paragraphs and lists, write descriptive link text, and keep code that should execute in a Quarto code chunk. Use a meaningful caption for each figure and cite sources near the claim they support. The Markdown basics reference covers tables, images, citations, cross-references, callouts, and other features.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#why-the-software-environment-matters",
+    "href": "03-quarto.html#why-the-software-environment-matters",
+    "title": "3  Reproducible Data Science",
+    "section": "3.3 Why the Software Environment Matters",
+    "text": "3.3 Why the Software Environment Matters\nAn analysis is a combination of source code and the software environment that interprets it. Two computers can run the same source and obtain different results when they use different Python versions, package versions, operating- system libraries, or default settings. A result that cannot be rerun after an environment changes is not fully reproducible, even when the code is available (Wilson et al., 2017).\nAn isolated environment makes these dependencies explicit and prevents one project from silently changing another. Recording the Python version and the installed packages lets a collaborator recreate the computational setting, while a lockfile or pinned requirements file records the versions tested here. This practice also makes failures diagnosable: when an upgrade changes an output, we can identify the change instead of guessing which global installation caused it.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#python-environments-for-quarto",
+    "href": "03-quarto.html#python-environments-for-quarto",
+    "title": "3  Reproducible Data Science",
+    "section": "3.4 Python Environments for Quarto",
+    "text": "3.4 Python Environments for Quarto\nQuarto executes Python through a Jupyter kernel, so the interpreter and packages must be installed in an environment that Quarto can find. A virtual environment keeps this project’s packages separate from the system Python and from unrelated projects.\nThis repository uses Python 3.12 as its tested compatibility target. The recommended local environment is .ids, created and managed with uv. uv is a fast command-line tool for installing Python versions, creating virtual environments, and installing packages; it is not a replacement for Python or Quarto. Students who prefer the standard Python tools can use the pip alternative below.\nuv venv --python 3.12 .ids\nsource .ids/bin/activate\nuv pip install jupyter matplotlib pandas\nThe environment name is a convenience, not a requirement. Students may use a different name, such as .venv, provided that Quarto and the editor use that environment’s Python kernel. When the name differs from the Makefile default, pass the chosen name explicitly:\nmake req VENV=.venv\nmake render VENV=.venv\nThe first command records installed packages in requirements.txt; the second renders the book. Do not install packages into the system Python, and do not commit the virtual-environment directory. Keep the environment specification and the source files under version control instead.\nIf uv is not available, create the environment with the standard library and install the same packages with pip:\npython3.12 -m venv .venv\nsource .venv/bin/activate\npython -m pip install --upgrade pip\npython -m pip install jupyter matplotlib pandas\nUse python --version, which python, and jupyter kernelspec list to verify that the active interpreter is the one you intend to use. If Quarto reports that it cannot find a kernel, select the environment’s Python interpreter in your editor or install its kernel with python -m ipykernel install --user.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#reproducibility-in-practice",
+    "href": "03-quarto.html#reproducibility-in-practice",
+    "title": "3  Reproducible Data Science",
+    "section": "3.5 Reproducibility in Practice",
+    "text": "3.5 Reproducibility in Practice\nReproducibility requires a record of the inputs, environment, instructions, and decisions that produced an analysis. A Quarto file brings prose and executable code together, but it cannot by itself make an undocumented dataset, unrecorded random seed, or unavailable package reproducible.\nFor each analysis, preserve these five components:\n\nSource: the .qmd file and any scripts it calls.\nData: the source, version, download date, and transformations for each dataset; keep private or large raw data outside Git when necessary.\nEnvironment: the Python version, package requirements, Quarto version, and operating-system details needed to run the source.\nExecution: the commands, options, random seeds, and order of steps used to render the document.\nOutputs: tables, figures, and conclusions checked against the source, not manually edited after rendering.\n\nUse relative project paths, pin important package versions, set random seeds when simulation is involved, and render from a clean working tree. These habits make it possible for another analyst to inspect and repeat the work (Wilson et al., 2017).",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#rendering-the-book",
+    "href": "03-quarto.html#rendering-the-book",
+    "title": "3  Reproducible Data Science",
+    "section": "3.6 Rendering the Book",
+    "text": "3.6 Rendering the Book\nRendering checks whether the source, computations, citations, and cross- references work together. From the repository root, use the Makefile targets:\nmake check\nmake render\nmake preview\nmake check verifies the command-line tools, make render builds the complete book in _book/, and make preview starts a local server with live reload. For a quick test of one source file, use:\nmake render-one FILE=hello.qmd\nRead the terminal output rather than assuming a successful command produced a correct document. Check that code results make sense, links work, figures have captions, citations resolve, and the output contains no accidental secrets or local file paths. Generated _book/, .quarto/, and cache files belong in .gitignore, not in a commit.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#presentations-with-quarto",
+    "href": "03-quarto.html#presentations-with-quarto",
+    "title": "3  Reproducible Data Science",
+    "section": "3.7 Presentations with Quarto",
+    "text": "3.7 Presentations with Quarto\nQuarto presentations should replace the default habit of preparing course work in a proprietary PowerPoint file. A presentation remains plain text, versionable, reproducible, and reviewable while still producing a polished slide deck. Quarto supports reveal.js slides in HTML and can also produce other formats; the presentation guide explains the available options.\nA well-made Quarto homework is a reusable professional artifact, not a disposable submission. The same source can become a polished report, research memo, lab note, portfolio piece, or presentation for a different audience by changing its format and explanation while retaining the executable analysis. Students should therefore treat each assignment as an opportunity to practice communicating evidence to people outside this course: clear prose, labeled figures, citations, and a reproducible source record are more valuable than a decorative layout alone (Quarto Developers, 2025b).\nExcel, Word, and PowerPoint are useful office tools for administrative staff, but they are not data-science authoring tools. Students should not author data-science assignments in these MS Office formats: their binary contents produce opaque diffs, make line-by-line review difficult, and can preserve hidden formatting or manually edited results without recording how those results were computed. Use a .qmd file, code, data description, and environment as the authoritative record; an HTML rendering is the normal output, and a PDF may be exported only when an audience or assignment specifically requires it. The reason is methodological: a data-science submission must expose executable transformations, preserve data and software provenance, support line-by-line review, and reproduce the same outputs after the source changes. Office files primarily preserve a presentation or a spreadsheet state; they do not reliably preserve that computational record (Wilson et al., 2017).\nPlain-text source and Git also provide benefits that office workflows lack. Version history records who changed which lines and makes earlier versions recoverable, rather than hiding revisions in a track-changes pane or a file named final-v2-revised. Code automates repeated calculations, keeps tables and figures synchronized with the data, and can be tested after each change. Several people can review, merge, and reuse the same source without passing around conflicting binary attachments.\nCreate a presentation by choosing a presentation format in the YAML header:\n---\ntitle: \"A Data-Science Result\"\nformat: revealjs\n---\n\n## The question\n\nWhat decision does this analysis support?\n\n## The evidence\n\nExplain the important figure and its limitations.\nRender it with quarto render presentation.qmd or preview it with quarto preview presentation.qmd. Use headings for slides, keep one central idea on each slide, and write speaker notes when additional explanation belongs in the oral presentation rather than on the slide. Export a PDF only when a course or audience requires a static copy; keep the .qmd source as the authoritative presentation.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#exercises",
+    "href": "03-quarto.html#exercises",
+    "title": "3  Reproducible Data Science",
+    "section": "Exercises",
+    "text": "Exercises\nComplete the Git setup from Chapter 2 and the Quarto installation from Chapter 1 before beginning. Document each exercise in a .qmd file as a user manual for another beginner:\n\nBuild and inspect a reproducible Quarto document.\n\nRecord your operating system, Python version, Quarto version, and any installation obstacle; explain how you verified that Quarto can find the Python environment.\nCreate the environment, open the project in your editor, and reproduce the polar-axis line plot from the Quarto presentation guide with a caption.\nAdd prose, an equation, an executable Python chunk, and a generated figure to a short document; render it to HTML, inspect it in a browser, and correct warnings or unresolved references.\n\nPublish and preserve the work.\n\nRender the homework to PDF and place the PDF in a GitHub release, while keeping the .qmd source under version control and excluding the virtual environment and generated _book/ output.\nCommit in small, meaningful steps and push the branch to your fork.\nInclude the HTML link, release link, commands, and troubleshooting notes in the homework so another student can reproduce the result.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  },
+  {
+    "objectID": "03-quarto.html#references",
+    "href": "03-quarto.html#references",
+    "title": "3  Reproducible Data Science",
+    "section": "References",
+    "text": "References\n\n\n\n\nQuarto Developers. (2025a). Markdown basics. https://quarto.org/docs/authoring/markdown-basics.html\n\n\nQuarto Developers. (2025b). Quarto guide. https://quarto.org/docs/guide/\n\n\nQuarto Developers. (2025c). Quarto presentations. https://quarto.org/docs/presentations/\n\n\nQuarto Developers. (2025d). Using python with quarto. https://quarto.org/docs/computations/python.html\n\n\nWilson, G., Bryan, J., Cranston, K., Kitzes, J., Nederbragt, L., & Teal, T. K. (2017). Good enough practices in scientific computing. PLOS Computational Biology, 13(6), e1005510. https://doi.org/10.1371/journal.pcbi.1005510",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Reproducible Data Science</span>"
+    ]
+  }
+]

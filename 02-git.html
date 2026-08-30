@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Project Management – Introduction to Data Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./03-quarto.html" rel="next">
+<link href="./01-intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02-git.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to Data Science</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/statds/ids-book" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preliminaries</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-git.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reproducible Data Science</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-git-model" id="toc-the-git-model" class="nav-link active" data-scroll-target="#the-git-model"><span class="header-section-number">2.1</span> The Git Model</a></li>
+  <li><a href="#installing-and-configuring-git" id="toc-installing-and-configuring-git" class="nav-link" data-scroll-target="#installing-and-configuring-git"><span class="header-section-number">2.2</span> Installing and Configuring Git</a></li>
+  <li><a href="#a-first-local-workflow" id="toc-a-first-local-workflow" class="nav-link" data-scroll-target="#a-first-local-workflow"><span class="header-section-number">2.3</span> A First Local Workflow</a></li>
+  <li><a href="#inspecting-and-recovering-history" id="toc-inspecting-and-recovering-history" class="nav-link" data-scroll-target="#inspecting-and-recovering-history"><span class="header-section-number">2.4</span> Inspecting and Recovering History</a></li>
+  <li><a href="#branches-and-remotes" id="toc-branches-and-remotes" class="nav-link" data-scroll-target="#branches-and-remotes"><span class="header-section-number">2.5</span> Branches and Remotes</a></li>
+  <li><a href="#github-and-pull-requests" id="toc-github-and-pull-requests" class="nav-link" data-scroll-target="#github-and-pull-requests"><span class="header-section-number">2.6</span> GitHub and Pull Requests</a></li>
+  <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">2.7</span> Practical Recommendations</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/02-git.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-git" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Git records the history of a project so that an analyst can work reproducibly, recover from mistakes, and collaborate without exchanging unnamed copies of files. GitHub and similar services host Git repositories online; they add backup, discussion, and review around Git’s local history. This chapter introduces the ideas and commands needed for the projects in this book. The free <em>Pro Git</em> book provides a fuller reference <span class="citation" data-cites="chacon2014progit">(<a href="#ref-chacon2014progit" role="doc-biblioref">Chacon &amp; Straub, 2014</a>)</span>.</p>
+<p>Several hands-on resources complement this chapter. The <a href="https://www.youtube.com/watch?v=RGOj5yH7evk">Git and GitHub for Beginners crash course</a> provides a visual overview, <a href="https://gitexercises.fracz.com/">Git Exercises</a> offers short command-line practice, and <a href="https://ohmygit.org/">Oh My Git!</a> teaches Git through an open-source game. Version control is useful beyond Git because it preserves history, supports recovery, and coordinates work across collaborators. Hofert’s beginner-friendly tutorial compares the fundamentals of Git and Subversion and is a useful additional reading <span class="citation" data-cites="hofert2025version">(<a href="#ref-hofert2025version" role="doc-biblioref">Hofert, 2025</a>)</span>. Use all of these resources for practice, but check each command against <code>git status</code> and the repository’s documentation.</p>
+<p>GitHub is one hosting service for Git repositories; <a href="https://bitbucket.org/">Bitbucket</a> and <a href="https://gitlab.com/">GitLab</a> offer similar services. Hosting a repository online provides a backup of committed work and makes collaboration with classmates and coworkers easier.</p>
+<section id="the-git-model" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="the-git-model"><span class="header-section-number">2.1</span> The Git Model</h2>
+<p>A Git repository is a project directory together with a database of its history. The <strong>working tree</strong> contains files being edited, the <strong>staging area</strong> records changes intended for the next snapshot, and a <strong>commit</strong> stores that snapshot with an author, time, and message. Thinking in these three states prevents the common mistake of treating <code>git add</code> as a backup or <code>git commit</code> as an upload.</p>
+<p>The staging area makes a commit a deliberate unit of work. You can inspect a change, stage only the part that belongs together, and then commit a coherent snapshot. A good commit should explain one change in the imperative mood, such as <code>content: clarify relative paths</code>; generated files, credentials, and large local data should not be committed.</p>
+</section>
+<section id="installing-and-configuring-git" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="installing-and-configuring-git"><span class="header-section-number">2.2</span> Installing and Configuring Git</h2>
+<p>Install Git before creating a repository. Use <a href="https://gitforwindows.org/">Git for Windows</a> on Windows, and use the package manager or installer appropriate for macOS or Linux; the official <a href="https://git-scm.com/downloads">Git downloads page</a> lists current options <span class="citation" data-cites="git-scm2025downloads">(<a href="#ref-git-scm2025downloads" role="doc-biblioref">Git Project, 2025</a>)</span>. On Windows, open <strong>Git Bash</strong> for the Unix-style commands used in this book.</p>
+<p>Git needs an identity so that each commit records who made it, and a remote account provides a place to share those commits. Set your local name and email once on a computer, then verify the values:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@example.com"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> init.defaultBranch main</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--list</span> <span class="at">--show-origin</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An account on GitHub is separate from a local Git installation. Set up GitHub by creating an account, generating an SSH key if you do not already have one, and adding the key’s public half to your GitHub account; HTTPS authentication is an alternative. GitHub’s onboarding guide explains account setup and authentication <span class="citation" data-cites="github2025gettingstarted">(<a href="#ref-github2025gettingstarted" role="doc-biblioref">GitHub, 2025b</a>)</span>.</p>
+</section>
+<section id="a-first-local-workflow" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="a-first-local-workflow"><span class="header-section-number">2.3</span> A First Local Workflow</h2>
+<p>The safest beginner workflow is to inspect, stage, inspect again, and then commit. Start by cloning an existing repository or initializing a new one:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/OWNER/REPOSITORY.git</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> REPOSITORY</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For a new local project instead:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> init</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>git status</code> is the most useful diagnostic command. It reports the current branch, changed files, staged files, and files Git is ignoring. Run it before and after each logical operation rather than guessing what Git will do. The following sequence records a small change:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff                 <span class="co"># changes not yet staged</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add path/to/file.qmd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--staged</span>        <span class="co"># changes that will enter the commit</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"content: explain the Git workflow"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>git add</code> copies the selected version into the staging area; it does not send anything to GitHub. <code>git commit</code> saves the staged snapshot locally; it does not publish it. <code>git push</code> is the operation that sends local commits to a remote. This distinction is the foundation of a reliable backup and collaboration workflow.</p>
+<p>Beginners should avoid <code>git add .</code> because it stages every unignored change below the current directory, including files they may not have inspected or intended to commit. Stage named files, such as <code>git add 02-git.qmd</code>, and review <code>git diff --staged</code> before committing. Use <code>git add .</code> only when you have deliberately checked every change in the directory.</p>
+<p>The seven commands used most often in this book are <code>git clone</code>, <code>git pull</code>, <code>git status</code>, <code>git add</code>, <code>git rm</code>, <code>git commit</code>, and <code>git push</code>. The first clones a repository using an HTTPS URL or an SSH key; <code>pull</code> downloads and integrates updates; <code>status</code> reports changed, staged, and untracked files and whether the local branch is ahead of or behind its remote; <code>add</code> stages selected changes; <code>rm</code> removes a file from the index and working tree; <code>commit</code> records a snapshot with a message; and <code>push</code> sends commits to a remote. The commands <code>git diff</code>, <code>git branch</code>, and <code>git reset</code> are useful for more advanced work; use <code>git reset</code> only after learning how it changes history.</p>
+</section>
+<section id="inspecting-and-recovering-history" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="inspecting-and-recovering-history"><span class="header-section-number">2.4</span> Inspecting and Recovering History</h2>
+<p>Git’s history commands let you understand a change before trying to undo it. Use a compact log for the sequence of commits and a diff for exact lines:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> log <span class="at">--oneline</span> <span class="at">--decorate</span> <span class="at">--graph</span> <span class="at">--all</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> show COMMIT</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff HEAD~1 HEAD</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Different recovery commands have different safety implications. <code>git restore path/to/file</code> discards unstaged edits, <code>git restore --staged path/to/file</code> unstages a file without changing its contents, and <code>git revert COMMIT</code> creates a new commit that reverses an earlier published commit. Avoid <code>git reset</code> on a shared branch until you understand how it changes history.</p>
+</section>
+<section id="branches-and-remotes" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="branches-and-remotes"><span class="header-section-number">2.5</span> Branches and Remotes</h2>
+<p>A branch is a movable name for a line of commits. Branches let you develop and review an idea without changing the shared default branch:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch <span class="at">-c</span> improve-introduction</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># edit files, then add and commit</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch main</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull <span class="at">--ff-only</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch improve-introduction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A <strong>remote</strong> is a name for another repository, usually an online copy called <code>origin</code>. These commands inspect and synchronize it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote <span class="at">-v</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> fetch origin</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull <span class="at">--ff-only</span> origin main</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin improve-introduction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>git fetch</code> downloads remote history without changing working files; <code>git pull</code> fetches and then integrates the selected branch. Pull before starting work when others may have pushed changes, and push completed commits so that a second copy exists.</p>
+<p>Git reports a conflict when two changes cannot be integrated automatically. Use this sequence to resolve one:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status                         <span class="co"># list conflicted files</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># open each conflicted file and choose the intended content</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the &lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, and &gt;&gt;&gt;&gt;&gt;&gt;&gt; markers</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add path/to/resolved-file.qmd</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--staged</span>                  <span class="co"># inspect the resolution</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit                         <span class="co"># finish the merge, if Git requests it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Do not choose a side blindly. Ask the contributor who made the other change when the intended result is unclear, and run the project’s checks after the resolution. If you need to abandon an unfinished merge, use <code>git merge --abort</code> before making further edits.</p>
+</section>
+<section id="github-and-pull-requests" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="github-and-pull-requests"><span class="header-section-number">2.6</span> GitHub and Pull Requests</h2>
+<p>GitHub is a hosting and collaboration service, not a replacement for Git. A repository on GitHub can store the canonical source, while each contributor works in a local clone and exchanges commits through a remote.</p>
+<p>A pull request proposes merging a branch into another branch. It gives reviewers a place to inspect the diff, discuss design and evidence, and run checks before the change is merged.</p>
+<p>Small pull requests are easier to review and less likely to conceal an accidental change. Include the motivation, files affected, and checks you ran; do not include rendered <code>_book/</code> output when it is generated by the project.</p>
+<p>GitHub’s pull-request process is easiest to follow as a sequence of checks:</p>
+<ol type="1">
+<li>Fork the upstream repository and synchronize the fork if it is out of date.</li>
+<li>Clone your fork and confirm that you can open the project in your editor.</li>
+<li>Run <code>git status</code> to verify that the working tree is clean.</li>
+<li>Create a descriptive branch, make the change, and run the relevant checks.</li>
+<li>Run <code>git status</code> and inspect the diff before staging and committing.</li>
+<li>Push the branch, open the pull request, and describe the change for reviewers.</li>
+</ol>
+<p>GitHub provides a short <a href="https://youtu.be/8lGpZkjnkt4">pull requests in 100 seconds video</a>, and its documentation explains the full workflow <span class="citation" data-cites="github2025pullrequests">(<a href="#ref-github2025pullrequests" role="doc-biblioref">GitHub, 2025a</a>)</span>.</p>
+<p>For a class-notes contribution, the concrete command-line sequence looks like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/GitHub_Username/ids-book.git</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ids-book</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch <span class="at">-c</span> branch-name</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># edit a file, for example index.qmd, and save it</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add index.qmd</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--staged</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"content: add a useful example"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin branch-name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Replace <code>GitHub_Username</code> and <code>branch-name</code> with your own values. On GitHub, open the fork, click <strong>Compare &amp; pull request</strong>, describe the change, and click <strong>Create pull request</strong>. If you are on the wrong branch, use <code>git switch existing-branch</code>; use <code>git branch</code> to list branches and identify the current one. Before beginning work, use <strong>Sync fork</strong> on GitHub when the fork is behind the upstream repository.</p>
+</section>
+<section id="practical-recommendations" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="practical-recommendations"><span class="header-section-number">2.7</span> Practical Recommendations</h2>
+<p>The following checklist turns the chapter’s concepts into everyday repository habits:</p>
+<ul>
+<li>Use the command-line interface instead of the web interface for Git operations, such as uploading files to GitHub.</li>
+<li>Make frequent small commits instead of rare large commits.</li>
+<li>Make commit messages informative and meaningful.</li>
+<li>Name files and folders with lowercase letters and no spaces.</li>
+<li>Keep the repository clean by not tracking generated files.</li>
+<li>Create and maintain a <code>.gitignore</code> file for generated output, caches, local environments, and secrets.</li>
+<li>Keep source lines under 80 characters so that diffs remain readable.</li>
+<li>Run <code>git status</code> before and after important operations.</li>
+<li>Inspect a diff before staging and inspect the staged diff before committing.</li>
+<li>Pull before starting work when collaborators may have pushed changes, and push completed commits so that a second copy exists.</li>
+</ul>
+<p>Git tracks text changes well but is not a data warehouse. Keep reproducible scripts, small instructional data, and environment specifications under version control; keep credentials, huge raw datasets, and generated results out of the repository. Record where excluded data came from and how to obtain it so another analyst can reproduce the work.</p>
+<p>Use this file-level rule when deciding what belongs in a repository:</p>
+<ul>
+<li><strong>Track:</strong> source code (<code>.py</code>, <code>.qmd</code>, and <code>.R</code>), documentation, small example data, configuration needed to reproduce the project, environment specifications, and <code>.gitignore</code>.</li>
+<li><strong>Do not track:</strong> passwords, API keys, private keys, personal data, huge raw datasets, downloaded installers, temporary files, caches, virtual environments, rendered <code>_book/</code> output, or other files generated from the tracked source.</li>
+</ul>
+<p>Put the exclusion rule in <code>.gitignore</code> before creating files that should not be tracked. If sensitive information is accidentally committed, deleting the file in a later commit does not remove it from the earlier history; change the exposed credential and seek help to remove the history safely.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<ol type="1">
+<li>Establish a usable GitHub project from the command line.
+<ol type="a">
+<li>Create an account if necessary and configure SSH authentication, or explain why you selected HTTPS.</li>
+<li>Fork <code>statds/ids-book</code>, clone your fork, configure your name and email, and verify the remote, identity, and a clean <code>git status</code>.</li>
+<li>Record what failed and how you fixed it; do not omit an obstacle merely because you eventually solved it.</li>
+</ol></li>
+<li>Make and review a reproducible contribution in your fork.
+<ol type="a">
+<li>Create and check out a descriptive branch, make a small documented change to a practice file, and make at least ten small commits with informative messages.</li>
+<li>Inspect both <code>git diff</code> and <code>git diff --staged</code> as you work, then push the branch to your fork.</li>
+<li>Open a pull request against the repository from which you forked, describe the change clearly, respond to one review comment with a follow-up commit, and submit the link. Include enough setup information that another student can clone the fork and reproduce the result on their own computer.</li>
+</ol></li>
+<li>Explain the conventions you used in a complete-paragraph <code>.qmd</code> report.
+<ol type="a">
+<li>Explain why a professional workflow uses the command line rather than web uploads, why binary and generated files stay out of Git, and why a homework PDF belongs in a GitHub release.</li>
+<li>Explain why this course requires lowercase names, 80-character source lines, and multiple small commits, using examples from your repository.</li>
+<li>Verify the final state with <code>git status</code> and include the commands and links needed for another student to inspect it.</li>
+</ol></li>
+</ol>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-chacon2014progit" class="csl-entry" role="listitem">
+Chacon, S., &amp; Straub, B. (2014). <em>Pro git</em> (2nd ed.). Apress. <a href="https://git-scm.com/book/en/v2">https://git-scm.com/book/en/v2</a>
+</div>
+<div id="ref-git-scm2025downloads" class="csl-entry" role="listitem">
+Git Project. (2025). <em>Git downloads</em>. <a href="https://git-scm.com/downloads">https://git-scm.com/downloads</a>
+</div>
+<div id="ref-github2025pullrequests" class="csl-entry" role="listitem">
+GitHub. (2025a). <em>About pull requests</em>. <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests">https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests</a>
+</div>
+<div id="ref-github2025gettingstarted" class="csl-entry" role="listitem">
+GitHub. (2025b). <em>Getting started with GitHub</em>. <a href="https://docs.github.com/en/get-started">https://docs.github.com/en/get-started</a>
+</div>
+<div id="ref-hofert2025version" class="csl-entry" role="listitem">
+Hofert, M. (2025). Version control systems: Fundamentals for beginners. <em>Journal of Data Science</em>. <a href="https://doi.org/10.6339/25-JDS1202">https://doi.org/10.6339/25-JDS1202</a>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/statds\.github\.io\/ids-book");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./01-intro.html" class="pagination-link" aria-label="Introduction">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./03-quarto.html" class="pagination-link" aria-label="Reproducible Data Science">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reproducible Data Science</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/02-git.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
