@@ -109,6 +109,42 @@ source of installation errors. For course work, use the documented project
 environment instead of installing packages into an unspecified global Python
 installation.
 
+### Installing Quarto
+
+Quarto is the publishing tool used throughout this book, so install it before
+you try to render a `.qmd` file. Follow the official [Quarto installation
+guide](https://quarto.org/docs/get-started/) for your operating system, then
+verify the installation from Git Bash, WSL, macOS Terminal, or a Linux shell:
+
+```bash
+quarto --version
+quarto check
+```
+
+The `quarto` command must be available on your `PATH`. If the shell reports
+`command not found`, finish the installation or reopen the shell so it reloads
+the updated `PATH`. Chapter 3 combines Quarto with Python and Jupyter to
+produce executable documents [@quarto2025guide].
+
+### Installing Git
+
+Git is the version-control tool used throughout this book, so install it before
+you begin the collaboration exercises. Follow the [official Git installation
+instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
+or install [Git for Windows](https://gitforwindows.org/) and use Git Bash on
+Windows. Verify the installation and identity from your shell:
+
+```bash
+git --version
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --list --show-origin
+```
+
+Chapter 2 explains repositories, commits, branches, remotes, and pull
+requests. Chapter 1 only asks you to install and verify Git; do not install
+project packages globally.
+
 ### Files, Paths, and Directories
 
 A file system organizes files into directories, also called folders. File
@@ -309,5 +345,32 @@ causal language when the design supports only association. Provide enough
 information about data sources, software, and analytical choices for others to
 inspect or reproduce the work. The objective is not to make a result sound
 certain; it is to make the reasoning transparent and useful.
+
+## Exercises {.unnumbered}
+
+1. Prepare your computer for this course.
+   a. Install Git and Quarto, record your operating system and the outputs of
+      `git --version`, `quarto --version`, and `quarto check`, and configure and
+      verify your Git identity.
+   b. Explain one installation problem and its solution in a short `.qmd` report.
+   c. Render the report to HTML and state which commands produced it.
+
+2. Find and describe a file without relying on a graphical application's recent-
+   files list.
+   a. Use `pwd`, `ls`, and `cd` to locate your home directory and `Downloads`.
+   b. Describe that folder with both an absolute path and a path relative to your
+      project directory, and explain why the relative path is more portable.
+   c. Render the explanation to HTML.
+
+3. Establish naming and organization conventions for a new project.
+   a. Create a practice directory containing three files with recommended names
+      and one deliberately difficult name.
+   b. Explain why the difficult name causes trouble in a shell, rename it, and
+      show the commands and directory listing.
+   c. Write a short `.qmd` essay explaining why professionals use the command
+      line, why Linux and Windows organize software differently, and why source
+      files should be separated from generated or binary files. Include one
+      collaboration problem caused by spaces in names, lines longer than 80
+      characters, or untracked output.
 
 ## References {.unnumbered}

@@ -1,4 +1,4 @@
-# Reproducible Data Science with Quarto {#sec-quarto}
+# Reproducible Data Science {#sec-quarto}
 
 Quarto turns plain-text source into reproducible documents that combine
 explanation, computation, results, figures, and references. A data-science
@@ -151,6 +151,23 @@ each figure and cite sources near the claim they support. The [Markdown basics
 reference](https://quarto.org/docs/authoring/markdown-basics.html) covers
 tables, images, citations, cross-references, callouts, and other features.
 
+## Why the Software Environment Matters
+
+An analysis is a combination of source code and the software environment that
+interprets it. Two computers can run the same source and obtain different
+results when they use different Python versions, package versions, operating-
+system libraries, or default settings. A result that cannot be rerun after an
+environment changes is not fully reproducible, even when the code is available
+[@wilson2017good].
+
+An isolated environment makes these dependencies explicit and prevents one
+project from silently changing another. Recording the Python version and the
+installed packages lets a collaborator recreate the computational setting,
+while a lockfile or pinned requirements file records the versions tested here.
+This practice also makes failures diagnosable: when an upgrade changes an
+output, we can identify the change instead of guessing which global installation
+caused it.
+
 ## Python Environments for Quarto
 
 Quarto executes Python through a Jupyter kernel, so the interpreter and
@@ -201,6 +218,30 @@ that the active interpreter is the one you intend to use. If Quarto reports
 that it cannot find a kernel, select the environment's Python interpreter in
 your editor or install its kernel with `python -m ipykernel install --user`.
 
+## Reproducibility in Practice
+
+Reproducibility requires a record of the inputs, environment, instructions, and
+decisions that produced an analysis. A Quarto file brings prose and executable
+code together, but it cannot by itself make an undocumented dataset,
+unrecorded random seed, or unavailable package reproducible.
+
+For each analysis, preserve these five components:
+
+1. **Source:** the `.qmd` file and any scripts it calls.
+2. **Data:** the source, version, download date, and transformations for each
+   dataset; keep private or large raw data outside Git when necessary.
+3. **Environment:** the Python version, package requirements, Quarto version,
+   and operating-system details needed to run the source.
+4. **Execution:** the commands, options, random seeds, and order of steps used
+   to render the document.
+5. **Outputs:** tables, figures, and conclusions checked against the source,
+   not manually edited after rendering.
+
+Use relative project paths, pin important package versions, set random seeds
+when simulation is involved, and render from a clean working tree. These habits
+make it possible for another analyst to inspect and repeat the work
+[@wilson2017good].
+
 ## Rendering the Book
 
 Rendering checks whether the source, computations, citations, and cross-
@@ -235,6 +276,29 @@ slide deck. Quarto supports reveal.js slides in HTML and can also produce other
 formats; the [presentation guide](https://quarto.org/docs/presentations/)
 explains the available options.
 
+Excel, Word, and PowerPoint are useful office tools for administrative staff,
+but they are not data-science authoring tools. Students should not author
+data-science assignments in these MS Office formats: their binary contents
+produce opaque diffs, make line-by-line review difficult, and can preserve
+hidden formatting or manually edited results without recording how those
+results were computed. Use a `.qmd` file, code, data description, and
+environment as the authoritative record; an HTML rendering is the normal
+output, and a PDF may be exported only when an audience or assignment
+specifically requires it. The reason is methodological: a data-science
+submission must expose executable transformations, preserve data and software
+provenance, support line-by-line review, and reproduce the same outputs after
+the source changes. Office files primarily preserve a presentation or a
+spreadsheet state; they do not reliably preserve that computational record
+[@wilson2017good].
+
+Plain-text source and Git also provide benefits that office workflows lack.
+Version history records who changed which lines and makes earlier versions
+recoverable, rather than hiding revisions in a track-changes pane or a file
+named `final-v2-revised`. Code automates repeated calculations, keeps tables
+and figures synchronized with the data, and can be tested after each change.
+Several people can review, merge, and reuse the same source without passing
+around conflicting binary attachments.
+
 Create a presentation by choosing a presentation format in the YAML header:
 
 ```markdown
@@ -258,5 +322,29 @@ each slide, and write speaker notes when additional explanation belongs in the
 oral presentation rather than on the slide. Export a PDF only when a course or
 audience requires a static copy; keep the `.qmd` source as the authoritative
 presentation.
+
+## Exercises {.unnumbered}
+
+Complete the Git setup from Chapter 2 and the Quarto installation from Chapter
+1 before beginning. Document each exercise in a `.qmd` file as a user manual
+for another beginner:
+
+1. Build and inspect a reproducible Quarto document.
+   a. Record your operating system, Python version, Quarto version, and any
+      installation obstacle; explain how you verified that Quarto can find the
+      Python environment.
+   b. Create the environment, open the project in your editor, and reproduce the
+      polar-axis line plot from the Quarto presentation guide with a caption.
+   c. Add prose, an equation, an executable Python chunk, and a generated figure
+      to a short document; render it to HTML, inspect it in a browser, and correct
+      warnings or unresolved references.
+
+2. Publish and preserve the work.
+   a. Render the homework to PDF and place the PDF in a GitHub release, while
+      keeping the `.qmd` source under version control and excluding the virtual
+      environment and generated `_book/` output.
+   b. Commit in small, meaningful steps and push the branch to your fork.
+   c. Include the HTML link, release link, commands, and troubleshooting notes in
+      the homework so another student can reproduce the result.
 
 ## References {.unnumbered}

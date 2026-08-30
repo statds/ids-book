@@ -1,4 +1,4 @@
-# Project Management with Git {#sec-git}
+# Project Management {#sec-git}
 
 Git records the history of a project so that an analyst can work reproducibly,
 recover from mistakes, and collaborate without exchanging unnamed copies of
@@ -265,5 +265,35 @@ Put the exclusion rule in `.gitignore` before creating files that should not be
 tracked. If sensitive information is accidentally committed, deleting the file
 in a later commit does not remove it from the earlier history; change the
 exposed credential and seek help to remove the history safely.
+
+## Exercises {.unnumbered}
+
+1. Establish a usable GitHub project from the command line.
+   a. Create an account if necessary and configure SSH authentication, or explain
+      why you selected HTTPS.
+   b. Fork `statds/ids-book`, clone your fork, configure your name and email, and
+      verify the remote, identity, and a clean `git status`.
+   c. Record what failed and how you fixed it; do not omit an obstacle merely
+      because you eventually solved it.
+
+2. Make and review a reproducible contribution in your fork.
+   a. Create and check out a descriptive branch, make a small documented change
+      to a practice file, and make at least ten small commits with informative
+      messages.
+   b. Inspect both `git diff` and `git diff --staged` as you work, then push the
+      branch to your fork.
+   c. Open a pull request against the repository from which you forked, describe
+      the change clearly, respond to one review comment with a follow-up commit,
+      and submit the link. Include enough setup information that another student
+      can clone the fork and reproduce the result on their own computer.
+
+3. Explain the conventions you used in a complete-paragraph `.qmd` report.
+   a. Explain why a professional workflow uses the command line rather than web
+      uploads, why binary and generated files stay out of Git, and why a homework
+      PDF belongs in a GitHub release.
+   b. Explain why this course requires lowercase names, 80-character source
+      lines, and multiple small commits, using examples from your repository.
+   c. Verify the final state with `git status` and include the commands and links
+      needed for another student to inspect it.
 
 ## References {.unnumbered}
