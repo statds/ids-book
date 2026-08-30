@@ -1,0 +1,212 @@
+# Introduction {#sec-intro}
+
+## What Is Data Science?
+
+Data science is the practice of learning from data. It combines statistical
+reasoning, computation, and knowledge of the setting in which the data arose.
+None of these components is sufficient by itself. A technically sophisticated
+model can answer the wrong question; a sound statistical method can fail when
+implemented incorrectly; and efficient code cannot repair measurements that do
+not represent the phenomenon of interest.
+
+In her 2014 presidential address to the Institute of Mathematical Statistics,
+Bin Yu summarized the breadth of the field as [@yu2014let]
+
+$$
+\text{Data science} = S D C^3,
+$$
+
+where $S$ is statistics, $D$ is domain or scientific knowledge, and the three
+$C$s are computing, collaboration, and communication. Statistics provides ways
+to reason from observations while accounting for variation and uncertainty.
+Domain knowledge connects an analysis to a meaningful question and helps us
+judge whether its assumptions are sensible. Computing makes it possible to
+acquire, organize, explore, and model data at useful scales.
+
+Collaboration and communication are not additions made after the technical work
+is complete. Data-science problems are commonly defined and solved by people
+with different forms of expertise. Their work becomes useful only when the
+question, evidence, assumptions, limitations, and conclusions can be understood
+by others. Data science is therefore both a technical and a social practice.
+
+## The Data-Science Workflow
+
+Although projects rarely proceed in a perfectly straight line, a useful
+workflow has the following recurring activities:
+
+1. **Formulate a question.** Identify the decision or phenomenon of interest
+   and determine what kind of answer is needed.
+2. **Acquire and understand data.** Learn how the observations were generated,
+   what each variable measures, and which population they represent.
+3. **Prepare the data.** Correct structural problems, handle missing values,
+   combine sources, and record every transformation.
+4. **Explore.** Use summaries and visualizations to discover patterns, check
+   assumptions, and refine the question.
+5. **Model or quantify.** Apply methods appropriate to the question and the way
+   the data were collected.
+6. **Evaluate.** Check statistical, computational, and contextual validity;
+   investigate alternative explanations; and describe uncertainty.
+7. **Communicate and act.** Present the evidence and its limitations in a form
+   that supports an informed decision.
+
+These activities form a cycle rather than a pipeline. Exploration may reveal a
+measurement problem, model checking may require different data, and discussion
+with a domain expert may change the original question. Reproducible records of
+the data, code, environment, and decisions make such revisions manageable and
+allow other people to inspect the work.
+
+## Goals of This Course
+
+This course develops the foundations needed to carry out that workflow. By the
+end of the course, students should be able to:
+
+- translate a substantive problem into an answerable data-science question;
+- use Python to import, organize, explore, visualize, and model data;
+- explain the principles behind the methods they use and interpret their
+  results in context;
+- distinguish descriptive, predictive, and causal claims;
+- evaluate data quality, model performance, uncertainty, and possible sources
+  of bias;
+- use Git to maintain a transparent history of a project and collaborate with
+  others;
+- use Quarto to combine prose, code, results, and citations in a reproducible
+  report;
+- communicate findings clearly without overstating what the evidence supports;
+  and
+- identify ethical concerns and take responsibility for analytical choices,
+  including work performed with the assistance of AI.
+
+The aim is not mastery of every available command or algorithm. Tools will
+change, and unfamiliar problems are unavoidable. The more durable goal is to
+learn how to select tools, investigate problems, verify results, and explain the
+reasoning that connects a question to a conclusion.
+
+## Computing Foundations
+
+Data science takes place in a computing environment: an operating system, a
+file system, a command-line shell, a Python installation, project-specific
+packages, and an editor or notebook interface. These components affect one
+another. A program that works in one environment may fail in another because a
+file is in a different location, a package version has changed, or a command is
+interpreted by a different shell. Understanding the environment is part of
+reproducible analysis.
+
+### Operating Systems and Software
+
+Linux, macOS, and Windows can all support data-science work. Their interfaces
+and software-management tools differ, so installation instructions must be read
+with the operating system in mind. Linux distributions commonly use system
+package managers such as APT or DNF; Homebrew is a widely used third-party
+package manager on macOS; and Windows provides tools such as Windows Package
+Manager as well as the Windows Subsystem for Linux (WSL).
+
+An operating-system package manager and a Python package manager solve
+different problems. The former installs software for the operating system; the
+latter installs Python libraries into a Python environment. Mixing their roles
+without understanding which interpreter or environment is active is a common
+source of installation errors. For course work, use the documented project
+environment instead of installing packages into an unspecified global Python
+installation.
+
+### Files, Paths, and Directories
+
+A file system organizes files into directories. A **path** identifies a
+location in that hierarchy. An absolute path starts from the root of the file
+system; a relative path starts from the program's current working directory.
+Relative paths make projects portable when they refer to files inside a stable
+project structure rather than to locations specific to one person's computer.
+
+Several details routinely cause problems. File names may be case-sensitive,
+spaces require careful quoting at the command line, and extensions such as
+`.csv`, `.py`, and `.qmd` indicate different kinds of content. Hidden files
+often store configuration. Before reading or writing a file, know the current
+working directory, the intended path, and whether the operation will replace an
+existing file.
+
+### The Command Line
+
+A command-line interface provides a direct way to navigate the file system and
+run development tools. On Linux and macOS, use a terminal application. On
+Windows, PowerShell, Git Bash, and WSL are common options; the appropriate
+choice depends on the course environment and the instructions being followed.
+
+The following shell commands form a useful starting vocabulary:
+
+- `pwd` prints the current working directory;
+- `ls` lists directory contents;
+- `cd` changes the current directory, with `..` denoting its parent;
+- `mkdir` creates a directory;
+- `cp` copies files or directories;
+- `mv` moves or renames files or directories; and
+- `rm` removes files.
+
+Options change the behavior of a command. For example, `ls -a` includes hidden
+entries and `ls -l` displays additional details. Use tab completion to reduce
+typing errors and consult a command's documentation before using unfamiliar
+options. In particular, check paths carefully before commands that overwrite or
+remove data; command-line deletion may not use a desktop trash folder.
+
+### Python and Its Environment
+
+Python is the primary programming language used in this book. A working setup
+requires a supported Python 3 interpreter, an isolated environment containing
+the required packages, and an interface for editing and running code. The
+interface may be a notebook, an editor, or an integrated development
+environment; the underlying project should remain reproducible regardless of
+which interface is used.
+
+Readable code is easier to verify, revise, and share. Python's principal style
+guide is PEP 8 [@van2001pep]. For a start, follow three conventions:
+
+- use four spaces for each indentation level and do not mix tabs and spaces;
+- give variables and functions descriptive `lower_case_with_underscores` names;
+  and
+- use whitespace consistently, keep statements on separate lines, and wrap
+  long lines inside parentheses when they become difficult to read.
+
+Style is not merely cosmetic: clear code exposes assumptions and makes errors
+easier to find. Consistency within a project matters more than mechanically
+applying a rule that makes the code less readable. Two useful references for
+the Python data-science ecosystem are the *Python Data Science Handbook*
+[@vanderplas2016python], whose full first edition is freely available online,
+and *Python for Data Analysis* [@mckinney2022python].
+
+## Responsible Practice
+
+Ethical questions occur throughout a project, not only when results are
+published. Data may have been collected without meaningful consent, omit groups
+affected by a decision, encode historical inequities, or reveal private
+information when combined with other sources. A model may distribute errors
+unevenly, and a technically correct analysis may still be used for a harmful or
+unjustified purpose.
+
+Responsible practice begins by asking who created the data, who is represented,
+who is missing, who benefits from the analysis, and who bears the risks. Collect
+and retain only what is needed; protect sensitive information; document
+provenance and transformations; examine performance across relevant groups;
+and communicate limitations. Legal compliance is necessary in regulated
+settings, but it is not a substitute for ethical judgment.
+
+Accountability remains with the people conducting and deploying an analysis.
+This is especially important when AI generates code, models, or prose. The
+apparent fluency of an output is not evidence that the data were appropriate,
+the computation was correct, or the conclusion was justified. Every result
+must be examined with the same statistical, computational, contextual, and
+ethical scrutiny regardless of how it was produced.
+
+## Communicating Data Science
+
+An analysis has little value if its audience cannot understand what was learned
+or decide how to respond. Effective communication begins with the question and
+the main finding, then supplies the evidence needed to support that finding.
+Tables and graphics should have a clear purpose, informative labels, honest
+scales, and enough context to be interpreted without guesswork.
+
+Good communication also makes uncertainty and limitations visible. Report what
+the data cover, distinguish observed patterns from explanations, and avoid
+causal language when the design supports only association. Provide enough
+information about data sources, software, and analytical choices for others to
+inspect or reproduce the work. The objective is not to make a result sound
+certain; it is to make the reasoning transparent and useful.
+
+## References {.unnumbered}

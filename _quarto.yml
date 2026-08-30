@@ -19,6 +19,7 @@ book:
     - issue
   chapters:
     - index.qmd
+    - 01-intro.qmd
 
 format:
   html:
