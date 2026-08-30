@@ -49,6 +49,67 @@ To build the notes locally:
 Quarto writes the rendered book to `_book/`. Generated output and local caches
 are not tracked by Git; the source and environment specifications are.
 
+## Learning Data Science in the Age of AI
+
+The concern that artificial intelligence will replace entry-level analytical
+work is reasonable. AI systems can already write routine code, clean data,
+create visualizations, fit models, and draft reports. Consequently, a course
+that consists mainly of memorizing commands or reproducing standard analyses
+would offer diminishing value. The appropriate response, however, is not to
+abandon data-science education. It is to teach the knowledge and judgment
+needed to use increasingly capable tools well.
+
+Current evidence presents both disruption and opportunity. In its 2025 survey,
+the World Economic Forum reported that 41 percent of employers expected to
+reduce their workforce where AI could automate tasks, while 77 percent planned
+to upskill their workers. The same report identified AI and big data as the
+fastest-growing skill area and analytical thinking as the most widely valued
+core skill [@worldeconomicforum2025]. In the United States, the Bureau of Labor
+Statistics projects employment of data scientists to grow by about 34 percent
+from 2024 to 2034 [@bls2025datascientists]. Such projections are not a promise
+of a job, but they do show why students need a combination of technical
+knowledge and analytical judgment rather than less preparation.
+
+AI tends to amplify the capabilities of its user rather than make expertise
+irrelevant. A person with limited understanding may use AI to produce a weak
+analysis faster, more confidently, and in more polished language. A strong
+researcher can use the same technology to investigate more alternatives,
+challenge assumptions, detect errors, and undertake work that would previously
+have required much more time. The difference is not merely skill in writing
+prompts. It is the ability to conceive, direct, and evaluate an analysis.
+
+First, students need enough knowledge to recognize **what is possible**. A
+useful analysis begins before any code is written: someone must connect a
+substantive problem to data that could inform it, distinguish descriptive,
+predictive, causal, and decision questions, and recognize promising methods.
+Without this foundation, a user can ask AI only for familiar tasks and may not
+notice when a question cannot be answered from the available data. Knowledge
+expands both the range and the ambition of what a student can imagine doing.
+
+Second, students must learn **how to direct AI**. A vague real-world concern
+must be translated into precise questions, variables, comparisons, and
+computational steps. The user must supply context, state constraints, decide
+what evidence would be relevant, and revise the approach as new problems
+emerge. These are central data-science skills. AI can assist with their
+execution, but it cannot compensate reliably for a poorly formulated problem.
+
+Third, students must be able to **evaluate what AI produces**. Plausible code
+may contain subtle errors; an attractive graph may conceal a misleading
+comparison; a highly accurate model may suffer from data leakage; and a fluent
+report may make a causal claim that the study design cannot support. Evaluation
+therefore requires understanding data provenance, measurement, variation,
+validation, uncertainty, reproducibility, and the context in which a result
+will be used. Because AI can make incorrect work appear polished and
+authoritative, these foundations become more important, not less.
+
+This course prepares students to work with AI without surrendering judgment to
+it. Students learn enough about data, computation, statistical reasoning, and
+communication to formulate worthwhile questions, supervise computational
+work, verify results, explain limitations, and take responsibility for the
+conclusions they present. The goal is not to compete with AI at producing code
+quickly. It is to become the kind of informed practitioner whose abilities are
+made stronger by AI.
+
 ## Adapting to Rapid Skill Acquisition
 
 Data science requires learning new tools and ideas quickly. VanderPlas
