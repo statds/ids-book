@@ -1,0 +1,262 @@
+# Reproducible Data Science with Quarto {#sec-quarto}
+
+Quarto turns plain-text source into reproducible documents that combine
+explanation, computation, results, figures, and references. A data-science
+analysis should be reproducible because readers need to inspect how evidence
+was produced, not merely see a final picture or a pasted table. Quarto supports
+Python, R, Julia, and Observable and can publish articles, reports, websites,
+books, and presentations in several output formats [@quarto2025guide].
+
+This chapter is a jump start, not a replacement for the [complete Quarto
+Guide](https://quarto.org/docs/guide/). Use the guide when you need options not
+covered here, and consult the [Python documentation](https://quarto.org/docs/computations/python.html),
+[Markdown reference](https://quarto.org/docs/authoring/markdown-basics.html),
+and [presentation documentation](https://quarto.org/docs/presentations/)
+for detailed examples [@quarto2025python; @quarto2025markdown;
+@quarto2025presentations].
+
+## A Minimal Quarto Document
+
+A Quarto document is a text file whose `.qmd` extension combines YAML
+metadata, Markdown prose, equations, citations, and executable code chunks.
+The following small document is a better starting point than a code-only
+hello-world: it produces a numerical result, a table, and a figure from the
+same code that explains them.
+
+Create a file named `hello.qmd` with YAML metadata like this:
+
+```yaml
+---
+title: "Hello, Quarto"
+author: "Your Name"
+format: html
+jupyter: python3
+bibliography: references.bib
+---
+```
+
+The document can then combine prose, equations, and executable code. Equation
+punctuation follows ordinary sentence punctuation. The mean of observations
+$x_1,\ldots,x_n$ is given by @eq-mean.
+
+The source syntax for this numbered equation is:
+
+```text
+The mean ... is given by @eq-mean.
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i.
+$$ {#eq-mean}
+```
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i.
+$$ {#eq-mean}
+
+A cases display can continue a sentence with a comma, as shown in @eq-cases:
+
+$$
+g(x) =
+\begin{cases}
+  0, & x < 0,\\
+  1, & x \ge 0.
+\end{cases}
+$$ {#eq-cases}
+
+The comma after the first case and the period after the final case are part of
+one grammatical statement. The code below generates a table and a figure from
+the same observations:
+
+```{python}
+#| label: fig-scores
+#| fig-cap: "Scores for three students"
+#| fig-format: svg
+import matplotlib.pyplot as plt
+import pandas as pd
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+
+set_matplotlib_formats("svg")
+
+scores = pd.DataFrame({"student": ["A", "B", "C"],
+                       "score": [82, 91, 87]})
+scores["score"].mean()
+scores
+
+fig, ax = plt.subplots()
+ax.bar(scores["student"], scores["score"])
+ax.set(xlabel="Student", ylabel="Score", title="Scores")
+plt.show()
+```
+
+The resulting table and Figure @fig-scores summarize the observations above.
+Quarto itself is documented in the Quarto Guide [@quarto2025guide].
+
+The opening and closing lines between `---` define YAML metadata. Headings use
+one or more `#` characters, ordinary text forms paragraphs, dollar signs mark
+LaTeX equations, and a fenced code chunk begins with ```` ```{python} ````. The
+`jupyter: python3` setting tells Quarto which Jupyter kernel should execute
+Python chunks. Expressions whose values are displayed, such as `scores`, and
+figures returned by the chunk become part of the rendered document.
+
+Render the document from its directory:
+
+```bash
+quarto render hello.qmd
+```
+
+Quarto writes `hello.html` by default. Open that file in a browser, or use
+`quarto preview hello.qmd` while editing to render again after each save. Keep
+the `.qmd` source under version control; treat the rendered HTML as generated
+output.
+
+## Markdown Essentials
+
+Markdown provides the readable structure around an analysis. The following
+constructs cover the structures needed in early assignments:
+
+````markdown
+# Chapter title
+## Section heading
+
+**bold**, *italic*, and [a link](https://quarto.org/)
+
+- an unordered list
+- another item
+
+1. a numbered step
+2. another step
+
+`inline code` and a code block:
+
+```python
+print("This block is displayed, not executed by Quarto.")
+```
+
+> A block quote highlights a definition or key point.
+
+| quantity | value |
+|:--|--:|
+| observations | 3 |
+| mean | 86.7 |
+
+![A descriptive caption](figures/scores.png)
+
+See the Quarto Guide [@quarto2025guide] and @eq-mean.
+````
+
+Use a heading hierarchy rather than bold text to organize a document. Put a
+blank line around paragraphs and lists, write descriptive link text, and keep
+code that should execute in a Quarto code chunk. Use a meaningful caption for
+each figure and cite sources near the claim they support. The [Markdown basics
+reference](https://quarto.org/docs/authoring/markdown-basics.html) covers
+tables, images, citations, cross-references, callouts, and other features.
+
+## Python Environments for Quarto
+
+Quarto executes Python through a Jupyter kernel, so the interpreter and
+packages must be installed in an environment that Quarto can find. A virtual
+environment keeps this project's packages separate from the system Python and
+from unrelated projects.
+
+This repository uses Python 3.12 as its tested compatibility target. The
+recommended local environment is `.ids`, created and managed with `uv`. `uv`
+is a fast command-line tool for installing Python versions, creating virtual
+environments, and installing packages; it is not a replacement for Python or
+Quarto. Students who prefer the standard Python tools can use the pip
+alternative below.
+
+```bash
+uv venv --python 3.12 .ids
+source .ids/bin/activate
+uv pip install jupyter matplotlib pandas
+```
+
+The environment name is a convenience, not a requirement. Students may use a
+different name, such as `.venv`, provided that Quarto and the editor use that
+environment's Python kernel. When the name differs from the Makefile default,
+pass the chosen name explicitly:
+
+```bash
+make req VENV=.venv
+make render VENV=.venv
+```
+
+The first command records installed packages in `requirements.txt`; the second
+renders the book. Do not install packages into the system Python, and do not
+commit the virtual-environment directory. Keep the environment specification
+and the source files under version control instead.
+
+If `uv` is not available, create the environment with the standard library and
+install the same packages with pip:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install jupyter matplotlib pandas
+```
+
+Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
+that the active interpreter is the one you intend to use. If Quarto reports
+that it cannot find a kernel, select the environment's Python interpreter in
+your editor or install its kernel with `python -m ipykernel install --user`.
+
+## Rendering the Book
+
+Rendering checks whether the source, computations, citations, and cross-
+references work together. From the repository root, use the Makefile targets:
+
+```bash
+make check
+make render
+make preview
+```
+
+`make check` verifies the command-line tools, `make render` builds the complete
+book in `_book/`, and `make preview` starts a local server with live reload.
+For a quick test of one source file, use:
+
+```bash
+make render-one FILE=hello.qmd
+```
+
+Read the terminal output rather than assuming a successful command produced a
+correct document. Check that code results make sense, links work, figures have
+captions, citations resolve, and the output contains no accidental secrets or
+local file paths. Generated `_book/`, `.quarto/`, and cache files belong in
+`.gitignore`, not in a commit.
+
+## Presentations with Quarto
+
+Quarto presentations should replace the default habit of preparing course
+work in a proprietary PowerPoint file. A presentation remains plain text,
+versionable, reproducible, and reviewable while still producing a polished
+slide deck. Quarto supports reveal.js slides in HTML and can also produce other
+formats; the [presentation guide](https://quarto.org/docs/presentations/)
+explains the available options.
+
+Create a presentation by choosing a presentation format in the YAML header:
+
+```markdown
+---
+title: "A Data-Science Result"
+format: revealjs
+---
+
+## The question
+
+What decision does this analysis support?
+
+## The evidence
+
+Explain the important figure and its limitations.
+```
+
+Render it with `quarto render presentation.qmd` or preview it with `quarto
+preview presentation.qmd`. Use headings for slides, keep one central idea on
+each slide, and write speaker notes when additional explanation belongs in the
+oral presentation rather than on the slide. Export a PDF only when a course or
+audience requires a static copy; keep the `.qmd` source as the authoritative
+presentation.
+
+## References {.unnumbered}

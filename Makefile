@@ -5,7 +5,7 @@ SHELL := /bin/sh
 
 QUARTO ?= quarto
 PYTHON ?= python3
-VENV ?= .venv
+VENV ?= .ids
 REQUIREMENTS ?= requirements.txt
 QUARTO_ARGS ?=
 
