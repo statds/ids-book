@@ -49,12 +49,26 @@ To build the notes locally:
 Quarto writes the rendered book to `_book/`. Generated output and local caches
 are not tracked by Git; the source and environment specifications are.
 
-## Learning Data Science
+## Adapting to Rapid Skill Acquisition
 
-Data science requires learning new tools and ideas quickly. Effective
-practitioners do not memorize every command. They learn how to frame a problem,
-consult documentation and other reliable sources, test possible solutions, and
-evaluate whether the result makes sense.
+Data science requires learning new tools and ideas quickly. VanderPlas
+[@vanderplas2016python] captures an important feature of this work:
+
+> When a technologically-minded person is asked to help a friend, family
+> member, or colleague with a computer problem, most of the time it's less a
+> matter of knowing the answer as much as knowing how to quickly find an
+> unknown answer. In data science it's the same: searchable web resources such
+> as online documentation, mailing-list threads, and StackOverflow answers
+> contain a wealth of information, even (especially?) if it is a topic you've
+> found yourself searching before. Being an effective practitioner of data
+> science is less about memorizing the tool or command you should use for every
+> possible situation, and more about learning to effectively find the
+> information you don't know, whether through a web search engine or another
+> means.
+
+Effective practitioners learn how to frame a problem, consult documentation
+and other reliable sources, test possible solutions, and evaluate whether the
+result makes sense.
 
 This habit is especially important when software, data formats, and computing
 environments change. Encountering an unfamiliar package, error message, data
