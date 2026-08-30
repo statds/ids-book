@@ -110,25 +110,111 @@ installation.
 
 ### Files, Paths, and Directories
 
-A file system organizes files into directories. A **path** identifies a
-location in that hierarchy. An absolute path starts from the root of the file
-system; a relative path starts from the program's current working directory.
-Relative paths make projects portable when they refer to files inside a stable
-project structure rather than to locations specific to one person's computer.
+A file system organizes files into directories, also called folders. File
+Explorer on Windows, Finder on macOS, and a command-line shell are different
+ways of viewing and working with the same file system. A file downloaded in a
+web browser is not stored "in the browser": it is saved somewhere in the file
+system.
 
-Several details routinely cause problems. File names may be case-sensitive,
-spaces require careful quoting at the command line, and extensions such as
-`.csv`, `.py`, and `.qmd` indicate different kinds of content. Hidden files
-often store configuration. Before reading or writing a file, know the current
-working directory, the intended path, and whether the operation will replace an
-existing file.
+#### Finding Your Files
+
+Every user has a **home directory** containing familiar folders such as
+`Desktop`, `Documents`, and usually `Downloads`. A web browser normally saves a
+download in `Downloads` unless the user or browser chooses another location. To
+find a recent download:
+
+1. Open the browser's downloads list and use **Show in folder**, or open
+   `Downloads` in File Explorer or Finder.
+2. Check the file name and extension. A file called `survey.csv` is different
+   from `survey.csv.zip` or `survey (1).csv`.
+3. Move course materials from `Downloads` into a deliberately named project
+   folder. Do not let `Downloads` become the permanent organization for an
+   analysis.
+4. If the download is a `.zip` archive, extract it and identify the new folder
+   before trying to run or edit its contents.
+
+From a Unix-like shell, `~` denotes the home directory. The following commands
+answer three basic questions:
+
+```bash
+pwd             # Where am I now?
+ls              # What is here?
+cd ~/Downloads  # Move to my Downloads folder.
+```
+
+Run `pwd` again after `cd` and compare its output with the location shown in
+File Explorer or Finder. Software Carpentry provides a guided introduction to
+this navigation process [@softwarecarpentryndunix].
+
+#### Absolute and Relative Paths
+
+A **path** identifies a location in the file-system hierarchy. An **absolute
+path** starts at the file-system root and identifies a location without
+reference to the current working directory. Examples include
+`/home/lee/air-quality/data/raw.csv` on Linux and
+`C:\Users\Lee\air-quality\data\raw.csv` on Windows. Such a path is tied to a
+particular machine and user account.
+
+A **relative path** is interpreted from the current working directory. If the
+working directory is the project folder `air-quality`, then `data/raw.csv`
+identifies the same file without recording where the project is stored. The
+special path `.` denotes the current directory and `..` denotes its parent.
+Software Carpentry provides diagrams and exercises for learning how absolute
+and relative paths are resolved [@softwarecarpentryndunix].
+
+For files within a project, prefer paths relative to the project root. If the
+whole project directory is moved to a different computer, every internal
+relative path can remain valid; absolute paths containing a user's home
+directory generally cannot. This is why project-relative paths are important
+for portability and reproducibility. Keep each project in its own directory,
+separate source data from generated results, and run the analysis with a known
+project root [@wilson2017good].
+
+#### Naming Files and Folders
+
+Names should be easy for both people and software to use. Follow these
+conventions:
+
+- use short, descriptive names such as `survey-responses.csv` and
+  `clean-data.py`;
+- use lowercase letters, digits, hyphens, and underscores, and avoid spaces and
+  characters that have special meanings in a shell;
+- choose one delimiter convention and apply it consistently;
+- write dates in sortable `YYYY-MM-DD` order and zero-pad sequence numbers when
+  ordering matters; and
+- use stable content-based names instead of names such as `final-v2-revised`;
+  let version control record revisions.
+
+The Windows directory `C:\Program Files` illustrates an unfortunate naming
+convention for command-line work. The space is legal, but a shell may interpret
+it as the boundary between two arguments unless the entire path is quoted, as
+in `"C:\Program Files"`. Users must accommodate system paths they do not control,
+but should not copy this convention into data-science projects. Prefer
+`air-quality` to `Air Quality Project`. Software Carpentry gives the same
+recommendation because spaces and other shell-sensitive characters complicate
+commands, loops, and scripts [@softwarecarpentryndunix].
+
+File names may also be case-sensitive on one operating system but not another,
+and extensions such as `.csv`, `.py`, and `.qmd` signal different kinds of
+content. Hidden files often store configuration. Before reading or writing a
+file, know the current working directory, the intended path, and whether the
+operation will replace an existing file.
 
 ### The Command Line
 
 A command-line interface provides a direct way to navigate the file system and
-run development tools. On Linux and macOS, use a terminal application. On
-Windows, PowerShell, Git Bash, and WSL are common options; the appropriate
-choice depends on the course environment and the instructions being followed.
+run development tools. The basic commands in this book follow Unix shell
+conventions and work in Git Bash, Cygwin, WSL, macOS terminals, and Linux
+terminals. On Windows, use Git Bash, which is distributed with Git for Windows
+and provides a Bash emulation for running Git and Unix-style commands
+[@gitforwindowsndgit].
+
+Do not use PowerShell for the command-line examples in this book. PowerShell
+defines familiar names such as `ls`, `cp`, and `rm` as aliases for PowerShell
+cmdlets rather than the corresponding Unix programs. The names may appear to
+work while their options and behavior differ [@microsoftndusing]. In this
+course, use PowerShell only when a Windows-specific software installation step
+explicitly requires it.
 
 The following shell commands form a useful starting vocabulary:
 
@@ -145,6 +231,11 @@ entries and `ls -l` displays additional details. Use tab completion to reduce
 typing errors and consult a command's documentation before using unfamiliar
 options. In particular, check paths carefully before commands that overwrite or
 remove data; command-line deletion may not use a desktop trash folder.
+
+This list is only a starting point. The Software Carpentry lesson *The Unix
+Shell* provides a fuller introduction to navigating and modifying files,
+combining commands with pipes, automating repetition with loops, and writing
+shell scripts [@softwarecarpentryndunix].
 
 ### Python and Its Environment
 
