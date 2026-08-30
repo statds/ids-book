@@ -28,6 +28,8 @@ format:
     code-copy: true
     code-overflow: wrap
     toc: true
+    toc-depth: 4
+    toc-expand: 1
 
 bibliography: references.bib
 
