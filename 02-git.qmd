@@ -1,0 +1,269 @@
+# Project Management with Git {#sec-git}
+
+Git records the history of a project so that an analyst can work reproducibly,
+recover from mistakes, and collaborate without exchanging unnamed copies of
+files. GitHub and similar services host Git repositories online; they add
+backup, discussion, and review around Git's local history. This chapter
+introduces the ideas and commands needed for the projects in this book. The
+free *Pro Git* book provides a fuller reference [@chacon2014progit].
+
+Several hands-on resources complement this chapter. The [Git and GitHub for
+Beginners crash course](https://www.youtube.com/watch?v=RGOj5yH7evk) provides a
+visual overview, [Git Exercises](https://gitexercises.fracz.com/) offers
+short command-line practice, and [Oh My Git!](https://ohmygit.org/) teaches
+Git through an open-source game. Version control is useful beyond Git because
+it preserves history, supports recovery, and coordinates work across
+collaborators. Hofert's beginner-friendly tutorial compares the fundamentals
+of Git and Subversion and is a useful additional reading
+[@hofert2025version]. Use all of these resources for practice, but check each
+command against `git status` and the repository's documentation.
+
+GitHub is one hosting service for Git repositories; [Bitbucket](https://bitbucket.org/)
+and [GitLab](https://gitlab.com/) offer similar services. Hosting a repository
+online provides a backup of committed work and makes collaboration with
+classmates and coworkers easier.
+
+## The Git Model
+
+A Git repository is a project directory together with a database of its
+history. The **working tree** contains files being edited, the **staging area**
+records changes intended for the next snapshot, and a **commit** stores that
+snapshot with an author, time, and message. Thinking in these three states
+prevents the common mistake of treating `git add` as a backup or `git commit`
+as an upload.
+
+The staging area makes a commit a deliberate unit of work. You can inspect a
+change, stage only the part that belongs together, and then commit a coherent
+snapshot. A good commit should explain one change in the imperative mood, such
+as `content: clarify relative paths`; generated files, credentials, and large
+local data should not be committed.
+
+## Installing and Configuring Git
+
+Install Git before creating a repository. Use [Git for
+Windows](https://gitforwindows.org/) on Windows, and use the package manager or
+installer appropriate for macOS or Linux; the official [Git downloads
+page](https://git-scm.com/downloads) lists current options
+[@git-scm2025downloads]. On Windows, open **Git Bash** for the Unix-style
+commands used in this book.
+
+Git needs an identity so that each commit records who made it, and a remote
+account provides a place to share those commits. Set your local name and email
+once on a computer, then verify the values:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main
+git config --list --show-origin
+```
+
+An account on GitHub is separate from a local Git installation. Set up GitHub
+by creating an account, generating an SSH key if you do not already have one,
+and adding the key's public half to your GitHub account; HTTPS authentication
+is an alternative. GitHub's onboarding guide explains account setup and
+authentication [@github2025gettingstarted].
+
+## A First Local Workflow
+
+The safest beginner workflow is to inspect, stage, inspect again, and then
+commit. Start by cloning an existing repository or initializing a new one:
+
+```bash
+git clone https://github.com/OWNER/REPOSITORY.git
+cd REPOSITORY
+
+# For a new local project instead:
+git init
+```
+
+`git status` is the most useful diagnostic command. It reports the current
+branch, changed files, staged files, and files Git is ignoring. Run it before
+and after each logical operation rather than guessing what Git will do. The
+following sequence records a small change:
+
+```bash
+git status
+git diff                 # changes not yet staged
+git add path/to/file.qmd
+git diff --staged        # changes that will enter the commit
+git commit -m "content: explain the Git workflow"
+git status
+```
+
+`git add` copies the selected version into the staging area; it does not send
+anything to GitHub. `git commit` saves the staged snapshot locally; it does not
+publish it. `git push` is the operation that sends local commits to a remote.
+This distinction is the foundation of a reliable backup and collaboration
+workflow.
+
+Beginners should avoid `git add .` because it stages every unignored change
+below the current directory, including files they may not have inspected or
+intended to commit. Stage named files, such as `git add 02-git.qmd`, and review
+`git diff --staged` before committing. Use `git add .` only when you have
+deliberately checked every change in the directory.
+
+The seven commands used most often in this book are `git clone`, `git pull`,
+`git status`, `git add`, `git rm`, `git commit`, and `git push`. The first
+clones a repository using an HTTPS URL or an SSH key; `pull` downloads and
+integrates updates; `status` reports changed, staged, and untracked files and
+whether the local branch is ahead of or behind its remote; `add` stages
+selected changes; `rm` removes a file from the index and working tree; `commit`
+records a snapshot with a message; and `push` sends commits to a remote. The
+commands `git diff`, `git branch`, and `git reset` are useful for more advanced
+work; use `git reset` only after learning how it changes history.
+
+## Inspecting and Recovering History
+
+Git's history commands let you understand a change before trying to undo it.
+Use a compact log for the sequence of commits and a diff for exact lines:
+
+```bash
+git log --oneline --decorate --graph --all
+git show COMMIT
+git diff HEAD~1 HEAD
+```
+
+Different recovery commands have different safety implications. `git restore
+path/to/file` discards unstaged edits, `git restore --staged path/to/file`
+unstages a file without changing its contents, and `git revert COMMIT` creates
+a new commit that reverses an earlier published commit. Avoid `git reset` on a
+shared branch until you understand how it changes history.
+
+## Branches and Remotes
+
+A branch is a movable name for a line of commits. Branches let you develop and
+review an idea without changing the shared default branch:
+
+```bash
+git switch -c improve-introduction
+# edit files, then add and commit
+git switch main
+git pull --ff-only
+git switch improve-introduction
+```
+
+A **remote** is a name for another repository, usually an online copy called
+`origin`. These commands inspect and synchronize it:
+
+```bash
+git remote -v
+git fetch origin
+git pull --ff-only origin main
+git push -u origin improve-introduction
+```
+
+`git fetch` downloads remote history without changing working files; `git pull`
+fetches and then integrates the selected branch. Pull before starting work
+when others may have pushed changes, and push completed commits so that a
+second copy exists.
+
+Git reports a conflict when two changes cannot be integrated automatically. Use
+this sequence to resolve one:
+
+```bash
+git status                         # list conflicted files
+# open each conflicted file and choose the intended content
+# remove the <<<<<<<, =======, and >>>>>>> markers
+git add path/to/resolved-file.qmd
+git diff --staged                  # inspect the resolution
+git commit                         # finish the merge, if Git requests it
+```
+
+Do not choose a side blindly. Ask the contributor who made the other change
+when the intended result is unclear, and run the project's checks after the
+resolution. If you need to abandon an unfinished merge, use `git merge
+--abort` before making further edits.
+
+## GitHub and Pull Requests
+
+GitHub is a hosting and collaboration service, not a replacement for Git. A
+repository on GitHub can store the canonical source, while each contributor
+works in a local clone and exchanges commits through a remote.
+
+A pull request proposes merging a branch into another branch. It gives
+reviewers a place to inspect the diff, discuss design and evidence, and run
+checks before the change is merged.
+
+Small pull requests are easier to review and less likely to conceal an
+accidental change. Include the motivation, files affected, and checks you ran;
+do not include rendered `_book/` output when it is generated by the project.
+
+GitHub's pull-request process is easiest to follow as a sequence of checks:
+
+1. Fork the upstream repository and synchronize the fork if it is out of date.
+2. Clone your fork and confirm that you can open the project in your editor.
+3. Run `git status` to verify that the working tree is clean.
+4. Create a descriptive branch, make the change, and run the relevant checks.
+5. Run `git status` and inspect the diff before staging and committing.
+6. Push the branch, open the pull request, and describe the change for
+   reviewers.
+
+GitHub provides a short [pull requests in 100 seconds
+video](https://youtu.be/8lGpZkjnkt4), and its documentation explains the full
+workflow [@github2025pullrequests].
+
+For a class-notes contribution, the concrete command-line sequence looks like
+this:
+
+```bash
+git clone https://github.com/GitHub_Username/ids-book.git
+cd ids-book
+git status
+git switch -c branch-name
+# edit a file, for example index.qmd, and save it
+git status
+git add index.qmd
+git diff --staged
+git commit -m "content: add a useful example"
+git push -u origin branch-name
+```
+
+Replace `GitHub_Username` and `branch-name` with your own values. On GitHub,
+open the fork, click **Compare & pull request**, describe the change, and click
+**Create pull request**. If you are on the wrong branch, use `git switch
+existing-branch`; use `git branch` to list branches and identify the current
+one. Before beginning work, use **Sync fork** on GitHub when the fork is behind
+the upstream repository.
+
+## Practical Recommendations
+
+The following checklist turns the chapter's concepts into everyday repository
+habits:
+
+- Use the command-line interface instead of the web interface for Git
+  operations, such as uploading files to GitHub.
+- Make frequent small commits instead of rare large commits.
+- Make commit messages informative and meaningful.
+- Name files and folders with lowercase letters and no spaces.
+- Keep the repository clean by not tracking generated files.
+- Create and maintain a `.gitignore` file for generated output, caches, local
+  environments, and secrets.
+- Keep source lines under 80 characters so that diffs remain readable.
+- Run `git status` before and after important operations.
+- Inspect a diff before staging and inspect the staged diff before committing.
+- Pull before starting work when collaborators may have pushed changes, and
+  push completed commits so that a second copy exists.
+
+Git tracks text changes well but is not a data warehouse. Keep reproducible
+scripts, small instructional data, and environment specifications under
+version control; keep credentials, huge raw datasets, and generated results out
+of the repository. Record where excluded data came from and how to obtain it
+so another analyst can reproduce the work.
+
+Use this file-level rule when deciding what belongs in a repository:
+
+- **Track:** source code (`.py`, `.qmd`, and `.R`), documentation, small example
+  data, configuration needed to reproduce the project, environment
+  specifications, and `.gitignore`.
+- **Do not track:** passwords, API keys, private keys, personal data, huge raw
+  datasets, downloaded installers, temporary files, caches, virtual
+  environments, rendered `_book/` output, or other files generated from the
+  tracked source.
+
+Put the exclusion rule in `.gitignore` before creating files that should not be
+tracked. If sensitive information is accidentally committed, deleting the file
+in a later commit does not remove it from the earlier history; change the
+exposed credential and seek help to remove the history safely.
+
+## References {.unnumbered}
