@@ -1,0 +1,33 @@
+project:
+  type: book
+  output-dir: _book
+
+execute:
+  enabled: true
+  freeze: auto
+
+book:
+  title: "Introduction to Data Science"
+  subtitle: "Course Notes"
+  author:
+    - name: Jun Yan
+      url: https://statcomp.org
+  site-url: https://statds.github.io/ids-book
+  repo-url: https://github.com/statds/ids-book
+  repo-actions:
+    - edit
+    - issue
+  chapters:
+    - index.qmd
+
+format:
+  html:
+    theme: cosmo
+    html-math-method: mathjax
+    code-copy: true
+    code-overflow: wrap
+    toc: true
+
+bibliography: references.bib
+
+lang: en
