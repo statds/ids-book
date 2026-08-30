@@ -1,3 +1,7 @@
+---
+toc-expand: 2
+---
+
 # Preliminaries {.unnumbered}
 
 ## About These Notes
@@ -6,20 +10,23 @@ These notes support STAT 3255/5255, Introduction to Data Science, at the
 University of Connecticut. They introduce the ideas, tools, and working habits
 needed to learn from data in a reproducible and responsible way.
 
-The notes are written as a Quarto book and use Python for computation. They are
+The book uses Quarto for publishing and Python for computation. This combination
+keeps prose, code, results, and citations together in a reproducible source.
+
+The instructor-authored book is the permanent source for course content. It is
 intended to remain useful across semesters and to develop over time into a
-textbook. The instructor-authored book is the authoritative source for the
-course content. Semester schedules, assignments, and student-contributed notes
-are maintained separately.
+textbook. Semester schedules, assignments, and student-contributed notes are
+maintained separately.
 
 ## Sources and Acknowledgments
 
-The source for this book is available in its
-[GitHub repository](https://github.com/jun-yan/ids-book). Earlier versions of
-the course notes were developed with contributions from students in successive
-offerings of STAT 3255/5255. Those contributions helped identify useful
-examples, alternative explanations, common difficulties, and topics that
-deserved fuller treatment.
+The [GitHub repository](https://github.com/jun-yan/ids-book) contains the source
+for this book.
+
+Earlier course notes benefited from contributions by successive cohorts of STAT
+3255/5255 students. Those contributions helped identify useful examples,
+alternative explanations, common difficulties, and topics that deserved fuller
+treatment.
 
 Recent course archives include:
 
@@ -51,24 +58,24 @@ are not tracked by Git; the source and environment specifications are.
 
 ## Learning Data Science in the Age of AI
 
-The concern that artificial intelligence will replace entry-level analytical
-work is reasonable. AI systems can already write routine code, clean data,
+AI reduces the value of routine analytical production but increases the value
+of analytical judgment. AI systems can already write routine code, clean data,
 create visualizations, fit models, and draft reports. Consequently, a course
 that consists mainly of memorizing commands or reproducing standard analyses
-would offer diminishing value. The appropriate response, however, is not to
-abandon data-science education. It is to teach the knowledge and judgment
-needed to use increasingly capable tools well.
+would offer diminishing value. The appropriate response is not to abandon
+data-science education, but to teach the knowledge and judgment needed to use
+increasingly capable tools well.
 
-Current evidence presents both disruption and opportunity. In its 2025 survey,
-the World Economic Forum reported that 41 percent of employers expected to
-reduce their workforce where AI could automate tasks, while 77 percent planned
-to upskill their workers. The same report identified AI and big data as the
-fastest-growing skill area and analytical thinking as the most widely valued
-core skill [@worldeconomicforum2025]. In the United States, the Bureau of Labor
-Statistics projects employment of data scientists to grow by about 34 percent
-from 2024 to 2034 [@bls2025datascientists]. Such projections are not a promise
-of a job, but they do show why students need a combination of technical
-knowledge and analytical judgment rather than less preparation.
+Current labor evidence shows disruption and demand at the same time. In its
+2025 survey, the World Economic Forum reported that 41 percent of employers
+expected to reduce their workforce where AI could automate tasks, while 77
+percent planned to upskill their workers. The same report identified AI and big
+data as the fastest-growing skill area and analytical thinking as the most
+widely valued core skill [@worldeconomicforum2025]. In the United States, the
+Bureau of Labor Statistics projects employment of data scientists to grow by
+about 34 percent from 2024 to 2034 [@bls2025datascientists]. Such projections
+are not a promise of a job, but they do show why students need a combination of
+technical knowledge and analytical judgment rather than less preparation.
 
 AI tends to amplify the capabilities of its user rather than make expertise
 irrelevant. A person with limited understanding may use AI to produce a weak
@@ -113,23 +120,13 @@ made stronger by AI.
 ## Adapting to Rapid Skill Acquisition
 
 Data science requires learning new tools and ideas quickly. VanderPlas
-[@vanderplas2016python] captures an important feature of this work:
+[@vanderplas2016python] emphasizes that effective practice depends less on
+memorizing every command than on locating and evaluating the information needed
+to solve an unfamiliar problem.
 
-> When a technologically-minded person is asked to help a friend, family
-> member, or colleague with a computer problem, most of the time it's less a
-> matter of knowing the answer as much as knowing how to quickly find an
-> unknown answer. In data science it's the same: searchable web resources such
-> as online documentation, mailing-list threads, and StackOverflow answers
-> contain a wealth of information, even (especially?) if it is a topic you've
-> found yourself searching before. Being an effective practitioner of data
-> science is less about memorizing the tool or command you should use for every
-> possible situation, and more about learning to effectively find the
-> information you don't know, whether through a web search engine or another
-> means.
-
-Effective practitioners learn how to frame a problem, consult documentation
-and other reliable sources, test possible solutions, and evaluate whether the
-result makes sense.
+Effective practitioners follow a disciplined process for resolving unfamiliar
+problems. They frame the problem, consult documentation and other reliable
+sources, test possible solutions, and evaluate whether the result makes sense.
 
 This habit is especially important when software, data formats, and computing
 environments change. Encountering an unfamiliar package, error message, data
@@ -152,9 +149,12 @@ The examples and exercises in this book emphasize a few recurring principles:
 - Communicate the question, evidence, limitations, and conclusion—not merely
   the code.
 
-For presentations, introduce the problem and motivate why it matters. Give the
-audience a map of the talk, emphasize the main results, and conclude with the
-central takeaway. Original examples and careful attribution make an explanation
-both clearer and more trustworthy.
+Effective presentations guide the audience from motivation to conclusion.
+Introduce the problem and explain why it matters, provide a map of the talk,
+emphasize the main results, and conclude with the central takeaway.
+
+Trustworthy explanations distinguish original work from borrowed material.
+Original examples strengthen an explanation, while careful attribution allows
+the audience to evaluate its sources.
 
 ## References {.unnumbered}
