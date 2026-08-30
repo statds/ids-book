@@ -9,16 +9,18 @@ model can answer the wrong question; a sound statistical method can fail when
 implemented incorrectly; and efficient code cannot repair measurements that do
 not represent the phenomenon of interest.
 
-In her 2014 presidential address to the Institute of Mathematical Statistics,
-Bin Yu summarized the breadth of the field as [@yu2014let]
+Bin Yu's $SDC^3$ formulation captures this interdisciplinary breadth. In her
+2014 presidential address to the Institute of Mathematical Statistics, she
+summarized the field as follows [@yu2014let]:
 
 $$
 \text{Data science} = S D C^3,
 $$
 
-where $S$ is statistics, $D$ is domain or scientific knowledge, and the three
-$C$s are computing, collaboration, and communication. Statistics provides ways
-to reason from observations while accounting for variation and uncertainty.
+Yu's formulation gives each component of data science a distinct role. Here,
+$S$ is statistics, $D$ is domain or scientific knowledge, and the three $C$s
+are computing, collaboration, and communication. Statistics provides ways to
+reason from observations while accounting for variation and uncertainty.
 Domain knowledge connects an analysis to a meaningful question and helps us
 judge whether its assumptions are sensible. Computing makes it possible to
 acquire, organize, explore, and model data at useful scales.
@@ -31,8 +33,7 @@ by others. Data science is therefore both a technical and a social practice.
 
 ## The Data-Science Workflow
 
-Although projects rarely proceed in a perfectly straight line, a useful
-workflow has the following recurring activities:
+A data-science workflow organizes a project into seven recurring activities:
 
 1. **Formulate a question.** Identify the decision or phenomenon of interest
    and determine what kind of answer is needed.
@@ -49,11 +50,11 @@ workflow has the following recurring activities:
 7. **Communicate and act.** Present the evidence and its limitations in a form
    that supports an informed decision.
 
-These activities form a cycle rather than a pipeline. Exploration may reveal a
-measurement problem, model checking may require different data, and discussion
-with a domain expert may change the original question. Reproducible records of
-the data, code, environment, and decisions make such revisions manageable and
-allow other people to inspect the work.
+These activities form a cycle rather than a one-way pipeline. Exploration may
+reveal a measurement problem, model checking may require different data, and
+discussion with a domain expert may change the original question. Reproducible
+records of the data, code, environment, and decisions make such revisions
+manageable and allow other people to inspect the work.
 
 ## Goals of This Course
 
@@ -93,12 +94,12 @@ reproducible analysis.
 
 ### Operating Systems and Software
 
-Linux, macOS, and Windows can all support data-science work. Their interfaces
-and software-management tools differ, so installation instructions must be read
-with the operating system in mind. Linux distributions commonly use system
-package managers such as APT or DNF; Homebrew is a widely used third-party
-package manager on macOS; and Windows provides tools such as Windows Package
-Manager as well as the Windows Subsystem for Linux (WSL).
+Linux, macOS, and Windows all support data-science work but manage software
+differently. Installation instructions must therefore be read with the
+operating system in mind. Linux distributions commonly use system package
+managers such as APT or DNF; Homebrew is a widely used third-party package
+manager on macOS; and Windows provides tools such as Windows Package Manager as
+well as the Windows Subsystem for Linux (WSL).
 
 An operating-system package manager and a Python package manager solve
 different problems. The former installs software for the operating system; the
@@ -118,10 +119,10 @@ system.
 
 #### Finding Your Files
 
-Every user has a **home directory** containing familiar folders such as
-`Desktop`, `Documents`, and usually `Downloads`. A web browser normally saves a
-download in `Downloads` unless the user or browser chooses another location. To
-find a recent download:
+The **home directory** is the starting point for locating a user's files. It
+contains familiar folders such as `Desktop`, `Documents`, and usually
+`Downloads`. A web browser normally saves a download in `Downloads` unless the
+user or browser chooses another location. To find a recent download:
 
 1. Open the browser's downloads list and use **Show in folder**, or open
    `Downloads` in File Explorer or Finder.
@@ -142,9 +143,10 @@ ls              # What is here?
 cd ~/Downloads  # Move to my Downloads folder.
 ```
 
-Run `pwd` again after `cd` and compare its output with the location shown in
-File Explorer or Finder. Software Carpentry provides a guided introduction to
-this navigation process [@softwarecarpentryndunix].
+The graphical and command-line views should lead to the same location. Run
+`pwd` again after `cd` and compare its output with the location shown in File
+Explorer or Finder. Software Carpentry provides a guided introduction to this
+navigation process [@softwarecarpentryndunix].
 
 #### Absolute and Relative Paths
 
@@ -172,8 +174,8 @@ project root [@wilson2017good].
 
 #### Naming Files and Folders
 
-Names should be easy for both people and software to use. Follow these
-conventions:
+Good file and folder names are readable by people and predictable for software.
+Follow these conventions:
 
 - use short, descriptive names such as `survey-responses.csv` and
   `clean-data.py`;
@@ -194,17 +196,19 @@ but should not copy this convention into data-science projects. Prefer
 recommendation because spaces and other shell-sensitive characters complicate
 commands, loops, and scripts [@softwarecarpentryndunix].
 
-File names may also be case-sensitive on one operating system but not another,
-and extensions such as `.csv`, `.py`, and `.qmd` signal different kinds of
-content. Hidden files often store configuration. Before reading or writing a
-file, know the current working directory, the intended path, and whether the
-operation will replace an existing file.
+Portable file handling requires attention to case, extensions, and hidden
+files. Names may be case-sensitive on one operating system but not another, and
+extensions such as `.csv`, `.py`, and `.qmd` signal different kinds of content.
+Hidden files often store configuration.
+
+Every file operation should begin with a check of its source and destination.
+Before reading or writing a file, know the current working directory, the
+intended path, and whether the operation will replace an existing file.
 
 ### The Command Line
 
-A command-line interface provides a direct way to navigate the file system and
-run development tools. The basic commands in this book follow Unix shell
-conventions and work in Git Bash, Cygwin, WSL, macOS terminals, and Linux
+This book standardizes on Unix shell conventions for command-line work. Its
+basic commands work in Git Bash, Cygwin, WSL, macOS terminals, and Linux
 terminals. On Windows, use Git Bash, which is distributed with Git for Windows
 and provides a Bash emulation for running Git and Unix-style commands
 [@gitforwindowsndgit].
@@ -226,16 +230,18 @@ The following shell commands form a useful starting vocabulary:
 - `mv` moves or renames files or directories; and
 - `rm` removes files.
 
-Options change the behavior of a command. For example, `ls -a` includes hidden
-entries and `ls -l` displays additional details. Use tab completion to reduce
-typing errors and consult a command's documentation before using unfamiliar
-options. In particular, check paths carefully before commands that overwrite or
-remove data; command-line deletion may not use a desktop trash folder.
+Options modify the behavior of a command. For example, `ls -a` includes hidden
+entries and `ls -l` displays additional details. Consult a command's
+documentation before using unfamiliar options, and use tab completion to reduce
+typing errors.
 
-This list is only a starting point. The Software Carpentry lesson *The Unix
-Shell* provides a fuller introduction to navigating and modifying files,
-combining commands with pipes, automating repetition with loops, and writing
-shell scripts [@softwarecarpentryndunix].
+Commands that overwrite or remove data require special care. Check every path
+before running them; command-line deletion may not use a desktop trash folder.
+
+A short command list is only a starting point for shell fluency. The Software
+Carpentry lesson *The Unix Shell* provides a fuller introduction to navigating
+and modifying files, combining commands with pipes, automating repetition with
+loops, and writing shell scripts [@softwarecarpentryndunix].
 
 ### Python and Its Environment
 
@@ -255,12 +261,16 @@ guide is PEP 8 [@van2001pep]. For a start, follow three conventions:
 - use whitespace consistently, keep statements on separate lines, and wrap
   long lines inside parentheses when they become difficult to read.
 
-Style is not merely cosmetic: clear code exposes assumptions and makes errors
-easier to find. Consistency within a project matters more than mechanically
-applying a rule that makes the code less readable. Two useful references for
-the Python data-science ecosystem are the *Python Data Science Handbook*
-[@vanderplas2016python], whose full first edition is freely available online,
-and *Python for Data Analysis* [@mckinney2022python].
+Consistent style makes analytical code easier to inspect and trust. Clear code
+exposes assumptions and makes errors easier to find, but consistency within a
+project matters more than mechanically applying a rule that reduces
+readability.
+
+Two freely available books provide broader instruction in the Python
+data-science ecosystem. The *Python Data Science Handbook*
+[@vanderplas2016python] covers NumPy, pandas, visualization, and machine
+learning, while *Python for Data Analysis* [@mckinney2022python] develops data
+manipulation with pandas in greater depth.
 
 ## Responsible Practice
 
