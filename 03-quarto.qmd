@@ -276,6 +276,15 @@ slide deck. Quarto supports reveal.js slides in HTML and can also produce other
 formats; the [presentation guide](https://quarto.org/docs/presentations/)
 explains the available options.
 
+A well-made Quarto homework is a reusable professional artifact, not a
+disposable submission. The same source can become a polished report, research
+memo, lab note, portfolio piece, or presentation for a different audience by
+changing its format and explanation while retaining the executable analysis.
+Students should therefore treat each assignment as an opportunity to practice
+communicating evidence to people outside this course: clear prose, labeled
+figures, citations, and a reproducible source record are more valuable than a
+decorative layout alone [@quarto2025guide].
+
 Excel, Word, and PowerPoint are useful office tools for administrative staff,
 but they are not data-science authoring tools. Students should not author
 data-science assignments in these MS Office formats: their binary contents

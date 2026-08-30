@@ -109,42 +109,6 @@ source of installation errors. For course work, use the documented project
 environment instead of installing packages into an unspecified global Python
 installation.
 
-### Installing Quarto
-
-Quarto is the publishing tool used throughout this book, so install it before
-you try to render a `.qmd` file. Follow the official [Quarto installation
-guide](https://quarto.org/docs/get-started/) for your operating system, then
-verify the installation from Git Bash, WSL, macOS Terminal, or a Linux shell:
-
-```bash
-quarto --version
-quarto check
-```
-
-The `quarto` command must be available on your `PATH`. If the shell reports
-`command not found`, finish the installation or reopen the shell so it reloads
-the updated `PATH`. Chapter 3 combines Quarto with Python and Jupyter to
-produce executable documents [@quarto2025guide].
-
-### Installing Git
-
-Git is the version-control tool used throughout this book, so install it before
-you begin the collaboration exercises. Follow the [official Git installation
-instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
-or install [Git for Windows](https://gitforwindows.org/) and use Git Bash on
-Windows. Verify the installation and identity from your shell:
-
-```bash
-git --version
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-git config --list --show-origin
-```
-
-Chapter 2 explains repositories, commits, branches, remotes, and pull
-requests. Chapter 1 only asks you to install and verify Git; do not install
-project packages globally.
-
 ### Files, Paths, and Directories
 
 A file system organizes files into directories, also called folders. File
@@ -307,6 +271,53 @@ data-science ecosystem. The *Python Data Science Handbook*
 [@vanderplas2016python] covers NumPy, pandas, visualization, and machine
 learning, while *Python for Data Analysis* [@mckinney2022python] develops data
 manipulation with pandas in greater depth.
+
+## Tools for Reproducible Data Science
+
+Coursework should produce artifacts that remain useful after the semester ends.
+When an assignment is written in Quarto, its clear prose, executable analysis,
+figures, citations, and reproducible source can be revised into a research memo,
+portfolio sample, lab report, or presentation for another audience. Students
+should therefore treat homework as practice for professional communication, not
+as a disposable file submitted only for a grade; attractive output is valuable
+because it helps readers understand trustworthy work, not because appearance
+can substitute for sound reasoning [@quarto2025guide].
+
+### Installing Quarto
+
+Quarto is the publishing tool used throughout this book, so install it before
+you try to render a `.qmd` file. Follow the official [Quarto installation
+guide](https://quarto.org/docs/get-started/) for your operating system, then
+verify the installation from Git Bash, WSL, macOS Terminal, or a Linux shell:
+
+```bash
+quarto --version
+quarto check
+```
+
+The `quarto` command must be available on your `PATH`. If the shell reports
+`command not found`, finish the installation or reopen the shell so it reloads
+the updated `PATH`. Chapter 3 combines Quarto with Python and Jupyter to
+produce executable documents [@quarto2025guide].
+
+### Installing Git
+
+Git is the version-control tool used throughout this book, so install it before
+you begin the collaboration exercises. Follow the [official Git installation
+instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
+or install [Git for Windows](https://gitforwindows.org/) and use Git Bash on
+Windows. Verify the installation and identity from your shell:
+
+```bash
+git --version
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --list --show-origin
+```
+
+Chapter 2 explains repositories, commits, branches, remotes, and pull
+requests. Chapter 1 only asks you to install and verify Git; do not install
+project packages globally.
 
 ## Responsible Practice
 
