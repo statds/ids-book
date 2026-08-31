@@ -335,8 +335,8 @@ presentation.
 ## Exercises {.unnumbered}
 
 Complete the Git setup from Chapter 2 and the Quarto installation from Chapter
-1 before beginning. Document each exercise in a `.qmd` file as a user manual
-for another beginner:
+1 before beginning. Write one `.qmd` file containing your answers to all
+problems.
 
 1. Build and inspect a reproducible Quarto document.
    a. Record your operating system, Python version, Quarto version, and any
@@ -345,15 +345,17 @@ for another beginner:
    b. Create the environment, open the project in your editor, and reproduce the
       polar-axis line plot from the Quarto presentation guide with a caption.
    c. Add prose, an equation, an executable Python chunk, and a generated figure
-      to a short document; render it to HTML, inspect it in a browser, and correct
-      warnings or unresolved references.
+      to a short document. Check the document for warnings and unresolved
+      references.
 
-2. Publish and preserve the work.
-   a. Render the homework to PDF and place the PDF in a GitHub release, while
-      keeping the `.qmd` source under version control and excluding the virtual
-      environment and generated `_book/` output.
-   b. Commit in small, meaningful steps and push the branch to your fork.
-   c. Include the HTML link, release link, commands, and troubleshooting notes in
-      the homework so another student can reproduce the result.
+2. Design a reproducible project record.
+   a. List the source files, data inputs, software environment, execution
+      commands, and generated outputs needed for another person to reproduce your
+      document.
+   b. Explain which of those items belong under version control and which should
+      be excluded, such as a virtual environment, cache, or generated `_book/`
+      directory.
+   c. Describe one change that could make your results differ on another computer
+      and state how you would detect or prevent it.
 
 ## References {.unnumbered}

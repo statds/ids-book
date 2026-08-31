@@ -232,8 +232,10 @@ The following shell commands form a useful starting vocabulary:
 
 Options modify the behavior of a command. For example, `ls -a` includes hidden
 entries and `ls -l` displays additional details. Consult a command's
-documentation before using unfamiliar options, and use tab completion to reduce
-typing errors.
+documentation before using unfamiliar options. Use tab completion while typing
+commands and paths: it completes valid names, reveals what is available, speeds
+up repetitive work, and reduces errors caused by misspelling or misquoting a
+file name.
 
 Commands that overwrite or remove data require special care. Check every path
 before running them; command-line deletion may not use a desktop trash folder.
@@ -300,6 +302,38 @@ The `quarto` command must be available on your `PATH`. If the shell reports
 the updated `PATH`. Chapter 3 combines Quarto with Python and Jupyter to
 produce executable documents [@quarto2025guide].
 
+You can test the installation with a minimal document before working on the
+book. Create `hello.qmd` with the following contents:
+
+```markdown
+---
+title: "Hello, Quarto"
+format: html
+---
+
+# A Short Introduction
+
+This document was rendered by **Quarto**.
+
+## What I Am Learning
+
+I am practicing Markdown before adding executable analysis.
+
+- headings organize a document;
+- emphasis draws attention to important words; and
+- links connect the document to [Quarto's guide](https://quarto.org/docs/guide/).
+```
+
+From the directory containing the file, run:
+
+```bash
+quarto render hello.qmd
+```
+
+Quarto should create `hello.html`. Open that file in a browser and check that
+the title and sentence appear. The source file is the record of what you wrote;
+the HTML file is generated output and should not replace the source.
+
 ### Installing Git
 
 Git is the version-control tool used throughout this book, so install it before
@@ -359,29 +393,32 @@ certain; it is to make the reasoning transparent and useful.
 
 ## Exercises {.unnumbered}
 
+Write one `.qmd` file containing your answers to all problems.
+
 1. Prepare your computer for this course.
    a. Install Git and Quarto, record your operating system and the outputs of
       `git --version`, `quarto --version`, and `quarto check`, and configure and
       verify your Git identity.
-   b. Explain one installation problem and its solution in a short `.qmd` report.
-   c. Render the report to HTML and state which commands produced it.
+   b. Explain one installation problem and its solution.
+   c. State which commands you used to verify both installations.
 
 2. Find and describe a file without relying on a graphical application's recent-
    files list.
    a. Use `pwd`, `ls`, and `cd` to locate your home directory and `Downloads`.
    b. Describe that folder with both an absolute path and a path relative to your
       project directory, and explain why the relative path is more portable.
-   c. Render the explanation to HTML.
+   c. Explain why the relative path is preferable when the project is moved to
+      another computer.
 
 3. Establish naming and organization conventions for a new project.
    a. Create a practice directory containing three files with recommended names
       and one deliberately difficult name.
    b. Explain why the difficult name causes trouble in a shell, rename it, and
       show the commands and directory listing.
-   c. Write a short `.qmd` essay explaining why professionals use the command
-      line, why Linux and Windows organize software differently, and why source
-      files should be separated from generated or binary files. Include one
-      collaboration problem caused by spaces in names, lines longer than 80
-      characters, or untracked output.
+   c. Why do professionals use the command line for project work?
+   d. Why do Linux and Windows organize software differently?
+   e. Why should source files be separated from generated or binary files?
+   f. Give one collaboration problem caused by spaces in names, lines longer
+      than 80 characters, or untracked output.
 
 ## References {.unnumbered}

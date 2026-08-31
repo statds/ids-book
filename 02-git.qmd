@@ -268,6 +268,8 @@ exposed credential and seek help to remove the history safely.
 
 ## Exercises {.unnumbered}
 
+Write one `.qmd` file containing your answers to all problems.
+
 1. Establish a usable GitHub project from the command line.
    a. Create an account if necessary and configure SSH authentication, or explain
       why you selected HTTPS.
@@ -283,9 +285,9 @@ exposed credential and seek help to remove the history safely.
    b. Inspect both `git diff` and `git diff --staged` as you work, then push the
       branch to your fork.
    c. Open a pull request against the repository from which you forked, describe
-      the change clearly, respond to one review comment with a follow-up commit,
-      and submit the link. Include enough setup information that another student
-      can clone the fork and reproduce the result on their own computer.
+      the change clearly, and respond to one review comment with a follow-up
+      commit. Include enough setup information that another student can clone the
+      fork and reproduce the result on their own computer.
 
 3. Explain the conventions you used in a complete-paragraph `.qmd` report.
    a. Explain why a professional workflow uses the command line rather than web
