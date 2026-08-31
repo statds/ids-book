@@ -10,6 +10,12 @@ These notes support STAT 3255/5255, Introduction to Data Science, at the
 University of Connecticut. They introduce the ideas, tools, and working habits
 needed to learn from data in a reproducible and responsible way.
 
+Copyright © 2026 Jun Yan. Unless otherwise noted, these instructor-authored
+notes are licensed under [CC BY-NC
+4.0](https://creativecommons.org/licenses/by-nc/4.0/). See the repository's
+[copyright notice](https://github.com/jun-yan/ids-book/blob/main/COPYRIGHT.md)
+for attribution and reuse conditions.
+
 The book uses Quarto for publishing and Python for computation. This combination
 keeps prose, code, results, and citations together in a reproducible source.
 

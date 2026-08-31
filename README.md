@@ -3,6 +3,10 @@
 Course notes for Introduction to Data Science, with ongoing development toward
 a textbook.
 
+Copyright © 2026 Jun Yan. Unless otherwise noted, the written and visual
+content is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/);
+see [COPYRIGHT.md](COPYRIGHT.md) before reusing the material.
+
 ## Contributing
 
 Make each commit a coherent change. Use an imperative, concise subject without
