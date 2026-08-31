@@ -379,7 +379,7 @@ window.Quarto = {
 <li><code>mv</code> moves or renames files or directories; and</li>
 <li><code>rm</code> removes files.</li>
 </ul>
-<p>Options modify the behavior of a command. For example, <code>ls -a</code> includes hidden entries and <code>ls -l</code> displays additional details. Consult a command’s documentation before using unfamiliar options, and use tab completion to reduce typing errors.</p>
+<p>Options modify the behavior of a command. For example, <code>ls -a</code> includes hidden entries and <code>ls -l</code> displays additional details. Consult a command’s documentation before using unfamiliar options. Use tab completion while typing commands and paths: it completes valid names, reveals what is available, speeds up repetitive work, and reduces errors caused by misspelling or misquoting a file name.</p>
 <p>Commands that overwrite or remove data require special care. Check every path before running them; command-line deletion may not use a desktop trash folder.</p>
 <p>A short command list is only a starting point for shell fluency. The Software Carpentry lesson <em>The Unix Shell</em> provides a fuller introduction to navigating and modifying files, combining commands with pipes, automating repetition with loops, and writing shell scripts <span class="citation" data-cites="softwarecarpentryndunix">(<a href="#ref-softwarecarpentryndunix" role="doc-biblioref">Software Carpentry, n.d.</a>)</span>.</p>
 </section>
@@ -405,14 +405,34 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> <span class="at">--version</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> check</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The <code>quarto</code> command must be available on your <code>PATH</code>. If the shell reports <code>command not found</code>, finish the installation or reopen the shell so it reloads the updated <code>PATH</code>. Chapter 3 combines Quarto with Python and Jupyter to produce executable documents <span class="citation" data-cites="quarto2025guide">(<a href="#ref-quarto2025guide" role="doc-biblioref">Quarto Developers, 2025</a>)</span>.</p>
+<p>You can test the installation with a minimal document before working on the book. Create <code>hello.qmd</code> with the following contents:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Hello, Quarto"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu"># A Short Introduction</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>This document was rendered by **Quarto**.</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## What I Am Learning</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>I am practicing Markdown before adding executable analysis.</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>headings organize a document;</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>emphasis draws attention to important words; and</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>links connect the document to <span class="co">[</span><span class="ot">Quarto's guide</span><span class="co">](https://quarto.org/docs/guide/)</span>.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>From the directory containing the file, run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render hello.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Quarto should create <code>hello.html</code>. Open that file in a browser and check that the title and sentence appear. The source file is the record of what you wrote; the HTML file is generated output and should not replace the source.</p>
 </section>
 <section id="installing-git" class="level3" data-number="1.5.2">
 <h3 data-number="1.5.2" class="anchored" data-anchor-id="installing-git"><span class="header-section-number">1.5.2</span> Installing Git</h3>
 <p>Git is the version-control tool used throughout this book, so install it before you begin the collaboration exercises. Follow the <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">official Git installation instructions</a>, or install <a href="https://gitforwindows.org/">Git for Windows</a> and use Git Bash on Windows. Verify the installation and identity from your shell:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">--version</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@example.com"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--list</span> <span class="at">--show-origin</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">--version</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@example.com"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--list</span> <span class="at">--show-origin</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Chapter 2 explains repositories, commits, branches, remotes, and pull requests. Chapter 1 only asks you to install and verify Git; do not install project packages globally.</p>
 </section>
 </section>
@@ -429,24 +449,28 @@ window.Quarto = {
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <ol type="1">
 <li>Prepare your computer for this course.
 <ol type="a">
 <li>Install Git and Quarto, record your operating system and the outputs of <code>git --version</code>, <code>quarto --version</code>, and <code>quarto check</code>, and configure and verify your Git identity.</li>
-<li>Explain one installation problem and its solution in a short <code>.qmd</code> report.</li>
-<li>Render the report to HTML and state which commands produced it.</li>
+<li>Explain one installation problem and its solution.</li>
+<li>State which commands you used to verify both installations.</li>
 </ol></li>
 <li>Find and describe a file without relying on a graphical application’s recent- files list.
 <ol type="a">
 <li>Use <code>pwd</code>, <code>ls</code>, and <code>cd</code> to locate your home directory and <code>Downloads</code>.</li>
 <li>Describe that folder with both an absolute path and a path relative to your project directory, and explain why the relative path is more portable.</li>
-<li>Render the explanation to HTML.</li>
+<li>Explain why the relative path is preferable when the project is moved to another computer.</li>
 </ol></li>
 <li>Establish naming and organization conventions for a new project.
 <ol type="a">
 <li>Create a practice directory containing three files with recommended names and one deliberately difficult name.</li>
 <li>Explain why the difficult name causes trouble in a shell, rename it, and show the commands and directory listing.</li>
-<li>Write a short <code>.qmd</code> essay explaining why professionals use the command line, why Linux and Windows organize software differently, and why source files should be separated from generated or binary files. Include one collaboration problem caused by spaces in names, lines longer than 80 characters, or untracked output.</li>
+<li>Why do professionals use the command line for project work?</li>
+<li>Why do Linux and Windows organize software differently?</li>
+<li>Why should source files be separated from generated or binary files?</li>
+<li>Give one collaboration problem caused by spaces in names, lines longer than 80 characters, or untracked output.</li>
 </ol></li>
 </ol>
 </section>
