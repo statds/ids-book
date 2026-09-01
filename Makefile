@@ -12,20 +12,26 @@ QUARTO_ARGS ?=
 
 VENV_PYTHON := $(VENV)/bin/python
 
-.PHONY: help check-tools check render preview render-one install upgrade req \
+.PHONY: help check-python check-tools check-venv check render preview render-one install upgrade req \
 	packages publish clean clean-output clean-cache
 
 help: ## Show the available targets.
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\n\nTargets:\n"} \
 		/^[a-zA-Z0-9_-]+:.*## / {printf "  %-14s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-check-tools: ## Verify that required command-line tools are available.
-	@command -v "$(QUARTO)" >/dev/null 2>&1 || { \
-		echo "Error: Quarto executable not found: $(QUARTO)" >&2; exit 1; }
+check-python: ## Verify that the selected Python is version 3.12.
 	@command -v "$(PYTHON)" >/dev/null 2>&1 || { \
 		echo "Error: Python executable not found: $(PYTHON)" >&2; exit 1; }
 	@"$(PYTHON)" -c 'import sys; expected = "$(REQUIRED_PYTHON_VERSION)"; actual = f"{sys.version_info.major}.{sys.version_info.minor}"; \
 	assert actual == expected, f"Python {expected} required; found {actual}"'
+
+check-tools: check-python ## Verify that required command-line tools are available.
+	@command -v "$(QUARTO)" >/dev/null 2>&1 || { \
+		echo "Error: Quarto executable not found: $(QUARTO)" >&2; exit 1; }
+
+check-venv: $(VENV_PYTHON) ## Verify that the project environment uses Python 3.12.
+	@"$(VENV_PYTHON)" -c 'import sys; expected = "$(REQUIRED_PYTHON_VERSION)"; actual = f"{sys.version_info.major}.{sys.version_info.minor}"; \
+	assert actual == expected, f"Python {expected} required in $(VENV); found {actual}"'
 
 check: check-tools ## Run Quarto's installation and environment checks.
 	$(QUARTO) check
@@ -44,20 +50,21 @@ render-one: check-tools ## Render FILE, for example: make render-one FILE=chapte
 	$(QUARTO) render "$(FILE)" $(QUARTO_ARGS)
 
 $(VENV_PYTHON):
+	$(MAKE) check-python
 	$(PYTHON) -m venv "$(VENV)"
 	$(VENV_PYTHON) -m pip install --upgrade pip
 
-install: $(VENV_PYTHON) ## Install Python dependencies in the project environment.
+install: check-venv ## Install Python dependencies in the project environment.
 	@test -f "$(REQUIREMENTS)" || { \
 		echo "Error: requirements file not found: $(REQUIREMENTS)" >&2; exit 2; }
 	$(VENV_PYTHON) -m pip install -r "$(REQUIREMENTS)"
 
-upgrade: $(VENV_PYTHON) ## Upgrade packages allowed by the requirements file.
+upgrade: check-venv ## Upgrade packages allowed by the requirements file.
 	@test -f "$(REQUIREMENTS)" || { \
 		echo "Error: requirements file not found: $(REQUIREMENTS)" >&2; exit 2; }
 	$(VENV_PYTHON) -m pip install --upgrade -r "$(REQUIREMENTS)"
 
-req: $(VENV_PYTHON) ## Freeze the selected environment into requirements.txt.
+req: check-venv ## Freeze the selected environment into requirements.txt.
 	@if "$(VENV_PYTHON)" -c 'import pip' >/dev/null 2>&1; then \
 		"$(VENV_PYTHON)" -m pip freeze > "$(REQUIREMENTS)"; \
 	elif grep -q '^uv = ' "$(VENV)/pyvenv.cfg" 2>/dev/null && \
@@ -68,7 +75,7 @@ req: $(VENV_PYTHON) ## Freeze the selected environment into requirements.txt.
 		echo "Install pip or use uv for an environment created by uv." >&2; exit 2; \
 	fi
 
-packages: $(VENV_PYTHON) ## Print the installed Python package versions.
+packages: check-venv ## Print the installed Python package versions.
 	$(VENV_PYTHON) -m pip freeze
 
 publish: check-tools ## Publish interactively to GitHub Pages.
