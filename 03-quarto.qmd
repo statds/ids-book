@@ -175,7 +175,7 @@ packages must be installed in an environment that Quarto can find. A virtual
 environment keeps this project's packages separate from the system Python and
 from unrelated projects.
 
-This repository uses Python 3.12 as its tested compatibility target. The
+This repository requires Python 3.12 for its tested environment. The
 recommended local environment is `.ids`, created and managed with `uv`. `uv`
 is a fast command-line tool for installing Python versions, creating virtual
 environments, and installing packages; it is not a replacement for Python or
@@ -214,7 +214,9 @@ python -m pip install jupyter matplotlib pandas
 ```
 
 Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
-that the active interpreter is the one you intend to use. If Quarto reports
+that the active interpreter is Python 3.12 and is the one you intend to use. If
+you use the Makefile, `make check-tools` performs the version check and fails
+when the selected interpreter is not 3.12. If Quarto reports
 that it cannot find a kernel, select the environment's Python interpreter in
 your editor or install its kernel with `python -m ipykernel install --user`.
 

@@ -5,6 +5,7 @@ SHELL := /bin/sh
 
 QUARTO ?= quarto
 PYTHON ?= python3
+REQUIRED_PYTHON_VERSION := 3.12
 VENV ?= .ids
 REQUIREMENTS ?= requirements.txt
 QUARTO_ARGS ?=
@@ -23,6 +24,8 @@ check-tools: ## Verify that required command-line tools are available.
 		echo "Error: Quarto executable not found: $(QUARTO)" >&2; exit 1; }
 	@command -v "$(PYTHON)" >/dev/null 2>&1 || { \
 		echo "Error: Python executable not found: $(PYTHON)" >&2; exit 1; }
+	@"$(PYTHON)" -c 'import sys; expected = "$(REQUIRED_PYTHON_VERSION)"; actual = f"{sys.version_info.major}.{sys.version_info.minor}"; \
+	assert actual == expected, f"Python {expected} required; found {actual}"'
 
 check: check-tools ## Run Quarto's installation and environment checks.
 	$(QUARTO) check
