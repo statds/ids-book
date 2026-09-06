@@ -302,15 +302,20 @@ Write one `.qmd` file containing your answers to all problems.
    d. Make at least ten small, meaningful commits for this contribution, using
       informative messages and keeping each commit understandable on its own.
    e. Use `git status` and `git log --oneline` to verify that the branch contains
-      the intended history and no generated files or credentials.
+      the intended history and no generated files or credentials. In your `.qmd`,
+      record the branch name, the commit hashes and messages, and the relevant
+      command output or a concise summary of it.
    f. Explain why the wishlist belongs in the text source but a rendered HTML
       file, virtual environment, or cache does not belong in the repository.
 
 4. Share the wishlist contribution for review.
    a. Push your branch to your fork and open a pull request against the course
-      class-notes repository.
+      class-notes repository. In your `.qmd`, give the fork and pull-request
+      links, branch name, latest commit hash, and a one-paragraph description of
+      the proposed change.
    b. Describe the purpose of the change, the files it affects, and the checks
-      you ran so a reviewer can understand the proposal.
+      you ran so a reviewer can understand the proposal; include the commands
+      and concise results, not an unfiltered terminal transcript.
    c. Respond to a review comment with a focused follow-up commit, then inspect
       the updated diff.
    d. If the branch cannot be merged cleanly, identify the conflict markers,
