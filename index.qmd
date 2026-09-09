@@ -13,7 +13,7 @@ needed to learn from data in a reproducible and responsible way.
 Copyright © 2026 Jun Yan. Unless otherwise noted, these instructor-authored
 notes are licensed under [CC BY-NC
 4.0](https://creativecommons.org/licenses/by-nc/4.0/). See the repository's
-[copyright notice](https://github.com/jun-yan/ids-book/blob/main/COPYRIGHT.md)
+[copyright notice](https://github.com/statds/ids-book/blob/main/COPYRIGHT.md)
 for attribution and reuse conditions.
 
 The book uses Quarto for publishing and Python for computation. This combination
@@ -26,7 +26,7 @@ maintained separately.
 
 ## Sources and Acknowledgments
 
-The [GitHub repository](https://github.com/jun-yan/ids-book) contains the source
+The [GitHub repository](https://github.com/statds/ids-book) contains the source
 for this book.
 
 Earlier course notes benefited from contributions by successive cohorts of STAT
