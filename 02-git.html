@@ -362,23 +362,46 @@ div.csl-indent {
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <p>Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <ol type="1">
-<li>Establish a usable GitHub project from the command line.
+<li>Establish a local working copy of the course class-notes repository. For Fall 2026, use <a href="https://github.com/statds/ids-f26"><code>statds/ids-f26</code></a>.
 <ol type="a">
-<li>Create an account if necessary and configure SSH authentication, or explain why you selected HTTPS.</li>
-<li>Fork <code>statds/ids-book</code>, clone your fork, configure your name and email, and verify the remote, identity, and a clean <code>git status</code>.</li>
-<li>Record what failed and how you fixed it; do not omit an obstacle merely because you eventually solved it.</li>
+<li>Create a GitHub account if necessary and configure SSH authentication, or explain why you selected HTTPS.</li>
+<li>Fork the class-notes repository and clone your fork into an appropriately named directory using the command line.</li>
+<li>Configure your Git name and email, then use <code>git remote -v</code>, <code>git branch --show-current</code>, and <code>git status</code> to inspect the clone.</li>
+<li>Explain the difference between your fork, your local clone, and the remote named <code>origin</code>. Record any obstacle and how you resolved it.</li>
 </ol></li>
-<li>Make and review a reproducible contribution in your fork.
+<li>Practice a safe local Git workflow before editing the class notes.
 <ol type="a">
-<li>Create and check out a descriptive branch, make a small documented change to a practice file, and make at least ten small commits with informative messages.</li>
-<li>Inspect both <code>git diff</code> and <code>git diff --staged</code> as you work, then push the branch to your fork.</li>
-<li>Open a pull request against the repository from which you forked, describe the change clearly, and respond to one review comment with a follow-up commit. Include enough setup information that another student can clone the fork and reproduce the result on their own computer.</li>
+<li>Update the default branch with <code>git pull --ff-only</code>, then create and switch to a descriptive branch.</li>
+<li>Create a small text file with a lowercase name and make a deliberate change to it. Inspect <code>git status</code> and <code>git diff</code> before staging anything.</li>
+<li>Stage the named file, inspect <code>git diff --staged</code>, and make one coherent commit with an informative imperative message.</li>
+<li>Use <code>git log --oneline</code> and <code>git show</code> to inspect the commit you made.</li>
+<li>Explain why <code>git add .</code> is risky for beginners and why a commit is not the same as a push.</li>
 </ol></li>
-<li>Explain the conventions you used in a complete-paragraph <code>.qmd</code> report.
+<li>Add your wishlist contribution to the class notes.
 <ol type="a">
-<li>Explain why a professional workflow uses the command line rather than web uploads, why binary and generated files stay out of Git, and why a homework PDF belongs in a GitHub release.</li>
-<li>Explain why this course requires lowercase names, 80-character source lines, and multiple small commits, using examples from your repository.</li>
-<li>Verify the final state with <code>git status</code> and include the commands and links needed for another student to inspect it.</li>
+<li>Locate the wishlist in the class-notes repository and preserve its existing Markdown structure and alphabetical order.</li>
+<li>Add your name and two or three goals as a nested Markdown list. Use a lowercase, space-free filename for any additional file you create.</li>
+<li>Inspect the change with <code>git diff</code>, stage only the intended source file, and inspect <code>git diff --staged</code> before committing.</li>
+<li>Make at least ten small, meaningful commits for this contribution, using informative messages and keeping each commit understandable on its own.</li>
+<li>Use <code>git status</code> and <code>git log --oneline</code> to verify that the branch contains the intended history and no generated files or credentials. In your <code>.qmd</code>, record the branch name, the commit hashes and messages, and the relevant command output or a concise summary of it.</li>
+<li>Explain why the wishlist belongs in the text source but a rendered HTML file, virtual environment, or cache does not belong in the repository.</li>
+</ol></li>
+<li>Share the wishlist contribution for review.
+<ol type="a">
+<li>Push your branch to your fork and open a pull request against the course class-notes repository. In your <code>.qmd</code>, give the fork and pull-request links, branch name, latest commit hash, and a one-paragraph description of the proposed change.</li>
+<li>Describe the purpose of the change, the files it affects, and the checks you ran so a reviewer can understand the proposal; include the commands and concise results, not an unfiltered terminal transcript.</li>
+<li>Respond to a review comment with a focused follow-up commit, then inspect the updated diff.</li>
+<li>If the branch cannot be merged cleanly, identify the conflict markers, choose the intended content with the other contributor, stage the resolved file, and complete the merge or rebase safely.</li>
+</ol></li>
+<li>Explain the conventions that make this workflow reliable.
+<ol type="a">
+<li>Why is the command-line interface preferable to uploading files through a web page for a version-controlled project?</li>
+<li>What is the difference between a source file and a binary file?</li>
+<li>Why should generated and binary files normally stay out of Git history?</li>
+<li>Why are lowercase names without spaces easier to use in a shell and across operating systems?</li>
+<li>Why does this course ask you to keep source lines under 80 characters?</li>
+<li>Why are many small commits easier to review and recover from than one large commit?</li>
+<li>What information should a repository record when raw data or generated output is excluded?</li>
 </ol></li>
 </ol>
 </section>

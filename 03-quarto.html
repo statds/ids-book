@@ -374,7 +374,7 @@ Figure&nbsp;3.1: Scores for three students
 <section id="python-environments-for-quarto" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="python-environments-for-quarto"><span class="header-section-number">3.4</span> Python Environments for Quarto</h2>
 <p>Quarto executes Python through a Jupyter kernel, so the interpreter and packages must be installed in an environment that Quarto can find. A virtual environment keeps this project’s packages separate from the system Python and from unrelated projects.</p>
-<p>This repository uses Python 3.12 as its tested compatibility target. The recommended local environment is <code>.ids</code>, created and managed with <code>uv</code>. <code>uv</code> is a fast command-line tool for installing Python versions, creating virtual environments, and installing packages; it is not a replacement for Python or Quarto. Students who prefer the standard Python tools can use the pip alternative below.</p>
+<p>This repository requires Python 3.12 for its tested environment. The recommended local environment is <code>.ids</code>, created and managed with <code>uv</code>. <code>uv</code> is a fast command-line tool for installing Python versions, creating virtual environments, and installing packages; it is not a replacement for Python or Quarto. Students who prefer the standard Python tools can use the pip alternative below.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 .ids</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .ids/bin/activate</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> pip install jupyter matplotlib pandas</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -387,7 +387,7 @@ Figure&nbsp;3.1: Scores for three students
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--upgrade</span> pip</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install jupyter matplotlib pandas</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Use <code>python --version</code>, <code>which python</code>, and <code>jupyter kernelspec list</code> to verify that the active interpreter is the one you intend to use. If Quarto reports that it cannot find a kernel, select the environment’s Python interpreter in your editor or install its kernel with <code>python -m ipykernel install --user</code>.</p>
+<p>Use <code>python --version</code>, <code>which python</code>, and <code>jupyter kernelspec list</code> to verify that the active interpreter is Python 3.12 and is the one you intend to use. If you use the Makefile, <code>make check-tools</code> performs the version check and fails when the selected interpreter is not 3.12. If Quarto reports that it cannot find a kernel, select the environment’s Python interpreter in your editor or install its kernel with <code>python -m ipykernel install --user</code>.</p>
 </section>
 <section id="reproducibility-in-practice" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="reproducibility-in-practice"><span class="header-section-number">3.5</span> Reproducibility in Practice</h2>
@@ -437,17 +437,35 @@ Figure&nbsp;3.1: Scores for three students
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <p>Complete the Git setup from Chapter 2 and the Quarto installation from Chapter 1 before beginning. Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <ol type="1">
-<li>Build and inspect a reproducible Quarto document.
+<li>Set up and verify the Python environment used by Quarto.
 <ol type="a">
-<li>Record your operating system, Python version, Quarto version, and any installation obstacle; explain how you verified that Quarto can find the Python environment.</li>
-<li>Create the environment, open the project in your editor, and reproduce the polar-axis line plot from the Quarto presentation guide with a caption.</li>
-<li>Add prose, an equation, an executable Python chunk, and a generated figure to a short document. Check the document for warnings and unresolved references.</li>
+<li>Record your operating system, Python version, Quarto version, and any installation obstacle in the <code>.qmd</code>, together with the commands used to obtain those details.</li>
+<li>Create a Python 3.12 virtual environment with <code>uv</code> or the standard Python tools, activate it, and install the packages needed for the examples. In the <code>.qmd</code>, show the setup commands and list the packages you installed.</li>
+<li>Verify the interpreter, package versions, and Jupyter kernel with commands such as <code>python --version</code>, <code>which python</code>, and <code>jupyter kernelspec list</code>. Include the relevant output or a concise transcription in the <code>.qmd</code>.</li>
+<li>Explain how you confirmed that Quarto and your editor use this environment rather than a system-wide Python installation, citing the evidence you recorded.</li>
 </ol></li>
-<li>Design a reproducible project record.
+<li>Author a Markdown document that uses the core structures in this chapter.
 <ol type="a">
-<li>List the source files, data inputs, software environment, execution commands, and generated outputs needed for another person to reproduce your document.</li>
-<li>Explain which of those items belong under version control and which should be excluded, such as a virtual environment, cache, or generated <code>_book/</code> directory.</li>
-<li>Describe one change that could make your results differ on another computer and state how you would detect or prevent it.</li>
+<li>Organize the document with a title, sections, paragraphs, emphasis, a bulleted list, and a descriptive hyperlink. Include the Markdown source in the <code>.qmd</code> itself.</li>
+<li>Write a displayed equation with correct sentence punctuation, give it a label, and refer to it by its automatically generated number in the prose.</li>
+<li>Add a table with a caption and label, and refer to the table by its number rather than by a hard-coded number.</li>
+<li>Add a source citation and a References section, using the citation key from the bibliography rather than pasting an uncited URL.</li>
+<li>Explain the difference between Markdown source syntax and the rendered document that readers see.</li>
+</ol></li>
+<li>Combine prose, executable Python, and generated results in one analysis.
+<ol type="a">
+<li>Reproduce the polar-axis line plot from the Quarto presentation guide or create an equally informative plot from a small data frame. Keep the executable source in the <code>.qmd</code> and explain the generated result there.</li>
+<li>Put the Python in an executable code chunk with a descriptive label and make the chunk produce a table and a figure from the same data.</li>
+<li>Give the table and figure captions, label both outputs, and refer to each by its automatically generated number in the surrounding explanation.</li>
+<li>Interpret one numerical result and one visual pattern in complete sentences, including a limitation of the example.</li>
+<li>Check that the document has no unresolved citations or cross-references and that its displayed results are generated by the source code. Render the document while saving the messages, then search the log for warnings: <code>quarto render homework.qmd 2&gt;&amp;1 | tee render.log</code> followed by <code>rg -i 'warning|not found|undefined|citation|reference|broken' render.log</code>. Inspect the rendered document for <code>??</code>, missing labels, and missing bibliography entries. State the checks you performed and any correction you made in the <code>.qmd</code>; do not commit the generated log.</li>
+</ol></li>
+<li>Make the document ready for reproducible collaboration.
+<ol type="a">
+<li>Identify the source files, data inputs, software environment, commands, and outputs another analyst would need to reproduce the work.</li>
+<li>Distinguish files that belong under version control from a virtual environment, cache, generated HTML, or other output that should be ignored.</li>
+<li>Explain how relative paths, pinned package versions, and a recorded random seed would help another student obtain the same results.</li>
+<li>Describe how you would adapt this document into a student-created class- notes contribution without copying instructor-authored exposition.</li>
 </ol></li>
 </ol>
 </section>
