@@ -79,7 +79,7 @@ packages: check-venv ## Print the installed Python package versions.
 	$(VENV_PYTHON) -m pip freeze
 
 publish: check-tools ## Publish interactively to GitHub Pages.
-	$(QUARTO) publish gh-pages $(QUARTO_ARGS)
+	printf 'Y\n' | $(QUARTO) publish gh-pages $(QUARTO_ARGS)
 
 clean-output: ## Remove the rendered book.
 	rm -rf -- _book
