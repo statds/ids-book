@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Python for Data Science – Introduction to Data Science</title>
+<title>4&nbsp; Python Practice – Introduction to Data Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,7 +174,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-python.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python for Data Science</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-python.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -229,7 +229,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04-python.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python for Data Science</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></span></a>
   </div>
 </li>
     </ul>
@@ -242,14 +242,14 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-interpreter-standard-library-and-packages" id="toc-the-interpreter-standard-library-and-packages" class="nav-link active" data-scroll-target="#the-interpreter-standard-library-and-packages"><span class="header-section-number">4.1</span> The Interpreter, Standard Library, and Packages</a></li>
-  <li><a href="#imports-give-names-access-to-objects" id="toc-imports-give-names-access-to-objects" class="nav-link" data-scroll-target="#imports-give-names-access-to-objects"><span class="header-section-number">4.2</span> Imports Give Names Access to Objects</a></li>
-  <li><a href="#functions-automate-a-repeated-decision" id="toc-functions-automate-a-repeated-decision" class="nav-link" data-scroll-target="#functions-automate-a-repeated-decision"><span class="header-section-number">4.3</span> Functions Automate a Repeated Decision</a></li>
-  <li><a href="#names-objects-and-mutation" id="toc-names-objects-and-mutation" class="nav-link" data-scroll-target="#names-objects-and-mutation"><span class="header-section-number">4.4</span> Names, Objects, and Mutation</a></li>
-  <li><a href="#lists-arrays-and-data-frames" id="toc-lists-arrays-and-data-frames" class="nav-link" data-scroll-target="#lists-arrays-and-data-frames"><span class="header-section-number">4.5</span> Lists, Arrays, and Data Frames</a></li>
-  <li><a href="#numbers-are-representations-not-real-numbers" id="toc-numbers-are-representations-not-real-numbers" class="nav-link" data-scroll-target="#numbers-are-representations-not-real-numbers"><span class="header-section-number">4.6</span> Numbers Are Representations, Not Real Numbers</a></li>
-  <li><a href="#a-reproducible-simulation" id="toc-a-reproducible-simulation" class="nav-link" data-scroll-target="#a-reproducible-simulation"><span class="header-section-number">4.7</span> A Reproducible Simulation</a></li>
-  <li><a href="#practical-debugging" id="toc-practical-debugging" class="nav-link" data-scroll-target="#practical-debugging"><span class="header-section-number">4.8</span> Practical Debugging</a></li>
+  <li><a href="#python-ecosystem" id="toc-python-ecosystem" class="nav-link active" data-scroll-target="#python-ecosystem"><span class="header-section-number">4.1</span> Python Ecosystem</a></li>
+  <li><a href="#imports" id="toc-imports" class="nav-link" data-scroll-target="#imports"><span class="header-section-number">4.2</span> Imports</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions"><span class="header-section-number">4.3</span> Functions</a></li>
+  <li><a href="#names-and-objects" id="toc-names-and-objects" class="nav-link" data-scroll-target="#names-and-objects"><span class="header-section-number">4.4</span> Names and Objects</a></li>
+  <li><a href="#data-structures" id="toc-data-structures" class="nav-link" data-scroll-target="#data-structures"><span class="header-section-number">4.5</span> Data Structures</a></li>
+  <li><a href="#number-representation" id="toc-number-representation" class="nav-link" data-scroll-target="#number-representation"><span class="header-section-number">4.6</span> Number Representation</a></li>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation"><span class="header-section-number">4.7</span> Simulation</a></li>
+  <li><a href="#debugging" id="toc-debugging" class="nav-link" data-scroll-target="#debugging"><span class="header-section-number">4.8</span> Debugging</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -260,7 +260,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-python" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python for Data Science</span></span></h1>
+<h1 class="title"><span id="sec-python" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></span></h1>
 </div>
 
 
@@ -278,11 +278,11 @@ window.Quarto = {
 
 
 <p>Students entering this course have already used Python. This chapter therefore does not repeat introductory syntax. Instead, it develops the habits that make Python analysis dependable: knowing which interpreter runs the code, finding the package that supplies a function, designing functions with clear inputs and outputs, predicting when a change mutates an existing object, and recognizing the limits of computer number representations. These habits turn short scripts into analyses that another person can inspect and rerun.</p>
-<section id="the-interpreter-standard-library-and-packages" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="the-interpreter-standard-library-and-packages"><span class="header-section-number">4.1</span> The Interpreter, Standard Library, and Packages</h2>
+<section id="python-ecosystem" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="python-ecosystem"><span class="header-section-number">4.1</span> Python Ecosystem</h2>
 <p>Every Python command runs in one interpreter. That interpreter supplies the language and its standard library; an environment adds third-party packages such as NumPy and pandas. A <strong>module</strong> is an importable Python file, a <strong>package</strong> is an importable collection of modules, and a <strong>library</strong> is the broader set of code and documentation that users treat as one tool. The Python standard library includes modules such as <code>math</code>, <code>pathlib</code>, and <code>statistics</code>; NumPy and pandas are installed packages rather than parts of Python itself <span class="citation" data-cites="python2026modules mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-python2026modules" role="doc-biblioref">Python Software Foundation, 2026c</a>)</span>.</p>
 <p>When code fails with <code>ModuleNotFoundError</code>, first determine which interpreter is active. The following chunk reports the interpreter path and version used by the current Quarto document:</p>
-<div id="d4d736d3" class="cell" data-execution_count="1">
+<div id="1a63b17d" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.executable)</span>
@@ -298,10 +298,10 @@ window.Quarto = {
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip freeze</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A virtual environment is a self-contained directory with a chosen Python installation and its packages. It prevents one project’s package version from silently changing another project’s behavior. The exact package versions in <code>requirements.txt</code> are part of a reproducible analysis because another person can install the same set with <code>python -m pip install -r requirements.txt</code> <span class="citation" data-cites="python2026venv wilson2017good">(<a href="#ref-python2026venv" role="doc-biblioref">Python Software Foundation, 2026d</a>; <a href="#ref-wilson2017good" role="doc-biblioref">Wilson et al., 2017</a>)</span>. Chapter 3 showed how this book uses the <code>.ids</code> environment; the important practice here is to check the interpreter, not merely the command prompt.</p>
 </section>
-<section id="imports-give-names-access-to-objects" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="imports-give-names-access-to-objects"><span class="header-section-number">4.2</span> Imports Give Names Access to Objects</h2>
+<section id="imports" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="imports"><span class="header-section-number">4.2</span> Imports</h2>
 <p>An <code>import</code> statement binds a name in the current file to a module or an object defined elsewhere. Choose imports that make the source easy to read and avoid names that obscure where a function comes from:</p>
-<div id="76ee84d2" class="cell" data-execution_count="2">
+<div id="3899a41c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -314,12 +314,12 @@ ids-book</code></pre>
 </div>
 </div>
 <p>For widely used data-science libraries, conventional aliases make code easier to recognize:</p>
-<div id="f41efad5" class="cell" data-execution_count="3">
+<div id="e8868db3" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Avoid <code>from package import *</code>. It hides the source of each name, can overwrite an existing name, and makes a traceback harder to interpret. When you need to learn what an imported object does, use <code>help()</code>, inspect its documentation, or check its type and attributes deliberately:</p>
-<div id="dd73790e" class="cell" data-execution_count="4">
+<div id="6340c333" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(sample))</span>
@@ -333,11 +333,11 @@ int64
 </div>
 <p>The <code>type</code>, <code>dtype</code>, and <code>shape</code> attributes answer different questions. The first identifies the Python or library object; <code>dtype</code> describes how an array stores its values; and <code>shape</code> gives its dimensions. Checking all three is often more informative than printing a large object.</p>
 </section>
-<section id="functions-automate-a-repeated-decision" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="functions-automate-a-repeated-decision"><span class="header-section-number">4.3</span> Functions Automate a Repeated Decision</h2>
+<section id="functions" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="functions"><span class="header-section-number">4.3</span> Functions</h2>
 <p>A function should name a task, accept the data and choices needed for that task, and return a result that another part of the analysis can use. It should not quietly depend on a global variable or print a result that a later step needs to analyze. A docstring records the function’s contract, while type hints communicate the intended inputs and output; Python does not automatically enforce those hints.</p>
 <p>The function below summarizes numeric values without changing its input. It converts the input to a floating-point NumPy array, checks a precondition, and returns a dictionary whose named fields are convenient in prose and tables.</p>
-<div id="abfc036b" class="cell" data-execution_count="5">
+<div id="74b6c195" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize(values: <span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> np.ndarray) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>]:</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the count, mean, and sample standard deviation of values."""</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
@@ -357,16 +357,16 @@ int64
 </div>
 <p>The conversion inside <code>summarize</code> creates an array suited to numerical work. The function therefore accepts an ordinary list but does not force every caller to learn NumPy’s input rules. Its explicit <code>ValueError</code> gives a useful message at the boundary of the function, instead of allowing a mysterious result later in the analysis.</p>
 <p>Run a small, direct check whenever you write a function. This is not a complete test suite, but it records a known case and catches an accidental change to the function’s behavior:</p>
-<div id="e6d166e8" class="cell" data-execution_count="6">
+<div id="571f5b12" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>expected_mean <span class="op">=</span> <span class="fl">86.0</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])[<span class="st">"mean"</span>] <span class="op">==</span> expected_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Use a function when a task recurs, when its name clarifies a multi-step calculation, or when you want to test one part of an analysis independently. Do not turn every one-line expression into a function; an unnecessary function can hide a simple calculation.</p>
 </section>
-<section id="names-objects-and-mutation" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="names-objects-and-mutation"><span class="header-section-number">4.4</span> Names, Objects, and Mutation</h2>
+<section id="names-and-objects" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="names-and-objects"><span class="header-section-number">4.4</span> Names and Objects</h2>
 <p>Python names refer to objects. Assignment usually binds another name to the same object; it does not copy that object. Every object has an identity, type, and value. Lists and dictionaries are mutable, while numbers, strings, and tuples are immutable <span class="citation" data-cites="python2026datamodel">(<a href="#ref-python2026datamodel" role="doc-biblioref">Python Software Foundation, 2026b</a>)</span>.</p>
-<div id="46e0c9ac" class="cell" data-execution_count="7">
+<div id="fa2c6e3a" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>alias <span class="op">=</span> scores</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>copy <span class="op">=</span> scores.copy()</span>
@@ -386,7 +386,7 @@ False</code></pre>
 </div>
 <p>The call to <code>append</code> changes the list object that both <code>scores</code> and <code>alias</code> refer to. The <code>copy</code> variable refers to a distinct list, so it retains the earlier values. Use <code>is</code> only to ask whether two names refer to the same object; use <code>==</code> to ask whether their values are equal.</p>
 <p>This distinction matters at function boundaries. The first function below has a side effect: it modifies the caller’s list. The second creates and returns a new list, which is generally safer for a data-analysis transformation.</p>
-<div id="28c87e45" class="cell" data-execution_count="8">
+<div id="3a84f25f" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bonus_in_place(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Add bonus to each value by changing values itself."""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(values)):</span>
@@ -411,10 +411,10 @@ False</code></pre>
 </div>
 <p>Neither style is universally correct. Mutating a large object can be efficient, and some library methods intentionally modify objects in place. The important rule is that a function’s name, docstring, and use should make mutation clear. When in doubt, assign a returned object to a new, descriptive name and retain the original until you have checked the result.</p>
 </section>
-<section id="lists-arrays-and-data-frames" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="lists-arrays-and-data-frames"><span class="header-section-number">4.5</span> Lists, Arrays, and Data Frames</h2>
+<section id="data-structures" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="data-structures"><span class="header-section-number">4.5</span> Data Structures</h2>
 <p>Lists are flexible containers that can hold objects of different types. NumPy arrays store a regularly shaped collection of values of one <code>dtype</code>, which makes elementwise numerical operations concise. A pandas data frame organizes named columns that can have different types. Select the structure that matches the task, rather than treating them as interchangeable.</p>
-<div id="aedd8f04" class="cell" data-execution_count="9">
+<div id="7d91d37b" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>array <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pd.DataFrame({<span class="st">"student"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>], <span class="st">"score"</span>: array})</span>
@@ -460,10 +460,10 @@ False</code></pre>
 </div>
 <p>The expression <code>array * 10</code> multiplies every array value. In contrast, <code>values * 10</code> repeats the list ten times. This is not a minor syntactic detail: it changes the object type and the meaning of the operation. Convert to an array when you need regular numerical computation; use a data frame when the observations have named variables and you need to inspect, join, summarize, or plot columns <span class="citation" data-cites="vanderplas2016python mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-vanderplas2016python" role="doc-biblioref">VanderPlas, 2016</a>)</span>.</p>
 </section>
-<section id="numbers-are-representations-not-real-numbers" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="numbers-are-representations-not-real-numbers"><span class="header-section-number">4.6</span> Numbers Are Representations, Not Real Numbers</h2>
+<section id="number-representation" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="number-representation"><span class="header-section-number">4.6</span> Number Representation</h2>
 <p>Python’s built-in integers grow to represent arbitrarily large whole numbers, subject to available memory. NumPy integers have a fixed width, such as <code>int8</code> or <code>int64</code>, because fixed-width storage supports compact arrays and fast operations. A value outside that type’s range can overflow:</p>
-<div id="0c20b756" class="cell" data-execution_count="10">
+<div id="5d5e0127" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>largest_int8 <span class="op">=</span> np.array([<span class="dv">127</span>], dtype<span class="op">=</span>np.int8)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>overflowed <span class="op">=</span> largest_int8 <span class="op">+</span> np.array([<span class="dv">1</span>], dtype<span class="op">=</span>np.int8)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -476,7 +476,7 @@ False</code></pre>
 </div>
 <p>Inspect <code>dtype</code> before converting identifiers, counts, or monetary values to a small integer type. An overflow may produce a plausible but wrong value, which is more dangerous than a visible error.</p>
 <p>Most numerical analysis uses binary floating-point values. Many decimal fractions, including 0.1, have no exact finite binary representation, so a stored <code>float</code> is usually an approximation. This behavior comes from the hardware representation, not from a Python mistake <span class="citation" data-cites="python2026floating">(<a href="#ref-python2026floating" role="doc-biblioref">Python Software Foundation, 2026a</a>)</span>.</p>
-<div id="61c7fc13" class="cell" data-execution_count="11">
+<div id="ed78eb82" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span></span>
@@ -493,10 +493,10 @@ True</code></pre>
 </div>
 <p>Use exact equality for values that are expected to be exactly equal, such as category labels, integer counts, or a known string. For computed floating-point values, use <code>math.isclose</code> or <code>numpy.isclose</code> with tolerances chosen for the scale and purpose of the analysis. Format a final result for readers, but do not mistake rounded display for increased computational accuracy. Use <code>decimal.Decimal</code> when an application requires decimal arithmetic, such as currency calculations with legally defined rounding rules.</p>
 </section>
-<section id="a-reproducible-simulation" class="level2" data-number="4.7">
-<h2 data-number="4.7" class="anchored" data-anchor-id="a-reproducible-simulation"><span class="header-section-number">4.7</span> A Reproducible Simulation</h2>
+<section id="simulation" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="simulation"><span class="header-section-number">4.7</span> Simulation</h2>
 <p>Random simulation is a compact setting in which all of these ideas matter. The Monty Hall game has three doors, one prize, and a host who opens an unchosen empty door. A player who switches wins whenever the first choice was wrong, which has probability two-thirds. The function below uses a local NumPy random number generator. Supplying the same seed creates the same pseudo-random draws, which makes debugging and review possible.</p>
-<div id="963eed39" class="cell" data-execution_count="12">
+<div id="875dfafa" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_monty_hall(</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    n_trials: <span class="bu">int</span>, seed: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
@@ -552,7 +552,7 @@ True</code></pre>
 </div>
 </div>
 <p>The function returns a data frame instead of printing a conclusion. That choice lets later code make a table, a figure, or a formal comparison without parsing text. Repeating the call with the same arguments should reproduce the result:</p>
-<div id="91c30384" class="cell" data-execution_count="13">
+<div id="ebe0e8e4" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>repeat_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results.equals(repeat_results)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -563,10 +563,10 @@ True</code></pre>
 </div>
 <p>The tolerance in the last line reflects simulation variability, not floating-point error alone. State why a tolerance is appropriate whenever you choose one; a tolerance that is too loose can conceal a mistake.</p>
 </section>
-<section id="practical-debugging" class="level2" data-number="4.8">
-<h2 data-number="4.8" class="anchored" data-anchor-id="practical-debugging"><span class="header-section-number">4.8</span> Practical Debugging</h2>
+<section id="debugging" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="debugging"><span class="header-section-number">4.8</span> Debugging</h2>
 <p>When an analysis gives an unexpected result, reduce the question before changing the code. Check the interpreter and package version, then inspect the smallest object that could explain the behavior. A concise diagnostic sequence often looks like this:</p>
-<div id="0d6789fd" class="cell" data-execution_count="14">
+<div id="a594f0cd" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(monty_results))</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.dtypes)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.shape)</span>
@@ -613,6 +613,47 @@ dtype: object
 <li>Show that <code>0.1 + 0.1 + 0.1 == 0.3</code> is false on your system. Use <code>math.isclose</code> to make the intended comparison, and explain why equality and closeness answer different questions.</li>
 <li>Reproduce <code>simulate_monty_hall</code> from this chapter. Run it twice with <code>n_trials=100_000</code> and <code>seed=2026</code>, and use an assertion to show that the returned data frames are identical.</li>
 <li>Run the simulation with seed <code>2027</code>. Give the two estimated win rates and compare each with its theoretical value, <span class="math inline">\(1/3\)</span> for staying and <span class="math inline">\(2/3\)</span> for switching. State a tolerance you used and why it is reasonable for this simulation size.</li>
+</ol>
+</div>
+<div id="exr-generalized-monty-hall" class="theorem exercise">
+<p><span class="theorem-title"><strong> 4.4</strong></span> Extend the Monty Hall simulation to a general number of doors.</p>
+<ol type="a">
+<li>Write <code>play_general_monty_hall(n_doors, n_empty, rng)</code> to simulate one game. Require <code>n_doors &gt;= 3</code> and <code>0 &lt; n_empty &lt;= n_doors - 2</code>. After the player selects a door, the host must open <code>n_empty</code> unchosen doors that do not hide the prize. For the switching strategy, choose uniformly among the remaining unopened doors other than the player’s initial choice. Return the outcomes of both the stay and switch strategies.</li>
+<li>Play the three-door game with one empty door opened by the host several times. Display the individual results and explain how the host’s choice follows the rules in each game.</li>
+<li>Play the 10-door game with eight empty doors opened by the host several times. Display the individual results and explain how the switching choice differs from the three-door game.</li>
+<li>Write <code>simulate_general_monty_hall(n_doors, n_empty, n_trials, seed)</code> to call the one-game function repeatedly. Require <code>n_trials &gt; 0</code>, create one seeded random-number generator for the simulation, and return a data frame with one row each for <code>stay</code> and <code>switch</code>, including wins and win rate.</li>
+<li>Apply the simulation with <code>(n_doors, n_empty)</code> equal to <code>(3, 1)</code> and <code>(10, 8)</code>, both with <code>n_trials=1_000</code> and <code>seed=2026</code>. Render a table that summarizes the results.</li>
+<li>Calculate the theoretical win rates: <span class="math inline">\(1/n\)</span> for staying and <span class="math inline">\((n-1) / [n(n-m-1)]\)</span> for switching when there are <span class="math inline">\(n\)</span> doors and the host opens <span class="math inline">\(m\)</span> empty doors. Compare the simulations with these values and explain which strategy is preferred in each setting.</li>
+<li>Call the simulation twice with identical arguments and use an assertion to show that it returns identical results. Explain why this check matters.</li>
+</ol>
+</div>
+<div id="exr-monte-carlo-pi" class="theorem exercise">
+<p><span class="theorem-title"><strong> 4.5</strong></span> Estimate <span class="math inline">\(\pi\)</span> with Monte Carlo simulation.</p>
+<ol type="a">
+<li>Write <code>estimate_pi(n, seed)</code> using <code>numpy.random.default_rng</code>. Generate <code>n</code> points uniformly in the square from <span class="math inline">\(-1\)</span> to <span class="math inline">\(1\)</span> in both coordinates. Return the estimate of <span class="math inline">\(\pi\)</span> and a 95% normal-approximation confidence interval based on the proportion of points inside the unit circle. Validate that <code>n</code> is positive.</li>
+<li>Run the function with sample sizes 1,000, 2,000, 4,000, and 8,000, using a different documented seed for each run. Render a table containing the sample size, estimate, interval bounds, and whether the interval contains <span class="math inline">\(\pi\)</span>.</li>
+<li>Write a second function that repeats the experiment 1,000 times for one sample size and returns the proportion of intervals that contain <span class="math inline">\(\pi\)</span>. Apply it to all four sample sizes with a fixed seed, then plot empirical coverage against sample size with a horizontal reference line at 0.95.</li>
+<li>Explain why a 95% confidence interval need not contain <span class="math inline">\(\pi\)</span> in every individual run, and explain what the coverage results say about the method.</li>
+</ol>
+</div>
+<div id="exr-prime-in-e" class="theorem exercise">
+<p><span class="theorem-title"><strong> 4.6</strong></span> Reproduce the <a href="http://mathworld.wolfram.com/news/2004-10-13/google/">Google Billboard Ad</a> by searching the digits of <span class="math inline">\(e\)</span> with the Python standard library.</p>
+<ol type="a">
+<li>Write a function that computes at least 200 decimal digits of <span class="math inline">\(e\)</span> with <code>decimal.Decimal</code>, then returns the digits after the decimal point as a string. Set the decimal context precision inside the function rather than relying on an editor or notebook setting.</li>
+<li>Write <code>is_prime(n)</code> using <code>math.isqrt</code> and trial division. It must return <code>False</code> for integers less than 2 and avoid testing divisors larger than the square root of <code>n</code>.</li>
+<li>Scan consecutive 10-digit strings in the fractional digits of <span class="math inline">\(e\)</span> and find the first one that represents a prime number. Report the prime and its zero-based starting position after the decimal point. Use an assertion or a documented loop result to show that no earlier 10-digit string is prime.</li>
+<li>Explain why using <code>float</code> would be unsuitable for this search and why the <code>decimal</code> context belongs in the function rather than in hidden notebook state.</li>
+</ol>
+</div>
+<div id="exr-game-24" class="theorem exercise">
+<p><span class="theorem-title"><strong> 4.7</strong></span> Play <a href="https://en.wikipedia.org/wiki/24_Game">Game 24</a> by searching arithmetic expressions. Given four card values, use every value exactly once with the operations <span class="math inline">\(+\)</span>, <span class="math inline">\(-\)</span>, <span class="math inline">\(\times\)</span>, and <span class="math inline">\(/\)</span> to make 24. Parentheses determine the order of operations. Let <span class="math inline">\(\square\)</span> represent one of the four card values and let <span class="math inline">\(\bigcirc\)</span> represent one of the four operations. For example, <span class="math inline">\((\square \bigcirc \square) \bigcirc (\square \bigcirc \square)\)</span> is one possible expression form.</p>
+<ol type="a">
+<li>List all distinct ways to group four card values with parentheses. Use <span class="math inline">\(\square\)</span> and <span class="math inline">\(\bigcirc\)</span> notation, and state how many groupings there are.</li>
+<li>Count the maximum number of candidate expressions that a brute-force solver could examine before removing equivalent expressions. Account for the five parenthesizations, all orders of four card values, and the four choices for each of three operations.</li>
+<li>Write <code>solve_24(cards)</code> for a list of four integer card values. The function must use every card exactly once and return the fully parenthesized expressions that equal 24. Use brute force to enumerate the five groupings, every order of the card values, and every choice of operations. Use <code>fractions.Fraction</code> for arithmetic, so a valid solution is not lost to floating-point rounding. Do not remove duplicate solutions yet.</li>
+<li>Write <code>unique_solutions(expressions)</code> to remove duplicate solutions from the brute-force output. Treat expressions that differ only in the order of the operands of addition or multiplication as duplicates. Describe the normalized representation you use to make that decision.</li>
+<li>Test both functions with <code>[1, 3, 9, 10]</code>, <code>[4, 4, 10, 10]</code>, <code>[1, 5, 5, 5]</code>, <code>[3, 3, 7, 7]</code>, <code>[3, 3, 8, 8]</code>, and <code>[1, 4, 5, 6]</code>. Render one solution for each hand, report the number of solutions before and after deduplication, and use assertions to verify that every displayed expression has value 24. Include one hand with no solution and assert that its result is empty.</li>
+<li>Explain why brute force is feasible for four cards but would become costly with more cards. Explain why exact fractions are preferable to floating-point values for this task.</li>
 </ol>
 </div>
 </section>
