@@ -341,51 +341,49 @@ Complete the Git setup from Chapter 2 and the Quarto installation from Chapter
 problems.
 
 ::: {#exr-python-environment}
-Set up and verify the Python environment used by Quarto.
+Clone and build this book from source.
 
-a. Record your operating system, Python version, Quarto version, and any
-   installation obstacle in the `.qmd`, together with the commands used to
-   obtain those details.
-b. Create a Python 3.12 virtual environment with `uv` or the standard Python
-   tools, activate it, and install the packages needed for the examples. In
-   the `.qmd`, show the setup commands and list the packages you installed.
-c. Verify the interpreter, package versions, and Jupyter kernel with commands
-   such as `python --version`, `which python`, and `jupyter kernelspec list`.
-   Include the relevant output or a concise transcription in the `.qmd`.
-d. Explain how you confirmed that Quarto and your editor use this environment
-   rather than a system-wide Python installation, citing the evidence you
-   recorded.
+a. Run `git clone https://github.com/statds/ids-book.git`, then use `cd
+   ids-book` to enter the cloned repository. In the assignment `.qmd`, record
+   the commands and concise results of `git remote -v` and `git status`.
+b. In the repository root, create a Python 3.12 environment named `.ids` with
+   either `uv venv --python 3.12 .ids` or `python3.12 -m venv .ids`. Run
+   `make install` to install the pinned dependencies. Record the commands and
+   the Python version used by the environment.
+c. Run `make check` and `make render`. Confirm that the rendered home page is
+   `_book/index.html`; in the `.qmd`, state the commands, concise results, and
+   any error you fixed.
+d. Explain why `.ids` and `_book` should not be committed, while the source
+   files, `requirements.txt`, and `_quarto.yml` should be tracked.
 :::
 
 ::: {#exr-quarto-analysis}
-Author a Markdown document that uses the core structures in this chapter.
+Build a small, reproducible analysis in your assignment `.qmd`. Use the
+[Hello, Quarto Jupyter tutorial](https://quarto.org/docs/get-started/hello/jupyter.html)
+as the starting point for its polar-axis figure. Do not create a second
+document.
 
-a. Organize the document with a title, sections, paragraphs, emphasis, a
-   bulleted list, and a descriptive hyperlink. Include the Markdown source in
-   the `.qmd` itself.
-b. Write a displayed equation with correct sentence punctuation, give it a
-   label, and refer to it by its automatically generated number in the prose.
-c. Add a table with a caption and label, and refer to the table by its number
-   rather than by a hard-coded number.
-d. Add a source citation and a References section, using the citation key from
-   the bibliography rather than pasting an uncited URL.
-e. Explain the difference between Markdown source syntax and the rendered
-   document that readers see.
-:::
+a. Adapt the tutorial's polar-axis Python code into an executable code chunk,
+   then render the assignment successfully. Give the figure a descriptive
+   caption and label, and refer to it by its automatically generated number in
+   a complete sentence.
+b. Add the displayed equation below using the shown label. In the sentence
+   immediately before or after it, refer to the equation as `@eq-polar` and
+   explain that it defines the angle used by the Python code.
 
-::: {#exr-quarto-analysis}
-Combine prose, executable Python, and generated results in one analysis.
+   $$
+   \theta = 2\pi r, \qquad 0 \le r < 2.
+   $$ {#eq-polar}
 
-a. Reproduce the polar-axis line plot from the Quarto presentation guide or
-   create an equally informative plot from a small data frame. Keep the
-   executable source in the `.qmd` and explain the generated result there.
-b. Put the Python in an executable code chunk with a descriptive label and
-   make the chunk produce a table and a figure from the same data.
-c. Give the table and figure captions, label both outputs, and refer to each
-   by its automatically generated number in the surrounding explanation.
-d. Interpret one numerical result and one visual pattern in complete
-   sentences, including a limitation of the example.
-e. Check that the document has no unresolved citations or cross-references and
+c. From the same `r` and `theta` values used for the plot, generate a table of
+   at least five selected pairs. Give the table a caption and label, then refer
+   to it by its automatically generated number in a complete sentence.
+d. Add a BibTeX entry for the Hello, Quarto tutorial to the assignment
+   bibliography, cite it in the prose with its citation key, and verify that
+   the rendered References section contains the entry.
+e. Write two or three complete sentences that interpret the equation, table,
+   and figure together. Include one limitation of this example.
+f. Check that the document has no unresolved citations or cross-references and
    that its displayed results are generated by the source code. Render the
    document while saving the messages, then search the log for warnings:
    `quarto render homework.qmd 2>&1 | tee render.log` followed by

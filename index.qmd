@@ -50,14 +50,24 @@ edited, even when lessons from those archives inform its revision.
 
 ## Building the Book
 
-To build the notes locally:
+To build the notes locally, clone the repository and create its Python 3.12
+environment. With `uv`, run these commands from a terminal:
 
-1. Clone the source repository.
-2. Create and activate a Python virtual environment in the repository root.
-3. Install the dependencies specified by the project environment files.
-4. Supply any credentials required by particular examples through the
-   documented local configuration. Never commit credentials to Git.
-5. Run `quarto render` from the repository root.
+```bash
+git clone https://github.com/statds/ids-book.git
+cd ids-book
+uv venv --python 3.12 .ids
+make install
+make check
+make render
+```
+
+If `uv` is unavailable, replace the third command with
+`python3.12 -m venv .ids`. The `make install` target installs the pinned
+dependencies in `.ids`; `make check` verifies the required tools; and
+`make render` writes the completed book to `_book/index.html`. Supply any
+credentials required by particular examples through documented local
+configuration, and never commit credentials or generated output to Git.
 
 Quarto writes the rendered book to `_book/`. Generated output and local caches
 are not tracked by Git; the source and environment specifications are.
