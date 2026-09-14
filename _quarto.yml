@@ -22,6 +22,7 @@ book:
     - 01-intro.qmd
     - 02-git.qmd
     - 03-quarto.qmd
+    - 04-python.qmd
 
 format:
   html:

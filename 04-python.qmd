@@ -1,0 +1,391 @@
+# Python for Data Science {#sec-python}
+
+Students entering this course have already used Python. This chapter therefore
+does not repeat introductory syntax. Instead, it develops the habits that make
+Python analysis dependable: knowing which interpreter runs the code, finding
+the package that supplies a function, designing functions with clear inputs and
+outputs, predicting when a change mutates an existing object, and recognizing
+the limits of computer number representations. These habits turn short scripts
+into analyses that another person can inspect and rerun.
+
+## The Interpreter, Standard Library, and Packages
+
+Every Python command runs in one interpreter. That interpreter supplies the
+language and its standard library; an environment adds third-party packages
+such as NumPy and pandas. A **module** is an importable Python file, a
+**package** is an importable collection of modules, and a **library** is the
+broader set of code and documentation that users treat as one tool. The Python
+standard library includes modules such as `math`, `pathlib`, and `statistics`;
+NumPy and pandas are installed packages rather than parts of Python itself
+[@python2026modules; @mckinney2022python].
+
+When code fails with `ModuleNotFoundError`, first determine which interpreter
+is active. The following chunk reports the interpreter path and version used by
+the current Quarto document:
+
+```{python}
+import sys
+
+print(sys.executable)
+print(sys.version.split()[0])
+```
+
+In a terminal, `python --version` and `which python` provide similar evidence
+after an environment has been activated. Use `python -m pip`, rather than a
+bare `pip`, to ensure that package management uses that same interpreter:
+
+```bash
+python -m pip show numpy
+python -m pip show pandas
+python -m pip freeze
+```
+
+A virtual environment is a self-contained directory with a chosen Python
+installation and its packages. It prevents one project’s package version from
+silently changing another project’s behavior. The exact package versions in
+`requirements.txt` are part of a reproducible analysis because another person
+can install the same set with `python -m pip install -r requirements.txt`
+[@python2026venv; @wilson2017good]. Chapter 3 showed how this book uses the
+`.ids` environment; the important practice here is to check the interpreter,
+not merely the command prompt.
+
+## Imports Give Names Access to Objects
+
+An `import` statement binds a name in the current file to a module or an object
+defined elsewhere. Choose imports that make the source easy to read and avoid
+names that obscure where a function comes from:
+
+```{python}
+import math
+from pathlib import Path
+
+project_root = Path.cwd()
+print(math.sqrt(81))
+print(project_root.name)
+```
+
+For widely used data-science libraries, conventional aliases make code easier
+to recognize:
+
+```{python}
+import numpy as np
+import pandas as pd
+```
+
+Avoid `from package import *`. It hides the source of each name, can overwrite
+an existing name, and makes a traceback harder to interpret. When you need to
+learn what an imported object does, use `help()`, inspect its documentation, or
+check its type and attributes deliberately:
+
+```{python}
+sample = np.array([2, 4, 8])
+
+print(type(sample))
+print(sample.dtype)
+print(sample.shape)
+```
+
+`type`, `dtype`, and `shape` answer different questions. The first identifies
+the Python or library object; `dtype` describes how an array stores its values;
+and `shape` gives its dimensions. Checking all three is often more informative
+than printing a large object.
+
+## Functions Automate a Repeated Decision
+
+A function should name a task, accept the data and choices needed for that
+task, and return a result that another part of the analysis can use. It should
+not quietly depend on a global variable or print a result that a later step
+needs to analyze. A docstring records the function’s contract, while type hints
+communicate the intended inputs and output; Python does not automatically
+enforce those hints.
+
+The function below summarizes numeric values without changing its input. It
+converts the input to a floating-point NumPy array, checks a precondition, and
+returns a dictionary whose named fields are convenient in prose and tables.
+
+```{python}
+def summarize(values: list[float] | np.ndarray) -> dict[str, int | float]:
+    """Return the count, mean, and sample standard deviation of values."""
+    data = np.asarray(values, dtype=float)
+    if data.ndim != 1 or data.size < 2:
+        raise ValueError("values must be a one-dimensional sequence of length 2 or more")
+    return {
+        "n": int(data.size),
+        "mean": float(data.mean()),
+        "sd": float(data.std(ddof=1)),
+    }
+
+summary = summarize([82, 91, 87, 76, 94])
+summary
+```
+
+The conversion inside `summarize` creates an array suited to numerical work.
+The function therefore accepts an ordinary list but does not force every caller
+to learn NumPy’s input rules. Its explicit `ValueError` gives a useful message
+at the boundary of the function, instead of allowing a mysterious result later
+in the analysis.
+
+Run a small, direct check whenever you write a function. This is not a complete
+test suite, but it records a known case and catches an accidental change to the
+function’s behavior:
+
+```{python}
+expected_mean = 86.0
+assert summarize([82, 91, 87, 76, 94])["mean"] == expected_mean
+```
+
+Use a function when a task recurs, when its name clarifies a multi-step
+calculation, or when you want to test one part of an analysis independently.
+Do not turn every one-line expression into a function; an unnecessary function
+can hide a simple calculation.
+
+## Names, Objects, and Mutation
+
+Python names refer to objects. Assignment usually binds another name to the
+same object; it does not copy that object. Every object has an identity, type,
+and value. Lists and dictionaries are mutable, while numbers, strings, and
+tuples are immutable [@python2026datamodel].
+
+```{python}
+scores = [82, 91, 87]
+alias = scores
+copy = scores.copy()
+
+alias.append(76)
+
+print(scores)
+print(alias is scores)
+print(copy)
+print(copy is scores)
+```
+
+The call to `append` changes the list object that both `scores` and `alias`
+refer to. `copy` refers to a distinct list, so it retains the earlier values.
+Use `is` only to ask whether two names refer to the same object; use `==` to
+ask whether their values are equal.
+
+This distinction matters at function boundaries. The first function below has
+a side effect: it modifies the caller’s list. The second creates and returns a
+new list, which is generally safer for a data-analysis transformation.
+
+```{python}
+def add_bonus_in_place(values: list[float], bonus: float) -> None:
+    """Add bonus to each value by changing values itself."""
+    for index in range(len(values)):
+        values[index] += bonus
+
+
+def with_bonus(values: list[float], bonus: float) -> list[float]:
+    """Return bonus-adjusted values without changing values itself."""
+    return [value + bonus for value in values]
+
+
+original = [82, 91, 87]
+adjusted = with_bonus(original, 3)
+add_bonus_in_place(original, 3)
+
+print(adjusted)
+print(original)
+```
+
+Neither style is universally correct. Mutating a large object can be efficient,
+and some library methods intentionally modify objects in place. The important
+rule is that a function’s name, docstring, and use should make mutation clear.
+When in doubt, assign a returned object to a new, descriptive name and retain
+the original until you have checked the result.
+
+## Lists, Arrays, and Data Frames
+
+Lists are flexible containers that can hold objects of different types. NumPy
+arrays store a regularly shaped collection of values of one `dtype`, which
+makes elementwise numerical operations concise. A pandas data frame organizes
+named columns that can have different types. Select the structure that matches
+the task, rather than treating them as interchangeable.
+
+```{python}
+values = [1, 2, 3]
+array = np.asarray(values, dtype=float)
+table = pd.DataFrame({"student": ["A", "B", "C"], "score": array})
+
+print(array * 10)
+table
+```
+
+The expression `array * 10` multiplies every array value. In contrast,
+`values * 10` repeats the list ten times. This is not a minor syntactic detail:
+it changes the object type and the meaning of the operation. Convert to an
+array when you need regular numerical computation; use a data frame when the
+observations have named variables and you need to inspect, join, summarize, or
+plot columns [@vanderplas2016python; @mckinney2022python].
+
+## Numbers Are Representations, Not Real Numbers
+
+Python’s built-in integers grow to represent arbitrarily large whole numbers,
+subject to available memory. NumPy integers have a fixed width, such as
+`int8` or `int64`, because fixed-width storage supports compact arrays and fast
+operations. A value outside that type’s range can overflow:
+
+```{python}
+largest_int8 = np.array([127], dtype=np.int8)
+overflowed = largest_int8 + np.array([1], dtype=np.int8)
+
+print(largest_int8.dtype, largest_int8)
+print(overflowed)
+```
+
+Inspect `dtype` before converting identifiers, counts, or monetary values to a
+small integer type. An overflow may produce a plausible but wrong value, which
+is more dangerous than a visible error.
+
+Most numerical analysis uses binary floating-point values. Many decimal
+fractions, including 0.1, have no exact finite binary representation, so a
+stored `float` is usually an approximation. This behavior comes from the
+hardware representation, not from a Python mistake [@python2026floating].
+
+```{python}
+import math
+
+total = 0.1 + 0.1 + 0.1
+target = 0.3
+
+print(total == target)
+print(format(total, ".17f"))
+print(math.isclose(total, target))
+```
+
+Use exact equality for values that are expected to be exactly equal, such as
+category labels, integer counts, or a known string. For computed floating-point
+values, use `math.isclose` or `numpy.isclose` with tolerances chosen for the
+scale and purpose of the analysis. Format a final result for readers, but do
+not mistake rounded display for increased computational accuracy. Use
+`decimal.Decimal` when an application requires decimal arithmetic, such as
+currency calculations with legally defined rounding rules.
+
+## A Reproducible Simulation
+
+Random simulation is a compact setting in which all of these ideas matter. The
+Monty Hall game has three doors, one prize, and a host who opens an unchosen
+empty door. A player who switches wins whenever the first choice was wrong,
+which has probability two-thirds. The function below uses a local NumPy random
+number generator. Supplying the same seed creates the same pseudo-random draws,
+which makes debugging and review possible.
+
+```{python}
+def simulate_monty_hall(
+    n_trials: int, seed: int | None = None
+) -> pd.DataFrame:
+    """Estimate stay and switch win rates in the three-door Monty Hall game."""
+    if n_trials <= 0:
+        raise ValueError("n_trials must be positive")
+    rng = np.random.default_rng(seed)
+    prize = rng.integers(0, 3, size=n_trials)
+    first_choice = rng.integers(0, 3, size=n_trials)
+    stay_wins = (first_choice == prize).sum()
+    switch_wins = n_trials - stay_wins
+    return pd.DataFrame(
+        {
+            "strategy": ["stay", "switch"],
+            "wins": [stay_wins, switch_wins],
+            "win_rate": [stay_wins / n_trials, switch_wins / n_trials],
+        }
+    )
+
+
+monty_results = simulate_monty_hall(n_trials=100_000, seed=2026)
+monty_results
+```
+
+The function returns a data frame instead of printing a conclusion. That choice
+lets later code make a table, a figure, or a formal comparison without parsing
+text. Repeating the call with the same arguments should reproduce the result:
+
+```{python}
+repeat_results = simulate_monty_hall(n_trials=100_000, seed=2026)
+assert monty_results.equals(repeat_results)
+
+np.isclose(monty_results.loc[0, "win_rate"], 1 / 3, atol=0.01)
+```
+
+The tolerance in the last line reflects simulation variability, not
+floating-point error alone. State why a tolerance is appropriate whenever you
+choose one; a tolerance that is too loose can conceal a mistake.
+
+## Practical Debugging
+
+When an analysis gives an unexpected result, reduce the question before
+changing the code. Check the interpreter and package version, then inspect the
+smallest object that could explain the behavior. A concise diagnostic sequence
+often looks like this:
+
+```{python}
+print(type(monty_results))
+print(monty_results.dtypes)
+print(monty_results.shape)
+print(monty_results.head())
+```
+
+Read the final line of a traceback first: it usually states the exception type
+and message. Then find the line in your source that led there. Avoid solving an
+error by repeatedly installing packages, restarting the editor, or changing
+several unrelated lines at once. Make one hypothesis, test it with a small
+example, and record the correction in the source or a concise commit message.
+
+## Exercises {.unnumbered}
+
+Write one `.qmd` file containing your answers to all problems. Use the same
+Python 3.12 environment that you created for Chapter 3.
+
+::: {#exr-python-provenance}
+Inspect the Python environment that will run your analysis.
+
+a. In an executable Python chunk, display `sys.executable`, `sys.version`, and
+   the versions of NumPy and pandas. Include the resulting output in the
+   rendered `.qmd`.
+b. In a terminal, run `python -m pip show numpy` and `python -m pip show
+   pandas`. Record the commands and the package version and location reported
+   for each package.
+c. In two or three sentences, distinguish the interpreter, the standard
+   library, a module, a package, and a virtual environment. Name one example of
+   each from this chapter.
+d. State one concrete symptom that would make you suspect that Quarto or your
+   editor is using the wrong Python environment, and give the first command or
+   setting you would check.
+:::
+
+::: {#exr-python-functions-objects}
+Write and check functions with clear object behavior.
+
+a. In your `.qmd`, reproduce the `add_bonus_in_place` and `with_bonus`
+   functions from this chapter. Call both functions on a list named `scores`,
+   then show `scores` before and after each call.
+b. Add `assert` statements that verify that `with_bonus` leaves its input list
+   unchanged and that `add_bonus_in_place` changes its input list by the stated
+   bonus.
+c. Write a function named `summarize_scores` that accepts a one-dimensional
+   sequence of at least two numeric scores and returns a dictionary with the
+   keys `n`, `mean`, `minimum`, and `maximum`. Include a docstring and type
+   hints, then show the returned dictionary for `[82, 91, 87, 76, 94]`.
+d. Give one example of a situation in which in-place mutation is useful and one
+   in which returning a new object is safer. Explain each choice in one or two
+   complete sentences.
+:::
+
+::: {#exr-python-numbers-simulation}
+Use numerical types and random simulation deliberately.
+
+a. Reproduce the `int8` overflow example from this chapter. Include the array’s
+   `dtype`, the value before addition, and the value after addition, then
+   explain why the result is not a valid count.
+b. Show that `0.1 + 0.1 + 0.1 == 0.3` is false on your system. Use
+   `math.isclose` to make the intended comparison, and explain why equality and
+   closeness answer different questions.
+c. Reproduce `simulate_monty_hall` from this chapter. Run it twice with
+   `n_trials=100_000` and `seed=2026`, and use an assertion to show that the
+   returned data frames are identical.
+d. Run the simulation with seed `2027`. Give the two estimated win rates and
+   compare each with its theoretical value, $1/3$ for staying and $2/3$ for
+   switching. State a tolerance you used and why it is reasonable for this
+   simulation size.
+:::
+
+## References {.unnumbered}
