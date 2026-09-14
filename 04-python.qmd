@@ -85,10 +85,10 @@ print(sample.dtype)
 print(sample.shape)
 ```
 
-`type`, `dtype`, and `shape` answer different questions. The first identifies
-the Python or library object; `dtype` describes how an array stores its values;
-and `shape` gives its dimensions. Checking all three is often more informative
-than printing a large object.
+The `type`, `dtype`, and `shape` attributes answer different questions. The
+first identifies the Python or library object; `dtype` describes how an array
+stores its values; and `shape` gives its dimensions. Checking all three is
+often more informative than printing a large object.
 
 ## Functions Automate a Repeated Decision
 
@@ -160,9 +160,9 @@ print(copy is scores)
 ```
 
 The call to `append` changes the list object that both `scores` and `alias`
-refer to. `copy` refers to a distinct list, so it retains the earlier values.
-Use `is` only to ask whether two names refer to the same object; use `==` to
-ask whether their values are equal.
+refer to. The `copy` variable refers to a distinct list, so it retains the
+earlier values. Use `is` only to ask whether two names refer to the same
+object; use `==` to ask whether their values are equal.
 
 This distinction matters at function boundaries. The first function below has
 a side effect: it modifies the caller’s list. The second creates and returns a

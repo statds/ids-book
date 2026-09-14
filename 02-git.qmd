@@ -77,10 +77,10 @@ cd REPOSITORY
 git init
 ```
 
-`git status` is the most useful diagnostic command. It reports the current
-branch, changed files, staged files, and files Git is ignoring. Run it before
-and after each logical operation rather than guessing what Git will do. The
-following sequence records a small change:
+The `git status` command is the most useful diagnostic tool. It reports the
+current branch, changed files, staged files, and files Git is ignoring. Run it
+before and after each logical operation rather than guessing what Git will do.
+The following sequence records a small change:
 
 ```bash
 git status
@@ -91,11 +91,11 @@ git commit -m "content: explain the Git workflow"
 git status
 ```
 
-`git add` copies the selected version into the staging area; it does not send
-anything to GitHub. `git commit` saves the staged snapshot locally; it does not
-publish it. `git push` is the operation that sends local commits to a remote.
-This distinction is the foundation of a reliable backup and collaboration
-workflow.
+The `git add` command copies the selected version into the staging area; it
+does not send anything to GitHub. The `git commit` command saves the staged
+snapshot locally; it does not publish it. The `git push` command sends local
+commits to a remote. This distinction is the foundation of a reliable backup
+and collaboration workflow.
 
 Beginners should avoid `git add .` because it stages every unignored change
 below the current directory, including files they may not have inspected or
@@ -124,11 +124,11 @@ git show COMMIT
 git diff HEAD~1 HEAD
 ```
 
-Different recovery commands have different safety implications. `git restore
-path/to/file` discards unstaged edits, `git restore --staged path/to/file`
-unstages a file without changing its contents, and `git revert COMMIT` creates
-a new commit that reverses an earlier published commit. Avoid `git reset` on a
-shared branch until you understand how it changes history.
+Different recovery commands have different safety implications. For example,
+`git restore path/to/file` discards unstaged edits, `git restore --staged
+path/to/file` unstages a file without changing its contents, and `git revert
+COMMIT` creates a new commit that reverses an earlier published commit. Avoid
+`git reset` on a shared branch until you understand how it changes history.
 
 ## Branches and Remotes
 
@@ -153,10 +153,10 @@ git pull --ff-only origin main
 git push -u origin improve-introduction
 ```
 
-`git fetch` downloads remote history without changing working files; `git pull`
-fetches and then integrates the selected branch. Pull before starting work
-when others may have pushed changes, and push completed commits so that a
-second copy exists.
+The `git fetch` command downloads remote history without changing working
+files; `git pull` fetches and then integrates the selected branch. Pull before
+starting work when others may have pushed changes, and push completed commits
+so that a second copy exists.
 
 Git reports a conflict when two changes cannot be integrated automatically. Use
 this sequence to resolve one:
