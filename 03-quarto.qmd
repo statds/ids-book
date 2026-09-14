@@ -175,42 +175,45 @@ packages must be installed in an environment that Quarto can find. A virtual
 environment keeps this project's packages separate from the system Python and
 from unrelated projects.
 
-This repository requires Python 3.12 for its tested environment. The
-recommended local environment is `.ids`, created and managed with `uv`. `uv`
-is a fast command-line tool for installing Python versions, creating virtual
-environments, and installing packages; it is not a replacement for Python or
-Quarto. Students who prefer the standard Python tools can use the pip
+This repository requires Python 3.12 for its tested environment. Use any local
+virtual environment that contains Python 3.12; its directory name and location
+are your choice. The Makefile accepts that environment’s path through `VENV`.
+`uv` is a fast command-line tool for installing Python versions, creating
+virtual environments, and installing packages; it is not a replacement for
+Python or Quarto. Students who prefer the standard Python tools can use the
 alternative below.
 
 ```bash
-uv venv --python 3.12 .ids
-source .ids/bin/activate
-uv pip install jupyter matplotlib pandas
+ENVIRONMENT_DIRECTORY=/path/to/your/environment
+uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"
+source "$ENVIRONMENT_DIRECTORY/bin/activate"
+make install VENV="$VIRTUAL_ENV"
 ```
 
-The environment name is a convenience, not a requirement. Students may use a
-different name, such as `.venv`, provided that Quarto and the editor use that
-environment's Python kernel. When the name differs from the Makefile default,
-pass the chosen name explicitly:
+Set `ENVIRONMENT_DIRECTORY` to the directory you chose. If you have already
+created an appropriate environment, activate it and pass its path to the
+Makefile with `$VIRTUAL_ENV`:
 
 ```bash
-make req VENV=.venv
-make render VENV=.venv
+make install VENV="$VIRTUAL_ENV"
+make req VENV="$VIRTUAL_ENV"
 ```
 
-The first command records installed packages in `requirements.txt`; the second
-renders the book. Do not install packages into the system Python, and do not
-commit the virtual-environment directory. Keep the environment specification
-and the source files under version control instead.
+The first command installs the pinned packages and the second records installed
+packages in `requirements.txt`. After activating the environment, run
+`make render` normally; it will use the active interpreter. Do not install
+packages into the system Python, and do not commit the virtual-environment
+directory. Keep the environment specification and the source files under
+version control instead.
 
 If `uv` is not available, create the environment with the standard library and
 install the same packages with pip:
 
 ```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install jupyter matplotlib pandas
+ENVIRONMENT_DIRECTORY=/path/to/your/environment
+python3.12 -m venv "$ENVIRONMENT_DIRECTORY"
+source "$ENVIRONMENT_DIRECTORY/bin/activate"
+make install VENV="$VIRTUAL_ENV"
 ```
 
 Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
@@ -346,15 +349,19 @@ Clone and build this book from source.
 a. Run `git clone https://github.com/statds/ids-book.git`, then use `cd
    ids-book` to enter the cloned repository. In the assignment `.qmd`, record
    the commands and concise results of `git remote -v` and `git status`.
-b. In the repository root, create a Python 3.12 environment named `.ids` with
-   either `uv venv --python 3.12 .ids` or `python3.12 -m venv .ids`. Run
-   `make install` to install the pinned dependencies. Record the commands and
-   the Python version used by the environment.
+b. In the repository root, create or identify a Python 3.12 environment of
+   your choice. If you create one, set `ENVIRONMENT_DIRECTORY` to its path and
+   use either `uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"` or
+   `python3.12 -m venv "$ENVIRONMENT_DIRECTORY"`. Activate it, then run
+   `make install VENV="$VIRTUAL_ENV"` to install the pinned dependencies.
+   Record the commands, environment path, and Python version used by the
+   environment.
 c. Run `make check` and `make render`. Confirm that the rendered home page is
    `_book/index.html`; in the `.qmd`, state the commands, concise results, and
    any error you fixed.
-d. Explain why `.ids` and `_book` should not be committed, while the source
-   files, `requirements.txt`, and `_quarto.yml` should be tracked.
+d. Explain why your virtual-environment directory and `_book` should not be
+   committed, while the source files, `requirements.txt`, and `_quarto.yml`
+   should be tracked.
 :::
 
 ::: {#exr-quarto-analysis}
