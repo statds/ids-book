@@ -1,4 +1,4 @@
-# Python for Data Science {#sec-python}
+# Python Practice {#sec-python}
 
 Students entering this course have already used Python. This chapter therefore
 does not repeat introductory syntax. Instead, it develops the habits that make
@@ -8,7 +8,7 @@ outputs, predicting when a change mutates an existing object, and recognizing
 the limits of computer number representations. These habits turn short scripts
 into analyses that another person can inspect and rerun.
 
-## The Interpreter, Standard Library, and Packages
+## Python Ecosystem
 
 Every Python command runs in one interpreter. That interpreter supplies the
 language and its standard library; an environment adds third-party packages
@@ -49,7 +49,7 @@ can install the same set with `python -m pip install -r requirements.txt`
 `.ids` environment; the important practice here is to check the interpreter,
 not merely the command prompt.
 
-## Imports Give Names Access to Objects
+## Imports
 
 An `import` statement binds a name in the current file to a module or an object
 defined elsewhere. Choose imports that make the source easy to read and avoid
@@ -90,7 +90,7 @@ first identifies the Python or library object; `dtype` describes how an array
 stores its values; and `shape` gives its dimensions. Checking all three is
 often more informative than printing a large object.
 
-## Functions Automate a Repeated Decision
+## Functions
 
 A function should name a task, accept the data and choices needed for that
 task, and return a result that another part of the analysis can use. It should
@@ -139,7 +139,7 @@ calculation, or when you want to test one part of an analysis independently.
 Do not turn every one-line expression into a function; an unnecessary function
 can hide a simple calculation.
 
-## Names, Objects, and Mutation
+## Names and Objects
 
 Python names refer to objects. Assignment usually binds another name to the
 same object; it does not copy that object. Every object has an identity, type,
@@ -194,7 +194,7 @@ rule is that a function’s name, docstring, and use should make mutation clear.
 When in doubt, assign a returned object to a new, descriptive name and retain
 the original until you have checked the result.
 
-## Lists, Arrays, and Data Frames
+## Data Structures
 
 Lists are flexible containers that can hold objects of different types. NumPy
 arrays store a regularly shaped collection of values of one `dtype`, which
@@ -218,7 +218,7 @@ array when you need regular numerical computation; use a data frame when the
 observations have named variables and you need to inspect, join, summarize, or
 plot columns [@vanderplas2016python; @mckinney2022python].
 
-## Numbers Are Representations, Not Real Numbers
+## Number Representation
 
 Python’s built-in integers grow to represent arbitrarily large whole numbers,
 subject to available memory. NumPy integers have a fixed width, such as
@@ -261,7 +261,7 @@ not mistake rounded display for increased computational accuracy. Use
 `decimal.Decimal` when an application requires decimal arithmetic, such as
 currency calculations with legally defined rounding rules.
 
-## A Reproducible Simulation
+## Simulation
 
 Random simulation is a compact setting in which all of these ideas matter. The
 Monty Hall game has three doors, one prize, and a host who opens an unchosen
@@ -310,7 +310,7 @@ The tolerance in the last line reflects simulation variability, not
 floating-point error alone. State why a tolerance is appropriate whenever you
 choose one; a tolerance that is too loose can conceal a mistake.
 
-## Practical Debugging
+## Debugging
 
 When an analysis gives an unexpected result, reduce the question before
 changing the code. Check the interpreter and package version, then inspect the
@@ -386,6 +386,110 @@ d. Run the simulation with seed `2027`. Give the two estimated win rates and
    compare each with its theoretical value, $1/3$ for staying and $2/3$ for
    switching. State a tolerance you used and why it is reasonable for this
    simulation size.
+:::
+
+::: {#exr-generalized-monty-hall}
+Extend the Monty Hall simulation to a general number of doors.
+
+a. Write `play_general_monty_hall(n_doors, n_empty, rng)` to simulate one
+   game. Require `n_doors >= 3` and `0 < n_empty <= n_doors - 2`. After the
+   player selects a door, the host must open `n_empty` unchosen doors that do
+   not hide the prize. For the switching strategy, choose uniformly among the
+   remaining unopened doors other than the player's initial choice. Return the
+   outcomes of both the stay and switch strategies.
+b. Play the three-door game with one empty door opened by the host several
+   times. Display the individual results and explain how the host's choice
+   follows the rules in each game.
+c. Play the 10-door game with eight empty doors opened by the host several
+   times. Display the individual results and explain how the switching choice
+   differs from the three-door game.
+d. Write `simulate_general_monty_hall(n_doors, n_empty, n_trials, seed)` to
+   call the one-game function repeatedly. Require `n_trials > 0`, create one
+   seeded random-number generator for the simulation, and return a data frame
+   with one row each for `stay` and `switch`, including wins and win rate.
+e. Apply the simulation with `(n_doors, n_empty)` equal to `(3, 1)` and
+   `(10, 8)`, both with `n_trials=1_000` and `seed=2026`. Render a table that
+   summarizes the results.
+f. Calculate the theoretical win rates: $1/n$ for staying and
+   $(n-1) / [n(n-m-1)]$ for switching when there are $n$ doors and the host
+   opens $m$ empty doors. Compare the simulations with these values and explain
+   which strategy is preferred in each setting.
+g. Call the simulation twice with identical arguments and use an assertion to
+   show that it returns identical results. Explain why this check matters.
+:::
+
+::: {#exr-monte-carlo-pi}
+Estimate $\pi$ with Monte Carlo simulation.
+
+a. Write `estimate_pi(n, seed)` using `numpy.random.default_rng`. Generate
+   `n` points uniformly in the square from $-1$ to $1$ in both coordinates.
+   Return the estimate of $\pi$ and a 95% normal-approximation confidence
+   interval based on the proportion of points inside the unit circle. Validate
+   that `n` is positive.
+b. Run the function with sample sizes 1,000, 2,000, 4,000, and 8,000, using a
+   different documented seed for each run. Render a table containing the sample
+   size, estimate, interval bounds, and whether the interval contains $\pi$.
+c. Write a second function that repeats the experiment 1,000 times for one
+   sample size and returns the proportion of intervals that contain $\pi$.
+   Apply it to all four sample sizes with a fixed seed, then plot empirical
+   coverage against sample size with a horizontal reference line at 0.95.
+d. Explain why a 95% confidence interval need not contain $\pi$ in every
+   individual run, and explain what the coverage results say about the method.
+:::
+
+::: {#exr-prime-in-e}
+Reproduce the [Google Billboard Ad](http://mathworld.wolfram.com/news/2004-10-13/google/)
+by searching the digits of $e$ with the Python standard library.
+
+a. Write a function that computes at least 200 decimal digits of $e$ with
+   `decimal.Decimal`, then returns the digits after the decimal point as a
+   string. Set the decimal context precision inside the function rather than
+   relying on an editor or notebook setting.
+b. Write `is_prime(n)` using `math.isqrt` and trial division. It must return
+   `False` for integers less than 2 and avoid testing divisors larger than the
+   square root of `n`.
+c. Scan consecutive 10-digit strings in the fractional digits of $e$ and find
+   the first one that represents a prime number. Report the prime and its
+   zero-based starting position after the decimal point. Use an assertion or a
+   documented loop result to show that no earlier 10-digit string is prime.
+d. Explain why using `float` would be unsuitable for this search and why the
+   `decimal` context belongs in the function rather than in hidden notebook
+   state.
+:::
+
+::: {#exr-game-24}
+Play [Game 24](https://en.wikipedia.org/wiki/24_Game) by searching arithmetic
+expressions. Given four card values, use every value exactly once with the
+operations $+$, $-$, $\times$, and $/$ to make 24. Parentheses determine the
+order of operations. Let $\square$ represent one of the four card values and
+let $\bigcirc$ represent one of the four operations. For example,
+$(\square \bigcirc \square) \bigcirc (\square \bigcirc \square)$ is one
+possible expression form.
+
+a. List all distinct ways to group four card values with parentheses. Use
+   $\square$ and $\bigcirc$ notation, and state how many groupings there are.
+b. Count the maximum number of candidate expressions that a brute-force solver
+   could examine before removing equivalent expressions. Account for the five
+   parenthesizations, all orders of four card values, and the four choices for
+   each of three operations.
+c. Write `solve_24(cards)` for a list of four integer card values. The function
+   must use every card exactly once and return the fully parenthesized
+   expressions that equal 24. Use brute force to enumerate the five groupings,
+   every order of the card values, and every choice of operations. Use
+   `fractions.Fraction` for arithmetic, so a valid solution is not lost to
+   floating-point rounding. Do not remove duplicate solutions yet.
+d. Write `unique_solutions(expressions)` to remove duplicate solutions from the
+   brute-force output. Treat expressions that differ only in the order of the
+   operands of addition or multiplication as duplicates. Describe the
+   normalized representation you use to make that decision.
+e. Test both functions with `[1, 3, 9, 10]`, `[4, 4, 10, 10]`, `[1, 5, 5, 5]`,
+   `[3, 3, 7, 7]`, `[3, 3, 8, 8]`, and `[1, 4, 5, 6]`. Render one solution for
+   each hand, report the number of solutions before and after deduplication,
+   and use assertions to verify that every displayed expression has value 24.
+   Include one hand with no solution and assert that its result is empty.
+f. Explain why brute force is feasible for four cards but would become costly
+   with more cards. Explain why exact fractions are preferable to floating-point
+   values for this task.
 :::
 
 ## References {.unnumbered}
