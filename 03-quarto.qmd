@@ -187,16 +187,15 @@ alternative below.
 ENVIRONMENT_DIRECTORY=/path/to/your/environment
 uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"
 source "$ENVIRONMENT_DIRECTORY/bin/activate"
-make install VENV="$VIRTUAL_ENV"
+make install
 ```
 
 Set `ENVIRONMENT_DIRECTORY` to the directory you chose. If you have already
-created an appropriate environment, activate it and pass its path to the
-Makefile with `$VIRTUAL_ENV`:
+created an appropriate environment, activate it and use the Makefile normally:
 
 ```bash
-make install VENV="$VIRTUAL_ENV"
-make req VENV="$VIRTUAL_ENV"
+make install
+make req
 ```
 
 The first command installs the pinned packages and the second records installed
@@ -213,7 +212,7 @@ install the same packages with pip:
 ENVIRONMENT_DIRECTORY=/path/to/your/environment
 python3.12 -m venv "$ENVIRONMENT_DIRECTORY"
 source "$ENVIRONMENT_DIRECTORY/bin/activate"
-make install VENV="$VIRTUAL_ENV"
+make install
 ```
 
 Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
@@ -353,9 +352,8 @@ b. In the repository root, create or identify a Python 3.12 environment of
    your choice. If you create one, set `ENVIRONMENT_DIRECTORY` to its path and
    use either `uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"` or
    `python3.12 -m venv "$ENVIRONMENT_DIRECTORY"`. Activate it, then run
-   `make install VENV="$VIRTUAL_ENV"` to install the pinned dependencies.
-   Record the commands, environment path, and Python version used by the
-   environment.
+   `make install` to install the pinned dependencies. Record the commands,
+   environment path, and Python version used by the environment.
 c. Run `make check` and `make render`. Confirm that the rendered home page is
    `_book/index.html`; in the `.qmd`, state the commands, concise results, and
    any error you fixed.

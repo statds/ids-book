@@ -60,17 +60,17 @@ cd ids-book
 ENVIRONMENT_DIRECTORY=/path/to/your/environment
 uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"
 source "$ENVIRONMENT_DIRECTORY/bin/activate"
-make install VENV="$VIRTUAL_ENV"
+make install
 make check
 make render
 ```
 
 If `uv` is unavailable, replace the `uv venv` command with
 `python3.12 -m venv "$ENVIRONMENT_DIRECTORY"`. If you already have an
-appropriate environment, set `ENVIRONMENT_DIRECTORY` to its path, activate it,
-and continue with `make install VENV="$VIRTUAL_ENV"`. The install target uses
-the active environment’s path to install pinned dependencies; `make check`
-verifies the required tools; and `make render` writes the completed book to
+appropriate environment, set `ENVIRONMENT_DIRECTORY` to its path and activate
+it, then continue with `make install`. The install target uses the active
+environment’s path to install pinned dependencies; `make check` verifies the
+required tools; and `make render` writes the completed book to
 `_book/index.html`. Supply any credentials required by particular examples
 through documented local configuration, and never commit credentials or
 generated output to Git.

@@ -6,7 +6,7 @@ SHELL := /bin/sh
 QUARTO ?= quarto
 PYTHON ?= python3
 REQUIRED_PYTHON_VERSION := 3.12
-VENV ?= .ids
+VENV ?= $(or $(VIRTUAL_ENV),.ids)
 REQUIREMENTS ?= requirements.txt
 QUARTO_ARGS ?=
 
