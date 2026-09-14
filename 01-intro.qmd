@@ -17,13 +17,14 @@ $$
 \text{Data science} = S D C^3,
 $$
 
-Yu's formulation gives each component of data science a distinct role. Here,
-$S$ is statistics, $D$ is domain or scientific knowledge, and the three $C$s
-are computing, collaboration, and communication. Statistics provides ways to
-reason from observations while accounting for variation and uncertainty.
-Domain knowledge connects an analysis to a meaningful question and helps us
-judge whether its assumptions are sensible. Computing makes it possible to
-acquire, organize, explore, and model data at useful scales.
+Yu's notation names the capabilities that must work together in data science.
+The $S$ represents statistics, the $D$ represents domain or scientific
+knowledge, and the three $C$s represent computing, collaboration, and
+communication. Statistics provides ways to reason from observations while
+accounting for variation and uncertainty. Domain knowledge connects an analysis
+to a meaningful question and helps us judge whether its assumptions are
+sensible. Computing makes it possible to acquire, organize, explore, and model
+data at useful scales.
 
 Collaboration and communication are not additions made after the technical work
 is complete. Data-science problems are commonly defined and solved by people
