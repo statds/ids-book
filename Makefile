@@ -57,7 +57,15 @@ $(VENV_PYTHON):
 install: check-venv ## Install Python dependencies in the project environment.
 	@test -f "$(REQUIREMENTS)" || { \
 		echo "Error: requirements file not found: $(REQUIREMENTS)" >&2; exit 2; }
-	$(VENV_PYTHON) -m pip install -r "$(REQUIREMENTS)"
+	@if "$(VENV_PYTHON)" -c 'import pip' >/dev/null 2>&1; then \
+		"$(VENV_PYTHON)" -m pip install -r "$(REQUIREMENTS)"; \
+	elif grep -q '^uv = ' "$(VENV)/pyvenv.cfg" 2>/dev/null && \
+		command -v uv >/dev/null 2>&1; then \
+		uv pip install --python "$(VENV_PYTHON)" -r "$(REQUIREMENTS)"; \
+	else \
+		echo "Error: pip is unavailable in this environment." >&2; \
+		echo "Install pip or use uv for an environment created by uv." >&2; exit 2; \
+	fi
 
 upgrade: check-venv ## Upgrade packages allowed by the requirements file.
 	@test -f "$(REQUIREMENTS)" || { \
