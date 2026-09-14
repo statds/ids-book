@@ -280,16 +280,15 @@ div.csl-indent {
 </section>
 <section id="building-the-book" class="level2">
 <h2 class="anchored" data-anchor-id="building-the-book">Building the Book</h2>
-<p>To build the notes locally, clone the repository and use a Python 3.12 virtual environment of your choice. Set <code>ENVIRONMENT_DIRECTORY</code> to the path you chose for that environment. With <code>uv</code>, run these commands from a terminal:</p>
+<p>To build the notes locally, clone the repository and use a Python 3.12 virtual environment of your choice. With <code>uv</code>, run these commands from a terminal:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/statds/ids-book.git</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ids-book</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">ENVIRONMENT_DIRECTORY</span><span class="op">=</span>/path/to/your/environment</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">/bin/activate"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If <code>uv</code> is unavailable, replace the <code>uv venv</code> command with <code>python3.12 -m venv "$ENVIRONMENT_DIRECTORY"</code>. If you already have an appropriate environment, set <code>ENVIRONMENT_DIRECTORY</code> to its path and activate it, then continue with <code>make install</code>. The install target uses the active environment’s path to install pinned dependencies; <code>make check</code> verifies the required tools; and <code>make render</code> writes the completed book to <code>_book/index.html</code>. Supply any credentials required by particular examples through documented local configuration, and never commit credentials or generated output to Git.</p>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 /path/to/your/environment</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /path/to/your/environment/bin/activate</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If <code>uv</code> is unavailable, replace the <code>uv venv</code> command with <code>python3.12 -m venv</code> and use the same path. If you already have an appropriate activated environment, run <code>make install</code> directly. The install target uses the active environment; <code>make check</code> verifies the required tools; and <code>make render</code> writes the completed book to <code>_book/index.html</code>. Supply any credentials required by particular examples through documented local configuration, and never commit credentials or generated output to Git.</p>
 <p>Quarto writes the rendered book to <code>_book/</code>. Generated output and local caches are not tracked by Git; the source and environment specifications are.</p>
 </section>
 <section id="learning-data-science-in-the-age-of-ai" class="level2">

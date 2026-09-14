@@ -243,9 +243,9 @@ window.Quarto = {
   <li><a href="#a-minimal-quarto-document" id="toc-a-minimal-quarto-document" class="nav-link active" data-scroll-target="#a-minimal-quarto-document"><span class="header-section-number">3.1</span> A Minimal Quarto Document</a></li>
   <li><a href="#markdown-essentials" id="toc-markdown-essentials" class="nav-link" data-scroll-target="#markdown-essentials"><span class="header-section-number">3.2</span> Markdown Essentials</a></li>
   <li><a href="#why-the-software-environment-matters" id="toc-why-the-software-environment-matters" class="nav-link" data-scroll-target="#why-the-software-environment-matters"><span class="header-section-number">3.3</span> Why the Software Environment Matters</a></li>
-  <li><a href="#python-environments-for-quarto" id="toc-python-environments-for-quarto" class="nav-link" data-scroll-target="#python-environments-for-quarto"><span class="header-section-number">3.4</span> Python Environments for Quarto</a></li>
+  <li><a href="#sec-python-environment" id="toc-sec-python-environment" class="nav-link" data-scroll-target="#sec-python-environment"><span class="header-section-number">3.4</span> Python Environments for Quarto</a></li>
   <li><a href="#reproducibility-in-practice" id="toc-reproducibility-in-practice" class="nav-link" data-scroll-target="#reproducibility-in-practice"><span class="header-section-number">3.5</span> Reproducibility in Practice</a></li>
-  <li><a href="#rendering-the-book" id="toc-rendering-the-book" class="nav-link" data-scroll-target="#rendering-the-book"><span class="header-section-number">3.6</span> Rendering the Book</a></li>
+  <li><a href="#sec-rendering-the-book" id="toc-sec-rendering-the-book" class="nav-link" data-scroll-target="#sec-rendering-the-book"><span class="header-section-number">3.6</span> Rendering the Book</a></li>
   <li><a href="#presentations-with-quarto" id="toc-presentations-with-quarto" class="nav-link" data-scroll-target="#presentations-with-quarto"><span class="header-section-number">3.7</span> Presentations with Quarto</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -308,20 +308,27 @@ g(x) =
 <p>The comma after the first case and the period after the final case are part of one grammatical statement. The code below generates a table and a figure from the same observations:</p>
 <div id="cell-fig-scores" class="cell" data-fig-format="svg" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib_inline.backend_inline <span class="im">import</span> set_matplotlib_formats</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>set_matplotlib_formats(<span class="st">"svg"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame({<span class="st">"student"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>],</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"score"</span>: [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]})</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>scores[<span class="st">"score"</span>].mean()</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>scores</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>ax.bar(scores[<span class="st">"student"</span>], scores[<span class="st">"score"</span>])</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Student"</span>, ylabel<span class="op">=</span><span class="st">"Score"</span>, title<span class="op">=</span><span class="st">"Scores"</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib_inline.backend_inline <span class="im">import</span> set_matplotlib_formats</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>set_matplotlib_formats(<span class="st">"svg"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2026</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    rng.normal(loc<span class="op">=</span>[<span class="dv">78</span>, <span class="dv">72</span>, <span class="dv">84</span>], scale<span class="op">=</span>[<span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">7</span>], size<span class="op">=</span>(<span class="dv">30</span>, <span class="dv">3</span>)).<span class="bu">round</span>(<span class="dv">1</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"data science"</span>, <span class="st">"statistics"</span>, <span class="st">"programming"</span>],</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">31</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>scores.index.name <span class="op">=</span> <span class="st">"student"</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>scores.head()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>mean_scores <span class="op">=</span> scores.mean()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>standard_errors <span class="op">=</span> scores.sem()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>ax.bar(mean_scores.index, mean_scores, yerr<span class="op">=</span>standard_errors, capsize<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Subject"</span>, ylabel<span class="op">=</span><span class="st">"Mean score"</span>, title<span class="op">=</span><span class="st">"Simulated class scores"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div id="fig-scores" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -329,13 +336,13 @@ g(x) =
 <img src="03-quarto_files/figure-html/fig-scores-output-1.svg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3.1: Scores for three students
+Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; error bars show standard errors
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The resulting table and Figure <a href="#fig-scores" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> summarize the observations above. Quarto itself is documented in the Quarto Guide <span class="citation" data-cites="quarto2025guide">(<a href="#ref-quarto2025guide" role="doc-biblioref">Quarto Developers, 2025b</a>)</span>.</p>
+<p>The call to <code>default_rng(2026)</code> creates a seeded random-number generator, so the simulated 30-student, three-subject score table and Figure <a href="#fig-scores" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> are reproducible on another computer. The three <code>loc</code> values create subjects with different underlying mean scores. The bar heights are subject means; the error bars show standard errors across students. Quarto itself is documented in the Quarto Guide <span class="citation" data-cites="quarto2025guide">(<a href="#ref-quarto2025guide" role="doc-biblioref">Quarto Developers, 2025b</a>)</span>.</p>
 <p>The opening and closing lines between <code>---</code> define YAML metadata. Headings use one or more <code>#</code> characters, ordinary text forms paragraphs, dollar signs mark LaTeX equations, and a fenced code chunk begins with <code>```{python}</code>. The <code>jupyter: python3</code> setting tells Quarto which Jupyter kernel should execute Python chunks. Expressions whose values are displayed, such as <code>scores</code>, and figures returned by the chunk become part of the rendered document.</p>
 <p>Render the document from its directory:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render hello.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -343,59 +350,49 @@ Figure&nbsp;3.1: Scores for three students
 </section>
 <section id="markdown-essentials" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="markdown-essentials"><span class="header-section-number">3.2</span> Markdown Essentials</h2>
-<p>Markdown provides the readable structure around an analysis. The following constructs cover the structures needed in early assignments:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Chapter title</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">## Section heading</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>**bold**, *italic*, and <span class="co">[</span><span class="ot">a link</span><span class="co">](https://quarto.org/)</span></span>
+<p>Markdown provides the readable structure around an analysis. The following mini-report shows how headings, emphasis, a list, a labeled equation, a table, a figure, a citation, and cross-references work together:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Assessment results {#sec-assessment-results}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>The **mean score** summarizes performance in each subject, but it does not show</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>the variation among students. The sample mean for subject $s$ is</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>an unordered list</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>another item</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>a numbered step</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>another step</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="in">`inline code`</span> and a code block:</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"This block is displayed, not executed by Quarto."</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; A block quote highlights a definition or key point.</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> quantity <span class="pp">|</span> value <span class="pp">|</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span>:--<span class="pp">|</span>--:<span class="pp">|</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> observations <span class="pp">|</span> 3 <span class="pp">|</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> mean <span class="pp">|</span> 86.7 <span class="pp">|</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="al">![A descriptive caption](figures/scores.png)</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>See the Quarto Guide <span class="co">[</span><span class="ot">@quarto2025guide</span><span class="co">]</span> and @eq-mean.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Use a heading hierarchy rather than bold text to organize a document. Put a blank line around paragraphs and lists, write descriptive link text, and keep code that should execute in a Quarto code chunk. Use a meaningful caption for each figure and cite sources near the claim they support. The <a href="https://quarto.org/docs/authoring/markdown-basics.html">Markdown basics reference</a> covers tables, images, citations, cross-references, callouts, and other features.</p>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>\bar{x}_s = \frac{1}{n}\sum_{i=1}^{n}x_{is}.</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>$$ {#eq-subject-mean}</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>Table @tbl-subject-means reports the results calculated with</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>@eq-subject-mean.</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> subject <span class="pp">|</span> mean score <span class="pp">|</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span>:--<span class="pp">|</span>--:<span class="pp">|</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> data science <span class="pp">|</span> 78.4 <span class="pp">|</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> statistics <span class="pp">|</span> 72.1 <span class="pp">|</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> programming <span class="pp">|</span> 84.3 <span class="pp">|</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>: Simulated mean scores for a class of 30 students. {#tbl-subject-means}</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="al">![Mean score by subject, with standard-error bars.](figures/scores.png)</span>{#fig-subject-means}</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>Figure @fig-subject-means makes the difference among subjects easier to see.</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>The interpretation should also consider the variation, as explained in</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>Section @sec-assessment-results. The analysis follows reproducible-authoring</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>practices <span class="co">[</span><span class="ot">@quarto2025guide</span><span class="co">]</span>.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A label in braces, such as <code>{#eq-subject-mean}</code>, identifies an object that Quarto should number. Use the prefixes <code>eq-</code>, <code>tbl-</code>, <code>fig-</code>, and <code>sec-</code> for equations, tables, figures, and sections. A cross-reference begins with <code>@</code> and uses the matching label, as in <code>@tbl-subject-means</code>. During rendering, Quarto replaces that source text with the current object number. If an earlier table or figure is added, references update automatically instead of leaving a stale number in the prose.</p>
+<p>Use a heading hierarchy rather than bold text to organize a document. Put blank lines around paragraphs, tables, and lists; write descriptive link text; keep code that should execute in a Quarto code chunk; and use meaningful captions for figures and tables. Cite sources near the claim they support. The <a href="https://quarto.org/docs/authoring/markdown-basics.html">Markdown basics reference</a> covers tables, images, citations, cross-references, callouts, and other features.</p>
 </section>
 <section id="why-the-software-environment-matters" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="why-the-software-environment-matters"><span class="header-section-number">3.3</span> Why the Software Environment Matters</h2>
 <p>An analysis is a combination of source code and the software environment that interprets it. Two computers can run the same source and obtain different results when they use different Python versions, package versions, operating- system libraries, or default settings. A result that cannot be rerun after an environment changes is not fully reproducible, even when the code is available <span class="citation" data-cites="wilson2017good">(<a href="#ref-wilson2017good" role="doc-biblioref">Wilson et al., 2017</a>)</span>.</p>
 <p>An isolated environment makes these dependencies explicit and prevents one project from silently changing another. Recording the Python version and the installed packages lets a collaborator recreate the computational setting, while a lockfile or pinned requirements file records the versions tested here. This practice also makes failures diagnosable: when an upgrade changes an output, we can identify the change instead of guessing which global installation caused it.</p>
 </section>
-<section id="python-environments-for-quarto" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="python-environments-for-quarto"><span class="header-section-number">3.4</span> Python Environments for Quarto</h2>
+<section id="sec-python-environment" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="sec-python-environment"><span class="header-section-number">3.4</span> Python Environments for Quarto</h2>
 <p>Quarto executes Python through a Jupyter kernel, so the interpreter and packages must be installed in an environment that Quarto can find. A virtual environment keeps this project’s packages separate from the system Python and from unrelated projects.</p>
-<p>This repository requires Python 3.12 for its tested environment. Use any local virtual environment that contains Python 3.12; its directory name and location are your choice. The Makefile accepts that environment’s path through <code>VENV</code>. <code>uv</code> is a fast command-line tool for installing Python versions, creating virtual environments, and installing packages; it is not a replacement for Python or Quarto. Students who prefer the standard Python tools can use the alternative below.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">ENVIRONMENT_DIRECTORY</span><span class="op">=</span>/path/to/your/environment</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">/bin/activate"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Set <code>ENVIRONMENT_DIRECTORY</code> to the directory you chose. If you have already created an appropriate environment, activate it and use the Makefile normally:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> req</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first command installs the pinned packages and the second records installed packages in <code>requirements.txt</code>. After activating the environment, run <code>make render</code> normally; it will use the active interpreter. Do not install packages into the system Python, and do not commit the virtual-environment directory. Keep the environment specification and the source files under version control instead.</p>
-<p>If <code>uv</code> is not available, create the environment with the standard library and install the same packages with pip:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">ENVIRONMENT_DIRECTORY</span><span class="op">=</span>/path/to/your/environment</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3.12</span> <span class="at">-m</span> venv <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">"</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="st">"</span><span class="va">$ENVIRONMENT_DIRECTORY</span><span class="st">/bin/activate"</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Use <code>python --version</code>, <code>which python</code>, and <code>jupyter kernelspec list</code> to verify that the active interpreter is Python 3.12 and is the one you intend to use. If you use the Makefile, <code>make check-tools</code> performs the version check and fails when the selected interpreter is not 3.12. If Quarto reports that it cannot find a kernel, select the environment’s Python interpreter in your editor or install its kernel with <code>python -m ipykernel install --user</code>.</p>
+<p>This book uses Python 3.12 in its tested environment. You may choose a virtual environment’s name and location. A virtual environment is a directory containing an isolated Python installation and its packages; it does not contain a project’s source files or build instructions. The <code>uv</code> command-line tool installs Python versions, creates virtual environments, and installs packages; it is not a replacement for Python or Quarto.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 /path/to/your/environment</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /path/to/your/environment/bin/activate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If <code>uv</code> is unavailable, replace <code>uv venv</code> with <code>python3.12 -m venv</code> and use the same path. Do not install packages into the system Python, and do not commit a virtual-environment directory. Keep the project’s environment specification and source files under version control instead.</p>
+<p>Use <code>python --version</code>, <code>which python</code>, and <code>jupyter kernelspec list</code> to verify that the active interpreter is Python 3.12 and is the one you intend to use. If Quarto reports that it cannot find a kernel, select the environment’s Python interpreter in your editor or install its kernel with <code>python -m ipykernel install --user</code>.</p>
 </section>
 <section id="reproducibility-in-practice" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="reproducibility-in-practice"><span class="header-section-number">3.5</span> Reproducibility in Practice</h2>
@@ -410,13 +407,20 @@ Figure&nbsp;3.1: Scores for three students
 </ol>
 <p>Use relative project paths, pin important package versions, set random seeds when simulation is involved, and render from a clean working tree. These habits make it possible for another analyst to inspect and repeat the work <span class="citation" data-cites="wilson2017good">(<a href="#ref-wilson2017good" role="doc-biblioref">Wilson et al., 2017</a>)</span>.</p>
 </section>
-<section id="rendering-the-book" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="rendering-the-book"><span class="header-section-number">3.6</span> Rendering the Book</h2>
-<p>Rendering checks whether the source, computations, citations, and cross- references work together. From the repository root, use the Makefile targets:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> preview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>make check</code> verifies the command-line tools, <code>make render</code> builds the complete book in <code>_book/</code>, and <code>make preview</code> starts a local server with live reload. For a quick test of one source file, use:</p>
+<section id="sec-rendering-the-book" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="sec-rendering-the-book"><span class="header-section-number">3.6</span> Rendering the Book</h2>
+<p>Rendering the notes locally lets you see how the published book is produced, practice the workflow used in a shared data-science project, and test a correction or improvement before proposing it in a pull request. A successful render shows that the source, computations, citations, and cross-references work together on your computer. To obtain a local copy, clone the repository and enter it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/statds/ids-book.git</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ids-book</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Assume that you have already activated a Python 3.12 environment as described in <a href="#sec-python-environment" class="quarto-xref"><span>Section 3.4</span></a>. The cloned repository contains the Makefile. From its root, install this book’s pinned dependencies and build it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If you want an environment dedicated to this book, choose a directory for it, create it, and activate it before running those commands. For example, replace <code>/path/to/ids-book-env</code> below with a directory of your choice:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 /path/to/ids-book-env</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /path/to/ids-book-env/bin/activate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If <code>uv</code> is unavailable, replace <code>uv venv</code> with <code>python3.12 -m venv</code> and use the same path. Activation sets <code>VIRTUAL_ENV</code>, which this repository’s Makefile uses to select Python. The <code>make install</code> target installs the pinned packages from <code>requirements.txt</code>; <code>make check</code> verifies the command-line tools; and <code>make render</code> builds the complete book in <code>_book/</code>. Open <code>_book/index.html</code> in a browser to inspect that completed build. While actively editing the book, <code>make preview</code> starts a local server and rebuilds the output when source files change. Students building the book should not run <code>make req</code>, because that maintainer target rewrites <code>requirements.txt</code> from the local environment.</p>
+<p>Read the repository’s <code>Makefile</code> rather than treating its commands as magic. It is a short, plain-text description of the build tasks. Use an AI assistant to ask what a specific target, variable, or command does, then compare the answer with the Makefile and test it with a command such as <code>make -n render</code>, which prints the commands without running them. This is a useful way to learn an unfamiliar project while retaining responsibility for checking the explanation. For a quick test of one source file, use:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render-one FILE=hello.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Read the terminal output rather than assuming a successful command produced a correct document. Check that code results make sense, links work, figures have captions, citations resolve, and the output contains no accidental secrets or local file paths. Generated <code>_book/</code>, <code>.quarto/</code>, and cache files belong in <code>.gitignore</code>, not in a commit.</p>
 </section>
@@ -445,12 +449,12 @@ Figure&nbsp;3.1: Scores for three students
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <p>Complete the Git setup from Chapter 2 and the Quarto installation from Chapter 1 before beginning. Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <div id="exr-python-environment" class="theorem exercise">
-<p><span class="theorem-title"><strong> 3.1</strong></span> Clone and build this book from source.</p>
+<p><span class="theorem-title"><strong> 3.1</strong></span> Follow the complete workflow in <a href="#sec-rendering-the-book" class="quarto-xref"><span>Section 3.6</span></a> to clone and render this book from source. In the assignment <code>.qmd</code>, report the following evidence:</p>
 <ol type="a">
-<li>Run <code>git clone https://github.com/statds/ids-book.git</code>, then use <code>cd ids-book</code> to enter the cloned repository. In the assignment <code>.qmd</code>, record the commands and concise results of <code>git remote -v</code> and <code>git status</code>.</li>
-<li>In the repository root, create or identify a Python 3.12 environment of your choice. If you create one, set <code>ENVIRONMENT_DIRECTORY</code> to its path and use either <code>uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"</code> or <code>python3.12 -m venv "$ENVIRONMENT_DIRECTORY"</code>. Activate it, then run <code>make install</code> to install the pinned dependencies. Record the commands, environment path, and Python version used by the environment.</li>
-<li>Run <code>make check</code> and <code>make render</code>. Confirm that the rendered home page is <code>_book/index.html</code>; in the <code>.qmd</code>, state the commands, concise results, and any error you fixed.</li>
-<li>Explain why your virtual-environment directory and <code>_book</code> should not be committed, while the source files, <code>requirements.txt</code>, and <code>_quarto.yml</code> should be tracked.</li>
+<li>Record the commands and concise results of <code>git remote -v</code> and <code>git status</code> in the cloned repository.</li>
+<li>Record the environment path, the command used to create it (or state that you used an existing environment), and the result of <code>python --version</code>.</li>
+<li>Record concise results from <code>make install</code>, <code>make check</code>, and <code>make render</code>. Confirm that the rendered home page is <code>_book/index.html</code>, and describe any error you fixed.</li>
+<li>Explain why the virtual-environment directory and <code>_book</code> should not be committed, while the source files, <code>requirements.txt</code>, and <code>_quarto.yml</code> should be tracked.</li>
 </ol>
 </div>
 <div id="exr-quarto-analysis" class="theorem exercise">
