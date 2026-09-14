@@ -1,23 +1,42 @@
 # Python Practice {#sec-python}
 
-Students entering this course have already used Python. This chapter therefore
-does not repeat introductory syntax. Instead, it develops the habits that make
-Python analysis dependable: knowing which interpreter runs the code, finding
-the package that supplies a function, designing functions with clear inputs and
-outputs, predicting when a change mutates an existing object, and recognizing
-the limits of computer number representations. These habits turn short scripts
-into analyses that another person can inspect and rerun.
+Python becomes more useful when you can tell which interpreter runs your code,
+find the package that supplies a function, design functions with clear inputs
+and outputs, predict when a change affects an existing object, and recognize
+the limits of computer number representations. This chapter develops those
+habits so that short scripts become analyses that another person can inspect
+and rerun.
 
 ## Python Ecosystem
 
 Every Python command runs in one interpreter. That interpreter supplies the
 language and its standard library; an environment adds third-party packages
-such as NumPy and pandas. A **module** is an importable Python file, a
-**package** is an importable collection of modules, and a **library** is the
-broader set of code and documentation that users treat as one tool. The Python
-standard library includes modules such as `math`, `pathlib`, and `statistics`;
-NumPy and pandas are installed packages rather than parts of Python itself
-[@python2026modules; @mckinney2022python].
+such as NumPy and pandas. These related terms describe different layers of the
+Python ecosystem:
+
+Knowing these layers helps you solve ordinary problems. When `import pandas`
+fails, you need to determine whether the active interpreter has access to the
+installed distribution and its importable package. When someone else reruns
+your work, they need to know which interpreter and installed distributions it
+uses. The distinctions also help you read documentation, find the source of a
+function, and avoid installing a package into the wrong environment.
+
+- **Interpreter:** The program that runs Python code and supplies the standard
+  library.
+- **Module:** A unit that Python's import system loads as a module object. A
+  module can come from a Python source file, a compiled extension, built-in
+  code, or another source.
+- **Package:** A special module that can contain submodules. A regular package
+  is commonly a directory with an `__init__.py` file, while a namespace package
+  can span locations and needs no such file.
+- **Library:** An informal term for a reusable body of code and documentation,
+  such as NumPy or pandas.
+- **Distribution:** The installable unit managed by tools such as `pip`. One
+  distribution can provide one or more importable packages or modules.
+
+The standard library includes modules such as `math`, `pathlib`, and
+`statistics`; NumPy and pandas are third-party libraries rather than parts of
+Python itself [@python2026imports; @mckinney2022python].
 
 When code fails with `ModuleNotFoundError`, first determine which interpreter
 is active. The following chunk reports the interpreter path and version used by
