@@ -86,8 +86,8 @@ req: check-venv ## Freeze the selected environment into requirements.txt.
 packages: check-venv ## Print the installed Python package versions.
 	$(VENV_PYTHON) -m pip freeze
 
-publish: check-tools ## Publish interactively to GitHub Pages.
-	printf 'Y\n' | $(QUARTO) publish gh-pages $(QUARTO_ARGS)
+publish: check-tools ## Publish to GitHub Pages without a confirmation prompt.
+	$(QUARTO) publish gh-pages --no-prompt $(QUARTO_ARGS)
 
 clean-output: ## Remove the rendered book.
 	rm -rf -- _book
