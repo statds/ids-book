@@ -31,3 +31,6 @@ format:
 bibliography: references.bib
 
 csl: apa.csl
+
+crossref:
+  exr-title: ""

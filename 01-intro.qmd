@@ -395,30 +395,39 @@ certain; it is to make the reasoning transparent and useful.
 
 Write one `.qmd` file containing your answers to all problems.
 
-1. Prepare your computer for this course.
-   a. Install Git and Quarto, record your operating system and the outputs of
-      `git --version`, `quarto --version`, and `quarto check`, and configure and
-      verify your Git identity.
-   b. Explain one installation problem and its solution.
-   c. State which commands you used to verify both installations.
+::: {#exr-computer-setup}
+Prepare your computer for this course.
 
-2. Find and describe a file without relying on a graphical application's recent-
-   files list.
-   a. Use `pwd`, `ls`, and `cd` to locate your home directory and `Downloads`.
-   b. Describe that folder with both an absolute path and a path relative to your
-      project directory, and explain why the relative path is more portable.
-   c. Explain why the relative path is preferable when the project is moved to
-      another computer.
+a. Install Git and Quarto, record your operating system and the outputs of
+   `git --version`, `quarto --version`, and `quarto check`, and configure and
+   verify your Git identity.
+b. Explain one installation problem and its solution.
+c. State which commands you used to verify both installations.
+:::
 
-3. Establish naming and organization conventions for a new project.
-   a. Create a practice directory containing three files with recommended names
-      and one deliberately difficult name.
-   b. Explain why the difficult name causes trouble in a shell, rename it, and
-      show the commands and directory listing.
-   c. Why do professionals use the command line for project work?
-   d. Why do Linux and Windows organize software differently?
-   e. Why should source files be separated from generated or binary files?
-   f. Give one collaboration problem caused by spaces in names, lines longer
-      than 80 characters, or untracked output.
+::: {#exr-file-paths}
+Find and describe a file without relying on a graphical application's recent-
+files list.
+
+a. Use `pwd`, `ls`, and `cd` to locate your home directory and `Downloads`.
+b. Describe that folder with both an absolute path and a path relative to your
+   project directory, and explain why the relative path is more portable.
+c. Explain why the relative path is preferable when the project is moved to
+   another computer.
+:::
+
+::: {#exr-project-organization}
+Establish naming and organization conventions for a new project.
+
+a. Create a practice directory containing three files with recommended names
+   and one deliberately difficult name.
+b. Explain why the difficult name causes trouble in a shell, rename it, and
+   show the commands and directory listing.
+c. Why do professionals use the command line for project work?
+d. Why do Linux and Windows organize software differently?
+e. Why should source files be separated from generated or binary files?
+f. Give one collaboration problem caused by spaces in names, lines longer
+   than 80 characters, or untracked output.
+:::
 
 ## References {.unnumbered}
