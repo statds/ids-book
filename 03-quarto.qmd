@@ -69,26 +69,37 @@ the same observations:
 
 ```{python}
 #| label: fig-scores
-#| fig-cap: "Scores for three students"
+#| fig-cap: "Mean simulated score by subject for a class of 30 students; error bars show standard errors"
 #| fig-format: svg
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from matplotlib_inline.backend_inline import set_matplotlib_formats
 
 set_matplotlib_formats("svg")
 
-scores = pd.DataFrame({"student": ["A", "B", "C"],
-                       "score": [82, 91, 87]})
-scores["score"].mean()
-scores
+rng = np.random.default_rng(2026)
+scores = pd.DataFrame(
+    rng.normal(loc=[78, 72, 84], scale=[9, 8, 7], size=(30, 3)).round(1),
+    columns=["data science", "statistics", "programming"],
+    index=range(1, 31),
+)
+scores.index.name = "student"
+scores.head()
 
+mean_scores = scores.mean()
+standard_errors = scores.sem()
 fig, ax = plt.subplots()
-ax.bar(scores["student"], scores["score"])
-ax.set(xlabel="Student", ylabel="Score", title="Scores")
+ax.bar(mean_scores.index, mean_scores, yerr=standard_errors, capsize=4)
+ax.set(xlabel="Subject", ylabel="Mean score", title="Simulated class scores")
 plt.show()
 ```
 
-The resulting table and Figure @fig-scores summarize the observations above.
+The call to `default_rng(2026)` creates a seeded random-number generator, so
+the simulated 30-student, three-subject score table and Figure @fig-scores are
+reproducible on another computer. The three `loc` values create subjects with
+different underlying mean scores. The bar heights are subject means; the error
+bars show standard errors across students.
 Quarto itself is documented in the Quarto Guide [@quarto2025guide].
 
 The opening and closing lines between `---` define YAML metadata. Headings use
@@ -112,44 +123,54 @@ output.
 ## Markdown Essentials
 
 Markdown provides the readable structure around an analysis. The following
-constructs cover the structures needed in early assignments:
+mini-report shows how headings, emphasis, a list, a labeled equation, a table,
+a figure, a citation, and cross-references work together:
 
 ````markdown
-# Chapter title
-## Section heading
+## Assessment results {#sec-assessment-results}
 
-**bold**, *italic*, and [a link](https://quarto.org/)
+The **mean score** summarizes performance in each subject, but it does not show
+the variation among students. The sample mean for subject $s$ is
 
-- an unordered list
-- another item
+$$
+\bar{x}_s = \frac{1}{n}\sum_{i=1}^{n}x_{is}.
+$$ {#eq-subject-mean}
 
-1. a numbered step
-2. another step
+Table @tbl-subject-means reports the results calculated with
+@eq-subject-mean.
 
-`inline code` and a code block:
-
-```python
-print("This block is displayed, not executed by Quarto.")
-```
-
-> A block quote highlights a definition or key point.
-
-| quantity | value |
+| subject | mean score |
 |:--|--:|
-| observations | 3 |
-| mean | 86.7 |
+| data science | 78.4 |
+| statistics | 72.1 |
+| programming | 84.3 |
 
-![A descriptive caption](figures/scores.png)
+: Simulated mean scores for a class of 30 students. {#tbl-subject-means}
 
-See the Quarto Guide [@quarto2025guide] and @eq-mean.
+![Mean score by subject, with standard-error bars.](figures/scores.png){#fig-subject-means}
+
+Figure @fig-subject-means makes the difference among subjects easier to see.
+The interpretation should also consider the variation, as explained in
+Section @sec-assessment-results. The analysis follows reproducible-authoring
+practices [@quarto2025guide].
+
 ````
 
-Use a heading hierarchy rather than bold text to organize a document. Put a
-blank line around paragraphs and lists, write descriptive link text, and keep
-code that should execute in a Quarto code chunk. Use a meaningful caption for
-each figure and cite sources near the claim they support. The [Markdown basics
-reference](https://quarto.org/docs/authoring/markdown-basics.html) covers
-tables, images, citations, cross-references, callouts, and other features.
+A label in braces, such as `{#eq-subject-mean}`, identifies an object that
+Quarto should number. Use the prefixes `eq-`, `tbl-`, `fig-`, and `sec-` for
+equations, tables, figures, and sections. A cross-reference begins with `@` and
+uses the matching label, as in `@tbl-subject-means`. During rendering, Quarto
+replaces that source text with the current object number. If an earlier table
+or figure is added, references update automatically instead of leaving a stale
+number in the prose.
+
+Use a heading hierarchy rather than bold text to organize a document. Put blank
+lines around paragraphs, tables, and lists; write descriptive link text; keep
+code that should execute in a Quarto code chunk; and use meaningful captions
+for figures and tables. Cite sources near the claim they support. The [Markdown
+basics reference](https://quarto.org/docs/authoring/markdown-basics.html)
+covers tables, images, citations, cross-references, callouts, and other
+features.
 
 ## Why the Software Environment Matters
 
@@ -168,59 +189,35 @@ This practice also makes failures diagnosable: when an upgrade changes an
 output, we can identify the change instead of guessing which global installation
 caused it.
 
-## Python Environments for Quarto
+## Python Environments for Quarto {#sec-python-environment}
 
 Quarto executes Python through a Jupyter kernel, so the interpreter and
 packages must be installed in an environment that Quarto can find. A virtual
 environment keeps this project's packages separate from the system Python and
 from unrelated projects.
 
-This repository requires Python 3.12 for its tested environment. Use any local
-virtual environment that contains Python 3.12; its directory name and location
-are your choice. The Makefile accepts that environment’s path through `VENV`.
-`uv` is a fast command-line tool for installing Python versions, creating
-virtual environments, and installing packages; it is not a replacement for
-Python or Quarto. Students who prefer the standard Python tools can use the
-alternative below.
+This book uses Python 3.12 in its tested environment. You may choose a virtual
+environment's name and location. A virtual environment is a directory
+containing an isolated Python installation and its packages; it does not
+contain a project's source files or build instructions. The `uv` command-line
+tool installs Python versions, creates virtual environments, and installs
+packages; it is not a replacement for Python or Quarto.
 
 ```bash
-ENVIRONMENT_DIRECTORY=/path/to/your/environment
-uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"
-source "$ENVIRONMENT_DIRECTORY/bin/activate"
-make install
+uv venv --python 3.12 /path/to/your/environment
+source /path/to/your/environment/bin/activate
 ```
 
-Set `ENVIRONMENT_DIRECTORY` to the directory you chose. If you have already
-created an appropriate environment, activate it and use the Makefile normally:
-
-```bash
-make install
-make req
-```
-
-The first command installs the pinned packages and the second records installed
-packages in `requirements.txt`. After activating the environment, run
-`make render` normally; it will use the active interpreter. Do not install
-packages into the system Python, and do not commit the virtual-environment
-directory. Keep the environment specification and the source files under
-version control instead.
-
-If `uv` is not available, create the environment with the standard library and
-install the same packages with pip:
-
-```bash
-ENVIRONMENT_DIRECTORY=/path/to/your/environment
-python3.12 -m venv "$ENVIRONMENT_DIRECTORY"
-source "$ENVIRONMENT_DIRECTORY/bin/activate"
-make install
-```
+If `uv` is unavailable, replace `uv venv` with `python3.12 -m venv` and use the
+same path. Do not install packages into the system Python, and do not commit a
+virtual-environment directory. Keep the project's environment specification and
+source files under version control instead.
 
 Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
 that the active interpreter is Python 3.12 and is the one you intend to use. If
-you use the Makefile, `make check-tools` performs the version check and fails
-when the selected interpreter is not 3.12. If Quarto reports
-that it cannot find a kernel, select the environment's Python interpreter in
-your editor or install its kernel with `python -m ipykernel install --user`.
+Quarto reports that it cannot find a kernel, select the environment's Python
+interpreter in your editor or install its kernel with
+`python -m ipykernel install --user`.
 
 ## Reproducibility in Practice
 
@@ -246,19 +243,55 @@ when simulation is involved, and render from a clean working tree. These habits
 make it possible for another analyst to inspect and repeat the work
 [@wilson2017good].
 
-## Rendering the Book
+## Rendering the Book {#sec-rendering-the-book}
 
-Rendering checks whether the source, computations, citations, and cross-
-references work together. From the repository root, use the Makefile targets:
+Rendering the notes locally lets you see how the published book is produced,
+practice the workflow used in a shared data-science project, and test a
+correction or improvement before proposing it in a pull request. A successful
+render shows that the source, computations, citations, and cross-references
+work together on your computer. To obtain a local copy, clone the repository
+and enter it:
 
 ```bash
-make check
-make render
-make preview
+git clone https://github.com/statds/ids-book.git
+cd ids-book
 ```
 
-`make check` verifies the command-line tools, `make render` builds the complete
-book in `_book/`, and `make preview` starts a local server with live reload.
+Assume that you have already activated a Python 3.12 environment as described
+in @sec-python-environment. The cloned repository contains the Makefile. From
+its root, install this book's pinned dependencies and build it:
+
+```bash
+make install
+make check
+make render
+```
+
+If you want an environment dedicated to this book, choose a directory for it,
+create it, and activate it before running those commands. For example, replace
+`/path/to/ids-book-env` below with a directory of your choice:
+
+```bash
+uv venv --python 3.12 /path/to/ids-book-env
+source /path/to/ids-book-env/bin/activate
+```
+
+If `uv` is unavailable, replace `uv venv` with `python3.12 -m venv` and use the
+same path. Activation sets `VIRTUAL_ENV`, which this repository's Makefile uses
+to select Python. The `make install` target installs the pinned packages from
+`requirements.txt`; `make check` verifies the command-line tools; and `make
+render` builds the complete book in `_book/`. Open `_book/index.html` in a
+browser to inspect that completed build. While actively editing the book, `make
+preview` starts a local server and rebuilds the output when source files change.
+Students building the book should not run `make req`, because that maintainer
+target rewrites `requirements.txt` from the local environment.
+
+Read the repository's `Makefile` rather than treating its commands as magic.
+It is a short, plain-text description of the build tasks. Use an AI assistant to
+ask what a specific target, variable, or command does, then compare the answer
+with the Makefile and test it with a command such as `make -n render`, which
+prints the commands without running them. This is a useful way to learn an
+unfamiliar project while retaining responsibility for checking the explanation.
 For a quick test of one source file, use:
 
 ```bash
@@ -343,21 +376,17 @@ Complete the Git setup from Chapter 2 and the Quarto installation from Chapter
 problems.
 
 ::: {#exr-python-environment}
-Clone and build this book from source.
+Follow the complete workflow in @sec-rendering-the-book to clone and render
+this book from source. In the assignment `.qmd`, report the following evidence:
 
-a. Run `git clone https://github.com/statds/ids-book.git`, then use `cd
-   ids-book` to enter the cloned repository. In the assignment `.qmd`, record
-   the commands and concise results of `git remote -v` and `git status`.
-b. In the repository root, create or identify a Python 3.12 environment of
-   your choice. If you create one, set `ENVIRONMENT_DIRECTORY` to its path and
-   use either `uv venv --python 3.12 "$ENVIRONMENT_DIRECTORY"` or
-   `python3.12 -m venv "$ENVIRONMENT_DIRECTORY"`. Activate it, then run
-   `make install` to install the pinned dependencies. Record the commands,
-   environment path, and Python version used by the environment.
-c. Run `make check` and `make render`. Confirm that the rendered home page is
-   `_book/index.html`; in the `.qmd`, state the commands, concise results, and
-   any error you fixed.
-d. Explain why your virtual-environment directory and `_book` should not be
+a. Record the commands and concise results of `git remote -v` and `git status`
+   in the cloned repository.
+b. Record the environment path, the command used to create it (or state that
+   you used an existing environment), and the result of `python --version`.
+c. Record concise results from `make install`, `make check`, and `make render`.
+   Confirm that the rendered home page is `_book/index.html`, and describe any
+   error you fixed.
+d. Explain why the virtual-environment directory and `_book` should not be
    committed, while the source files, `requirements.txt`, and `_quarto.yml`
    should be tracked.
 :::
