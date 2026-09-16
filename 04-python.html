@@ -277,12 +277,21 @@ window.Quarto = {
 </header>
 
 
-<p>Students entering this course have already used Python. This chapter therefore does not repeat introductory syntax. Instead, it develops the habits that make Python analysis dependable: knowing which interpreter runs the code, finding the package that supplies a function, designing functions with clear inputs and outputs, predicting when a change mutates an existing object, and recognizing the limits of computer number representations. These habits turn short scripts into analyses that another person can inspect and rerun.</p>
+<p>Python becomes more useful when you can tell which interpreter runs your code, find the package that supplies a function, design functions with clear inputs and outputs, predict when a change affects an existing object, and recognize the limits of computer number representations. This chapter develops those habits so that short scripts become analyses that another person can inspect and rerun.</p>
 <section id="python-ecosystem" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="python-ecosystem"><span class="header-section-number">4.1</span> Python Ecosystem</h2>
-<p>Every Python command runs in one interpreter. That interpreter supplies the language and its standard library; an environment adds third-party packages such as NumPy and pandas. A <strong>module</strong> is an importable Python file, a <strong>package</strong> is an importable collection of modules, and a <strong>library</strong> is the broader set of code and documentation that users treat as one tool. The Python standard library includes modules such as <code>math</code>, <code>pathlib</code>, and <code>statistics</code>; NumPy and pandas are installed packages rather than parts of Python itself <span class="citation" data-cites="python2026modules mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-python2026modules" role="doc-biblioref">Python Software Foundation, 2026c</a>)</span>.</p>
+<p>Every Python command runs in one interpreter. That interpreter supplies the language and its standard library; an environment adds third-party packages such as NumPy and pandas. These related terms describe different layers of the Python ecosystem:</p>
+<p>Knowing these layers helps you solve ordinary problems. When <code>import pandas</code> fails, you need to determine whether the active interpreter has access to the installed distribution and its importable package. When someone else reruns your work, they need to know which interpreter and installed distributions it uses. The distinctions also help you read documentation, find the source of a function, and avoid installing a package into the wrong environment.</p>
+<ul>
+<li><strong>Interpreter:</strong> The program that runs Python code and supplies the standard library.</li>
+<li><strong>Module:</strong> A unit that Python’s import system loads as a module object. A module can come from a Python source file, a compiled extension, built-in code, or another source.</li>
+<li><strong>Package:</strong> A special module that can contain submodules. A regular package is commonly a directory with an <code>__init__.py</code> file, while a namespace package can span locations and needs no such file.</li>
+<li><strong>Library:</strong> An informal term for a reusable body of code and documentation, such as NumPy or pandas.</li>
+<li><strong>Distribution:</strong> The installable unit managed by tools such as <code>pip</code>. One distribution can provide one or more importable packages or modules.</li>
+</ul>
+<p>The standard library includes modules such as <code>math</code>, <code>pathlib</code>, and <code>statistics</code>; NumPy and pandas are third-party libraries rather than parts of Python itself <span class="citation" data-cites="python2026imports mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-python2026imports" role="doc-biblioref">Python Software Foundation, 2026c</a>)</span>.</p>
 <p>When code fails with <code>ModuleNotFoundError</code>, first determine which interpreter is active. The following chunk reports the interpreter path and version used by the current Quarto document:</p>
-<div id="1a63b17d" class="cell" data-execution_count="1">
+<div id="8884b745" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.executable)</span>
@@ -301,7 +310,7 @@ window.Quarto = {
 <section id="imports" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="imports"><span class="header-section-number">4.2</span> Imports</h2>
 <p>An <code>import</code> statement binds a name in the current file to a module or an object defined elsewhere. Choose imports that make the source easy to read and avoid names that obscure where a function comes from:</p>
-<div id="3899a41c" class="cell" data-execution_count="2">
+<div id="d38496a7" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -314,12 +323,12 @@ ids-book</code></pre>
 </div>
 </div>
 <p>For widely used data-science libraries, conventional aliases make code easier to recognize:</p>
-<div id="e8868db3" class="cell" data-execution_count="3">
+<div id="b7284b29" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Avoid <code>from package import *</code>. It hides the source of each name, can overwrite an existing name, and makes a traceback harder to interpret. When you need to learn what an imported object does, use <code>help()</code>, inspect its documentation, or check its type and attributes deliberately:</p>
-<div id="6340c333" class="cell" data-execution_count="4">
+<div id="39d1d245" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(sample))</span>
@@ -337,7 +346,7 @@ int64
 <h2 data-number="4.3" class="anchored" data-anchor-id="functions"><span class="header-section-number">4.3</span> Functions</h2>
 <p>A function should name a task, accept the data and choices needed for that task, and return a result that another part of the analysis can use. It should not quietly depend on a global variable or print a result that a later step needs to analyze. A docstring records the function’s contract, while type hints communicate the intended inputs and output; Python does not automatically enforce those hints.</p>
 <p>The function below summarizes numeric values without changing its input. It converts the input to a floating-point NumPy array, checks a precondition, and returns a dictionary whose named fields are convenient in prose and tables.</p>
-<div id="74b6c195" class="cell" data-execution_count="5">
+<div id="7626f3d2" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize(values: <span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> np.ndarray) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>]:</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the count, mean, and sample standard deviation of values."""</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
@@ -357,7 +366,7 @@ int64
 </div>
 <p>The conversion inside <code>summarize</code> creates an array suited to numerical work. The function therefore accepts an ordinary list but does not force every caller to learn NumPy’s input rules. Its explicit <code>ValueError</code> gives a useful message at the boundary of the function, instead of allowing a mysterious result later in the analysis.</p>
 <p>Run a small, direct check whenever you write a function. This is not a complete test suite, but it records a known case and catches an accidental change to the function’s behavior:</p>
-<div id="571f5b12" class="cell" data-execution_count="6">
+<div id="d8dcabe1" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>expected_mean <span class="op">=</span> <span class="fl">86.0</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])[<span class="st">"mean"</span>] <span class="op">==</span> expected_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -366,7 +375,7 @@ int64
 <section id="names-and-objects" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="names-and-objects"><span class="header-section-number">4.4</span> Names and Objects</h2>
 <p>Python names refer to objects. Assignment usually binds another name to the same object; it does not copy that object. Every object has an identity, type, and value. Lists and dictionaries are mutable, while numbers, strings, and tuples are immutable <span class="citation" data-cites="python2026datamodel">(<a href="#ref-python2026datamodel" role="doc-biblioref">Python Software Foundation, 2026b</a>)</span>.</p>
-<div id="fa2c6e3a" class="cell" data-execution_count="7">
+<div id="3e053cde" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>alias <span class="op">=</span> scores</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>copy <span class="op">=</span> scores.copy()</span>
@@ -386,7 +395,7 @@ False</code></pre>
 </div>
 <p>The call to <code>append</code> changes the list object that both <code>scores</code> and <code>alias</code> refer to. The <code>copy</code> variable refers to a distinct list, so it retains the earlier values. Use <code>is</code> only to ask whether two names refer to the same object; use <code>==</code> to ask whether their values are equal.</p>
 <p>This distinction matters at function boundaries. The first function below has a side effect: it modifies the caller’s list. The second creates and returns a new list, which is generally safer for a data-analysis transformation.</p>
-<div id="3a84f25f" class="cell" data-execution_count="8">
+<div id="bce3d0ab" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bonus_in_place(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Add bonus to each value by changing values itself."""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(values)):</span>
@@ -414,7 +423,7 @@ False</code></pre>
 <section id="data-structures" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="data-structures"><span class="header-section-number">4.5</span> Data Structures</h2>
 <p>Lists are flexible containers that can hold objects of different types. NumPy arrays store a regularly shaped collection of values of one <code>dtype</code>, which makes elementwise numerical operations concise. A pandas data frame organizes named columns that can have different types. Select the structure that matches the task, rather than treating them as interchangeable.</p>
-<div id="7d91d37b" class="cell" data-execution_count="9">
+<div id="868cf930" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>array <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pd.DataFrame({<span class="st">"student"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>], <span class="st">"score"</span>: array})</span>
@@ -463,7 +472,7 @@ False</code></pre>
 <section id="number-representation" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="number-representation"><span class="header-section-number">4.6</span> Number Representation</h2>
 <p>Python’s built-in integers grow to represent arbitrarily large whole numbers, subject to available memory. NumPy integers have a fixed width, such as <code>int8</code> or <code>int64</code>, because fixed-width storage supports compact arrays and fast operations. A value outside that type’s range can overflow:</p>
-<div id="5d5e0127" class="cell" data-execution_count="10">
+<div id="2bce6347" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>largest_int8 <span class="op">=</span> np.array([<span class="dv">127</span>], dtype<span class="op">=</span>np.int8)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>overflowed <span class="op">=</span> largest_int8 <span class="op">+</span> np.array([<span class="dv">1</span>], dtype<span class="op">=</span>np.int8)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -476,7 +485,7 @@ False</code></pre>
 </div>
 <p>Inspect <code>dtype</code> before converting identifiers, counts, or monetary values to a small integer type. An overflow may produce a plausible but wrong value, which is more dangerous than a visible error.</p>
 <p>Most numerical analysis uses binary floating-point values. Many decimal fractions, including 0.1, have no exact finite binary representation, so a stored <code>float</code> is usually an approximation. This behavior comes from the hardware representation, not from a Python mistake <span class="citation" data-cites="python2026floating">(<a href="#ref-python2026floating" role="doc-biblioref">Python Software Foundation, 2026a</a>)</span>.</p>
-<div id="ed78eb82" class="cell" data-execution_count="11">
+<div id="843f1403" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span></span>
@@ -496,7 +505,7 @@ True</code></pre>
 <section id="simulation" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="simulation"><span class="header-section-number">4.7</span> Simulation</h2>
 <p>Random simulation is a compact setting in which all of these ideas matter. The Monty Hall game has three doors, one prize, and a host who opens an unchosen empty door. A player who switches wins whenever the first choice was wrong, which has probability two-thirds. The function below uses a local NumPy random number generator. Supplying the same seed creates the same pseudo-random draws, which makes debugging and review possible.</p>
-<div id="875dfafa" class="cell" data-execution_count="12">
+<div id="8346168f" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_monty_hall(</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    n_trials: <span class="bu">int</span>, seed: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
@@ -552,7 +561,7 @@ True</code></pre>
 </div>
 </div>
 <p>The function returns a data frame instead of printing a conclusion. That choice lets later code make a table, a figure, or a formal comparison without parsing text. Repeating the call with the same arguments should reproduce the result:</p>
-<div id="ebe0e8e4" class="cell" data-execution_count="13">
+<div id="c479a9f7" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>repeat_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results.equals(repeat_results)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -566,7 +575,7 @@ True</code></pre>
 <section id="debugging" class="level2" data-number="4.8">
 <h2 data-number="4.8" class="anchored" data-anchor-id="debugging"><span class="header-section-number">4.8</span> Debugging</h2>
 <p>When an analysis gives an unexpected result, reduce the question before changing the code. Check the interpreter and package version, then inspect the smallest object that could explain the behavior. A concise diagnostic sequence often looks like this:</p>
-<div id="a594f0cd" class="cell" data-execution_count="14">
+<div id="0bf9d0d6" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(monty_results))</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.dtypes)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.shape)</span>
@@ -671,8 +680,8 @@ Python Software Foundation. (2026a). <em>Floating-point arithmetic: Issues and l
 <div id="ref-python2026datamodel" class="csl-entry" role="listitem">
 Python Software Foundation. (2026b). <em>The python language reference: Data model</em>. <a href="https://docs.python.org/3/reference/datamodel.html">https://docs.python.org/3/reference/datamodel.html</a>
 </div>
-<div id="ref-python2026modules" class="csl-entry" role="listitem">
-Python Software Foundation. (2026c). <em>The python tutorial: modules</em>. <a href="https://docs.python.org/3/tutorial/modules.html">https://docs.python.org/3/tutorial/modules.html</a>
+<div id="ref-python2026imports" class="csl-entry" role="listitem">
+Python Software Foundation. (2026c). <em>The python language reference: The import system</em>. <a href="https://docs.python.org/3/reference/import.html">https://docs.python.org/3/reference/import.html</a>
 </div>
 <div id="ref-python2026venv" class="csl-entry" role="listitem">
 Python Software Foundation. (2026d). <em>Virtual environments and packages</em>. <a href="https://docs.python.org/3/tutorial/venv.html">https://docs.python.org/3/tutorial/venv.html</a>
