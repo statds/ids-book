@@ -277,11 +277,11 @@ window.Quarto = {
 </header>
 
 
-<p>Python becomes more useful when you can tell which interpreter runs your code, find the package that supplies a function, design functions with clear inputs and outputs, predict when a change affects an existing object, and recognize the limits of computer number representations. This chapter develops those habits so that short scripts become analyses that another person can inspect and rerun.</p>
+<p>This chapter strengthens the Python skills that make data-science analyses reproducible, inspectable, and efficient. It assumes familiarity with basic Python syntax, including variables, functions, conditionals, and loops. Python becomes more useful when you can tell which interpreter runs your code, find the package that supplies a function, design functions with clear inputs and outputs, predict when a change affects an existing object, and recognize the limits of computer number representations. This refresher develops those habits and introduces data-science-oriented practices so that short scripts become analyses that another person can inspect and rerun.</p>
 <section id="python-ecosystem" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="python-ecosystem"><span class="header-section-number">4.1</span> Python Ecosystem</h2>
-<p>Every Python command runs in one interpreter. That interpreter supplies the language and its standard library; an environment adds third-party packages such as NumPy and pandas. These related terms describe different layers of the Python ecosystem:</p>
-<p>Knowing these layers helps you solve ordinary problems. When <code>import pandas</code> fails, you need to determine whether the active interpreter has access to the installed distribution and its importable package. When someone else reruns your work, they need to know which interpreter and installed distributions it uses. The distinctions also help you read documentation, find the source of a function, and avoid installing a package into the wrong environment.</p>
+<p>A Python process runs code in one interpreter, which supplies the language and standard library. An environment adds third-party packages such as NumPy and pandas. These related terms describe different layers of the Python ecosystem:</p>
+<p>Distinguishing these layers helps diagnose installation problems and reproduce analyses. When <code>import pandas</code> fails, you need to determine whether the active interpreter has access to the installed distribution and its importable package. When someone else reruns your work, they need to know which interpreter and installed distributions it uses. The distinctions also help you read documentation, find the source of a function, and avoid installing a package into the wrong environment.</p>
 <ul>
 <li><strong>Interpreter:</strong> The program that runs Python code and supplies the standard library.</li>
 <li><strong>Module:</strong> A unit that Python’s import system loads as a module object. A module can come from a Python source file, a compiled extension, built-in code, or another source.</li>
@@ -290,8 +290,8 @@ window.Quarto = {
 <li><strong>Distribution:</strong> The installable unit managed by tools such as <code>pip</code>. One distribution can provide one or more importable packages or modules.</li>
 </ul>
 <p>The standard library includes modules such as <code>math</code>, <code>pathlib</code>, and <code>statistics</code>; NumPy and pandas are third-party libraries rather than parts of Python itself <span class="citation" data-cites="python2026imports mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-python2026imports" role="doc-biblioref">Python Software Foundation, 2026c</a>)</span>.</p>
-<p>When code fails with <code>ModuleNotFoundError</code>, first determine which interpreter is active. The following chunk reports the interpreter path and version used by the current Quarto document:</p>
-<div id="8884b745" class="cell" data-execution_count="1">
+<p>When code fails with <code>ModuleNotFoundError</code>, first determine which interpreter is active. This chunk reports the interpreter path and version used by the current Quarto document:</p>
+<div id="d0cbd530" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.executable)</span>
@@ -310,7 +310,7 @@ window.Quarto = {
 <section id="imports" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="imports"><span class="header-section-number">4.2</span> Imports</h2>
 <p>An <code>import</code> statement binds a name in the current file to a module or an object defined elsewhere. Choose imports that make the source easy to read and avoid names that obscure where a function comes from:</p>
-<div id="d38496a7" class="cell" data-execution_count="2">
+<div id="b83ffe2d" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -323,12 +323,12 @@ ids-book</code></pre>
 </div>
 </div>
 <p>For widely used data-science libraries, conventional aliases make code easier to recognize:</p>
-<div id="b7284b29" class="cell" data-execution_count="3">
+<div id="102c8bc0" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Avoid <code>from package import *</code>. It hides the source of each name, can overwrite an existing name, and makes a traceback harder to interpret. When you need to learn what an imported object does, use <code>help()</code>, inspect its documentation, or check its type and attributes deliberately:</p>
-<div id="39d1d245" class="cell" data-execution_count="4">
+<div id="702b6db5" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(sample))</span>
@@ -345,47 +345,127 @@ int64
 <section id="functions" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="functions"><span class="header-section-number">4.3</span> Functions</h2>
 <p>A function should name a task, accept the data and choices needed for that task, and return a result that another part of the analysis can use. It should not quietly depend on a global variable or print a result that a later step needs to analyze. A docstring records the function’s contract, while type hints communicate the intended inputs and output; Python does not automatically enforce those hints.</p>
-<p>The function below summarizes numeric values without changing its input. It converts the input to a floating-point NumPy array, checks a precondition, and returns a dictionary whose named fields are convenient in prose and tables.</p>
-<div id="7626f3d2" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize(values: <span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> np.ndarray) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the count, mean, and sample standard deviation of values."""</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> data.ndim <span class="op">!=</span> <span class="dv">1</span> <span class="kw">or</span> data.size <span class="op">&lt;</span> <span class="dv">2</span>:</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"values must be a one-dimensional sequence of length 2 or more"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n"</span>: <span class="bu">int</span>(data.size),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"mean"</span>: <span class="bu">float</span>(data.mean()),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sd"</span>: <span class="bu">float</span>(data.std(ddof<span class="op">=</span><span class="dv">1</span>)),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<p>Two functions can return the same answer while requiring very different amounts of computation. The Fibonacci sequence provides a small example. We use (F_0 = 0) and (F_1 = 1), so each later value is the sum of the preceding two values. A direct recursive definition is easy to read, but it repeatedly recomputes the same earlier values:</p>
+<div id="33f2315b" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fibonacci_recursive(n: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the nth Fibonacci number using direct recursion."""</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n must be nonnegative"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">2</span>:</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> n</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fibonacci_recursive(n <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> fibonacci_recursive(n <span class="op">-</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Memoization stores values that have already been computed. The <code>functools.cache</code> decorator supplies a general-purpose cache, so the recursive definition still mirrors the mathematics without repeating the same work:</p>
+<div id="f0054a89" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> cache</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">@cache</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fibonacci_memoized(n: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the nth Fibonacci number while caching earlier results."""</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n must be nonnegative"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">2</span>:</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> n</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fibonacci_memoized(n <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> fibonacci_memoized(n <span class="op">-</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A bottom-up dynamic-programming function builds the sequence from its base cases. It uses linear time and stores all earlier values, which is useful when the analysis needs the sequence rather than only its final value:</p>
+<div id="1e51d229" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fibonacci_bottom_up(n: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the nth Fibonacci number using a table of earlier values."""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n must be nonnegative"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>, n <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        values.append(values[index <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> values[index <span class="op">-</span> <span class="dv">2</span>])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> values[n] <span class="cf">if</span> n <span class="cf">else</span> values[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>When only one value is needed, an iterative function can keep just the two values needed for the next step. It returns the same result with linear time and constant extra memory:</p>
+<div id="c711519c" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fibonacci_iterative(n: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the nth Fibonacci number by iterating from the base cases."""</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n must be nonnegative"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    previous, current <span class="op">=</span> <span class="dv">0</span>, <span class="dv">1</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        previous, current <span class="op">=</span> current, previous <span class="op">+</span> current</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> previous</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> (</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    fibonacci_recursive(<span class="dv">10</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">==</span> fibonacci_memoized(<span class="dv">10</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">==</span> fibonacci_bottom_up(<span class="dv">10</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">==</span> fibonacci_iterative(<span class="dv">10</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">==</span> <span class="dv">55</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The recursive version makes the mathematical definition visible, but its repeated work grows exponentially as <code>n</code> increases. Memoization and the two iterative approaches reduce the repeated work to linear time. The bottom-up version uses linear extra memory, while the constant-memory version is the practical choice when only one value is needed. A small timing comparison makes the difference observable:</p>
+<div id="c34f785b" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timeit</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_memoized():</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    fibonacci_memoized.cache_clear()</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fibonacci_memoized(<span class="dv">30</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>timings <span class="op">=</span> {</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"recursive"</span>: timeit.timeit(<span class="kw">lambda</span>: fibonacci_recursive(<span class="dv">30</span>), number<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"memoized"</span>: timeit.timeit(run_memoized, number<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bottom_up"</span>: timeit.timeit(<span class="kw">lambda</span>: fibonacci_bottom_up(<span class="dv">30</span>), number<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"iterative"</span>: timeit.timeit(<span class="kw">lambda</span>: fibonacci_iterative(<span class="dv">30</span>), number<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>pd.Series(timings, name<span class="op">=</span><span class="st">"seconds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>recursive    0.256787
+memoized     0.000028
+bottom_up    0.000010
+iterative    0.000028
+Name: seconds, dtype: float64</code></pre>
+</div>
+</div>
+<p>Data-science analyses often repeat calculations across observations, simulation trials, features, or model evaluations. An implementation that is acceptable for one small example can become infeasible when the data or number of repetitions grows. Choosing an algorithm, checking its runtime and memory use, and testing equivalent implementations are therefore data-science practices, not merely programming exercises.</p>
+<p>A summary function can accept ordinary Python data while returning statistics in a structured form. The function converts its input to a floating-point NumPy array, checks a precondition, and returns a dictionary whose named fields are convenient in prose and tables.</p>
+<div id="737e9172" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize(values: <span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> np.ndarray) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>]:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the count, mean, and sample standard deviation of values."""</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> data.ndim <span class="op">!=</span> <span class="dv">1</span> <span class="kw">or</span> data.size <span class="op">&lt;</span> <span class="dv">2</span>:</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"values must be a one-dimensional sequence of length 2 or more"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n"</span>: <span class="bu">int</span>(data.size),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"mean"</span>: <span class="bu">float</span>(data.mean()),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sd"</span>: <span class="bu">float</span>(data.std(ddof<span class="op">=</span><span class="dv">1</span>)),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>{'n': 5, 'mean': 86.0, 'sd': 7.176350047203662}</code></pre>
 </div>
 </div>
 <p>The conversion inside <code>summarize</code> creates an array suited to numerical work. The function therefore accepts an ordinary list but does not force every caller to learn NumPy’s input rules. Its explicit <code>ValueError</code> gives a useful message at the boundary of the function, instead of allowing a mysterious result later in the analysis.</p>
 <p>Run a small, direct check whenever you write a function. This is not a complete test suite, but it records a known case and catches an accidental change to the function’s behavior:</p>
-<div id="d8dcabe1" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>expected_mean <span class="op">=</span> <span class="fl">86.0</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])[<span class="st">"mean"</span>] <span class="op">==</span> expected_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="1a73ed01" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>expected_mean <span class="op">=</span> <span class="fl">86.0</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> summarize([<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>, <span class="dv">76</span>, <span class="dv">94</span>])[<span class="st">"mean"</span>] <span class="op">==</span> expected_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Use a function when a task recurs, when its name clarifies a multi-step calculation, or when you want to test one part of an analysis independently. Do not turn every one-line expression into a function; an unnecessary function can hide a simple calculation.</p>
 </section>
 <section id="names-and-objects" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="names-and-objects"><span class="header-section-number">4.4</span> Names and Objects</h2>
 <p>Python names refer to objects. Assignment usually binds another name to the same object; it does not copy that object. Every object has an identity, type, and value. Lists and dictionaries are mutable, while numbers, strings, and tuples are immutable <span class="citation" data-cites="python2026datamodel">(<a href="#ref-python2026datamodel" role="doc-biblioref">Python Software Foundation, 2026b</a>)</span>.</p>
-<div id="3e053cde" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>alias <span class="op">=</span> scores</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>copy <span class="op">=</span> scores.copy()</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>alias.append(<span class="dv">76</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(scores)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(alias <span class="kw">is</span> scores)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(copy)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(copy <span class="kw">is</span> scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="0069d769" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>alias <span class="op">=</span> scores</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>copy <span class="op">=</span> scores.copy()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>alias.append(<span class="dv">76</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(scores)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(alias <span class="kw">is</span> scores)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(copy)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(copy <span class="kw">is</span> scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[82, 91, 87, 76]
 True
@@ -394,25 +474,25 @@ False</code></pre>
 </div>
 </div>
 <p>The call to <code>append</code> changes the list object that both <code>scores</code> and <code>alias</code> refer to. The <code>copy</code> variable refers to a distinct list, so it retains the earlier values. Use <code>is</code> only to ask whether two names refer to the same object; use <code>==</code> to ask whether their values are equal.</p>
-<p>This distinction matters at function boundaries. The first function below has a side effect: it modifies the caller’s list. The second creates and returns a new list, which is generally safer for a data-analysis transformation.</p>
-<div id="bce3d0ab" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bonus_in_place(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Add bonus to each value by changing values itself."""</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(values)):</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        values[index] <span class="op">+=</span> bonus</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> with_bonus(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return bonus-adjusted values without changing values itself."""</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">+</span> bonus <span class="cf">for</span> value <span class="kw">in</span> values]</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>original <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>adjusted <span class="op">=</span> with_bonus(original, <span class="dv">3</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>add_bonus_in_place(original, <span class="dv">3</span>)</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(original)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This distinction matters at function boundaries. An in-place function has a side effect because it modifies the caller’s list. A function that creates and returns a new list is generally safer for a data-analysis transformation.</p>
+<div id="a7d2b96f" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bonus_in_place(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Add bonus to each value by changing values itself."""</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(values)):</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        values[index] <span class="op">+=</span> bonus</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> with_bonus(values: <span class="bu">list</span>[<span class="bu">float</span>], bonus: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return bonus-adjusted values without changing values itself."""</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">+</span> bonus <span class="cf">for</span> value <span class="kw">in</span> values]</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>original <span class="op">=</span> [<span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">87</span>]</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>adjusted <span class="op">=</span> with_bonus(original, <span class="dv">3</span>)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>add_bonus_in_place(original, <span class="dv">3</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(adjusted)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(original)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[85, 94, 90]
 [85, 94, 90]</code></pre>
@@ -423,17 +503,17 @@ False</code></pre>
 <section id="data-structures" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="data-structures"><span class="header-section-number">4.5</span> Data Structures</h2>
 <p>Lists are flexible containers that can hold objects of different types. NumPy arrays store a regularly shaped collection of values of one <code>dtype</code>, which makes elementwise numerical operations concise. A pandas data frame organizes named columns that can have different types. Select the structure that matches the task, rather than treating them as interchangeable.</p>
-<div id="868cf930" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>array <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pd.DataFrame({<span class="st">"student"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>], <span class="st">"score"</span>: array})</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(array <span class="op">*</span> <span class="dv">10</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="7bfdc668" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>array <span class="op">=</span> np.asarray(values, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pd.DataFrame({<span class="st">"student"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>], <span class="st">"score"</span>: array})</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(array <span class="op">*</span> <span class="dv">10</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[10. 20. 30.]</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -468,67 +548,75 @@ False</code></pre>
 </div>
 </div>
 <p>The expression <code>array * 10</code> multiplies every array value. In contrast, <code>values * 10</code> repeats the list ten times. This is not a minor syntactic detail: it changes the object type and the meaning of the operation. Convert to an array when you need regular numerical computation; use a data frame when the observations have named variables and you need to inspect, join, summarize, or plot columns <span class="citation" data-cites="vanderplas2016python mckinney2022python">(<a href="#ref-mckinney2022python" role="doc-biblioref">McKinney, 2022</a>; <a href="#ref-vanderplas2016python" role="doc-biblioref">VanderPlas, 2016</a>)</span>.</p>
+<p>NumPy operations are often vectorized: one expression applies the same calculation to every array element without an explicit Python loop. Vectorized operations are usually faster for large regular arrays, while loops remain appropriate for branching logic and one-game simulations <span class="citation" data-cites="vanderplas2016python">(<a href="#ref-vanderplas2016python" role="doc-biblioref">VanderPlas, 2016</a>)</span>:</p>
+<div id="2122d540" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>array<span class="op">**</span><span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>array([1., 4., 9.])</code></pre>
+</div>
+</div>
+<p>Python-level loops can be slower for large numerical arrays because Python must interpret each iteration and repeatedly manage dynamically typed objects. A NumPy expression moves the repeated numerical work into compiled code, much as R uses compiled routines behind vectorized operations. When a custom loop cannot be expressed with NumPy or pandas, Python users commonly use [Numba] (https://numba.readthedocs.io/en/stable/user/5minguide.html) to compile suitable numerical functions, or use <a href="https://cython.readthedocs.io/en/latest/">Cython</a> and compiled extensions for more control. Switching to Julia is another language choice, but it is not required simply because a Python loop is slow.</p>
 </section>
 <section id="number-representation" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="number-representation"><span class="header-section-number">4.6</span> Number Representation</h2>
 <p>Python’s built-in integers grow to represent arbitrarily large whole numbers, subject to available memory. NumPy integers have a fixed width, such as <code>int8</code> or <code>int64</code>, because fixed-width storage supports compact arrays and fast operations. A value outside that type’s range can overflow:</p>
-<div id="2bce6347" class="cell" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>largest_int8 <span class="op">=</span> np.array([<span class="dv">127</span>], dtype<span class="op">=</span>np.int8)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>overflowed <span class="op">=</span> largest_int8 <span class="op">+</span> np.array([<span class="dv">1</span>], dtype<span class="op">=</span>np.int8)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(largest_int8.dtype, largest_int8)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(overflowed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="58871c02" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>largest_int8 <span class="op">=</span> np.array([<span class="dv">127</span>], dtype<span class="op">=</span>np.int8)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>overflowed <span class="op">=</span> largest_int8 <span class="op">+</span> np.array([<span class="dv">1</span>], dtype<span class="op">=</span>np.int8)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(largest_int8.dtype, largest_int8)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(overflowed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>int8 [127]
 [-128]</code></pre>
 </div>
 </div>
 <p>Inspect <code>dtype</code> before converting identifiers, counts, or monetary values to a small integer type. An overflow may produce a plausible but wrong value, which is more dangerous than a visible error.</p>
-<p>Most numerical analysis uses binary floating-point values. Many decimal fractions, including 0.1, have no exact finite binary representation, so a stored <code>float</code> is usually an approximation. This behavior comes from the hardware representation, not from a Python mistake <span class="citation" data-cites="python2026floating">(<a href="#ref-python2026floating" role="doc-biblioref">Python Software Foundation, 2026a</a>)</span>.</p>
-<div id="843f1403" class="cell" data-execution_count="11">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="fl">0.3</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(total <span class="op">==</span> target)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">format</span>(total, <span class="st">".17f"</span>))</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(math.isclose(total, target))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Most numerical analysis uses binary floating-point values. Many decimal fractions, including 0.1, have no exact finite binary representation, so a stored <code>float</code> is usually an approximation. This behavior comes from the hardware representation, not from a Python mistake <span class="citation" data-cites="python2026floating">(<a href="#ref-python2026floating" role="doc-biblioref">Python Software Foundation, 2026a</a>)</span>. A standard double-precision floating-point value uses a finite sign, exponent, and significand; the <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">Wikipedia article on double-precision floating-point format</a> provides an optional visual explanation of these fields. The limited significand also means that ordinary floating-point values cannot represent every very large integer exactly.</p>
+<div id="aa4fa0d3" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>total <span class="op">=</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.1</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(total <span class="op">==</span> target)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">format</span>(total, <span class="st">".17f"</span>))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(math.isclose(total, target))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>False
 0.30000000000000004
 True</code></pre>
 </div>
 </div>
-<p>Use exact equality for values that are expected to be exactly equal, such as category labels, integer counts, or a known string. For computed floating-point values, use <code>math.isclose</code> or <code>numpy.isclose</code> with tolerances chosen for the scale and purpose of the analysis. Format a final result for readers, but do not mistake rounded display for increased computational accuracy. Use <code>decimal.Decimal</code> when an application requires decimal arithmetic, such as currency calculations with legally defined rounding rules.</p>
+<p>Use exact equality for values that are expected to be exactly equal, such as category labels, integer counts, or a known string. For computed floating-point values, use <code>math.isclose</code> or <code>numpy.isclose</code> with tolerances chosen for the scale and purpose of the analysis. Format a final result for readers, but do not mistake rounded display for increased computational accuracy. Use <code>decimal.Decimal</code> when an application requires decimal arithmetic, such as currency calculations with legally defined rounding rules. For calculations that require many decimal digits, set the decimal context inside the function so its result does not depend on hidden notebook state; construct values from exact inputs such as <code>Decimal(1)</code>, rather than converting an existing <code>float</code>.</p>
 </section>
 <section id="simulation" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="simulation"><span class="header-section-number">4.7</span> Simulation</h2>
-<p>Random simulation is a compact setting in which all of these ideas matter. The Monty Hall game has three doors, one prize, and a host who opens an unchosen empty door. A player who switches wins whenever the first choice was wrong, which has probability two-thirds. The function below uses a local NumPy random number generator. Supplying the same seed creates the same pseudo-random draws, which makes debugging and review possible.</p>
-<div id="8346168f" class="cell" data-execution_count="12">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_monty_hall(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    n_trials: <span class="bu">int</span>, seed: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Estimate stay and switch win rates in the three-door Monty Hall game."""</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n_trials <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n_trials must be positive"</span>)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    prize <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>n_trials)</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    first_choice <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>n_trials)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    stay_wins <span class="op">=</span> (first_choice <span class="op">==</span> prize).<span class="bu">sum</span>()</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    switch_wins <span class="op">=</span> n_trials <span class="op">-</span> stay_wins</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">"strategy"</span>: [<span class="st">"stay"</span>, <span class="st">"switch"</span>],</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">"wins"</span>: [stay_wins, switch_wins],</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">"win_rate"</span>: [stay_wins <span class="op">/</span> n_trials, switch_wins <span class="op">/</span> n_trials],</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>monty_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>monty_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<p>Random simulation is a compact setting in which all of these ideas matter. The Monty Hall game has three doors, one prize, and a host who opens an unchosen empty door. A player who switches wins whenever the first choice was wrong, which has probability two-thirds. The simulation uses a local NumPy random number generator. Supplying the same seed creates the same pseudo-random draws, which makes debugging and review possible.</p>
+<div id="7a7db67e" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_monty_hall(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    n_trials: <span class="bu">int</span>, seed: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Estimate stay and switch win rates in the three-door Monty Hall game."""</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n_trials <span class="op">&lt;=</span> <span class="dv">0</span>:</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"n_trials must be positive"</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    prize <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>n_trials)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    first_choice <span class="op">=</span> rng.integers(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>n_trials)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    stay_wins <span class="op">=</span> (first_choice <span class="op">==</span> prize).<span class="bu">sum</span>()</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    switch_wins <span class="op">=</span> n_trials <span class="op">-</span> stay_wins</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">"strategy"</span>: [<span class="st">"stay"</span>, <span class="st">"switch"</span>],</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">"wins"</span>: [stay_wins, switch_wins],</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">"win_rate"</span>: [stay_wins <span class="op">/</span> n_trials, switch_wins <span class="op">/</span> n_trials],</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>monty_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>monty_results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -561,12 +649,12 @@ True</code></pre>
 </div>
 </div>
 <p>The function returns a data frame instead of printing a conclusion. That choice lets later code make a table, a figure, or a formal comparison without parsing text. Repeating the call with the same arguments should reproduce the result:</p>
-<div id="c479a9f7" class="cell" data-execution_count="13">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>repeat_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results.equals(repeat_results)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>np.isclose(monty_results.loc[<span class="dv">0</span>, <span class="st">"win_rate"</span>], <span class="dv">1</span> <span class="op">/</span> <span class="dv">3</span>, atol<span class="op">=</span><span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="aecd64f3" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>repeat_results <span class="op">=</span> simulate_monty_hall(n_trials<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span><span class="dv">2026</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results.equals(repeat_results)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>np.isclose(monty_results.loc[<span class="dv">0</span>, <span class="st">"win_rate"</span>], <span class="dv">1</span> <span class="op">/</span> <span class="dv">3</span>, atol<span class="op">=</span><span class="fl">0.01</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
 <pre><code>np.True_</code></pre>
 </div>
 </div>
@@ -574,12 +662,16 @@ True</code></pre>
 </section>
 <section id="debugging" class="level2" data-number="4.8">
 <h2 data-number="4.8" class="anchored" data-anchor-id="debugging"><span class="header-section-number">4.8</span> Debugging</h2>
-<p>When an analysis gives an unexpected result, reduce the question before changing the code. Check the interpreter and package version, then inspect the smallest object that could explain the behavior. A concise diagnostic sequence often looks like this:</p>
-<div id="0bf9d0d6" class="cell" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(monty_results))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.dtypes)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.shape)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Debugging is the process of finding which assumption in a program failed, not merely making an exception disappear. When a program raises an error or returns an unexpected result, reduce the problem before changing the code. Reproduce it with the smallest input that shows the failure, read the final line of the traceback first, and inspect the smallest object that could explain the behavior.</p>
+<p>Python provides several complementary debugging tools. Use <code>type()</code>, <code>repr()</code>, <code>dir()</code>, and <code>help()</code> to inspect ordinary Python objects. Use <code>assert</code> to check program assumptions that should always hold, such as a positive sample size or a matching number of rows. When a program operates on tabular or numerical objects, inspect their types, shapes, missing values, and finite values deliberately:</p>
+<div id="41b5787b" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(monty_results))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.dtypes)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.shape)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(monty_results.head())</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results.shape <span class="op">==</span> (<span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> monty_results[<span class="st">"wins"</span>].<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">100_000</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.isfinite(monty_results[<span class="st">"win_rate"</span>]).<span class="bu">all</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.DataFrame'&gt;
 strategy        str
@@ -592,7 +684,13 @@ dtype: object
 1   switch  66740    0.6674</code></pre>
 </div>
 </div>
-<p>Read the final line of a traceback first: it usually states the exception type and message. Then find the line in your source that led there. Avoid solving an error by repeatedly installing packages, restarting the editor, or changing several unrelated lines at once. Make one hypothesis, test it with a small example, and record the correction in the source or a concise commit message.</p>
+<p>Pandas supplies additional checks such as <code>.info()</code>, <code>.describe()</code>, <code>.isna()</code>, and <code>.value_counts()</code>. NumPy supplies checks such as <code>.shape</code>, <code>.dtype</code>, <code>np.isnan()</code>, and <code>np.isfinite()</code>. These checks can reveal a wrong column type, unexpected missing values, an empty subset, or a calculation that silently produced infinite values.</p>
+<p>For an exception, the <code>traceback</code> module can display the error explicitly in a script. To pause a running program and inspect local variables, insert <code>breakpoint()</code> temporarily or run a script under Python’s <a href="https://docs.python.org/3/library/pdb.html">standard-library debugger</a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pdb analysis.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a Jupyter or Quarto notebook, <code>%debug</code> opens the debugger after the most recent exception, and <code>%pdb on</code> enables automatic entry into the debugger after future exceptions. These commands are interactive, so use them while developing rather than in a document that must render unattended.</p>
+<p>Turn a successful diagnostic into a repeatable test. A direct <code>assert</code> is often enough for a small function; a test framework such as <a href="https://docs.pytest.org/en/stable/"><code>pytest</code></a> is useful when a program has many cases. Keep the input small, make the expected result explicit, and test edge cases such as an empty input, a missing value, or a sample size of one.</p>
+<p>AI assistants can also help with debugging. Give an assistant the smallest reproducible example, the complete traceback, the relevant function, and the expected behavior. It can explain an unfamiliar message, suggest diagnostic checks, propose a minimal correction, or help write a test. Do not paste credentials, private data, or confidential project code. Treat an AI suggestion as a hypothesis: check it against the official documentation and your source, run the proposed test, and verify that the program now behaves as intended—not only that the exception has disappeared.</p>
+<p>Avoid solving an error by repeatedly installing packages, restarting the editor, or changing several unrelated lines at once. Make one hypothesis, test it with a small example, and record the correction in the source or a concise commit message.</p>
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
@@ -633,7 +731,7 @@ dtype: object
 <li>Write <code>simulate_general_monty_hall(n_doors, n_empty, n_trials, seed)</code> to call the one-game function repeatedly. Require <code>n_trials &gt; 0</code>, create one seeded random-number generator for the simulation, and return a data frame with one row each for <code>stay</code> and <code>switch</code>, including wins and win rate.</li>
 <li>Apply the simulation with <code>(n_doors, n_empty)</code> equal to <code>(3, 1)</code> and <code>(10, 8)</code>, both with <code>n_trials=1_000</code> and <code>seed=2026</code>. Render a table that summarizes the results.</li>
 <li>Calculate the theoretical win rates: <span class="math inline">\(1/n\)</span> for staying and <span class="math inline">\((n-1) / [n(n-m-1)]\)</span> for switching when there are <span class="math inline">\(n\)</span> doors and the host opens <span class="math inline">\(m\)</span> empty doors. Compare the simulations with these values and explain which strategy is preferred in each setting.</li>
-<li>Call the simulation twice with identical arguments and use an assertion to show that it returns identical results. Explain why this check matters.</li>
+<li>Call the simulation twice with identical arguments, including the same seed. Use an assertion to show that the returned results are identical. Explain that each call creates a new random-number generator initialized with that seed, so both calls produce the same pseudo-random sequence.</li>
 </ol>
 </div>
 <div id="exr-monte-carlo-pi" class="theorem exercise">
