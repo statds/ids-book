@@ -1,25 +1,28 @@
 # Python Practice {#sec-python}
 
-Python becomes more useful when you can tell which interpreter runs your code,
-find the package that supplies a function, design functions with clear inputs
-and outputs, predict when a change affects an existing object, and recognize
-the limits of computer number representations. This chapter develops those
-habits so that short scripts become analyses that another person can inspect
-and rerun.
+This chapter strengthens the Python skills that make data-science analyses
+reproducible, inspectable, and efficient. It assumes familiarity with basic
+Python syntax, including variables, functions, conditionals, and loops. Python
+becomes more useful when you can tell which interpreter runs your code, find the
+package that supplies a function, design functions with clear inputs and
+outputs, predict when a change affects an existing object, and recognize the
+limits of computer number representations. This refresher develops those
+habits and introduces data-science-oriented practices so that short scripts
+become analyses that another person can inspect and rerun.
 
 ## Python Ecosystem
 
-Every Python command runs in one interpreter. That interpreter supplies the
-language and its standard library; an environment adds third-party packages
-such as NumPy and pandas. These related terms describe different layers of the
-Python ecosystem:
+A Python process runs code in one interpreter, which supplies the language and
+standard library. An environment adds third-party packages such as NumPy and
+pandas. These related terms describe different layers of the Python ecosystem:
 
-Knowing these layers helps you solve ordinary problems. When `import pandas`
-fails, you need to determine whether the active interpreter has access to the
-installed distribution and its importable package. When someone else reruns
-your work, they need to know which interpreter and installed distributions it
-uses. The distinctions also help you read documentation, find the source of a
-function, and avoid installing a package into the wrong environment.
+Distinguishing these layers helps diagnose installation problems and reproduce
+analyses. When `import pandas` fails, you need to determine whether the active
+interpreter has access to the installed distribution and its importable
+package. When someone else reruns your work, they need to know which
+interpreter and installed distributions it uses. The distinctions also help
+you read documentation, find the source of a function, and avoid installing a
+package into the wrong environment.
 
 - **Interpreter:** The program that runs Python code and supplies the standard
   library.
@@ -39,8 +42,8 @@ The standard library includes modules such as `math`, `pathlib`, and
 Python itself [@python2026imports; @mckinney2022python].
 
 When code fails with `ModuleNotFoundError`, first determine which interpreter
-is active. The following chunk reports the interpreter path and version used by
-the current Quarto document:
+is active. This chunk reports the interpreter path and version used by the
+current Quarto document:
 
 ```{python}
 import sys
@@ -118,9 +121,114 @@ needs to analyze. A docstring records the function’s contract, while type hint
 communicate the intended inputs and output; Python does not automatically
 enforce those hints.
 
-The function below summarizes numeric values without changing its input. It
-converts the input to a floating-point NumPy array, checks a precondition, and
-returns a dictionary whose named fields are convenient in prose and tables.
+Two functions can return the same answer while requiring very different
+amounts of computation. The Fibonacci sequence provides a small example. We
+use \(F_0 = 0\) and \(F_1 = 1\), so each later value is the sum of the preceding
+two values. A direct recursive definition is easy to read, but it repeatedly
+recomputes the same earlier values:
+
+```{python}
+def fibonacci_recursive(n: int) -> int:
+    """Return the nth Fibonacci number using direct recursion."""
+    if n < 0:
+        raise ValueError("n must be nonnegative")
+    if n < 2:
+        return n
+    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+```
+
+Memoization stores values that have already been computed. The
+`functools.cache` decorator supplies a general-purpose cache, so the recursive
+definition still mirrors the mathematics without repeating the same work:
+
+```{python}
+from functools import cache
+
+
+@cache
+def fibonacci_memoized(n: int) -> int:
+    """Return the nth Fibonacci number while caching earlier results."""
+    if n < 0:
+        raise ValueError("n must be nonnegative")
+    if n < 2:
+        return n
+    return fibonacci_memoized(n - 1) + fibonacci_memoized(n - 2)
+```
+
+A bottom-up dynamic-programming function builds the sequence from its base
+cases. It uses linear time and stores all earlier values, which is useful when
+the analysis needs the sequence rather than only its final value:
+
+```{python}
+def fibonacci_bottom_up(n: int) -> int:
+    """Return the nth Fibonacci number using a table of earlier values."""
+    if n < 0:
+        raise ValueError("n must be nonnegative")
+    values = [0, 1]
+    for index in range(2, n + 1):
+        values.append(values[index - 1] + values[index - 2])
+    return values[n] if n else values[0]
+```
+
+When only one value is needed, an iterative function can keep just the two
+values needed for the next step. It returns the same result with linear time
+and constant extra memory:
+
+```{python}
+def fibonacci_iterative(n: int) -> int:
+    """Return the nth Fibonacci number by iterating from the base cases."""
+    if n < 0:
+        raise ValueError("n must be nonnegative")
+    previous, current = 0, 1
+    for _ in range(n):
+        previous, current = current, previous + current
+    return previous
+
+
+assert (
+    fibonacci_recursive(10)
+    == fibonacci_memoized(10)
+    == fibonacci_bottom_up(10)
+    == fibonacci_iterative(10)
+    == 55
+)
+```
+
+The recursive version makes the mathematical definition visible, but its
+repeated work grows exponentially as `n` increases. Memoization and the two
+iterative approaches reduce the repeated work to linear time. The bottom-up
+version uses linear extra memory, while the constant-memory version is the
+practical choice when only one value is needed. A small timing comparison makes
+the difference observable:
+
+```{python}
+import timeit
+
+def run_memoized():
+    fibonacci_memoized.cache_clear()
+    return fibonacci_memoized(30)
+
+
+timings = {
+    "recursive": timeit.timeit(lambda: fibonacci_recursive(30), number=1),
+    "memoized": timeit.timeit(run_memoized, number=1),
+    "bottom_up": timeit.timeit(lambda: fibonacci_bottom_up(30), number=1),
+    "iterative": timeit.timeit(lambda: fibonacci_iterative(30), number=1),
+}
+pd.Series(timings, name="seconds")
+```
+
+Data-science analyses often repeat calculations across observations, simulation
+trials, features, or model evaluations. An implementation that is acceptable
+for one small example can become infeasible when the data or number of
+repetitions grows. Choosing an algorithm, checking its runtime and memory use,
+and testing equivalent implementations are therefore data-science practices,
+not merely programming exercises.
+
+A summary function can accept ordinary Python data while returning statistics in
+a structured form. The function converts its input to a floating-point NumPy
+array, checks a precondition, and returns a dictionary whose named fields are
+convenient in prose and tables.
 
 ```{python}
 def summarize(values: list[float] | np.ndarray) -> dict[str, int | float]:
@@ -183,9 +291,9 @@ refer to. The `copy` variable refers to a distinct list, so it retains the
 earlier values. Use `is` only to ask whether two names refer to the same
 object; use `==` to ask whether their values are equal.
 
-This distinction matters at function boundaries. The first function below has
-a side effect: it modifies the caller’s list. The second creates and returns a
-new list, which is generally safer for a data-analysis transformation.
+This distinction matters at function boundaries. An in-place function has a
+side effect because it modifies the caller’s list. A function that creates and
+returns a new list is generally safer for a data-analysis transformation.
 
 ```{python}
 def add_bonus_in_place(values: list[float], bonus: float) -> None:
@@ -237,6 +345,25 @@ array when you need regular numerical computation; use a data frame when the
 observations have named variables and you need to inspect, join, summarize, or
 plot columns [@vanderplas2016python; @mckinney2022python].
 
+NumPy operations are often vectorized: one expression applies the same
+calculation to every array element without an explicit Python loop. Vectorized
+operations are usually faster for large regular arrays, while loops remain
+appropriate for branching logic and one-game simulations [@vanderplas2016python]:
+
+```{python}
+array**2
+```
+
+Python-level loops can be slower for large numerical arrays because Python must
+interpret each iteration and repeatedly manage dynamically typed objects. A
+NumPy expression moves the repeated numerical work into compiled code, much as
+R uses compiled routines behind vectorized operations. When a custom loop
+cannot be expressed with NumPy or pandas, Python users commonly use [Numba]
+(https://numba.readthedocs.io/en/stable/user/5minguide.html) to compile suitable
+numerical functions, or use [Cython](https://cython.readthedocs.io/en/latest/)
+and compiled extensions for more control. Switching to Julia is another
+language choice, but it is not required simply because a Python loop is slow.
+
 ## Number Representation
 
 Python’s built-in integers grow to represent arbitrarily large whole numbers,
@@ -259,7 +386,13 @@ is more dangerous than a visible error.
 Most numerical analysis uses binary floating-point values. Many decimal
 fractions, including 0.1, have no exact finite binary representation, so a
 stored `float` is usually an approximation. This behavior comes from the
-hardware representation, not from a Python mistake [@python2026floating].
+hardware representation, not from a Python mistake [@python2026floating]. A
+standard double-precision floating-point value uses a finite sign, exponent,
+and significand; the [Wikipedia article on double-precision floating-point
+format](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
+provides an optional visual explanation of these fields. The limited
+significand also means that ordinary floating-point values cannot represent
+every very large integer exactly.
 
 ```{python}
 import math
@@ -278,14 +411,17 @@ values, use `math.isclose` or `numpy.isclose` with tolerances chosen for the
 scale and purpose of the analysis. Format a final result for readers, but do
 not mistake rounded display for increased computational accuracy. Use
 `decimal.Decimal` when an application requires decimal arithmetic, such as
-currency calculations with legally defined rounding rules.
+currency calculations with legally defined rounding rules. For calculations
+that require many decimal digits, set the decimal context inside the function
+so its result does not depend on hidden notebook state; construct values from
+exact inputs such as `Decimal(1)`, rather than converting an existing `float`.
 
 ## Simulation
 
 Random simulation is a compact setting in which all of these ideas matter. The
 Monty Hall game has three doors, one prize, and a host who opens an unchosen
 empty door. A player who switches wins whenever the first choice was wrong,
-which has probability two-thirds. The function below uses a local NumPy random
+which has probability two-thirds. The simulation uses a local NumPy random
 number generator. Supplying the same seed creates the same pseudo-random draws,
 which makes debugging and review possible.
 
@@ -331,23 +467,69 @@ choose one; a tolerance that is too loose can conceal a mistake.
 
 ## Debugging
 
-When an analysis gives an unexpected result, reduce the question before
-changing the code. Check the interpreter and package version, then inspect the
-smallest object that could explain the behavior. A concise diagnostic sequence
-often looks like this:
+Debugging is the process of finding which assumption in a program failed, not
+merely making an exception disappear. When a program raises an error or returns
+an unexpected result, reduce the problem before changing the code. Reproduce it
+with the smallest input that shows the failure, read the final line of the
+traceback first, and inspect the smallest object that could explain the
+behavior.
+
+Python provides several complementary debugging tools. Use `type()`, `repr()`,
+`dir()`, and `help()` to inspect ordinary Python objects. Use `assert` to check
+program assumptions that should always hold, such as a positive sample size or
+a matching number of rows. When a program operates on tabular or numerical
+objects, inspect their types, shapes, missing values, and finite values
+deliberately:
 
 ```{python}
 print(type(monty_results))
 print(monty_results.dtypes)
 print(monty_results.shape)
 print(monty_results.head())
+assert monty_results.shape == (2, 3)
+assert monty_results["wins"].sum() == 100_000
+assert np.isfinite(monty_results["win_rate"]).all()
 ```
 
-Read the final line of a traceback first: it usually states the exception type
-and message. Then find the line in your source that led there. Avoid solving an
-error by repeatedly installing packages, restarting the editor, or changing
-several unrelated lines at once. Make one hypothesis, test it with a small
-example, and record the correction in the source or a concise commit message.
+Pandas supplies additional checks such as `.info()`, `.describe()`, `.isna()`,
+and `.value_counts()`. NumPy supplies checks such as `.shape`, `.dtype`,
+`np.isnan()`, and `np.isfinite()`. These checks can reveal a wrong column type,
+unexpected missing values, an empty subset, or a calculation that silently
+produced infinite values.
+
+For an exception, the `traceback` module can display the error explicitly in a
+script. To pause a running program and inspect local variables, insert
+`breakpoint()` temporarily or run a script under Python’s [standard-library
+debugger](https://docs.python.org/3/library/pdb.html):
+
+```bash
+python -m pdb analysis.py
+```
+
+In a Jupyter or Quarto notebook, `%debug` opens the debugger after the most
+recent exception, and `%pdb on` enables automatic entry into the debugger after
+future exceptions. These commands are interactive, so use them while
+developing rather than in a document that must render unattended.
+
+Turn a successful diagnostic into a repeatable test. A direct `assert` is often
+enough for a small function; a test framework such as
+[`pytest`](https://docs.pytest.org/en/stable/) is useful when a program has many
+cases. Keep the input small, make the expected result explicit, and test edge
+cases such as an empty input, a missing value, or a sample size of one.
+
+AI assistants can also help with debugging. Give an assistant the smallest
+reproducible example, the complete traceback, the relevant function, and the
+expected behavior. It can explain an unfamiliar message, suggest diagnostic
+checks, propose a minimal correction, or help write a test. Do not paste
+credentials, private data, or confidential project code. Treat an AI suggestion
+as a hypothesis: check it against the official documentation and your source,
+run the proposed test, and verify that the program now behaves as intended—not
+only that the exception has disappeared.
+
+Avoid solving an error by repeatedly installing packages, restarting the editor,
+or changing several unrelated lines at once. Make one hypothesis, test it with
+a small example, and record the correction in the source or a concise commit
+message.
 
 ## Exercises {.unnumbered}
 
@@ -433,8 +615,10 @@ f. Calculate the theoretical win rates: $1/n$ for staying and
    $(n-1) / [n(n-m-1)]$ for switching when there are $n$ doors and the host
    opens $m$ empty doors. Compare the simulations with these values and explain
    which strategy is preferred in each setting.
-g. Call the simulation twice with identical arguments and use an assertion to
-   show that it returns identical results. Explain why this check matters.
+g. Call the simulation twice with identical arguments, including the same seed.
+   Use an assertion to show that the returned results are identical. Explain
+   that each call creates a new random-number generator initialized with that
+   seed, so both calls produce the same pseudo-random sequence.
 :::
 
 ::: {#exr-monte-carlo-pi}
