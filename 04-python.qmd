@@ -437,13 +437,11 @@ def simulate_monty_hall(
     first_choice = rng.integers(0, 3, size=n_trials)
     stay_wins = (first_choice == prize).sum()
     switch_wins = n_trials - stay_wins
-    return pd.DataFrame(
-        {
-            "strategy": ["stay", "switch"],
-            "wins": [stay_wins, switch_wins],
-            "win_rate": [stay_wins / n_trials, switch_wins / n_trials],
-        }
-    )
+    return pd.DataFrame({
+        "strategy": ["stay", "switch"],
+        "wins": [stay_wins, switch_wins],
+        "win_rate": [stay_wins / n_trials, switch_wins / n_trials],
+    })
 
 
 monty_results = simulate_monty_hall(n_trials=100_000, seed=2026)

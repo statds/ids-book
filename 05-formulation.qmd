@@ -209,15 +209,13 @@ if len(members) != 1:
 
 csv_member = members[0]
 
-file_summary = pd.DataFrame(
-    {
-        "representation": ["ZIP archive", "Uncompressed CSV"],
-        "size_mib": [
-            data_path.stat().st_size / 2**20,
-            csv_member.file_size / 2**20,
-        ],
-    }
-)
+file_summary = pd.DataFrame({
+    "representation": ["ZIP archive", "Uncompressed CSV"],
+    "size_mib": [
+        data_path.stat().st_size / 2**20,
+        csv_member.file_size / 2**20,
+    ],
+})
 file_summary.round({"size_mib": 2})
 ```
 
@@ -261,13 +259,11 @@ display a small selection of fields that describe time, category, and
 geography.
 
 ```{python}
-pd.DataFrame(
-    {
-        "rows": [requests.shape[0]],
-        "columns": [requests.shape[1]],
-        "memory_mib": [requests.memory_usage(deep=True).sum() / 2**20],
-    }
-).round({"memory_mib": 2})
+pd.DataFrame({
+    "rows": [requests.shape[0]],
+    "columns": [requests.shape[1]],
+    "memory_mib": [requests.memory_usage(deep=True).sum() / 2**20],
+}).round({"memory_mib": 2})
 ```
 
 ```{python}
@@ -327,19 +323,16 @@ before_start = valid_created & requests["Created Date"].lt(start)
 on_or_after_end = valid_created & requests["Created Date"].ge(end)
 outside_intended_week = before_start | on_or_after_end
 
-scope_checks = pd.Series(
-    {
-        "rows delivered": len(requests),
-        "missing unique keys": requests["Unique Key"].isna().sum(),
-        "duplicated unique keys": requests["Unique Key"].duplicated().sum(),
-        "agency mismatches": agency_mismatch.sum(),
-        "agency values": requests["Agency"].nunique(dropna=False),
-        "invalid created dates": requests["Created Date"].isna().sum(),
-        "created before week": before_start.sum(),
-        "created at or after next week": on_or_after_end.sum(),
-    },
-    name="value",
-)
+scope_checks = pd.Series({
+    "rows delivered": len(requests),
+    "missing unique keys": requests["Unique Key"].isna().sum(),
+    "duplicated unique keys": requests["Unique Key"].duplicated().sum(),
+    "agency mismatches": agency_mismatch.sum(),
+    "agency values": requests["Agency"].nunique(dropna=False),
+    "invalid created dates": requests["Created Date"].isna().sum(),
+    "created before week": before_start.sum(),
+    "created at or after next week": on_or_after_end.sum(),
+}, name="value")
 scope_checks.to_frame()
 ```
 
@@ -349,20 +342,16 @@ provides the actual agency labels, while the separate lower- and upper-bound
 counts identify which side of the time window failed.
 
 ```{python}
-pd.DataFrame(
-    {
-        "agency": requests["Agency"].value_counts(dropna=False),
-    }
-)
+pd.DataFrame({
+    "agency": requests["Agency"].value_counts(dropna=False),
+})
 ```
 
 ```{python}
-pd.DataFrame(
-    {
-        "earliest": [requests["Created Date"].min()],
-        "latest": [requests["Created Date"].max()],
-    }
-)
+pd.DataFrame({
+    "earliest": [requests["Created Date"].min()],
+    "latest": [requests["Created Date"].max()],
+})
 ```
 
 The analysis subset should be created only after the discrepancy has been
@@ -372,14 +361,11 @@ outside the requested week without changing the downloaded object.
 ```{python}
 week_requests = requests.loc[in_intended_week].copy()
 
-pd.Series(
-    {
-        "rows delivered": len(requests),
-        "rows in intended week": len(week_requests),
-        "rows removed by time check": len(requests) - len(week_requests),
-    },
-    name="requests",
-).to_frame()
+pd.Series({
+    "rows delivered": len(requests),
+    "rows in intended week": len(week_requests),
+    "rows removed by time check": len(requests) - len(week_requests),
+}, name="requests").to_frame()
 ```
 
 The problem frequency table reveals what the screened week contains and makes
@@ -418,12 +404,10 @@ cleaning instruction.
 
 ```{python}
 missingness = (
-    pd.DataFrame(
-        {
-            "missing": parking.isna().sum(),
-            "percent": parking.isna().mean().mul(100),
-        }
-    )
+    pd.DataFrame({
+        "missing": parking.isna().sum(),
+        "percent": parking.isna().mean().mul(100),
+    })
     .query("missing > 0")
     .sort_values(["percent", "missing"], ascending=False)
 )
@@ -479,15 +463,13 @@ closure_hours = (
     parking["Closed Date"] - parking["Created Date"]
 ).dt.total_seconds() / 3600
 
-pd.DataFrame(
-    {
-        "missing": [closure_hours.isna().sum()],
-        "negative": [(closure_hours < 0).sum()],
-        "median_hours": [closure_hours.median()],
-        "mean_hours": [closure_hours.mean()],
-        "maximum_hours": [closure_hours.max()],
-    }
-).round(2)
+pd.DataFrame({
+    "missing": [closure_hours.isna().sum()],
+    "negative": [(closure_hours < 0).sum()],
+    "median_hours": [closure_hours.median()],
+    "mean_hours": [closure_hours.mean()],
+    "maximum_hours": [closure_hours.max()],
+}).round(2)
 ```
 
 The long upper tail makes the mean much larger than the median. That pattern is
@@ -505,30 +487,27 @@ the same result everywhere.
 created = parking["Created Date"].dropna()
 closed = parking["Closed Date"].dropna()
 
-time_heaping = pd.Series(
-    {
-        "created exactly at midnight": (
-            (created.dt.hour == 0)
-            & (created.dt.minute == 0)
-            & (created.dt.second == 0)
-        ).sum(),
-        "created exactly on an hour": (
-            (created.dt.minute == 0) & (created.dt.second == 0)
-        ).sum(),
-        "closed exactly at midnight": (
-            (closed.dt.hour == 0)
-            & (closed.dt.minute == 0)
-            & (closed.dt.second == 0)
-        ).sum(),
-        "closed exactly on an hour": (
-            (closed.dt.minute == 0) & (closed.dt.second == 0)
-        ).sum(),
-        "closure time is a whole hour": (
-            closure_hours.mod(1).abs() < 1e-12
-        ).sum(),
-    },
-    name="requests",
-)
+time_heaping = pd.Series({
+    "created exactly at midnight": (
+        (created.dt.hour == 0)
+        & (created.dt.minute == 0)
+        & (created.dt.second == 0)
+    ).sum(),
+    "created exactly on an hour": (
+        (created.dt.minute == 0) & (created.dt.second == 0)
+    ).sum(),
+    "closed exactly at midnight": (
+        (closed.dt.hour == 0)
+        & (closed.dt.minute == 0)
+        & (closed.dt.second == 0)
+    ).sum(),
+    "closed exactly on an hour": (
+        (closed.dt.minute == 0) & (closed.dt.second == 0)
+    ).sum(),
+    "closure time is a whole hour": (
+        closure_hours.mod(1).abs() < 1e-12
+    ).sum(),
+}, name="requests")
 time_heaping.to_frame()
 ```
 
@@ -567,16 +546,14 @@ with TemporaryDirectory() as temporary_directory:
     requests.to_feather(feather_path)
     requests_from_feather = pd.read_feather(feather_path)
 
-    representation = pd.DataFrame(
-        {
-            "format": ["CSV", "ZIP-compressed CSV", "Feather"],
-            "size_mib": [
-                csv_member.file_size / 2**20,
-                data_path.stat().st_size / 2**20,
-                feather_path.stat().st_size / 2**20,
-            ],
-        }
-    )
+    representation = pd.DataFrame({
+        "format": ["CSV", "ZIP-compressed CSV", "Feather"],
+        "size_mib": [
+            csv_member.file_size / 2**20,
+            data_path.stat().st_size / 2**20,
+            feather_path.stat().st_size / 2**20,
+        ],
+    })
 
 representation.round({"size_mib": 2})
 ```
@@ -593,14 +570,11 @@ checks make failures easier to diagnose than one large comparison whose false
 result gives no explanation.
 
 ```{python}
-pd.Series(
-    {
-        "same shape": requests.shape == requests_from_feather.shape,
-        "same columns": requests.columns.equals(requests_from_feather.columns),
-        "same values and types": requests.equals(requests_from_feather),
-    },
-    name="check",
-).to_frame()
+pd.Series({
+    "same shape": requests.shape == requests_from_feather.shape,
+    "same columns": requests.columns.equals(requests_from_feather.columns),
+    "same values and types": requests.equals(requests_from_feather),
+}, name="check").to_frame()
 ```
 
 The screened illegal-parking data can also be stored as a typed analysis
@@ -617,16 +591,14 @@ with TemporaryDirectory() as temporary_directory:
     parking_for_feather.to_feather(parking_path)
     parking_from_feather = pd.read_feather(parking_path)
 
-    parking_file_checks = pd.DataFrame(
-        {
-            "rows": [len(parking_from_feather)],
-            "columns": [len(parking_from_feather.columns)],
-            "size_mib": [parking_path.stat().st_size / 2**20],
-            "same_values_and_types": [
-                parking_for_feather.equals(parking_from_feather)
-            ],
-        }
-    )
+    parking_file_checks = pd.DataFrame({
+        "rows": [len(parking_from_feather)],
+        "columns": [len(parking_from_feather.columns)],
+        "size_mib": [parking_path.stat().st_size / 2**20],
+        "same_values_and_types": [
+            parking_for_feather.equals(parking_from_feather)
+        ],
+    })
 
 parking_file_checks.round({"size_mib": 2})
 ```

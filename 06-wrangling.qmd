@@ -103,24 +103,21 @@ tests act as assertions about the source-derived subset and should be repeated
 after transformations that could change row membership.
 
 ```{python}
-scope_report = pd.Series(
-    {
-        "rows": len(parking),
-        "missing keys": parking["Unique Key"].isna().sum(),
-        "duplicate keys": parking["Unique Key"].duplicated().sum(),
-        "outside intended week": (
-            ~parking["Created Date"].between(
-                start, end, inclusive="left"
-            )
-        ).sum(),
-        "not illegal parking": (
-            ~parking["Problem (formerly Complaint Type)"].eq(
-                "Illegal Parking"
-            )
-        ).sum(),
-    },
-    name="count",
-)
+scope_report = pd.Series({
+    "rows": len(parking),
+    "missing keys": parking["Unique Key"].isna().sum(),
+    "duplicate keys": parking["Unique Key"].duplicated().sum(),
+    "outside intended week": (
+        ~parking["Created Date"].between(
+            start, end, inclusive="left"
+        )
+    ).sum(),
+    "not illegal parking": (
+        ~parking["Problem (formerly Complaint Type)"].eq(
+            "Illegal Parking"
+        )
+    ).sum(),
+}, name="count")
 scope_report.to_frame()
 ```
 
@@ -140,12 +137,10 @@ observed missingness and inspect source documentation; do not infer from a
 single subset that every absent field has the same cause.
 
 ```{python}
-missing_report = pd.DataFrame(
-    {
-        "missing": parking.isna().sum(),
-        "percent": parking.isna().mean().mul(100),
-    }
-).query("missing > 0").sort_values("missing", ascending=False)
+missing_report = pd.DataFrame({
+    "missing": parking.isna().sum(),
+    "percent": parking.isna().mean().mul(100),
+}).query("missing > 0").sort_values("missing", ascending=False)
 missing_report.round({"percent": 2})
 ```
 
@@ -207,27 +202,26 @@ name_map = {
     ).strip("_")
     for source_name in parking.columns
 }
-name_map.update(
-    {
-        "Unique Key": "request_id",
-        "Created Date": "created_at",
-        "Closed Date": "closed_at",
-        "Problem (formerly Complaint Type)": "problem",
-        "Problem Detail (formerly Descriptor)": "problem_detail",
-        "Incident Zip": "incident_zip",
-        "Latitude": "latitude",
-        "Longitude": "longitude",
-        "Status": "status",
-    }
-)
+name_map.update({
+    "Unique Key": "request_id",
+    "Created Date": "created_at",
+    "Closed Date": "closed_at",
+    "Problem (formerly Complaint Type)": "problem",
+    "Problem Detail (formerly Descriptor)": "problem_detail",
+    "Incident Zip": "incident_zip",
+    "Latitude": "latitude",
+    "Longitude": "longitude",
+    "Status": "status",
+})
 
 analysis_names = pd.Index(name_map.values())
 if not analysis_names.is_unique:
     raise ValueError("Column-name normalization produced a collision.")
 
-name_mapping = pd.DataFrame(
-    {"source_name": name_map.keys(), "analysis_name": name_map.values()}
-)
+name_mapping = pd.DataFrame({
+    "source_name": name_map.keys(),
+    "analysis_name": name_map.values(),
+})
 analysis = parking.rename(columns=name_map).copy()
 
 name_mapping
@@ -267,15 +261,12 @@ analysis["closure_hours"] = (
     analysis["closed_at"] - analysis["created_at"]
 ).dt.total_seconds() / 3600
 
-duration_check = pd.Series(
-    {
-        "missing": analysis["closure_hours"].isna().sum(),
-        "negative": analysis["closure_hours"].lt(0).sum(),
-        "median": analysis["closure_hours"].median(),
-        "maximum": analysis["closure_hours"].max(),
-    },
-    name="value",
-)
+duration_check = pd.Series({
+    "missing": analysis["closure_hours"].isna().sum(),
+    "negative": analysis["closure_hours"].lt(0).sum(),
+    "median": analysis["closure_hours"].median(),
+    "maximum": analysis["closure_hours"].max(),
+}, name="value")
 duration_check.to_frame()
 ```
 
@@ -374,18 +365,15 @@ be checked after it is read back.
 ```{python}
 prepared = analysis.reset_index(drop=True)
 
-final_checks = pd.Series(
-    {
-        "same request count": len(prepared) == len(parking),
-        "unique request identifiers": prepared["request_id"].is_unique,
-        "all in intended week": prepared["created_at"].between(
-            start, end, inclusive="left"
-        ).all(),
-        "all illegal parking": prepared["problem"].eq("Illegal Parking").all(),
-        "closure field present": "closure_hours" in prepared.columns,
-    },
-    name="passed",
-)
+final_checks = pd.Series({
+    "same request count": len(prepared) == len(parking),
+    "unique request identifiers": prepared["request_id"].is_unique,
+    "all in intended week": prepared["created_at"].between(
+        start, end, inclusive="left"
+    ).all(),
+    "all illegal parking": prepared["problem"].eq("Illegal Parking").all(),
+    "closure field present": "closure_hours" in prepared.columns,
+}, name="passed")
 final_checks.to_frame()
 ```
 
@@ -404,14 +392,11 @@ with TemporaryDirectory() as temporary_directory:
     prepared.to_feather(prepared_path)
     round_trip = pd.read_feather(prepared_path)
 
-    pd.Series(
-        {
-            "same shape": prepared.shape == round_trip.shape,
-            "same columns": prepared.columns.equals(round_trip.columns),
-            "same values and types": prepared.equals(round_trip),
-        },
-        name="passed",
-    ).to_frame()
+    pd.Series({
+        "same shape": prepared.shape == round_trip.shape,
+        "same columns": prepared.columns.equals(round_trip.columns),
+        "same values and types": prepared.equals(round_trip),
+    }, name="passed").to_frame()
 ```
 
 The round-trip test uses a temporary path so that rendering does not create a
