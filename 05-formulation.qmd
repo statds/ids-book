@@ -8,16 +8,31 @@ available extract is the starting point: its categories and quality checks
 guide the choice and refinement of an illegal-parking question. Domain context
 and documentation determine what the resulting analysis can establish.
 
-## From Available Data to a Question
+Before running this chapter's code, update the local book source and its Python
+environment so that both match the current version. From the repository
+directory, pull the latest changes, activate the book's `.ids` environment,
+and install the pinned requirements:
 
-An available dataset can be a productive starting point for problem
-formulation. Administrative records are often created to operate a service,
+```bash
+git pull
+source .ids/bin/activate
+make install
+```
+
+On Windows, activate `.ids/Scripts/activate` from Git Bash. Keep the environment
+active while running the chapter's code.
+
+## Introduction {#sec-formulation-checks}
+
+Problem formulation can begin with a domain problem or an available dataset,
+but either route must connect a substantive purpose to evidence capable of
+addressing it. Administrative records are often created to operate a service,
 then made available for analysis before any research question has been chosen.
 Their categories, times, locations, and unusual values can suggest questions
-that an investigator would not have formulated in advance. In the NYPD extract,
-the distribution of reported problems will guide the choice of illegal parking
-as a working topic. That choice still requires a domain purpose and a careful
-account of what the records measure.
+that an investigator would not have formulated in advance. In this chapter,
+the NYPD extract's distribution of reported problems motivates illegal parking
+as a working topic; a domain purpose and account of what these service
+requests measure determine whether a resulting question is worth pursuing.
 
 The question-to-data route begins with a concern and seeks suitable evidence.
 A transportation planner might ask where blocked bicycle lanes are reported
@@ -43,8 +58,6 @@ interest. Statistics clarifies which claims the observations can support.
 Computing enables acquisition and inspection, while collaboration and
 communication expose assumptions that one investigator might overlook.
 
-### Narrowing a Candidate Question
-
 A candidate question becomes researchable when its unit, outcome, place,
 period, comparison, and intended claim are explicit. For this chapter, the
 broad topic of illegal parking can be narrowed to NYPD-directed 311 service
@@ -54,14 +67,29 @@ could motivate a narrower comparison after the records have been checked.
 Each restriction should serve a domain purpose because the resulting
 conclusion applies only to the selected records.
 
-The choice of a question also requires four checks. **Domain value** asks who
-could use the answer. **Measurement fit** asks whether recorded variables
-represent the intended concepts. **Scope fit** asks whether the place, period,
-and observed requests match the proposed conclusion. **Evidence fit** asks
-whether the design supports a description, comparison, prediction, or causal
-claim. These checks apply equally when a domain concern leads to a data search
-and when an observed pattern leads to a question. Later sections will apply
-them again after the downloaded records have been checked.
+Four complementary checks assess whether a candidate question is worth
+pursuing and whether the available evidence can answer it.
+
+- **Domain fit** asks whether an answer would inform a substantive concern or
+  decision, and who could use it. A data-first question needs a domain purpose
+  just as a problem-first question needs evidence suited to its purpose.
+- **Measurement fit** asks whether the recorded variables represent the
+  concepts in the question. For example, the NYPD records measure time to
+  administrative closure; without further documentation, they do not measure
+  time to an officer's arrival.
+- **Scope fit** asks whether the observational unit, population, place, and
+  period match the intended claim. This extract contains NYPD-directed
+  requests from one week, not every parking condition in New York City.
+- **Evidence fit** asks whether the study design supports the proposed
+  descriptive, comparative, predictive, or causal claim. A difference in
+  recorded closure times can describe these requests, but it does not by
+  itself show that problem type caused a difference.
+
+These checks are iterative rather than a one-time screen. A domain concern
+may lead to a data search, while an observed pattern may suggest a new
+question; in either direction, checking measurement, scope, and evidence can
+require revising the question. Later sections apply the same checks after the
+downloaded records have been examined.
 
 ## Interpreting the NYPD 311 Records
 
@@ -112,26 +140,20 @@ method should match the source and intended use. A stable file is convenient
 for a fixed classroom or research example, while an API or database query is
 more appropriate when an analysis must refresh regularly.
 
-A reproducible acquisition records the source and the requested selection
-rules. The example file was downloaded from the NYC Open Data dataset with
-identifier `erm2-nwe9`. The request asked for NYPD records whose creation time
-falls in the half-open interval
+A reproducible acquisition records the source and the intended selection
+rules. The example file came from the NYC Open Data portal, where we attempted
+to download NYPD requests created during the week containing Labor Day 2026.
+The portal identifier `erm2-nwe9` locates the full 311 dataset and can be used
+to find its documentation or construct an API request; it is a source
+identifier, not a request-level key. The archive contains the returned records
+but not a saved copy of the portal query settings, so the intended filters and
+the delivered values must be checked separately.
 
-\[
-[\text{2026-09-06 00:00:00},\ \text{2026-09-13 00:00:00}).
-\]
-
-The interval includes the beginning of Sunday, September 6, and excludes the
-beginning of Sunday, September 13. An exclusive upper bound avoids ambiguity
-about whether the final day ends at midnight, at 11:59:59 p.m., or at a
-fraction of a second not displayed by the interface.
-
-The downloaded file did not exactly honor the requested upper bound. It
-contains 1,902 records created during the first eight hours of September 13.
-That mistake is retained deliberately: a download interface can accept a
-request without returning precisely the intended rows. The discrepancy turns
-the time-window restriction into a testable data-quality claim rather than an
-assumption.
+The delivered file does not match the intended time window: it contains 1,902
+records created during the first eight hours of September 13. This discrepancy
+shows why a successful download is not evidence that the portal returned
+exactly the requested data. The intended agency restriction also requires an
+independent check against the `Agency` values in the file.
 
 Raw and derived data serve different purposes. The downloaded source extract
 preserves what the provider returned. The smaller illegal-parking data frame
@@ -278,9 +300,13 @@ correct. Instead, they turn assumptions about the extract into results that
 can be reviewed. The governing principle is to trust the provider while
 verifying every condition on which the analysis depends.
 
-The first checks address identity, agency, and time. The downloaded extract
-should have one unique key per row, contain only NYPD requests, and place every
-creation time inside the intended week.
+The first checks address identity, agency, and both temporal boundaries. A
+portal selection is an instruction about what to return; these checks test
+whether the delivered records satisfy it. For the Sunday-through-Saturday
+week, the intended creation-time window begins at midnight on September 6 and
+ends immediately before midnight on September 13. The inclusive lower bound
+and exclusive upper bound include every timestamp on the seven intended days
+without ambiguity at the next week's boundary.
 
 ```{python}
 start = pd.Timestamp("2026-09-06")
@@ -290,25 +316,31 @@ valid_created = requests["Created Date"].notna()
 in_intended_week = requests["Created Date"].between(
     start, end, inclusive="left"
 )
-outside_intended_week = valid_created & ~in_intended_week
+agency_mismatch = requests["Agency"].isna() | ~requests["Agency"].eq("NYPD")
+before_start = valid_created & requests["Created Date"].lt(start)
+on_or_after_end = valid_created & requests["Created Date"].ge(end)
+outside_intended_week = before_start | on_or_after_end
 
 scope_checks = pd.Series(
     {
         "rows delivered": len(requests),
         "missing unique keys": requests["Unique Key"].isna().sum(),
         "duplicated unique keys": requests["Unique Key"].duplicated().sum(),
+        "agency mismatches": agency_mismatch.sum(),
         "agency values": requests["Agency"].nunique(dropna=False),
         "invalid created dates": requests["Created Date"].isna().sum(),
-        "outside intended week": outside_intended_week.sum(),
+        "created before week": before_start.sum(),
+        "created at or after next week": on_or_after_end.sum(),
     },
     name="value",
 )
 scope_checks.to_frame()
 ```
 
-The observed endpoints explain the failed time-window check. The extract begins
-inside the requested interval but continues almost eight hours beyond its
-exclusive upper bound.
+The returned agency values and date-boundary counts show whether the file
+matches the intended selection on both dimensions. The frequency table
+provides the actual agency labels, while the separate lower- and upper-bound
+counts identify which side of the time window failed.
 
 ```{python}
 pd.DataFrame(
@@ -623,10 +655,12 @@ decisions made by the analyst.
 |---|---|
 | Provider | NYC 311 through NYC Open Data |
 | Source dataset | 311 Service Requests from 2020 to Present |
-| Dataset identifier | `erm2-nwe9` |
+| Dataset identifier | `erm2-nwe9` (portal locator for the full 311 dataset) |
 | Observational unit | One 311 service request |
-| Requested agency restriction | `Agency == "NYPD"` |
-| Requested time restriction | `2026-09-06 00:00:00 <= Created Date < 2026-09-13 00:00:00` |
+| Intended portal selection | NYPD requests created during September 6–12, 2026 |
+| Query record | Portal query settings were not saved with the downloaded archive |
+| Verified agency restriction | Checked against the delivered `Agency` values |
+| Verified time restriction | Checked against both boundaries of the intended week |
 | Delivered time coverage | September 6 at 00:00:04 through September 13 at 07:59:16 |
 | Distributed source archive | `data/311_nypd_lbdwk_2026.csv.zip` |
 | Local analysis filters | Intended half-open time interval, then `Problem (formerly Complaint Type) == "Illegal Parking"` |
@@ -815,8 +849,18 @@ or domain knowledge would strengthen the answer.
 The first two problems establish the core analysis. The third is an optional
 curation extension that develops issues for later data preparation. Write one
 `.qmd` file containing your answers, using executable code, concise prose, and
-rendered tables. Preserve the supplied ZIP archive unchanged, and store any
-derived files separately.
+rendered tables. Put every result in the document rather than only in a
+terminal session: include code where computation is requested, the relevant
+output or a concise summary table, and a short interpretation. Do not print an
+entire data frame when a small sample or summary answers the question.
+
+Download the [supplied ZIP archive](https://github.com/statds/ids-book/raw/refs/heads/main/data/311_nypd_lbdwk_2026.csv.zip)
+into a local `data/` directory in your homework repository so the relative
+path in your code resolves. Do not add the archive to Git or commit it; the
+grader will place the same file in the corresponding path before rendering
+your homework. Run Quarto from the homework repository root. Keep generated
+data products, such as the Feather file, local as well; your code should
+create them when rendered.
 
 ::: {#exr-import-311}
 Import and document the NYC 311 source extract.
@@ -845,12 +889,13 @@ f. Calculate the data frame's memory usage and compare it with the compressed
 g. Store the imported data in a derived Feather file without replacing the
    ZIP archive. Compare the Feather, ZIP, and uncompressed CSV sizes, and
    calculate each percentage change relative to the uncompressed CSV.
-h. Read the compressed CSV and Feather files several times and record the
-   elapsed time for each import. Use the median for each format rather than
-   reporting only one run. Ensure that the compressed CSV timing includes
-   decompression, the identifier types, and the datetime conversions required
-   above. Describe the timing procedure and computing environment so the
-   comparison can be interpreted appropriately.
+h. Read the compressed CSV and Feather files at least five times each and
+   record the elapsed time for every import. Use `time.perf_counter()` and
+   report the median for each format as well as the individual timings.
+   Ensure that the compressed CSV timing includes decompression, the
+   identifier types, and the datetime conversions required above. Describe
+   the timing procedure and computing environment so the comparison can be
+   interpreted appropriately.
 i. Compare the values, column names, column order, and data types obtained from
    the two formats. Identify information that must be reconstructed when the
    CSV is read and information that Feather retains.
@@ -872,14 +917,16 @@ the supplied values.
 
 a. Verify that `Unique Key` contains no missing or duplicated identifiers.
    Explain what a duplicate would mean for the claimed observational unit.
-b. Construct a frequency table for `Agency`. Determine whether every record
-   satisfies the stated NYPD restriction.
-c. Find the earliest and latest `Created Date`. Verify every record using the
-   half-open interval beginning at midnight on September 6 and ending
-   immediately before midnight on September 13. Explain why the exclusive
-   upper bound is safer than a comparison with the displayed text of the final
-   date. Report how many delivered records fall outside the intended window,
-   describe when they occur, and retain them in the source data frame.
+b. Construct a frequency table for `Agency`. Compare the intended portal
+   selection with the agency values actually delivered, and determine whether
+   every row is an NYPD request.
+c. Find the earliest and latest `Created Date`. Separately check for records
+   before midnight on September 6 and at or after midnight on September 13.
+   Explain why the upper boundary is exclusive. Report how many delivered
+   records fail each boundary, show the failure counts in a small table, and
+   summarize the dates and times of the out-of-window records. Retain them in
+   the source data frame. Distinguish the intended portal filters from the
+   checks you performed on its returned file.
 d. Create a new data frame containing only requests in the intended interval.
    Produce a complete frequency table for `Problem (formerly Complaint Type)`.
    Then create a second data frame containing the illegal-parking requests and
@@ -894,8 +941,9 @@ f. Check whether latitude and longitude are always missing together. Report
    their nonmissing ranges. Explain why plausible coordinate ranges can reveal
    obvious errors but cannot prove that every point lies within New York City.
 g. Compare `Status` with the presence or absence of `Closed Date`. Determine
-   whether every record whose status is not `Closed` lacks a closing time, and
-   describe any inconsistency without changing it.
+   whether every record whose status is not `Closed` lacks a closing time.
+   Include a status-by-missingness contingency table and report any
+   inconsistent rows without changing their values.
 h. Verify that no closing time precedes its creation time. Summarize the
    elapsed time from creation to closure, and explain why it should be called
    closure time rather than response time unless additional documentation
@@ -914,8 +962,9 @@ k. Select the stronger of your two questions as a possible project. Justify
    it using domain value, measurement fit, scope fit, and evidence fit. State
    one important claim that the project could not support.
 l. Save the screened illegal-parking data frame as a persistent Feather file
-   for later analysis. Reset inherited row-index labels while retaining
-   `Unique Key`, then read the file back and check the row count, columns,
+   at a separate path such as `data/illegal_parking.feather` for later
+   analysis. Reset inherited row-index labels while retaining `Unique Key`,
+   then read the file back and report checks of its row count, columns,
    values, and data types. Record the source archive and both row filters in
    the derived file's provenance; keep the ZIP archive unchanged.
 :::
@@ -929,16 +978,18 @@ because it failed a warning-level check.
 a. Read Tussey and Yan [-@tussey2025principles]. Summarize the six curation
    principles developed in the paper and explain why transparent documentation
    is part of data quality rather than an optional addition after cleaning.
-b. Re-import the text fields in a way that lets you distinguish an empty field
-   from literal codes such as `NA`, `N/A`, `<NA>`, and strings containing only
-   spaces. Search for inconsistent missing-value representations and case or
-   whitespace variants of important categories. Report what you find before
-   proposing a common representation.
+b. Re-import the text fields without automatically interpreting strings as
+   missing values. Count and display the distinct forms used for empty fields,
+   literal codes such as `NA`, `N/A`, `<NA>`, and strings containing only
+   spaces. Check important categories for case or whitespace variants. Present
+   a small table of observed forms and counts, then propose any common
+   representation without changing the source values.
 c. Identify every column whose name contains `Date`. Parse each one with an
-   explicit format and report conversion failures, years outside a plausible
-   range, and impossible chronological relationships. In particular, compare
-   creation, closure, and resolution-action update times. Treat a failed check
-   as evidence to investigate, not as an automatic instruction to delete a row.
+   documented explicit format. Present a summary table with conversion
+   failures and years outside a plausible range for that field, then count
+   impossible chronological relationships. In particular, compare creation,
+   closure, and resolution-action update times. Treat a failed check as
+   evidence to investigate, not as an automatic instruction to delete a row.
 d. For `Created Date`, `Closed Date`, and `Resolution Action Updated Date`, count
    timestamps exactly at midnight, exactly on an hour, and exactly on a minute.
    Count closure durations that are zero, negative, or exact whole numbers of
@@ -947,15 +998,18 @@ d. For `Created Date`, `Closed Date`, and `Resolution Action Updated Date`, coun
    large concentrations discussed in the paper? Explain why either answer is
    specific to the fields, agency, and period checked.
 e. Check the syntax and length of nonmissing `Incident Zip` values, preserving
-   leading zeros. Describe what an authoritative reference would be needed to
-   determine whether each code was valid during the study period. Explain why
-   a code that passes a five-digit pattern check is not necessarily a valid New
-   York City ZIP Code or a Census ZCTA.
+   leading zeros. Report counts by observed string length and a small table of
+   values that fail your stated syntax rule. Describe what authoritative
+   reference would be needed to determine whether each code was valid during
+   the study period. Explain why a code that passes a five-digit pattern check
+   is not necessarily a valid New York City ZIP Code or a Census ZCTA.
 f. Investigate potentially redundant fields, including `Agency` and `Agency
    Name`, `Borough` and `Park Borough`, and the coordinate columns and
-   `Location`. Determine whether each pair is always identical, conditionally
-   related, or substantively different. Explain why deleting one member based
-   only on similar names would be unsafe.
+   `Location`. For each pair, report missingness and the number of matching
+   and differing values among rows where both fields are observed. Determine
+   whether the pair is identical, conditionally related, or substantively
+   different. Explain why deleting one member based only on similar names
+   would be unsafe.
 g. Create a cleaning log with one row per issue and columns for the affected
    variables, evidence, scope, proposed action, justification, and whether
    curator input is needed. Permissible actions include retaining a value,
