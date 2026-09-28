@@ -5,6 +5,10 @@
 **/*.quarto_ipynb
 *.html
 
+# Local uncompressed copies of the NYC 311 teaching data
+/data/311_nypd_lbdwk_2026.csv
+/data/311_nypd_illegal_parking_lbdwk_2026.csv
+
 # Jupyter
 .ipynb_checkpoints/
 
