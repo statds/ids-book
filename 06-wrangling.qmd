@@ -1,0 +1,506 @@
+# Data Wrangling
+
+Data wrangling transforms acquired data into a form suited to a specified
+analysis while preserving the evidence needed to review those transformations.
+The goal of this chapter is to develop a reproducible preparation workflow
+using the NYPD illegal-parking requests introduced in the previous chapter.
+The emphasis is not on making every value look regular; it is on distinguishing
+documented facts, defensible transformations, and unresolved uncertainty.
+Exploratory data analysis and visualization will follow after the prepared
+data have been validated.
+
+## From source records to an analysis table
+
+Data preparation starts from a question and a retained source, not from an
+assumption that the downloaded table is already analysis-ready. The previous
+chapter established the observational unit, checked the requested time window,
+and selected illegal-parking requests. This chapter continues from those
+decisions: it standardizes representations where the meaning is clear, derives
+variables needed for analysis, joins contextual data only when the units and
+geographies align, and verifies the result. The steps are iterative because a
+transformation can expose a previously unnoticed problem or show that a
+question requires different data.
+
+A useful preparation plan separates three classes of decisions. **Scope
+decisions** select which observations and fields belong to an analysis.
+**Representation decisions** change how a value is encoded without changing
+its meaning, such as parsing a date string or storing a ZIP Code as text.
+**Analytical decisions** define derived measurements or handle uncertain
+values, such as defining nighttime or excluding requests without coordinates.
+The first two are often mechanical once documented; the third require an
+explicit rationale because they can change the population, measurement, or
+conclusion.
+
+The original ZIP archive should remain unchanged. A useful workflow creates a
+new data frame for each substantive stage and records its source, rules, and
+checks. This practice supports comparison with the source, makes decisions
+revisable, and avoids treating an undocumented edit as part of the original
+data. The small Feather file produced in the previous chapter is one possible
+starting point; the code below reconstructs the same screened records from the
+source so the chapter is executable independently.
+
+```{python}
+from pathlib import Path
+
+import pandas as pd
+
+data_path = Path("data") / "311_nypd_lbdwk_2026.csv.zip"
+requests = pd.read_csv(
+    data_path,
+    compression="zip",
+    dtype={"Unique Key": "string", "Incident Zip": "string"},
+    low_memory=False,
+)
+
+date_format = "%m/%d/%Y %I:%M:%S %p"
+for column in ["Created Date", "Closed Date"]:
+    requests[column] = pd.to_datetime(
+        requests[column], format=date_format, errors="coerce"
+    )
+
+start = pd.Timestamp("2026-09-06")
+end = pd.Timestamp("2026-09-13")
+parking = requests.loc[
+    requests["Created Date"].between(start, end, inclusive="left")
+    & requests["Problem (formerly Complaint Type)"].eq("Illegal Parking")
+].copy()
+```
+
+The code applies the two documented row restrictions without overwriting the
+download. Its output has the same observational unit as its source: one row
+per service request. A row filter does not resolve missing values, invalid
+categories, duplicate identifiers, or disagreement among fields; those
+conditions require separate diagnostics. Nor does this subset represent all
+parking conditions in New York City, since it includes only requests sent to
+NYPD during one week.
+
+## Diagnose before changing values
+
+Data cleaning begins by comparing observed values with documented rules and
+relationships among fields. VDS presents a useful general sequence: learn the
+collection process and problem domain, load the data, inspect it, create an
+action list, and then clean. This sequence prevents a common error in data
+work: treating unusual values as mistakes before establishing what they mean.
+For NYC 311, relevant context includes the administrative purpose of the
+records, the agency-specific categories, the process that creates and closes
+requests, and the way location fields are assigned.
+
+A diagnostic report should distinguish **failures** from **warnings**. A
+missing request identifier or duplicated key contradicts a basic structural
+expectation and may prevent reliable row-level tracking. A missing coordinate
+may only prevent a spatial analysis, while an unusually long closure time may
+be valid or may signal a process that needs investigation. Severity depends on
+the intended analysis: a coordinate problem blocks a point map but not a
+citywide count. Therefore, diagnostics should report affected records and
+analysis consequences rather than apply one global rule for dropping rows.
+
+The request identifier and scope conditions can be checked explicitly. These
+tests act as assertions about the source-derived subset and should be repeated
+after transformations that could change row membership.
+
+```{python}
+scope_report = pd.Series(
+    {
+        "rows": len(parking),
+        "missing keys": parking["Unique Key"].isna().sum(),
+        "duplicate keys": parking["Unique Key"].duplicated().sum(),
+        "outside intended week": (
+            ~parking["Created Date"].between(
+                start, end, inclusive="left"
+            )
+        ).sum(),
+        "not illegal parking": (
+            ~parking["Problem (formerly Complaint Type)"].eq(
+                "Illegal Parking"
+            )
+        ).sum(),
+    },
+    name="count",
+)
+scope_report.to_frame()
+```
+
+The checks should return zero for the last three conditions and for missing or
+duplicated keys if the input still matches the screened subset. A failure
+should trigger a review of the filter or data lineage, not an automatic
+deletion. Row counts are especially useful here because later joins or
+deduplication can silently change the number of requests.
+
+Missingness also needs interpretation before treatment. In pandas, several
+sentinel strings can become missing values automatically during CSV import;
+that convenience may erase evidence about how missingness was encoded. The
+curation study by Tussey and Yan documents inconsistent missing-value
+representations, temporal irregularities, redundant fields, and other issues
+in NYC 311 data [@tussey2025principles]. In a new extract, first report the
+observed missingness and inspect source documentation; do not infer from a
+single subset that every absent field has the same cause.
+
+```{python}
+missing_report = pd.DataFrame(
+    {
+        "missing": parking.isna().sum(),
+        "percent": parking.isna().mean().mul(100),
+    }
+).query("missing > 0").sort_values("missing", ascending=False)
+missing_report.round({"percent": 2})
+```
+
+For this extract, fields unrelated to illegal parking can be entirely absent,
+while 99 requests lack latitude, longitude, and council district. The paired
+coordinate pattern should be checked directly. Whether to retain those rows
+depends on the analysis: they belong in overall request counts and may be
+excluded from a map or a spatial join, with the excluded number reported.
+Imputing a location from an address or neighboring field requires a validated
+geocoding source and should be recorded as a derived value, not a replacement
+for the original.
+
+## Standardize representations conservatively
+
+Representation changes make fields usable without asserting new facts about
+the observations. Dates should use datetime types, ZIP Codes and request keys
+should remain strings, and controlled categories can be stored consistently
+after their observed forms have been examined. A ZIP Code such as `00501` is
+an identifier, not a quantity; converting it to an integer would remove a
+leading zero and invite meaningless arithmetic. Likewise, recoding a blank,
+`N/A`, and `Unspecified` to one missing value is justified only when their
+documented meanings coincide.
+
+Column labels also need a deliberate representation policy. The NYC export
+uses spaces, capitalization, punctuation, and historical parenthetical labels
+such as “formerly Complaint Type.” Such names are valid, but cumbersome in
+code and inconsistent as an interface. Normalize labels in a derived table,
+not in the imported source, and preserve a complete mapping from each provider
+label to its analysis name. Before applying the mapping, check that two source
+columns do not collapse to the same normalized name. A collision needs an
+explicit disambiguation, not silent overwriting.
+
+```{python}
+detail_column = "Problem Detail (formerly Descriptor)"
+detail_counts = (
+    parking[detail_column]
+    .value_counts(dropna=False)
+    .rename_axis("observed detail")
+    .reset_index(name="requests")
+)
+detail_counts
+```
+
+In the supplied extract, the detail categories have interpretable wording and
+the leading values are not spelling variants that should be merged
+automatically. Column-name normalization is separate from recoding category
+values: a convenient field name does not justify changing its contents. The
+following mapping converts all 44 labels to lowercase snake case and gives
+shorter analytical names to the fields used repeatedly below. The imported
+`parking` table retains the provider's original labels; `analysis` is the
+derived table with renamed columns.
+
+```{python}
+import re
+
+name_map = {
+    source_name: re.sub(
+        r"_+", "_", re.sub(r"[^a-z0-9]+", "_", source_name.lower())
+    ).strip("_")
+    for source_name in parking.columns
+}
+name_map.update(
+    {
+        "Unique Key": "request_id",
+        "Created Date": "created_at",
+        "Closed Date": "closed_at",
+        "Problem (formerly Complaint Type)": "problem",
+        "Problem Detail (formerly Descriptor)": "problem_detail",
+        "Incident Zip": "incident_zip",
+        "Latitude": "latitude",
+        "Longitude": "longitude",
+        "Status": "status",
+    }
+)
+
+analysis_names = pd.Index(name_map.values())
+if not analysis_names.is_unique:
+    raise ValueError("Column-name normalization produced a collision.")
+
+name_mapping = pd.DataFrame(
+    {"source_name": name_map.keys(), "analysis_name": name_map.values()}
+)
+analysis = parking.rename(columns=name_map).copy()
+
+name_mapping
+```
+
+The mapping table is part of the preparation record and can be saved with the
+analysis data dictionary. The parenthetical wording remains in
+`source_name`, so users can identify the provider's historical label even
+though `problem` and `problem_detail` are more convenient in code. If a future
+export changes its labels, the mapping should be reviewed against the current
+data dictionary rather than applied by position or assumed to remain valid.
+
+```{python}
+analysis[[
+    "request_id", "created_at", "problem_detail", "incident_zip", "status"
+]].head()
+```
+
+Renaming a field changes its label, not its definition. The derived table
+should travel with the complete source-to-analysis mapping, particularly where
+provider terminology is historical or ambiguous. Uniform labels improve code
+readability, but they do not make field contents more accurate or comparable
+across agencies and years.
+
+## Derive variables from documented meanings
+
+Derived variables translate recorded fields into measurements required by a
+question. A useful derived variable has an explicit definition, units, and
+validity conditions. For example, elapsed time from creation to closure can be
+defined as the difference between the two recorded timestamps, measured in
+hours. It remains a closure interval, not necessarily a measure of service
+response or resolution. The name of a column should not imply more than the
+source establishes.
+
+```{python}
+analysis["closure_hours"] = (
+    analysis["closed_at"] - analysis["created_at"]
+).dt.total_seconds() / 3600
+
+duration_check = pd.Series(
+    {
+        "missing": analysis["closure_hours"].isna().sum(),
+        "negative": analysis["closure_hours"].lt(0).sum(),
+        "median": analysis["closure_hours"].median(),
+        "maximum": analysis["closure_hours"].max(),
+    },
+    name="value",
+)
+duration_check.to_frame()
+```
+
+Negative values would contradict the expected chronology if both timestamps
+refer to the same request timeline, but the value should be inspected before
+removal because parsing, corrections, or field definitions may explain it.
+Missing closure timestamps indicate that a closure interval cannot be
+calculated; replacing those times with the observation date would invent an
+event. Even nonnegative values can be unusually large, so summaries should
+include robust measures and later analysis should examine the full distribution.
+
+Time-of-day groups require a declared boundary. “Night” has no universal
+definition, so an analysis must state the local-time interval and explain why
+it is appropriate. The following example labels requests created from 8 p.m.
+through 5:59 a.m. as nighttime and all others as daytime. It is a convenient
+working definition, not an objective division between night and day.
+
+```{python}
+hour = analysis["created_at"].dt.hour
+analysis["time_period"] = pd.Series(
+    pd.NA, index=analysis.index, dtype="string"
+)
+analysis.loc[hour.between(6, 19), "time_period"] = "day"
+analysis.loc[hour.ge(20) | hour.lt(6), "time_period"] = "night"
+
+analysis["time_period"].value_counts(dropna=False)
+```
+
+Derived categories can support comparison, but they also discard detail. The
+original timestamp should remain available so that alternative boundaries,
+hourly summaries, or date-specific patterns can be examined later. This is
+another reason to retain source fields alongside derived fields instead of
+replacing one with the other.
+
+## Merge geographic context with checks
+
+Data merging combines tables that describe different units. An individual
+request table can be joined to a ZIP-level or ZIP Code Tabulation Area (ZCTA)
+table only after the identifier concepts, reference period, and expected
+relationship have been established. A valid postal ZIP Code and a Census ZCTA
+are related but not identical geographies; the Census Bureau cautions that
+not every ZIP Code has a corresponding ZCTA [@census2023zip]. A successful
+software join therefore does not establish geographic equivalence.
+
+For request-level data joined to a table with one row per ZCTA, the intended
+relationship is many requests to one area record. The lookup key should be
+unique on the contextual table, identifiers should have compatible string
+types, and unmatched request locations should be counted. The sample code
+assumes that a prepared ACS table has fields `zcta` and `population`; it
+illustrates validation without treating a missing supplied file as part of
+the chapter's core data.
+
+```{python}
+# Read a documented, year-specific ZIP/ZCTA lookup prepared for the project.
+# The table must contain one row per ZCTA and string-valued identifiers.
+# zcta_context = pd.read_csv("data/zcta_context.csv", dtype={"zcta": "string"})
+
+# assert not zcta_context["zcta"].duplicated().any()
+# analysis = analysis.merge(
+#     zcta_context,
+#     how="left",
+#     left_on="incident_zip",
+#     right_on="zcta",
+#     validate="many_to_one",
+#     indicator=True,
+# )
+# analysis["_merge"].value_counts(dropna=False)
+```
+
+The `validate` argument turns the assumed join cardinality into an executable
+check. If a lookup key is duplicated, the join can multiply request rows and
+inflate subsequent counts. A left join preserves requests that lack a match,
+while the merge indicator distinguishes matched from unmatched rows. Unmatched
+values should be examined for missing identifiers, non-ZCTA ZIP Codes,
+formatting differences, boundary mismatch, or a flawed lookup; they should not
+be silently dropped.
+
+A population column can provide a denominator for area-level request rates,
+but interpretation still requires care. Dividing requests by population
+describes requests per resident over the chosen interval; it is not necessarily
+a rate of illegal-parking events because the data count reports rather than
+verified conditions. Area-level associations also do not describe individual
+residents. A merge can enrich the context for a question, but it cannot repair
+coverage or reporting differences absent from the data.
+
+## Validate and save the prepared data
+
+Validation repeats important checks after transformations and documents how
+the analysis table differs from the source. The output should retain request
+identity, have the expected row count, contain the required derived fields,
+and preserve the source fields needed for audit. If a join was performed, its
+cardinality and unmatched keys should be part of the validation report. A
+table that writes successfully is not necessarily correct; its invariants must
+be checked after it is read back.
+
+```{python}
+prepared = analysis.reset_index(drop=True)
+
+final_checks = pd.Series(
+    {
+        "same request count": len(prepared) == len(parking),
+        "unique request identifiers": prepared["request_id"].is_unique,
+        "all in intended week": prepared["created_at"].between(
+            start, end, inclusive="left"
+        ).all(),
+        "all illegal parking": prepared["problem"].eq("Illegal Parking").all(),
+        "closure field present": "closure_hours" in prepared.columns,
+    },
+    name="passed",
+)
+final_checks.to_frame()
+```
+
+Feather is useful when repeated analysis benefits from typed columns and fast
+columnar access, while the ZIP-compressed CSV remains a broadly readable
+source artifact. Bates and Yan discuss Arrow-based representations for
+cross-platform analytical workflows [@bates2024from]. The choice of output
+format should follow the next use: a compact typed derivative does not replace
+provenance or make an analysis more reproducible by itself.
+
+```{python}
+from tempfile import TemporaryDirectory
+
+with TemporaryDirectory() as temporary_directory:
+    prepared_path = Path(temporary_directory) / "illegal_parking.feather"
+    prepared.to_feather(prepared_path)
+    round_trip = pd.read_feather(prepared_path)
+
+    pd.Series(
+        {
+            "same shape": prepared.shape == round_trip.shape,
+            "same columns": prepared.columns.equals(round_trip.columns),
+            "same values and types": prepared.equals(round_trip),
+        },
+        name="passed",
+    ).to_frame()
+```
+
+The round-trip test uses a temporary path so that rendering does not create a
+generated file in the project. A provenance record for a persistent derivative
+should identify the source archive,
+the NYPD and time filters, any recoding and derived-variable definitions, the
+external lookup and reference year if used, and the validation results. It
+should distinguish unchanged provider fields from analyst-created fields.
+
+## Preparation as a documented argument
+
+Data preparation is a sequence of claims about what the rows and fields
+represent. Filtering claims that the retained requests meet specified scope
+conditions; parsing claims that text follows a known format; derivation claims
+that a formula operationalizes a concept; and merging claims that records
+share a defensible key and geographic meaning. Each claim needs evidence and
+an executable check. The goal is not to make every table tidy, but to make
+every analytical change reviewable.
+
+The preparation process also returns to problem formulation. A request-level
+comparison can proceed with the current table, while neighborhood rates need
+compatible areas and denominators. A prediction task may require predictors
+available at the prediction time, whereas a descriptive analysis may retain
+later fields for outcome definition. The next chapters can therefore begin
+from this documented prepared table, with exploratory summaries and plots
+chosen to answer a specific question rather than to substitute for one.
+
+## Exercises {.unnumbered}
+
+These exercises extend the import and checking work in the previous chapter.
+Use a new data frame for transformations, keep the distributed ZIP archive
+unchanged, and include both code and a concise explanation of each decision.
+
+::: {#exr-wrangle-311}
+Construct a documented analysis table from the NYPD illegal-parking requests.
+
+a. Recreate the screened subset from the source archive using the two row
+   restrictions. Record the starting and retained row counts, and verify that
+   `Unique Key` remains unique. Explain why the filters belong in code.
+b. Make a missingness report for all columns. Choose one analysis that needs
+   coordinates and one that does not; explain which rows each analysis can
+   use and report how many would be excluded. Do not impute locations.
+c. Inspect the observed values of `Problem Detail (formerly Descriptor)` and
+   `Status`. Propose any normalization only where evidence supports it. Show
+   a mapping table for every recoding and retain the original field.
+d. Normalize every column name to a consistent convention in a derived table.
+   Provide the complete mapping from each new name to its source name, check
+   for collisions, preserve the imported names in the source table, and
+   identify the observational unit.
+e. Derive closure time in hours from the two timestamps. Report missing and
+   negative durations, and compare the median with the mean. Explain why the
+   result is not automatically an officer-response-time measure.
+f. Define a day/night split by clock time, state the boundary, and report the
+   number of requests in each group. Repeat the split with a different
+   defensible boundary and note whether group sizes change substantially.
+g. Write a short data dictionary for the analysis table, including source
+   fields, derived fields, units, and known limitations.
+:::
+
+::: {#exr-merge-311}
+Plan and validate a merge with geographic context.
+
+a. Identify a year-specific Census or other authoritative area-level table
+   that could add context to a question from the previous chapter. Record its
+   source, unit, geographic definition, and reference year.
+b. Explain the difference between a postal ZIP Code and a ZCTA. State why a
+   direct string match is an approximation rather than proof that the
+   geographies coincide.
+c. Before joining, check that the contextual key is unique and that both
+   join keys have compatible types and formatting. State the expected join
+   cardinality and use a merge validation option in pandas.
+d. Use a left join and report matched and unmatched requests. Diagnose
+   unmatched records rather than dropping them automatically. Verify that the
+   row count has not increased and that `Unique Key` remains unique.
+e. If population is included, calculate a clearly defined area-level request
+   rate. Explain its denominator and why it is not an estimate of the rate of
+   illegal-parking events or an individual-level relationship.
+f. Save the prepared table in Feather format, read it back, and compare shape,
+   columns, values, and important data types. Keep the source archive intact.
+:::
+
+::: {#exr-wrangle-open}
+Write a preparation plan for a different question suggested by the data.
+
+a. State the question, intended audience, observational unit, outcome, and
+   comparison. Specify whether the question is descriptive, comparative,
+   predictive, or causal.
+b. List the fields and any additional data required. For each proposed
+   transformation, explain its purpose and define a check that could detect
+   an error.
+c. Identify one issue that should be raised with a data curator rather than
+   silently corrected. Draft a concise recommendation that distinguishes
+   evidence from conjecture.
+d. Describe what the prepared table will contain, what it will omit, and how
+   its provenance will let another analyst reproduce the result.
+:::

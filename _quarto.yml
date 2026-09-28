@@ -24,6 +24,7 @@ book:
     - 03-quarto.qmd
     - 04-python.qmd
     - 05-formulation.qmd
+    - 06-wrangling.qmd
 
 format:
   html:
