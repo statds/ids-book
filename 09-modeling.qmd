@@ -3,4 +3,6 @@
 This chapter will introduce predictive modeling as a workflow built around a
 well-defined target and an appropriate evaluation design. Planned topics
 include baselines, training and test data, model assessment, interpretation,
-and limits on claims from predictive performance.
+and limits on claims from predictive performance. Model development will
+revisit all four checks in @sec-formulation-checks, especially whether the
+target, available predictors, and evaluation design support the intended use.

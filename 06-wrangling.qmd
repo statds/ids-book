@@ -4,6 +4,9 @@ Data wrangling transforms acquired data into a form suited to a specified
 analysis while preserving the evidence needed to review those transformations.
 The goal of this chapter is to develop a reproducible preparation workflow
 using the NYPD illegal-parking requests introduced in the previous chapter.
+The four formulation checks in @sec-formulation-checks guide which variables
+to retain, which transformations to make, and what claims the prepared data
+can support.
 The emphasis is not on making every value look regular; it is on distinguishing
 documented facts, defensible transformations, and unresolved uncertainty.
 Exploratory data analysis and visualization will follow after the prepared

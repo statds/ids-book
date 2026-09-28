@@ -23,6 +23,9 @@ show that a project must stop. The analyst should specify the purpose, who is
 affected, what evidence is available, which alternatives exist, and who has the
 authority to decide.
 
+Ethical review revisits the four formulation checks in
+@sec-formulation-checks, because purpose, measurement, scope, and evidence
+shape who may be affected and what consequences the analysis can have.
 Several established frameworks help organize this reasoning. The Belmont
 Report identifies respect for persons, beneficence, and justice as principles
 for research involving human subjects; its original scope should be kept clear

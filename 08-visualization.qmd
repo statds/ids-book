@@ -4,3 +4,5 @@ This chapter will develop visual methods for examining and communicating data.
 Planned topics include visual encodings, selecting displays for analytical
 tasks, uncertainty and context, and diagnosing misleading design choices.
 Ethical communication will connect visual design to responsible interpretation.
+Display choices will also be evaluated against the domain purpose and evidence
+fit specified in @sec-formulation-checks.
