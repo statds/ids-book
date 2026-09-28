@@ -289,7 +289,7 @@ div.csl-indent {
 <p>Data preparation starts from a question and a retained source, not from an assumption that the downloaded table is already analysis-ready. The previous chapter established the observational unit, checked the requested time window, and selected illegal-parking requests. This chapter continues from those decisions: it standardizes representations where the meaning is clear, derives variables needed for analysis, joins contextual data only when the units and geographies align, and verifies the result. The steps are iterative because a transformation can expose a previously unnoticed problem or show that a question requires different data.</p>
 <p>A useful preparation plan separates three classes of decisions. <strong>Scope decisions</strong> select which observations and fields belong to an analysis. <strong>Representation decisions</strong> change how a value is encoded without changing its meaning, such as parsing a date string or storing a ZIP Code as text. <strong>Analytical decisions</strong> define derived measurements or handle uncertain values, such as defining nighttime or excluding requests without coordinates. The first two are often mechanical once documented; the third require an explicit rationale because they can change the population, measurement, or conclusion.</p>
 <p>The original ZIP archive should remain unchanged. A useful workflow creates a new data frame for each substantive stage and records its source, rules, and checks. This practice supports comparison with the source, makes decisions revisable, and avoids treating an undocumented edit as part of the original data. The small Feather file produced in the previous chapter is one possible starting point; the code below reconstructs the same screened records from the source so the chapter is executable independently.</p>
-<div id="3c85f3d8" class="cell" data-execution_count="1">
+<div id="485a0bb2" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -319,29 +319,26 @@ div.csl-indent {
 </section>
 <section id="diagnose-before-changing-values" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="diagnose-before-changing-values"><span class="header-section-number">6.2</span> Diagnose before changing values</h2>
-<p>Data cleaning begins by comparing observed values with documented rules and relationships among fields. VDS presents a useful general sequence: learn the collection process and problem domain, load the data, inspect it, create an action list, and then clean. This sequence prevents a common error in data work: treating unusual values as mistakes before establishing what they mean. For NYC 311, relevant context includes the administrative purpose of the records, the agency-specific categories, the process that creates and closes requests, and the way location fields are assigned.</p>
+<p>Data cleaning begins by comparing observed values with documented rules and relationships among fields. Yu and Barter place data preparation within a nonlinear data science life cycle and emphasize that real-world data contain imperfections that must be understood in context <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. Following that orientation, this chapter first examines how the records were collected and what their fields mean, then diagnoses values before proposing changes. For NYC 311, relevant context includes the administrative purpose of the records, the agency-specific categories, the process that creates and closes requests, and the way location fields are assigned.</p>
 <p>A diagnostic report should distinguish <strong>failures</strong> from <strong>warnings</strong>. A missing request identifier or duplicated key contradicts a basic structural expectation and may prevent reliable row-level tracking. A missing coordinate may only prevent a spatial analysis, while an unusually long closure time may be valid or may signal a process that needs investigation. Severity depends on the intended analysis: a coordinate problem blocks a point map but not a citywide count. Therefore, diagnostics should report affected records and analysis consequences rather than apply one global rule for dropping rows.</p>
 <p>The request identifier and scope conditions can be checked explicitly. These tests act as assertions about the source-derived subset and should be repeated after transformations that could change row membership.</p>
-<div id="fe32e42c" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_report <span class="op">=</span> pd.Series(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing keys"</span>: parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">sum</span>(),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"duplicate keys"</span>: parking[<span class="st">"Unique Key"</span>].duplicated().<span class="bu">sum</span>(),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"outside intended week"</span>: (</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">~</span>parking[<span class="st">"Created Date"</span>].between(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">sum</span>(),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"not illegal parking"</span>: (</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">~</span>parking[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Illegal Parking"</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">sum</span>(),</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"count"</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>scope_report.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="693bd7f8" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_report <span class="op">=</span> pd.Series({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing keys"</span>: parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"duplicate keys"</span>: parking[<span class="st">"Unique Key"</span>].duplicated().<span class="bu">sum</span>(),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"outside intended week"</span>: (</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">~</span>parking[<span class="st">"Created Date"</span>].between(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">sum</span>(),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"not illegal parking"</span>: (</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">~</span>parking[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Illegal Parking"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">sum</span>(),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>scope_report.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -382,14 +379,12 @@ div.csl-indent {
 </div>
 <p>The checks should return zero for the last three conditions and for missing or duplicated keys if the input still matches the screened subset. A failure should trigger a review of the filter or data lineage, not an automatic deletion. Row counts are especially useful here because later joins or deduplication can silently change the number of requests.</p>
 <p>Missingness also needs interpretation before treatment. In pandas, several sentinel strings can become missing values automatically during CSV import; that convenience may erase evidence about how missingness was encoded. The curation study by Tussey and Yan documents inconsistent missing-value representations, temporal irregularities, redundant fields, and other issues in NYC 311 data <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>. In a new extract, first report the observed missingness and inspect source documentation; do not infer from a single subset that every absent field has the same cause.</p>
-<div id="75932586" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>missing_report <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing"</span>: parking.isna().<span class="bu">sum</span>(),</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"percent"</span>: parking.isna().mean().mul(<span class="dv">100</span>),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>).query(<span class="st">"missing &gt; 0"</span>).sort_values(<span class="st">"missing"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>missing_report.<span class="bu">round</span>({<span class="st">"percent"</span>: <span class="dv">2</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="35fd703c" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>missing_report <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing"</span>: parking.isna().<span class="bu">sum</span>(),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"percent"</span>: parking.isna().mean().mul(<span class="dv">100</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}).query(<span class="st">"missing &gt; 0"</span>).sort_values(<span class="st">"missing"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>missing_report.<span class="bu">round</span>({<span class="st">"percent"</span>: <span class="dv">2</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -530,7 +525,7 @@ div.csl-indent {
 <h2 data-number="6.3" class="anchored" data-anchor-id="standardize-representations-conservatively"><span class="header-section-number">6.3</span> Standardize representations conservatively</h2>
 <p>Representation changes make fields usable without asserting new facts about the observations. Dates should use datetime types, ZIP Codes and request keys should remain strings, and controlled categories can be stored consistently after their observed forms have been examined. A ZIP Code such as <code>00501</code> is an identifier, not a quantity; converting it to an integer would remove a leading zero and invite meaningless arithmetic. Likewise, recoding a blank, <code>N/A</code>, and <code>Unspecified</code> to one missing value is justified only when their documented meanings coincide.</p>
 <p>Column labels also need a deliberate representation policy. The NYC export uses spaces, capitalization, punctuation, and historical parenthetical labels such as “formerly Complaint Type.” Such names are valid, but cumbersome in code and inconsistent as an interface. Normalize labels in a derived table, not in the imported source, and preserve a complete mapping from each provider label to its analysis name. Before applying the mapping, check that two source columns do not collapse to the same normalized name. A collision needs an explicit disambiguation, not silent overwriting.</p>
-<div id="65ec6bde" class="cell" data-execution_count="4">
+<div id="1f8a27dd" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>detail_counts <span class="op">=</span> (</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
@@ -629,7 +624,7 @@ div.csl-indent {
 </div>
 </div>
 <p>In the supplied extract, the detail categories have interpretable wording and the leading values are not spelling variants that should be merged automatically. Column-name normalization is separate from recoding category values: a convenient field name does not justify changing its contents. The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
-<div id="19bca4b5" class="cell" data-execution_count="5">
+<div id="7c2085c5" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
@@ -638,30 +633,29 @@ div.csl-indent {
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ).strip(<span class="st">"_"</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> source_name <span class="kw">in</span> parking.columns</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>name_map.update(</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem (formerly Complaint Type)"</span>: <span class="st">"problem"</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Status"</span>: <span class="st">"status"</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>analysis_names <span class="op">=</span> pd.Index(name_map.values())</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> analysis_names.is_unique:</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Column-name normalization produced a collision."</span>)</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"source_name"</span>: name_map.keys(), <span class="st">"analysis_name"</span>: name_map.values()}</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>name_mapping</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>name_map.update({</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem (formerly Complaint Type)"</span>: <span class="st">"problem"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Status"</span>: <span class="st">"status"</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>analysis_names <span class="op">=</span> pd.Index(name_map.values())</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> analysis_names.is_unique:</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Column-name normalization produced a collision."</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"source_name"</span>: name_map.keys(),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"analysis_name"</span>: name_map.values(),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>name_mapping</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -902,7 +896,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The mapping table is part of the preparation record and can be saved with the analysis data dictionary. The parenthetical wording remains in <code>source_name</code>, so users can identify the provider’s historical label even though <code>problem</code> and <code>problem_detail</code> are more convenient in code. If a future export changes its labels, the mapping should be reviewed against the current data dictionary rather than applied by position or assumed to remain valid.</p>
-<div id="ae705148" class="cell" data-execution_count="6">
+<div id="0cd85816" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -973,21 +967,18 @@ div.csl-indent {
 <section id="derive-variables-from-documented-meanings" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="derive-variables-from-documented-meanings"><span class="header-section-number">6.4</span> Derive variables from documented meanings</h2>
 <p>Derived variables translate recorded fields into measurements required by a question. A useful derived variable has an explicit definition, units, and validity conditions. For example, elapsed time from creation to closure can be defined as the difference between the two recorded timestamps, measured in hours. It remains a closure interval, not necessarily a measure of service response or resolution. The name of a column should not imply more than the source establishes.</p>
-<div id="2990e5c3" class="cell" data-execution_count="7">
+<div id="03aed191" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>duration_check <span class="op">=</span> pd.Series(</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing"</span>: analysis[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"negative"</span>: analysis[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"median"</span>: analysis[<span class="st">"closure_hours"</span>].median(),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"maximum"</span>: analysis[<span class="st">"closure_hours"</span>].<span class="bu">max</span>(),</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"value"</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>duration_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>duration_check <span class="op">=</span> pd.Series({</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing"</span>: analysis[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"negative"</span>: analysis[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"median"</span>: analysis[<span class="st">"closure_hours"</span>].median(),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"maximum"</span>: analysis[<span class="st">"closure_hours"</span>].<span class="bu">max</span>(),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"value"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>duration_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -1024,7 +1015,7 @@ div.csl-indent {
 </div>
 <p>Negative values would contradict the expected chronology if both timestamps refer to the same request timeline, but the value should be inspected before removal because parsing, corrections, or field definitions may explain it. Missing closure timestamps indicate that a closure interval cannot be calculated; replacing those times with the observation date would invent an event. Even nonnegative values can be unusually large, so summaries should include robust measures and later analysis should examine the full distribution.</p>
 <p>Time-of-day groups require a declared boundary. “Night” has no universal definition, so an analysis must state the local-time interval and explain why it is appropriate. The following example labels requests created from 8 p.m. through 5:59 a.m. as nighttime and all others as daytime. It is a convenient working definition, not an objective division between night and day.</p>
-<div id="5a59ceff" class="cell" data-execution_count="8">
+<div id="25023651" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
@@ -1046,7 +1037,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <h2 data-number="6.5" class="anchored" data-anchor-id="merge-geographic-context-with-checks"><span class="header-section-number">6.5</span> Merge geographic context with checks</h2>
 <p>Data merging combines tables that describe different units. An individual request table can be joined to a ZIP-level or ZIP Code Tabulation Area (ZCTA) table only after the identifier concepts, reference period, and expected relationship have been established. A valid postal ZIP Code and a Census ZCTA are related but not identical geographies; the Census Bureau cautions that not every ZIP Code has a corresponding ZCTA <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. A successful software join therefore does not establish geographic equivalence.</p>
 <p>For request-level data joined to a table with one row per ZCTA, the intended relationship is many requests to one area record. The lookup key should be unique on the contextual table, identifiers should have compatible string types, and unmatched request locations should be counted. The sample code assumes that a prepared ACS table has fields <code>zcta</code> and <code>population</code>; it illustrates validation without treating a missing supplied file as part of the chapter’s core data.</p>
-<div id="0a89e117" class="cell" data-execution_count="9">
+<div id="555c7bee" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a documented, year-specific ZIP/ZCTA lookup prepared for the project.</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The table must contain one row per ZCTA and string-valued identifiers.</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># zcta_context = pd.read_csv("data/zcta_context.csv", dtype={"zcta": "string"})</span></span>
@@ -1068,22 +1059,19 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <section id="validate-and-save-the-prepared-data" class="level2" data-number="6.6">
 <h2 data-number="6.6" class="anchored" data-anchor-id="validate-and-save-the-prepared-data"><span class="header-section-number">6.6</span> Validate and save the prepared data</h2>
 <p>Validation repeats important checks after transformations and documents how the analysis table differs from the source. The output should retain request identity, have the expected row count, contain the required derived fields, and preserve the source fields needed for audit. If a join was performed, its cardinality and unmatched keys should be part of the validation report. A table that writes successfully is not necessarily correct; its invariants must be checked after it is read back.</p>
-<div id="db09bde0" class="cell" data-execution_count="10">
+<div id="68b5fe0d" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series(</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"same request count"</span>: <span class="bu">len</span>(prepared) <span class="op">==</span> <span class="bu">len</span>(parking),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"unique request identifiers"</span>: prepared[<span class="st">"request_id"</span>].is_unique,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"all in intended week"</span>: prepared[<span class="st">"created_at"</span>].between(</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">all</span>(),</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"all illegal parking"</span>: prepared[<span class="st">"problem"</span>].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"closure field present"</span>: <span class="st">"closure_hours"</span> <span class="kw">in</span> prepared.columns,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"passed"</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>final_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"same request count"</span>: <span class="bu">len</span>(prepared) <span class="op">==</span> <span class="bu">len</span>(parking),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique request identifiers"</span>: prepared[<span class="st">"request_id"</span>].is_unique,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all in intended week"</span>: prepared[<span class="st">"created_at"</span>].between(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">all</span>(),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all illegal parking"</span>: prepared[<span class="st">"problem"</span>].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure field present"</span>: <span class="st">"closure_hours"</span> <span class="kw">in</span> prepared.columns,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"passed"</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>final_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
@@ -1123,7 +1111,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </div>
 </div>
 <p>Feather is useful when repeated analysis benefits from typed columns and fast columnar access, while the ZIP-compressed CSV remains a broadly readable source artifact. Bates and Yan discuss Arrow-based representations for cross-platform analytical workflows <span class="citation" data-cites="bates2024from">(<a href="#ref-bates2024from" role="doc-biblioref">Bates &amp; Yan, 2024</a>)</span>. The choice of output format should follow the next use: a compact typed derivative does not replace provenance or make an analysis more reproducible by itself.</p>
-<div id="77830767" class="cell" data-execution_count="11">
+<div id="ce20bd04" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tempfile <span class="im">import</span> TemporaryDirectory</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> temporary_directory:</span>
@@ -1131,14 +1119,11 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    prepared.to_feather(prepared_path)</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    round_trip <span class="op">=</span> pd.read_feather(prepared_path)</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    pd.Series(</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same shape"</span>: prepared.shape <span class="op">==</span> round_trip.shape,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same columns"</span>: prepared.columns.equals(round_trip.columns),</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same values and types"</span>: prepared.equals(round_trip),</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        },</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">"passed"</span>,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    ).to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    pd.Series({</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"same shape"</span>: prepared.shape <span class="op">==</span> round_trip.shape,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"same columns"</span>: prepared.columns.equals(round_trip.columns),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"same values and types"</span>: prepared.equals(round_trip),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    }, name<span class="op">=</span><span class="st">"passed"</span>).to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The round-trip test uses a temporary path so that rendering does not create a generated file in the project. A provenance record for a persistent derivative should identify the source archive, the NYPD and time filters, any recoding and derived-variable definitions, the external lookup and reference year if used, and the validation results. It should distinguish unchanged provider fields from analyst-created fields.</p>
 </section>
@@ -1193,6 +1178,9 @@ Tussey, D., &amp; Yan, J. (2025). <em>Principles for open data curation: A case 
 </div>
 <div id="ref-census2023zip" class="csl-entry" role="listitem">
 U.S. Census Bureau. (2023). <em><span>ZIP</span> code tabulation areas (<span>ZCTAs</span>)</em>. <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html">https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html</a>
+</div>
+<div id="ref-yu2024veridical" class="csl-entry" role="listitem">
+Yu, B., &amp; Barter, R. L. (2024). <em>Veridical data science: The practice of responsible data analysis and decision making</em>. The MIT Press. <a href="https://vdsbook.com/">https://vdsbook.com/</a>
 </div>
 </div>
 </section>
