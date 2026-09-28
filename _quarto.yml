@@ -23,6 +23,7 @@ book:
     - 02-git.qmd
     - 03-quarto.qmd
     - 04-python.qmd
+    - 05-formulation.qmd
 
 format:
   html:

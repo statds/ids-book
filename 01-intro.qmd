@@ -34,21 +34,23 @@ by others. Data science is therefore both a technical and a social practice.
 
 ## The Data-Science Workflow
 
-A data-science workflow organizes a project into seven recurring activities:
+A data-science project may begin with a problem, an available dataset, or both.
+The workflow brings questions and evidence into alignment through six recurring
+activities:
 
-1. **Formulate a question.** Identify the decision or phenomenon of interest
-   and determine what kind of answer is needed.
-2. **Acquire and understand data.** Learn how the observations were generated,
-   what each variable measures, and which population they represent.
-3. **Prepare the data.** Correct structural problems, handle missing values,
+1. **Connect the domain, questions, and data.** Use domain knowledge to
+   understand the problem, how the data arose, what the variables measure, and
+   whom the observations represent. Formulate questions the available evidence
+   can address, and obtain additional data when necessary.
+2. **Prepare the data.** Correct structural problems, handle missing values,
    combine sources, and record every transformation.
-4. **Explore.** Use summaries and visualizations to discover patterns, check
+3. **Explore.** Use summaries and visualizations to discover patterns, check
    assumptions, and refine the question.
-5. **Model or quantify.** Apply methods appropriate to the question and the way
+4. **Model or quantify.** Apply methods appropriate to the question and the way
    the data were collected.
-6. **Evaluate.** Check statistical, computational, and contextual validity;
+5. **Evaluate.** Check statistical, computational, and contextual validity;
    investigate alternative explanations; and describe uncertainty.
-7. **Communicate and act.** Present the evidence and its limitations in a form
+6. **Communicate and act.** Present the evidence and its limitations in a form
    that supports an informed decision.
 
 These activities form a cycle rather than a one-way pipeline. Exploration may

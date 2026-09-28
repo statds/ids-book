@@ -156,7 +156,8 @@ recipes.
 
 The examples and exercises in this book emphasize a few recurring principles:
 
-- Start with a clear question and understand the context of the data.
+- Begin with a domain concern or available data, then formulate a clear
+  question in context.
 - Keep raw data separate from derived data and analysis output.
 - Explore data interactively, then collect tested code into reproducible
   scripts or documents.
