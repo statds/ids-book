@@ -44,6 +44,12 @@ data can change the questions. A pattern noticed while inspecting data remains
 exploratory until domain knowledge, alternative explanations, and further
 evidence have been considered.
 
+Yu and Barter describe the data science life cycle as nonlinear, while noting
+that projects often begin with a vague domain question [@yu2024veridical].
+Because administrative data may already be available before a project is
+defined, this chapter gives equal attention to the complementary route from
+data to question.
+
 The first activity in the data-science workflow aligns three components:
 
 1. **Domain purpose:** Why would an answer matter, and who might use it?

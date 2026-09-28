@@ -80,10 +80,11 @@ NYPD during one week.
 ## Diagnose before changing values
 
 Data cleaning begins by comparing observed values with documented rules and
-relationships among fields. VDS presents a useful general sequence: learn the
-collection process and problem domain, load the data, inspect it, create an
-action list, and then clean. This sequence prevents a common error in data
-work: treating unusual values as mistakes before establishing what they mean.
+relationships among fields. Yu and Barter place data preparation within a
+nonlinear data science life cycle and emphasize that real-world data contain
+imperfections that must be understood in context [@yu2024veridical]. Following
+that orientation, this chapter first examines how the records were collected
+and what their fields mean, then diagnoses values before proposing changes.
 For NYC 311, relevant context includes the administrative purpose of the
 records, the agency-specific categories, the process that creates and closes
 requests, and the way location fields are assigned.

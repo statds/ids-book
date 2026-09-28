@@ -35,8 +35,11 @@ by others. Data science is therefore both a technical and a social practice.
 ## The Data-Science Workflow
 
 A data-science project may begin with a problem, an available dataset, or both.
-The workflow brings questions and evidence into alignment through six recurring
-activities:
+Yu and Barter likewise describe a nonlinear data-science life cycle spanning
+problem formulation, data collection and preparation, analysis, evaluation,
+and communication [@yu2024veridical]. The workflow below adapts that broad
+life-cycle view for this course and brings questions and evidence into
+alignment through six recurring activities:
 
 1. **Connect the domain, questions, and data.** Use domain knowledge to
    understand the problem, how the data arose, what the variables measure, and
@@ -58,6 +61,22 @@ reveal a measurement problem, model checking may require different data, and
 discussion with a domain expert may change the original question. Reproducible
 records of the data, code, environment, and decisions make such revisions
 manageable and allow other people to inspect the work.
+
+## This Book's Emphasis
+
+This book is an introductory, implementation-focused companion to broader
+frameworks for responsible data science. A particularly close related text is
+Yu and Barter's *Veridical Data Science*, which develops the PCS framework
+through real-world case studies across the data-science life cycle
+[@yu2024veridical]. This book draws on its nonlinear view of that life cycle,
+while taking a different route for beginning students: the first four chapters
+build practical foundations in computing, Git, Quarto, and Python before the
+later chapters apply them to a sustained NYC 311 example. The workflow makes
+both problem-to-data and data-to-question reasoning explicit, then carries the
+example through preparation, exploration, visualization, modeling, and ethical
+review. Rather than reproduce VDS's full PCS framework, this text emphasizes
+hands-on implementation, careful checks on what the records measure, and
+claims proportionate to the available evidence.
 
 ## Goals of This Course
 
