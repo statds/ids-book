@@ -1,0 +1,6 @@
+# Modeling
+
+This chapter will introduce predictive modeling as a workflow built around a
+well-defined target and an appropriate evaluation design. Planned topics
+include baselines, training and test data, model assessment, interpretation,
+and limits on claims from predictive performance.

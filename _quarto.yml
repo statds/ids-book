@@ -25,6 +25,9 @@ book:
     - 04-python.qmd
     - 05-formulation.qmd
     - 06-wrangling.qmd
+    - 07-eda.qmd
+    - 08-visualization.qmd
+    - 09-modeling.qmd
 
 format:
   html:

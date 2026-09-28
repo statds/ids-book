@@ -1,0 +1,7 @@
+# Exploration
+
+This chapter will develop exploratory analysis of the prepared NYPD 311 data.
+Planned topics include distributions, group and time comparisons, missingness,
+unusual observations, and the distinction between exploratory patterns and
+confirmatory evidence. Visualization techniques are developed in the next
+chapter.
