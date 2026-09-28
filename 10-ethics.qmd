@@ -1,0 +1,441 @@
+# Ethics
+
+Ethical reasoning is part of every data-science decision because choices about
+questions, data, methods, and communication affect people and institutions.
+This chapter develops a practical framework for identifying those effects,
+evaluating competing responsibilities, and documenting a defensible course of
+action. It draws on principles in research ethics, professional statistical
+practice, and risk management, while treating none of these frameworks as a
+substitute for contextual judgment. The NYPD 311 requests used throughout the
+book provide a recurring case: the data are public, but their interpretation
+and reuse can still create privacy, equity, and accountability concerns.
+
+## Ethical Reasoning
+
+Ethical analysis asks more than whether an action is legal or technically
+possible. Legal rules establish requirements in particular jurisdictions and
+contexts; professional standards describe responsibilities attached to
+practice; ethical reasoning also considers foreseeable benefits, harms, power,
+and the interests of affected people. A project may satisfy a data license and
+still expose a vulnerable person, produce a misleading comparison, or support
+a harmful decision. Conversely, identifying a possible risk does not by itself
+show that a project must stop. The analyst should specify the purpose, who is
+affected, what evidence is available, which alternatives exist, and who has the
+authority to decide.
+
+Several established frameworks help organize this reasoning. The Belmont
+Report identifies respect for persons, beneficence, and justice as principles
+for research involving human subjects; its original scope should be kept clear
+when applying its ideas to administrative data or nonresearch settings
+[@belmont1979report]. The American Statistical Association's Ethical
+Guidelines address statistical practice across data collection, processing,
+analysis, interpretation, communication, and model development
+[@asastatistical2022guidelines]. The January 2026 Journal of Data Science
+editorial on trustworthy machine learning connects concerns such as fairness,
+privacy, transparency, robustness, and uncertainty to statistical reasoning
+and human judgment [@hicks2026statistical]. For systems involving artificial
+intelligence, the NIST AI Risk Management Framework organizes risk work around
+governance, context mapping, measurement, and management
+[@nist2023ai]. These frameworks differ in scope, but all reject the idea that
+technical correctness alone establishes responsible practice.
+
+The chapter uses six questions as a working review: What purpose does the
+analysis serve? Whose data or experiences are represented? Who could benefit
+or be harmed? What assumptions or uncertainties could change the result? What
+safeguards or alternatives are available? Who is responsible for the decision
+and its consequences? These questions should be revisited as the project
+changes. They do not produce an automatic ethical score; they make judgments
+and unresolved issues visible to collaborators, reviewers, and decision
+makers.
+
+## Purpose
+
+A defensible project begins with a purpose that is sufficiently specific to
+evaluate. The analyst should identify the intended audience, the decision or
+understanding the analysis may support, and the limits on its use. Broad goals
+such as “improve safety” do not explain which intervention is contemplated,
+who will receive it, or what costs it may impose. Purpose also constrains data
+use: information collected to administer a service may not be appropriate for
+every secondary use simply because it is accessible.
+
+The NYPD 311 extract records requests directed to NYPD, not a census of
+illegal-parking events. A project might describe how these requests vary by
+time or location. That is different from identifying where violations occur,
+which neighborhoods are less compliant, or where enforcement should be
+increased. Each transition changes the claim and may affect residents
+differently. Before proceeding, the project team should state which claim it
+intends to support and whether that claim is compatible with the collection
+process and available evidence.
+
+Affected parties include more than the people represented by rows. In this
+case they may include people who submitted requests, people whose vehicles or
+locations were reported, residents and businesses in mapped areas, NYPD staff,
+311 administrators, and decision makers who may rely on the analysis. These
+groups can have different interests and different opportunities to challenge
+an interpretation. Stakeholder consultation is most useful when it can alter
+the question, the safeguards, or the decision, rather than serving only as
+approval after the analysis is complete.
+
+## Privacy
+
+Privacy risk depends on context, not only on whether a table contains names.
+Precise locations, timestamps, rare categories, and external information can
+combine to reveal details about a person, household, or business. Removing
+direct identifiers may reduce risk, but it does not guarantee anonymity.
+Public accessibility also does not establish that every downstream use is
+expected, harmless, or consistent with the original collection purpose.
+
+The distributed 311 extract does not provide a reporter name, but individual
+addresses and coordinates can still expose the location of a reported
+condition. A citywide count may need no street address at all; a neighborhood
+comparison may require only an aggregated geography. Data minimization asks
+the analyst to use and disclose the least detailed data adequate for the
+stated task. The appropriate resolution depends on the question, the population
+at risk, the possibility of linkage, and the consequences of disclosure.
+
+The following example prepares a borough-by-detail summary without importing
+request identifiers, street addresses, or coordinates. It suppresses small
+cells in the displayed release table to illustrate one possible safeguard.
+The threshold is a teaching choice, not a universal privacy standard, and the
+internal count is not included in the table intended for release.
+
+```{python}
+from pathlib import Path
+
+import pandas as pd
+
+data_path = Path("data") / "311_nypd_lbdwk_2026.csv.zip"
+privacy_fields = [
+    "Created Date",
+    "Problem (formerly Complaint Type)",
+    "Problem Detail (formerly Descriptor)",
+    "Borough",
+]
+privacy_data = pd.read_csv(
+    data_path,
+    compression="zip",
+    usecols=privacy_fields,
+    low_memory=False,
+)
+privacy_data["Created Date"] = pd.to_datetime(
+    privacy_data["Created Date"],
+    format="%m/%d/%Y %I:%M:%S %p",
+    errors="coerce",
+)
+
+start = pd.Timestamp("2026-09-06")
+end = pd.Timestamp("2026-09-13")
+in_scope = privacy_data["Created Date"].between(
+    start, end, inclusive="left"
+)
+is_parking = privacy_data[
+    "Problem (formerly Complaint Type)"
+].eq("Illegal Parking")
+
+cell_counts = (
+    privacy_data.loc[in_scope & is_parking]
+    .groupby(
+        ["Borough", "Problem Detail (formerly Descriptor)"],
+        dropna=False,
+        observed=True,
+    )
+    .size()
+    .rename("internal_count")
+    .reset_index()
+)
+
+minimum_cell_count = 10
+release_table = cell_counts.drop(columns="internal_count").copy()
+release_table["requests"] = cell_counts["internal_count"].where(
+    cell_counts["internal_count"] >= minimum_cell_count
+).astype("Int64")
+release_table
+```
+
+The aggregate supports a limited comparison while excluding direct location
+fields and request-level identifiers. Suppression reduces the detail shown
+for small groups, but it does not establish that reidentification is
+impossible. A person may combine released values with outside information,
+and totals or overlapping tables can reveal a suppressed count by subtraction.
+The analyst should assess the release as a whole, state the purpose and
+threshold, and avoid publishing complementary summaries that undo the
+suppression.
+
+Privacy safeguards include limiting access, reducing precision, aggregating
+results, suppressing small cells where disclosure risk warrants it, and
+setting retention and deletion rules. Each safeguard has analytical costs:
+aggregation can conceal local variation, while suppression can make groups
+unequally visible. The analyst should state the risk being reduced and check
+whether the safeguard distorts the intended comparison. Data security and
+privacy protection are related but distinct; secure storage does not resolve
+whether a collection or analysis is appropriate.
+
+## Bias
+
+Bias can enter before a model is fitted. Administrative data reflect how a
+system defines categories, who can access it, what people choose to report,
+how staff record events, and which records are retained. Consequently, a large
+dataset can measure a process precisely while representing the underlying
+phenomenon incompletely. Bias is not limited to a mistaken algorithm; it can
+arise from the purpose, measurement, sampling, labels, missingness, and
+decisions surrounding the analysis.
+
+311 requests illustrate the distinction between an event and its observation.
+The data contain reported conditions, not all conditions on city streets.
+Reporting may vary with awareness of 311, access to a phone or internet,
+language, trust in public agencies, time available, and expectations about
+response. A neighborhood with more requests could have more underlying
+conditions, more reporting, or both. A population denominator may improve one
+comparison but cannot correct every difference in exposure or reporting
+behavior. The data alone may not identify those mechanisms.
+
+Missing values and outcome labels can also encode system processes. Requests
+without coordinates may be less suitable for mapping, but dropping them can
+change which areas or categories appear in the analysis. A label such as
+“closed” describes an administrative state and should not be treated as proof
+that a reported condition was resolved. The data-curation issues documented
+for NYC 311, including inconsistent representations and temporal anomalies,
+show why analysts should investigate how fields were produced before treating
+them as neutral measurements [@tussey2025principles].
+
+An ethical bias assessment therefore begins with a map of the data-generating
+process. Analysts should ask who is included, who may be missing, what the
+labels mean, how measurement varies across groups, and whether a proposed
+comparison has adequate support. When relevant group information is absent,
+the responsible conclusion may be that fairness cannot be evaluated from the
+available extract. Inferring sensitive attributes from location as a shortcut
+can add privacy risks and introduce new classification errors.
+
+## Fairness
+
+Fairness concerns how benefits, errors, burdens, and opportunities are
+distributed. It is not a single property that can be established by reporting
+one metric. A descriptive comparison may raise fairness questions even when no
+predictive model is used; a prediction system makes those questions more
+consequential when its output changes access, scrutiny, enforcement, or
+resources. The relevant groups, outcomes, and harms depend on the decision
+context and should be identified before selecting a metric.
+
+Suppose an analyst predicts which locations will receive future illegal-
+parking complaints and proposes that the city use the predictions to allocate
+enforcement. The target is future complaints, not verified violations.
+Historical complaint patterns can reproduce differences in reporting and
+enforcement, while enforcement can generate new records that appear to confirm
+the original pattern. A high overall prediction score would not establish that
+the system identifies violations accurately or distributes enforcement
+fairly. The team would need validated outcome measures, a specified decision
+process, subgroup error analysis where suitable data and sample sizes permit,
+and a justification for the costs of false positives and false negatives.
+
+Group metrics can conflict, and apparent parity can conceal unequal harms or
+poor measurement. Analysts should explain which errors matter, to whom, and
+why a chosen comparison is appropriate. They should also consider whether a
+model is needed at all: a transparent aggregate description or a nonalgorithmic
+process may achieve the stated purpose with fewer risks. If a proposed use
+cannot be evaluated with the available data, that limitation is a reason to
+collect better evidence, narrow the use, or decline deployment, not a reason
+to claim that the system is fair by default.
+
+## Uncertainty
+
+Uncertainty is an ethical concern when decisions depend on estimates,
+predictions, or classifications. A single performance score can conceal
+variation across places, time periods, or groups, while a precise-looking
+estimate can imply more certainty than the data-generating process supports.
+Trustworthy analysis therefore describes what is uncertain, why it is
+uncertain, and how that uncertainty affects the decision. Statistical
+uncertainty is only one component: ambiguity in field definitions, incomplete
+coverage, measurement error, and unknown reporting behavior can limit a
+conclusion even when a model's standard errors are small.
+
+The 311 extract contains the requests delivered for a defined agency and week.
+If the goal is to describe those delivered records, a sampling confidence
+interval is not needed to account for random selection from that finite file.
+If the goal is to generalize to other weeks, locations, or all illegal-parking
+conditions, uncertainty arises from a broader process that the one-week file
+does not fully represent. Such generalization requires a defensible model or
+sampling framework, not merely a confidence interval attached to the observed
+count. The distinction between describing the extract and making claims beyond
+it determines which uncertainty statements are appropriate.
+
+For a proposed prediction system, uncertainty also concerns the stability and
+calibration of predictions in the population where they would be used. A
+model's average accuracy does not show whether its errors cluster in a
+particular area or whether an individual prediction is reliable. Analysts
+should report evaluation design, uncertainty in performance estimates, and
+the consequences of errors for the decision. If those quantities cannot be
+estimated with adequate evidence, the correct response is to narrow the claim
+or postpone the decision rather than present uncertain output as fact.
+
+## Robustness
+
+Robustness asks whether a conclusion changes under reasonable alternatives in
+data preparation, measurement, modeling, or evaluation. It does not mean that
+every possible analysis must produce the same result, nor does agreement across
+several specifications prove a claim true. The alternatives should correspond
+to genuine uncertainties identified before the result is known. Reporting
+which findings persist, which change, and why helps decision makers understand
+how dependent a conclusion is on analyst choices.
+
+The 311 example offers concrete sensitivity checks. A time-of-day comparison
+could use alternative, explicitly defined day and night boundaries. A
+geographic summary could compare boroughs with ZIP/ZCTA-level results while
+reporting unmatched locations. A closure-time comparison could examine the
+effect of missing or unusually long durations without silently deleting them.
+For every check, the analyst should state the plausible alternative, the
+reason it is defensible, and whether it changes the substantive conclusion.
+Selecting only the specification that gives the strongest result is not a
+robustness analysis.
+
+Robustness is especially important before deployment because operational
+conditions can differ from the evaluation data. A model trained on one week of
+requests may fail in another season, under a changed reporting interface, or
+after enforcement practices change the records being used as outcomes. A
+technical validation on held-out rows from the same short period cannot
+establish stability under these shifts. The team should identify foreseeable
+changes, test them where data permit, and restrict use where they remain
+untested.
+
+## Transparency
+
+Transparency makes a project inspectable by communicating its purpose, data
+sources, transformations, assumptions, methods, uncertainty, limitations, and
+intended use. It is more than releasing code or choosing an interpretable
+model. Different audiences need different explanations: another analyst may
+need executable details, an affected community may need to know how a result
+could influence them, and a decision maker may need a clear account of what
+the evidence does and does not support. The ASA guidelines treat communication
+and disclosure of limitations as core parts of responsible statistical
+practice [@asastatistical2022guidelines].
+The JDS editorial also emphasizes that trustworthy analysis depends on the
+interaction between analytic choices and human judgment
+[@hicks2026statistical].
+
+In this book's 311 example, transparent reporting distinguishes requests from
+verified incidents, NYPD-directed data from all 311 requests, closure time
+from officer response, and ZIP Codes from ZCTAs. A map should state its
+aggregation level and denominator; a comparison should disclose missing
+locations and the time period; a predictive claim should identify the target
+and evaluation population. These qualifications are not peripheral caveats.
+They define the interpretation that the evidence supports.
+
+Visualization choices can either clarify or distort that interpretation.
+Selective time windows, unexplained denominators, cropped axes, and maps with
+unadjusted counts can lead an audience toward an unsupported conclusion.
+Responsible communication presents uncertainty and alternatives in proportion
+to their relevance and avoids implying causation from descriptive or
+predictive results. The communication chapter develops visual design in more
+detail; the ethical requirement here is to represent the evidence faithfully
+for the decisions at stake.
+
+Audience fit requires choosing the level and form of explanation without
+changing the underlying evidence. A technical report may present model
+validation details, while a public summary may explain what a prediction can
+and cannot support in direct language. Both should identify the target,
+population, uncertainty, and material limitations. Simplifying vocabulary is
+appropriate; omitting a caveat that could change a decision is not. The
+intended audience should be considered when formulating the analysis, not only
+when polishing its final display.
+
+## Accountability
+
+Accountability identifies who must explain, review, and respond to a data
+product and its effects. A reproducible workflow provides an audit trail of
+code and decisions, but reproducibility alone is not accountability: a harmful
+analysis can be perfectly reproducible. Teams should assign responsibility
+for data stewardship, methodological review, approval of intended uses,
+communication with affected parties, and monitoring after deployment.
+
+Risk review should continue as a project changes. A descriptive class exercise
+using aggregated public data has a different risk profile from a system that
+automatically directs enforcement. New data sources, finer geographic detail,
+new audiences, or operational deployment can change who is exposed and what
+errors cost. The NIST framework's governance and risk-management functions
+provide one structure for making review continuous in AI applications
+[@nist2023ai]. A review should have a route to pause, revise, or discontinue
+the work when safeguards fail or harms emerge.
+
+An ethical decision record can be concise while still being useful. It should
+state the purpose, affected parties, data and intended uses, major risks,
+uncertainties, safeguards, alternatives considered, responsible reviewers,
+and conditions that would trigger reassessment. The record should distinguish
+evidence from assumptions and identify questions that could not be resolved.
+This documentation supports later review and helps prevent provisional
+assumptions from becoming invisible facts as a project is handed to others.
+
+## Review
+
+Ethical review is a continuing part of data-science work rather than a final
+approval step. A practical review asks whether the question remains justified,
+whether the data represent the intended population, whether the measurement
+and model fit the proposed decision, whether risks are proportionate to
+expected benefits, and whether affected people can understand or challenge the
+use. Sometimes the result is to proceed with safeguards; sometimes it is to
+change the question, seek additional evidence, limit release, or stop.
+
+The frameworks discussed here provide vocabulary and structure, but they do
+not remove disagreement. Respect, benefit, justice, privacy, and fairness can
+point in different directions, and a technically precise analysis may still
+leave the central value choice unresolved. Responsible practice makes those
+choices explicit, considers who has authority and voice, records the basis for
+action, and remains open to revision as evidence and consequences become
+clearer.
+
+## Exercises {.unnumbered}
+
+::: {#exr-ethics-311}
+Evaluate an ethical decision involving the NYPD 311 data. Work individually or
+in a small group, and distinguish evidence in the data from assumptions about
+people or agency processes.
+
+a. Select one question proposed in Chapter 5. State its purpose, intended
+   audience, observational unit, and potential use. Identify at least three
+   affected parties and describe one possible benefit and one possible harm
+   for each.
+b. Trace how a request enters the dataset, including who may report, what is
+   recorded, how the request reaches NYPD, and what closure means. Mark which
+   parts are documented and which require further evidence or curator input.
+c. Identify a privacy risk in the selected analysis. Explain whether the
+   public archive, row-level coordinates, or a proposed map changes the risk.
+   Propose a safeguard and describe its analytical cost.
+d. Identify at least two plausible sources of bias in the data-generating
+   process. Explain why request counts cannot by themselves establish the
+   frequency of underlying illegal-parking events.
+e. Consider a proposal to use predicted complaint volume to allocate
+   enforcement. State the target the model would learn, distinguish that
+   target from the intended outcome, identify relevant errors, and explain
+   what evidence would be needed before deployment could be evaluated.
+f. Draft a transparent, two-sentence statement of what your analysis can
+   establish and what it cannot establish. Include one material limitation.
+g. Write a brief decision record that recommends proceeding with safeguards,
+   revising the question, seeking additional evidence, or stopping. State who
+   should review the decision and what new evidence would cause you to revisit
+   it.
+h. Distinguish uncertainty about the delivered one-week records from
+   uncertainty in generalizing to other weeks or to unreported parking
+   conditions. State what additional design or data would support the broader
+   claim.
+i. Propose two robustness checks for your selected question. For each, state
+   the plausible alternative and whether a changed result would alter your
+   recommendation.
+j. Write a short explanation of your conclusion for a technical audience and
+   for an affected community. Keep the evidence and limitations consistent
+   while adapting the terminology and level of detail.
+:::
+
+::: {#exr-ethics-visual}
+Assess the communication of a data-science result.
+
+a. Find a published chart, map, or model claim that could inform a public or
+   organizational decision. Record its source and intended audience.
+b. Identify design or reporting choices that shape interpretation, including
+   denominators, uncertainty, aggregation, axis limits, missing observations,
+   and causal language where applicable.
+c. Rewrite the caption or accompanying claim to state the evidence and its
+   limits. If the display could expose individuals or stigmatize a group,
+   propose a less harmful alternative.
+d. Explain which parts of your assessment are empirical questions and which
+   require a normative judgment about acceptable costs or benefits.
+:::
+
+## References {.unnumbered}

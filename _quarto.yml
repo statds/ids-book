@@ -28,6 +28,7 @@ book:
     - 07-eda.qmd
     - 08-visualization.qmd
     - 09-modeling.qmd
+    - 10-ethics.qmd
 
 format:
   html:
