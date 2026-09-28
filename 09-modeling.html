@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Jun Yan">
 
-<title>Introduction to Data Science</title>
+<title>9&nbsp; Modeling – Introduction to Data Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,62 +26,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -92,7 +36,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./01-intro.html" rel="next">
+<link href="./10-ethics.html" rel="next">
+<link href="./08-visualization.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -143,7 +88,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preliminaries</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09-modeling.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -173,7 +118,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preliminaries</span></a>
   </div>
 </li>
@@ -227,7 +172,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
+  <a href="./09-modeling.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span></a>
   </div>
 </li>
@@ -242,43 +187,21 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#preliminaries" id="toc-preliminaries" class="nav-link active" data-scroll-target="#preliminaries">Preliminaries</a>
-  <ul class="collapse">
-  <li><a href="#about-these-notes" id="toc-about-these-notes" class="nav-link" data-scroll-target="#about-these-notes">About These Notes</a></li>
-  <li><a href="#sources-and-acknowledgments" id="toc-sources-and-acknowledgments" class="nav-link" data-scroll-target="#sources-and-acknowledgments">Sources and Acknowledgments</a></li>
-  <li><a href="#building-the-book" id="toc-building-the-book" class="nav-link" data-scroll-target="#building-the-book">Building the Book</a></li>
-  <li><a href="#learning-data-science-in-the-age-of-ai" id="toc-learning-data-science-in-the-age-of-ai" class="nav-link" data-scroll-target="#learning-data-science-in-the-age-of-ai">Learning Data Science in the Age of AI</a></li>
-  <li><a href="#adapting-to-rapid-skill-acquisition" id="toc-adapting-to-rapid-skill-acquisition" class="nav-link" data-scroll-target="#adapting-to-rapid-skill-acquisition">Adapting to Rapid Skill Acquisition</a></li>
-  <li><a href="#working-principles" id="toc-working-principles" class="nav-link" data-scroll-target="#working-principles">Working Principles</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
-  </ul></li>
-  </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Introduction to Data Science</h1>
-<p class="subtitle lead">Course Notes</p>
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p><a href="https://statcomp.org">Jun Yan</a> </p>
-          </div>
-  </div>
     
   
     
@@ -289,93 +212,9 @@ div.csl-indent {
 </header>
 
 
-<section id="preliminaries" class="level1 unnumbered">
-<h1 class="unnumbered">Preliminaries</h1>
-<section id="about-these-notes" class="level2">
-<h2 class="anchored" data-anchor-id="about-these-notes">About These Notes</h2>
-<p>These notes support STAT 3255/5255, Introduction to Data Science, at the University of Connecticut. They introduce the ideas, tools, and working habits needed to learn from data in a reproducible and responsible way.</p>
-<p>Copyright © 2026 Jun Yan. Unless otherwise noted, these instructor-authored notes are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>. See the repository’s <a href="https://github.com/statds/ids-book/blob/main/COPYRIGHT.md">copyright notice</a> for attribution and reuse conditions.</p>
-<p>The book uses Quarto for publishing and Python for computation. This combination keeps prose, code, results, and citations together in a reproducible source.</p>
-<p>The instructor-authored book is the permanent source for course content. It is intended to remain useful across semesters and to develop over time into a textbook. Semester schedules, assignments, and student-contributed notes are maintained separately.</p>
-</section>
-<section id="sources-and-acknowledgments" class="level2">
-<h2 class="anchored" data-anchor-id="sources-and-acknowledgments">Sources and Acknowledgments</h2>
-<p>The <a href="https://github.com/statds/ids-book">GitHub repository</a> contains the source for this book.</p>
-<p>Earlier course notes benefited from contributions by successive cohorts of STAT 3255/5255 students. Those contributions helped identify useful examples, alternative explanations, common difficulties, and topics that deserved fuller treatment.</p>
-<p>Recent course archives include:</p>
-<ul>
-<li><a href="https://statds.github.io/ids-s26">Spring 2026</a></li>
-<li><a href="https://statds.github.io/ids-f25">Fall 2025</a></li>
-<li><a href="https://statds.github.io/ids-s25">Spring 2025</a></li>
-<li><a href="https://statds.github.io/ids-f24">Fall 2024</a></li>
-<li><a href="https://statds.github.io/ids-s24">Spring 2024</a></li>
-<li><a href="https://statds.github.io/ids-s23">Spring 2023</a></li>
-<li><a href="https://statds.github.io/ids-s22/">Spring 2022</a></li>
-</ul>
-<p>These archives document the evolution of the course and the perspectives of different student cohorts. The permanent book is independently authored and edited, even when lessons from those archives inform its revision.</p>
-</section>
-<section id="building-the-book" class="level2">
-<h2 class="anchored" data-anchor-id="building-the-book">Building the Book</h2>
-<p>To build the notes locally, clone the repository and use a Python 3.12 virtual environment of your choice. With <code>uv</code>, run these commands from a terminal:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/statds/ids-book.git</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ids-book</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> venv <span class="at">--python</span> 3.12 /path/to/your/environment</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /path/to/your/environment/bin/activate</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> install</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> check</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If <code>uv</code> is unavailable, replace the <code>uv venv</code> command with <code>python3.12 -m venv</code> and use the same path. If you already have an appropriate activated environment, run <code>make install</code> directly. The install target uses the active environment; <code>make check</code> verifies the required tools; and <code>make render</code> writes the completed book to <code>_book/index.html</code>. Supply any credentials required by particular examples through documented local configuration, and never commit credentials or generated output to Git.</p>
-<p>Quarto writes the rendered book to <code>_book/</code>. Generated output and local caches are not tracked by Git; the source and environment specifications are.</p>
-</section>
-<section id="learning-data-science-in-the-age-of-ai" class="level2">
-<h2 class="anchored" data-anchor-id="learning-data-science-in-the-age-of-ai">Learning Data Science in the Age of AI</h2>
-<p>AI reduces the value of routine analytical production but increases the value of analytical judgment. AI systems can already write routine code, clean data, create visualizations, fit models, and draft reports. Consequently, a course that consists mainly of memorizing commands or reproducing standard analyses would offer diminishing value. The appropriate response is not to abandon data-science education, but to teach the knowledge and judgment needed to use increasingly capable tools well.</p>
-<p>Current labor evidence shows disruption and demand at the same time. In its 2025 survey, the World Economic Forum reported that 41 percent of employers expected to reduce their workforce where AI could automate tasks, while 77 percent planned to upskill their workers. The same report identified AI and big data as the fastest-growing skill area and analytical thinking as the most widely valued core skill <span class="citation" data-cites="worldeconomicforum2025">(<a href="#ref-worldeconomicforum2025" role="doc-biblioref">World Economic Forum, 2025</a>)</span>. In the United States, the Bureau of Labor Statistics projects employment of data scientists to grow by about 34 percent from 2024 to 2034 <span class="citation" data-cites="bls2025datascientists">(<a href="#ref-bls2025datascientists" role="doc-biblioref">U.S. Bureau of Labor Statistics, 2025</a>)</span>. Such projections are not a promise of a job, but they do show why students need a combination of technical knowledge and analytical judgment rather than less preparation.</p>
-<p>AI tends to amplify the capabilities of its user rather than make expertise irrelevant. A person with limited understanding may use AI to produce a weak analysis faster, more confidently, and in more polished language. A strong researcher can use the same technology to investigate more alternatives, challenge assumptions, detect errors, and undertake work that would previously have required much more time. The difference is not merely skill in writing prompts. It is the ability to conceive, direct, and evaluate an analysis.</p>
-<p>First, students need enough knowledge to recognize <strong>what is possible</strong>. A useful analysis begins before any code is written: someone must connect a substantive problem to data that could inform it, distinguish descriptive, predictive, causal, and decision questions, and recognize promising methods. Without this foundation, a user can ask AI only for familiar tasks and may not notice when a question cannot be answered from the available data. Knowledge expands both the range and the ambition of what a student can imagine doing.</p>
-<p>Second, students must learn <strong>how to direct AI</strong>. A vague real-world concern must be translated into precise questions, variables, comparisons, and computational steps. The user must supply context, state constraints, decide what evidence would be relevant, and revise the approach as new problems emerge. These are central data-science skills. AI can assist with their execution, but it cannot compensate reliably for a poorly formulated problem.</p>
-<p>Third, students must be able to <strong>evaluate what AI produces</strong>. Plausible code may contain subtle errors; an attractive graph may conceal a misleading comparison; a highly accurate model may suffer from data leakage; and a fluent report may make a causal claim that the study design cannot support. Evaluation therefore requires understanding data provenance, measurement, variation, validation, uncertainty, reproducibility, and the context in which a result will be used. Because AI can make incorrect work appear polished and authoritative, these foundations become more important, not less.</p>
-<p>This course prepares students to work with AI without surrendering judgment to it. Students learn enough about data, computation, statistical reasoning, and communication to formulate worthwhile questions, supervise computational work, verify results, explain limitations, and take responsibility for the conclusions they present. The goal is not to compete with AI at producing code quickly. It is to become the kind of informed practitioner whose abilities are made stronger by AI.</p>
-</section>
-<section id="adapting-to-rapid-skill-acquisition" class="level2">
-<h2 class="anchored" data-anchor-id="adapting-to-rapid-skill-acquisition">Adapting to Rapid Skill Acquisition</h2>
-<p>Data science requires learning new tools and ideas quickly. VanderPlas <span class="citation" data-cites="vanderplas2016python">(<a href="#ref-vanderplas2016python" role="doc-biblioref">VanderPlas, 2016</a>)</span> emphasizes that effective practice depends less on memorizing every command than on locating and evaluating the information needed to solve an unfamiliar problem.</p>
-<p>Effective practitioners follow a disciplined process for resolving unfamiliar problems. They frame the problem, consult documentation and other reliable sources, test possible solutions, and evaluate whether the result makes sense.</p>
-<p>This habit is especially important when software, data formats, and computing environments change. Encountering an unfamiliar package, error message, data source, or hardware requirement is part of the work. The goal is to develop a repeatable way to investigate such problems rather than to accumulate isolated recipes.</p>
-</section>
-<section id="working-principles" class="level2">
-<h2 class="anchored" data-anchor-id="working-principles">Working Principles</h2>
-<p>The examples and exercises in this book emphasize a few recurring principles:</p>
-<ul>
-<li>Begin with a domain concern or available data, then formulate a clear question in context.</li>
-<li>Keep raw data separate from derived data and analysis output.</li>
-<li>Explore data interactively, then collect tested code into reproducible scripts or documents.</li>
-<li>Consider during data cleaning how each variable will be used later.</li>
-<li>Use version control to make small, understandable changes.</li>
-<li>Document data sources, assumptions, software dependencies, and decisions.</li>
-<li>Check results for statistical, computational, and contextual plausibility.</li>
-<li>Communicate the question, evidence, limitations, and conclusion—not merely the code.</li>
-</ul>
-<p>Effective presentations guide the audience from motivation to conclusion. Introduce the problem and explain why it matters, provide a map of the talk, emphasize the main results, and conclude with the central takeaway.</p>
-<p>Trustworthy explanations distinguish original work from borrowed material. Original examples strengthen an explanation, while careful attribution allows the audience to evaluate its sources.</p>
-</section>
-<section id="references" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<p>This chapter will introduce predictive modeling as a workflow built around a well-defined target and an appropriate evaluation design. Planned topics include baselines, training and test data, model assessment, interpretation, and limits on claims from predictive performance. Model development will revisit all four checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>, especially whether the target, available predictors, and evaluation design support the intended use.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
-<div id="ref-bls2025datascientists" class="csl-entry" role="listitem">
-U.S. Bureau of Labor Statistics. (2025). <em>Data scientists</em>. Occupational Outlook Handbook. <a href="https://www.bls.gov/ooh/math/data-scientists.htm">https://www.bls.gov/ooh/math/data-scientists.htm</a>
-</div>
-<div id="ref-vanderplas2016python" class="csl-entry" role="listitem">
-VanderPlas, J. (2016). <em>Python data science handbook: <span>E</span>ssential tools for working with data</em>. O’Reilly Media, Inc. <a href="https://jakevdp.github.io/PythonDataScienceHandbook/">https://jakevdp.github.io/PythonDataScienceHandbook/</a>
-</div>
-<div id="ref-worldeconomicforum2025" class="csl-entry" role="listitem">
-World Economic Forum. (2025). <em>The future of jobs report 2025</em>. World Economic Forum. <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/">https://www.weforum.org/publications/the-future-of-jobs-report-2025/</a>
-</div>
-</div>
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -780,10 +619,13 @@ World Economic Forum. (2025). <em>The future of jobs report 2025</em>. World Eco
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./08-visualization.html" class="pagination-link" aria-label="Visualization">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Visualization</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./01-intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./10-ethics.html" class="pagination-link" aria-label="Ethics">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -792,4 +634,4 @@ World Economic Forum. (2025). <em>The future of jobs report 2025</em>. World Eco
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/09-modeling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

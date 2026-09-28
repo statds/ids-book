@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; Ethics – Introduction to Data Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./09-modeling.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./10-ethics.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to Data Science</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/statds/ids-book" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preliminaries</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reproducible Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-formulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Problem Formulation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-eda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploration</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-ethics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#ethical-reasoning" id="toc-ethical-reasoning" class="nav-link active" data-scroll-target="#ethical-reasoning"><span class="header-section-number">10.1</span> Ethical Reasoning</a></li>
+  <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose"><span class="header-section-number">10.2</span> Purpose</a></li>
+  <li><a href="#privacy" id="toc-privacy" class="nav-link" data-scroll-target="#privacy"><span class="header-section-number">10.3</span> Privacy</a></li>
+  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">10.4</span> Bias</a></li>
+  <li><a href="#fairness" id="toc-fairness" class="nav-link" data-scroll-target="#fairness"><span class="header-section-number">10.5</span> Fairness</a></li>
+  <li><a href="#uncertainty" id="toc-uncertainty" class="nav-link" data-scroll-target="#uncertainty"><span class="header-section-number">10.6</span> Uncertainty</a></li>
+  <li><a href="#robustness" id="toc-robustness" class="nav-link" data-scroll-target="#robustness"><span class="header-section-number">10.7</span> Robustness</a></li>
+  <li><a href="#transparency" id="toc-transparency" class="nav-link" data-scroll-target="#transparency"><span class="header-section-number">10.8</span> Transparency</a></li>
+  <li><a href="#accountability" id="toc-accountability" class="nav-link" data-scroll-target="#accountability"><span class="header-section-number">10.9</span> Accountability</a></li>
+  <li><a href="#review" id="toc-review" class="nav-link" data-scroll-target="#review"><span class="header-section-number">10.10</span> Review</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/10-ethics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Ethical reasoning is part of every data-science decision because choices about questions, data, methods, and communication affect people and institutions. This chapter develops a practical framework for identifying those effects, evaluating competing responsibilities, and documenting a defensible course of action. It draws on principles in research ethics, professional statistical practice, and risk management, while treating none of these frameworks as a substitute for contextual judgment. The NYPD 311 requests used throughout the book provide a recurring case: the data are public, but their interpretation and reuse can still create privacy, equity, and accountability concerns.</p>
+<section id="ethical-reasoning" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="ethical-reasoning"><span class="header-section-number">10.1</span> Ethical Reasoning</h2>
+<p>Ethical analysis asks more than whether an action is legal or technically possible. Legal rules establish requirements in particular jurisdictions and contexts; professional standards describe responsibilities attached to practice; ethical reasoning also considers foreseeable benefits, harms, power, and the interests of affected people. A project may satisfy a data license and still expose a vulnerable person, produce a misleading comparison, or support a harmful decision. Conversely, identifying a possible risk does not by itself show that a project must stop. The analyst should specify the purpose, who is affected, what evidence is available, which alternatives exist, and who has the authority to decide.</p>
+<p>Ethical review revisits the four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>, because purpose, measurement, scope, and evidence shape who may be affected and what consequences the analysis can have. Several established frameworks help organize this reasoning. The Belmont Report identifies respect for persons, beneficence, and justice as principles for research involving human subjects; its original scope should be kept clear when applying its ideas to administrative data or nonresearch settings <span class="citation" data-cites="belmont1979report">(<a href="#ref-belmont1979report" role="doc-biblioref">National Commission for the Protection of Human Subjects of Biomedical and Behavioral Research, 1979</a>)</span>. The American Statistical Association’s Ethical Guidelines address statistical practice across data collection, processing, analysis, interpretation, communication, and model development <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>. The January 2026 Journal of Data Science editorial on trustworthy machine learning connects concerns such as fairness, privacy, transparency, robustness, and uncertainty to statistical reasoning and human judgment <span class="citation" data-cites="hicks2026statistical">(<a href="#ref-hicks2026statistical" role="doc-biblioref">Hicks et al., 2026</a>)</span>. For systems involving artificial intelligence, the NIST AI Risk Management Framework organizes risk work around governance, context mapping, measurement, and management <span class="citation" data-cites="nist2023ai">(<a href="#ref-nist2023ai" role="doc-biblioref">Tabassi, 2023</a>)</span>. These frameworks differ in scope, but all reject the idea that technical correctness alone establishes responsible practice.</p>
+<p>The chapter uses six questions as a working review: What purpose does the analysis serve? Whose data or experiences are represented? Who could benefit or be harmed? What assumptions or uncertainties could change the result? What safeguards or alternatives are available? Who is responsible for the decision and its consequences? These questions should be revisited as the project changes. They do not produce an automatic ethical score; they make judgments and unresolved issues visible to collaborators, reviewers, and decision makers.</p>
+</section>
+<section id="purpose" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="purpose"><span class="header-section-number">10.2</span> Purpose</h2>
+<p>A defensible project begins with a purpose that is sufficiently specific to evaluate. The analyst should identify the intended audience, the decision or understanding the analysis may support, and the limits on its use. Broad goals such as “improve safety” do not explain which intervention is contemplated, who will receive it, or what costs it may impose. Purpose also constrains data use: information collected to administer a service may not be appropriate for every secondary use simply because it is accessible.</p>
+<p>The NYPD 311 extract records requests directed to NYPD, not a census of illegal-parking events. A project might describe how these requests vary by time or location. That is different from identifying where violations occur, which neighborhoods are less compliant, or where enforcement should be increased. Each transition changes the claim and may affect residents differently. Before proceeding, the project team should state which claim it intends to support and whether that claim is compatible with the collection process and available evidence.</p>
+<p>Affected parties include more than the people represented by rows. In this case they may include people who submitted requests, people whose vehicles or locations were reported, residents and businesses in mapped areas, NYPD staff, 311 administrators, and decision makers who may rely on the analysis. These groups can have different interests and different opportunities to challenge an interpretation. Stakeholder consultation is most useful when it can alter the question, the safeguards, or the decision, rather than serving only as approval after the analysis is complete.</p>
+</section>
+<section id="privacy" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="privacy"><span class="header-section-number">10.3</span> Privacy</h2>
+<p>Privacy risk depends on context, not only on whether a table contains names. Precise locations, timestamps, rare categories, and external information can combine to reveal details about a person, household, or business. Removing direct identifiers may reduce risk, but it does not guarantee anonymity. Public accessibility also does not establish that every downstream use is expected, harmless, or consistent with the original collection purpose.</p>
+<p>The distributed 311 extract does not provide a reporter name, but individual addresses and coordinates can still expose the location of a reported condition. A citywide count may need no street address at all; a neighborhood comparison may require only an aggregated geography. Data minimization asks the analyst to use and disclose the least detailed data adequate for the stated task. The appropriate resolution depends on the question, the population at risk, the possibility of linkage, and the consequences of disclosure.</p>
+<p>The following example prepares a borough-by-detail summary without importing request identifiers, street addresses, or coordinates. It suppresses small cells in the displayed release table to illustrate one possible safeguard. The threshold is a teaching choice, not a universal privacy standard, and the internal count is not included in the table intended for release.</p>
+<div id="5efaf058" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"311_nypd_lbdwk_2026.csv.zip"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>privacy_fields <span class="op">=</span> [</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem (formerly Complaint Type)"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem Detail (formerly Descriptor)"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Borough"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>privacy_data <span class="op">=</span> pd.read_csv(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    data_path,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    compression<span class="op">=</span><span class="st">"zip"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    usecols<span class="op">=</span>privacy_fields,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    low_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>privacy_data[<span class="st">"Created Date"</span>] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    privacy_data[<span class="st">"Created Date"</span>],</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    errors<span class="op">=</span><span class="st">"coerce"</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>in_scope <span class="op">=</span> privacy_data[<span class="st">"Created Date"</span>].between(</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>is_parking <span class="op">=</span> privacy_data[</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem (formerly Complaint Type)"</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>].eq(<span class="st">"Illegal Parking"</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>cell_counts <span class="op">=</span> (</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    privacy_data.loc[in_scope <span class="op">&amp;</span> is_parking]</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    .groupby(</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        [<span class="st">"Borough"</span>, <span class="st">"Problem Detail (formerly Descriptor)"</span>],</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        dropna<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        observed<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    .rename(<span class="st">"internal_count"</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>minimum_cell_count <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>release_table <span class="op">=</span> cell_counts.drop(columns<span class="op">=</span><span class="st">"internal_count"</span>).copy()</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>release_table[<span class="st">"requests"</span>] <span class="op">=</span> cell_counts[<span class="st">"internal_count"</span>].where(</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    cell_counts[<span class="st">"internal_count"</span>] <span class="op">&gt;=</span> minimum_cell_count</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>).astype(<span class="st">"Int64"</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>release_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Borough</th>
+<th data-quarto-table-cell-role="th">Problem Detail (formerly Descriptor)</th>
+<th data-quarto-table-cell-role="th">requests</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>BRONX</td>
+<td>Blocked Bike Lane</td>
+<td>70</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>BRONX</td>
+<td>Blocked Crosswalk</td>
+<td>104</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>BRONX</td>
+<td>Blocked Hydrant</td>
+<td>507</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>BRONX</td>
+<td>Blocked Sidewalk</td>
+<td>188</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>BRONX</td>
+<td>Commercial Overnight Parking</td>
+<td>151</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">65</th>
+<td>STATEN ISLAND</td>
+<td>Overnight Commercial Storage</td>
+<td>&lt;NA&gt;</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">66</th>
+<td>STATEN ISLAND</td>
+<td>Paper License Plates</td>
+<td>&lt;NA&gt;</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">67</th>
+<td>STATEN ISLAND</td>
+<td>Parking Permit Improper Use</td>
+<td>&lt;NA&gt;</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">68</th>
+<td>STATEN ISLAND</td>
+<td>Posted Parking Sign Violation</td>
+<td>89</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">69</th>
+<td>STATEN ISLAND</td>
+<td>Unauthorized Bus Layover</td>
+<td>&lt;NA&gt;</td>
+</tr>
+</tbody>
+</table>
+
+<p>70 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>The aggregate supports a limited comparison while excluding direct location fields and request-level identifiers. Suppression reduces the detail shown for small groups, but it does not establish that reidentification is impossible. A person may combine released values with outside information, and totals or overlapping tables can reveal a suppressed count by subtraction. The analyst should assess the release as a whole, state the purpose and threshold, and avoid publishing complementary summaries that undo the suppression.</p>
+<p>Privacy safeguards include limiting access, reducing precision, aggregating results, suppressing small cells where disclosure risk warrants it, and setting retention and deletion rules. Each safeguard has analytical costs: aggregation can conceal local variation, while suppression can make groups unequally visible. The analyst should state the risk being reduced and check whether the safeguard distorts the intended comparison. Data security and privacy protection are related but distinct; secure storage does not resolve whether a collection or analysis is appropriate.</p>
+</section>
+<section id="bias" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="bias"><span class="header-section-number">10.4</span> Bias</h2>
+<p>Bias can enter before a model is fitted. Administrative data reflect how a system defines categories, who can access it, what people choose to report, how staff record events, and which records are retained. Consequently, a large dataset can measure a process precisely while representing the underlying phenomenon incompletely. Bias is not limited to a mistaken algorithm; it can arise from the purpose, measurement, sampling, labels, missingness, and decisions surrounding the analysis.</p>
+<p>311 requests illustrate the distinction between an event and its observation. The data contain reported conditions, not all conditions on city streets. Reporting may vary with awareness of 311, access to a phone or internet, language, trust in public agencies, time available, and expectations about response. A neighborhood with more requests could have more underlying conditions, more reporting, or both. A population denominator may improve one comparison but cannot correct every difference in exposure or reporting behavior. The data alone may not identify those mechanisms.</p>
+<p>Missing values and outcome labels can also encode system processes. Requests without coordinates may be less suitable for mapping, but dropping them can change which areas or categories appear in the analysis. A label such as “closed” describes an administrative state and should not be treated as proof that a reported condition was resolved. The data-curation issues documented for NYC 311, including inconsistent representations and temporal anomalies, show why analysts should investigate how fields were produced before treating them as neutral measurements <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>.</p>
+<p>An ethical bias assessment therefore begins with a map of the data-generating process. Analysts should ask who is included, who may be missing, what the labels mean, how measurement varies across groups, and whether a proposed comparison has adequate support. When relevant group information is absent, the responsible conclusion may be that fairness cannot be evaluated from the available extract. Inferring sensitive attributes from location as a shortcut can add privacy risks and introduce new classification errors.</p>
+</section>
+<section id="fairness" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="fairness"><span class="header-section-number">10.5</span> Fairness</h2>
+<p>Fairness concerns how benefits, errors, burdens, and opportunities are distributed. It is not a single property that can be established by reporting one metric. A descriptive comparison may raise fairness questions even when no predictive model is used; a prediction system makes those questions more consequential when its output changes access, scrutiny, enforcement, or resources. The relevant groups, outcomes, and harms depend on the decision context and should be identified before selecting a metric.</p>
+<p>Suppose an analyst predicts which locations will receive future illegal- parking complaints and proposes that the city use the predictions to allocate enforcement. The target is future complaints, not verified violations. Historical complaint patterns can reproduce differences in reporting and enforcement, while enforcement can generate new records that appear to confirm the original pattern. A high overall prediction score would not establish that the system identifies violations accurately or distributes enforcement fairly. The team would need validated outcome measures, a specified decision process, subgroup error analysis where suitable data and sample sizes permit, and a justification for the costs of false positives and false negatives.</p>
+<p>Group metrics can conflict, and apparent parity can conceal unequal harms or poor measurement. Analysts should explain which errors matter, to whom, and why a chosen comparison is appropriate. They should also consider whether a model is needed at all: a transparent aggregate description or a nonalgorithmic process may achieve the stated purpose with fewer risks. If a proposed use cannot be evaluated with the available data, that limitation is a reason to collect better evidence, narrow the use, or decline deployment, not a reason to claim that the system is fair by default.</p>
+</section>
+<section id="uncertainty" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="uncertainty"><span class="header-section-number">10.6</span> Uncertainty</h2>
+<p>Uncertainty is an ethical concern when decisions depend on estimates, predictions, or classifications. A single performance score can conceal variation across places, time periods, or groups, while a precise-looking estimate can imply more certainty than the data-generating process supports. Trustworthy analysis therefore describes what is uncertain, why it is uncertain, and how that uncertainty affects the decision. Statistical uncertainty is only one component: ambiguity in field definitions, incomplete coverage, measurement error, and unknown reporting behavior can limit a conclusion even when a model’s standard errors are small.</p>
+<p>The 311 extract contains the requests delivered for a defined agency and week. If the goal is to describe those delivered records, a sampling confidence interval is not needed to account for random selection from that finite file. If the goal is to generalize to other weeks, locations, or all illegal-parking conditions, uncertainty arises from a broader process that the one-week file does not fully represent. Such generalization requires a defensible model or sampling framework, not merely a confidence interval attached to the observed count. The distinction between describing the extract and making claims beyond it determines which uncertainty statements are appropriate.</p>
+<p>For a proposed prediction system, uncertainty also concerns the stability and calibration of predictions in the population where they would be used. A model’s average accuracy does not show whether its errors cluster in a particular area or whether an individual prediction is reliable. Analysts should report evaluation design, uncertainty in performance estimates, and the consequences of errors for the decision. If those quantities cannot be estimated with adequate evidence, the correct response is to narrow the claim or postpone the decision rather than present uncertain output as fact.</p>
+</section>
+<section id="robustness" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="robustness"><span class="header-section-number">10.7</span> Robustness</h2>
+<p>Robustness asks whether a conclusion changes under reasonable alternatives in data preparation, measurement, modeling, or evaluation. It does not mean that every possible analysis must produce the same result, nor does agreement across several specifications prove a claim true. The alternatives should correspond to genuine uncertainties identified before the result is known. Reporting which findings persist, which change, and why helps decision makers understand how dependent a conclusion is on analyst choices.</p>
+<p>The 311 example offers concrete sensitivity checks. A time-of-day comparison could use alternative, explicitly defined day and night boundaries. A geographic summary could compare boroughs with ZIP/ZCTA-level results while reporting unmatched locations. A closure-time comparison could examine the effect of missing or unusually long durations without silently deleting them. For every check, the analyst should state the plausible alternative, the reason it is defensible, and whether it changes the substantive conclusion. Selecting only the specification that gives the strongest result is not a robustness analysis.</p>
+<p>Robustness is especially important before deployment because operational conditions can differ from the evaluation data. A model trained on one week of requests may fail in another season, under a changed reporting interface, or after enforcement practices change the records being used as outcomes. A technical validation on held-out rows from the same short period cannot establish stability under these shifts. The team should identify foreseeable changes, test them where data permit, and restrict use where they remain untested.</p>
+</section>
+<section id="transparency" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="transparency"><span class="header-section-number">10.8</span> Transparency</h2>
+<p>Transparency makes a project inspectable by communicating its purpose, data sources, transformations, assumptions, methods, uncertainty, limitations, and intended use. It is more than releasing code or choosing an interpretable model. Different audiences need different explanations: another analyst may need executable details, an affected community may need to know how a result could influence them, and a decision maker may need a clear account of what the evidence does and does not support. The ASA guidelines treat communication and disclosure of limitations as core parts of responsible statistical practice <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>. The JDS editorial also emphasizes that trustworthy analysis depends on the interaction between analytic choices and human judgment <span class="citation" data-cites="hicks2026statistical">(<a href="#ref-hicks2026statistical" role="doc-biblioref">Hicks et al., 2026</a>)</span>.</p>
+<p>In this book’s 311 example, transparent reporting distinguishes requests from verified incidents, NYPD-directed data from all 311 requests, closure time from officer response, and ZIP Codes from ZCTAs. A map should state its aggregation level and denominator; a comparison should disclose missing locations and the time period; a predictive claim should identify the target and evaluation population. These qualifications are not peripheral caveats. They define the interpretation that the evidence supports.</p>
+<p>Visualization choices can either clarify or distort that interpretation. Selective time windows, unexplained denominators, cropped axes, and maps with unadjusted counts can lead an audience toward an unsupported conclusion. Responsible communication presents uncertainty and alternatives in proportion to their relevance and avoids implying causation from descriptive or predictive results. The communication chapter develops visual design in more detail; the ethical requirement here is to represent the evidence faithfully for the decisions at stake.</p>
+<p>Audience fit requires choosing the level and form of explanation without changing the underlying evidence. A technical report may present model validation details, while a public summary may explain what a prediction can and cannot support in direct language. Both should identify the target, population, uncertainty, and material limitations. Simplifying vocabulary is appropriate; omitting a caveat that could change a decision is not. The intended audience should be considered when formulating the analysis, not only when polishing its final display.</p>
+</section>
+<section id="accountability" class="level2" data-number="10.9">
+<h2 data-number="10.9" class="anchored" data-anchor-id="accountability"><span class="header-section-number">10.9</span> Accountability</h2>
+<p>Accountability identifies who must explain, review, and respond to a data product and its effects. A reproducible workflow provides an audit trail of code and decisions, but reproducibility alone is not accountability: a harmful analysis can be perfectly reproducible. Teams should assign responsibility for data stewardship, methodological review, approval of intended uses, communication with affected parties, and monitoring after deployment.</p>
+<p>Risk review should continue as a project changes. A descriptive class exercise using aggregated public data has a different risk profile from a system that automatically directs enforcement. New data sources, finer geographic detail, new audiences, or operational deployment can change who is exposed and what errors cost. The NIST framework’s governance and risk-management functions provide one structure for making review continuous in AI applications <span class="citation" data-cites="nist2023ai">(<a href="#ref-nist2023ai" role="doc-biblioref">Tabassi, 2023</a>)</span>. A review should have a route to pause, revise, or discontinue the work when safeguards fail or harms emerge.</p>
+<p>An ethical decision record can be concise while still being useful. It should state the purpose, affected parties, data and intended uses, major risks, uncertainties, safeguards, alternatives considered, responsible reviewers, and conditions that would trigger reassessment. The record should distinguish evidence from assumptions and identify questions that could not be resolved. This documentation supports later review and helps prevent provisional assumptions from becoming invisible facts as a project is handed to others.</p>
+</section>
+<section id="review" class="level2" data-number="10.10">
+<h2 data-number="10.10" class="anchored" data-anchor-id="review"><span class="header-section-number">10.10</span> Review</h2>
+<p>Ethical review is a continuing part of data-science work rather than a final approval step. A practical review asks whether the question remains justified, whether the data represent the intended population, whether the measurement and model fit the proposed decision, whether risks are proportionate to expected benefits, and whether affected people can understand or challenge the use. Sometimes the result is to proceed with safeguards; sometimes it is to change the question, seek additional evidence, limit release, or stop.</p>
+<p>The frameworks discussed here provide vocabulary and structure, but they do not remove disagreement. Respect, benefit, justice, privacy, and fairness can point in different directions, and a technically precise analysis may still leave the central value choice unresolved. Responsible practice makes those choices explicit, considers who has authority and voice, records the basis for action, and remains open to revision as evidence and consequences become clearer.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<div id="exr-ethics-311" class="theorem exercise">
+<p><span class="theorem-title"><strong> 10.1</strong></span> Evaluate an ethical decision involving the NYPD 311 data. Work individually or in a small group, and distinguish evidence in the data from assumptions about people or agency processes.</p>
+<ol type="a">
+<li>Select one question proposed in Chapter 5. State its purpose, intended audience, observational unit, and potential use. Identify at least three affected parties and describe one possible benefit and one possible harm for each.</li>
+<li>Trace how a request enters the dataset, including who may report, what is recorded, how the request reaches NYPD, and what closure means. Mark which parts are documented and which require further evidence or curator input.</li>
+<li>Identify a privacy risk in the selected analysis. Explain whether the public archive, row-level coordinates, or a proposed map changes the risk. Propose a safeguard and describe its analytical cost.</li>
+<li>Identify at least two plausible sources of bias in the data-generating process. Explain why request counts cannot by themselves establish the frequency of underlying illegal-parking events.</li>
+<li>Consider a proposal to use predicted complaint volume to allocate enforcement. State the target the model would learn, distinguish that target from the intended outcome, identify relevant errors, and explain what evidence would be needed before deployment could be evaluated.</li>
+<li>Draft a transparent, two-sentence statement of what your analysis can establish and what it cannot establish. Include one material limitation.</li>
+<li>Write a brief decision record that recommends proceeding with safeguards, revising the question, seeking additional evidence, or stopping. State who should review the decision and what new evidence would cause you to revisit it.</li>
+<li>Distinguish uncertainty about the delivered one-week records from uncertainty in generalizing to other weeks or to unreported parking conditions. State what additional design or data would support the broader claim.</li>
+<li>Propose two robustness checks for your selected question. For each, state the plausible alternative and whether a changed result would alter your recommendation.</li>
+<li>Write a short explanation of your conclusion for a technical audience and for an affected community. Keep the evidence and limitations consistent while adapting the terminology and level of detail.</li>
+</ol>
+</div>
+<div id="exr-ethics-visual" class="theorem exercise">
+<p><span class="theorem-title"><strong> 10.2</strong></span> Assess the communication of a data-science result.</p>
+<ol type="a">
+<li>Find a published chart, map, or model claim that could inform a public or organizational decision. Record its source and intended audience.</li>
+<li>Identify design or reporting choices that shape interpretation, including denominators, uncertainty, aggregation, axis limits, missing observations, and causal language where applicable.</li>
+<li>Rewrite the caption or accompanying claim to state the evidence and its limits. If the display could expose individuals or stigmatize a group, propose a less harmful alternative.</li>
+<li>Explain which parts of your assessment are empirical questions and which require a normative judgment about acceptable costs or benefits.</li>
+</ol>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-asastatistical2022guidelines" class="csl-entry" role="listitem">
+American Statistical Association. (2022). <em>Ethical guidelines for statistical practice</em>. <a href="https://www.amstat.org/your-career/ethical-guidelines-for-statistical-practice">https://www.amstat.org/your-career/ethical-guidelines-for-statistical-practice</a>
+</div>
+<div id="ref-hicks2026statistical" class="csl-entry" role="listitem">
+Hicks, S. C., Korthauer, K., Shen, X., Yan, J., &amp; Zhang, H. H. (2026). Editorial: Statistical aspects of trustworthy machine learning. <em>Journal of Data Science</em>, <em>24</em>(1), 1–3. <a href="https://doi.org/10.6339/26-JDS241EDI">https://doi.org/10.6339/26-JDS241EDI</a>
+</div>
+<div id="ref-belmont1979report" class="csl-entry" role="listitem">
+National Commission for the Protection of Human Subjects of Biomedical and Behavioral Research. (1979). <em>The belmont report: Ethical principles and guidelines for the protection of human subjects of research</em>. U.S. Department of Health; Human Services. <a href="https://www.hhs.gov/ohrp/regulations-and-policy/belmont-report/read-the-belmont-report/index.html">https://www.hhs.gov/ohrp/regulations-and-policy/belmont-report/read-the-belmont-report/index.html</a>
+</div>
+<div id="ref-nist2023ai" class="csl-entry" role="listitem">
+Tabassi, E. (2023). <em>Artificial intelligence risk management framework (<span>AI RMF</span> 1.0)</em> (NIST AI 100-1). National Institute of Standards; Technology. <a href="https://doi.org/10.6028/NIST.AI.100-1">https://doi.org/10.6028/NIST.AI.100-1</a>
+</div>
+<div id="ref-tussey2025principles" class="csl-entry" role="listitem">
+Tussey, D., &amp; Yan, J. (2025). <em>Principles for open data curation: A case study with the new york city 311 service request data</em>. <a href="https://doi.org/10.48550/arXiv.2502.08649">https://doi.org/10.48550/arXiv.2502.08649</a>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/statds\.github\.io\/ids-book");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./09-modeling.html" class="pagination-link" aria-label="Modeling">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/10-ethics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

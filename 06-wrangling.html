@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; Data Wrangling – Introduction to Data Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./07-eda.html" rel="next">
+<link href="./05-formulation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./06-wrangling.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to Data Science</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/statds/ids-book" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preliminaries</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reproducible Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-formulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Problem Formulation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-wrangling.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-eda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploration</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-ethics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-source-records-to-an-analysis-table" id="toc-from-source-records-to-an-analysis-table" class="nav-link active" data-scroll-target="#from-source-records-to-an-analysis-table"><span class="header-section-number">6.1</span> From source records to an analysis table</a></li>
+  <li><a href="#diagnose-before-changing-values" id="toc-diagnose-before-changing-values" class="nav-link" data-scroll-target="#diagnose-before-changing-values"><span class="header-section-number">6.2</span> Diagnose before changing values</a></li>
+  <li><a href="#standardize-representations-conservatively" id="toc-standardize-representations-conservatively" class="nav-link" data-scroll-target="#standardize-representations-conservatively"><span class="header-section-number">6.3</span> Standardize representations conservatively</a></li>
+  <li><a href="#derive-variables-from-documented-meanings" id="toc-derive-variables-from-documented-meanings" class="nav-link" data-scroll-target="#derive-variables-from-documented-meanings"><span class="header-section-number">6.4</span> Derive variables from documented meanings</a></li>
+  <li><a href="#merge-geographic-context-with-checks" id="toc-merge-geographic-context-with-checks" class="nav-link" data-scroll-target="#merge-geographic-context-with-checks"><span class="header-section-number">6.5</span> Merge geographic context with checks</a></li>
+  <li><a href="#validate-and-save-the-prepared-data" id="toc-validate-and-save-the-prepared-data" class="nav-link" data-scroll-target="#validate-and-save-the-prepared-data"><span class="header-section-number">6.6</span> Validate and save the prepared data</a></li>
+  <li><a href="#preparation-as-a-documented-argument" id="toc-preparation-as-a-documented-argument" class="nav-link" data-scroll-target="#preparation-as-a-documented-argument"><span class="header-section-number">6.7</span> Preparation as a documented argument</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/06-wrangling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Data wrangling transforms acquired data into a form suited to a specified analysis while preserving the evidence needed to review those transformations. The goal of this chapter is to develop a reproducible preparation workflow using the NYPD illegal-parking requests introduced in the previous chapter. The four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> guide which variables to retain, which transformations to make, and what claims the prepared data can support. The emphasis is not on making every value look regular; it is on distinguishing documented facts, defensible transformations, and unresolved uncertainty. Exploratory data analysis and visualization will follow after the prepared data have been validated.</p>
+<section id="from-source-records-to-an-analysis-table" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="from-source-records-to-an-analysis-table"><span class="header-section-number">6.1</span> From source records to an analysis table</h2>
+<p>Data preparation starts from a question and a retained source, not from an assumption that the downloaded table is already analysis-ready. The previous chapter established the observational unit, checked the requested time window, and selected illegal-parking requests. This chapter continues from those decisions: it standardizes representations where the meaning is clear, derives variables needed for analysis, joins contextual data only when the units and geographies align, and verifies the result. The steps are iterative because a transformation can expose a previously unnoticed problem or show that a question requires different data.</p>
+<p>A useful preparation plan separates three classes of decisions. <strong>Scope decisions</strong> select which observations and fields belong to an analysis. <strong>Representation decisions</strong> change how a value is encoded without changing its meaning, such as parsing a date string or storing a ZIP Code as text. <strong>Analytical decisions</strong> define derived measurements or handle uncertain values, such as defining nighttime or excluding requests without coordinates. The first two are often mechanical once documented; the third require an explicit rationale because they can change the population, measurement, or conclusion.</p>
+<p>The original ZIP archive should remain unchanged. A useful workflow creates a new data frame for each substantive stage and records its source, rules, and checks. This practice supports comparison with the source, makes decisions revisable, and avoids treating an undocumented edit as part of the original data. The small Feather file produced in the previous chapter is one possible starting point; the code below reconstructs the same screened records from the source so the chapter is executable independently.</p>
+<div id="3c85f3d8" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"311_nypd_lbdwk_2026.csv.zip"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>requests <span class="op">=</span> pd.read_csv(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    data_path,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    compression<span class="op">=</span><span class="st">"zip"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"Unique Key"</span>: <span class="st">"string"</span>, <span class="st">"Incident Zip"</span>: <span class="st">"string"</span>},</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    low_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>date_format <span class="op">=</span> <span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>]:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    requests[column] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        requests[column], <span class="bu">format</span><span class="op">=</span>date_format, errors<span class="op">=</span><span class="st">"coerce"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> requests.loc[</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    requests[<span class="st">"Created Date"</span>].between(start, end, inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> requests[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(<span class="st">"Illegal Parking"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The code applies the two documented row restrictions without overwriting the download. Its output has the same observational unit as its source: one row per service request. A row filter does not resolve missing values, invalid categories, duplicate identifiers, or disagreement among fields; those conditions require separate diagnostics. Nor does this subset represent all parking conditions in New York City, since it includes only requests sent to NYPD during one week.</p>
+</section>
+<section id="diagnose-before-changing-values" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="diagnose-before-changing-values"><span class="header-section-number">6.2</span> Diagnose before changing values</h2>
+<p>Data cleaning begins by comparing observed values with documented rules and relationships among fields. VDS presents a useful general sequence: learn the collection process and problem domain, load the data, inspect it, create an action list, and then clean. This sequence prevents a common error in data work: treating unusual values as mistakes before establishing what they mean. For NYC 311, relevant context includes the administrative purpose of the records, the agency-specific categories, the process that creates and closes requests, and the way location fields are assigned.</p>
+<p>A diagnostic report should distinguish <strong>failures</strong> from <strong>warnings</strong>. A missing request identifier or duplicated key contradicts a basic structural expectation and may prevent reliable row-level tracking. A missing coordinate may only prevent a spatial analysis, while an unusually long closure time may be valid or may signal a process that needs investigation. Severity depends on the intended analysis: a coordinate problem blocks a point map but not a citywide count. Therefore, diagnostics should report affected records and analysis consequences rather than apply one global rule for dropping rows.</p>
+<p>The request identifier and scope conditions can be checked explicitly. These tests act as assertions about the source-derived subset and should be repeated after transformations that could change row membership.</p>
+<div id="fe32e42c" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_report <span class="op">=</span> pd.Series(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing keys"</span>: parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"duplicate keys"</span>: parking[<span class="st">"Unique Key"</span>].duplicated().<span class="bu">sum</span>(),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"outside intended week"</span>: (</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">~</span>parking[<span class="st">"Created Date"</span>].between(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">sum</span>(),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"not illegal parking"</span>: (</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">~</span>parking[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Illegal Parking"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">sum</span>(),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"count"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>scope_report.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">rows</th>
+<td>13040</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">missing keys</th>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">duplicate keys</th>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">outside intended week</th>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">not illegal parking</th>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The checks should return zero for the last three conditions and for missing or duplicated keys if the input still matches the screened subset. A failure should trigger a review of the filter or data lineage, not an automatic deletion. Row counts are especially useful here because later joins or deduplication can silently change the number of requests.</p>
+<p>Missingness also needs interpretation before treatment. In pandas, several sentinel strings can become missing values automatically during CSV import; that convenience may erase evidence about how missingness was encoded. The curation study by Tussey and Yan documents inconsistent missing-value representations, temporal irregularities, redundant fields, and other issues in NYC 311 data <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>. In a new extract, first report the observed missingness and inspect source documentation; do not infer from a single subset that every absent field has the same cause.</p>
+<div id="75932586" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>missing_report <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing"</span>: parking.isna().<span class="bu">sum</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"percent"</span>: parking.isna().mean().mul(<span class="dv">100</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>).query(<span class="st">"missing &gt; 0"</span>).sort_values(<span class="st">"missing"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>missing_report.<span class="bu">round</span>({<span class="st">"percent"</span>: <span class="dv">2</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">missing</th>
+<th data-quarto-table-cell-role="th">percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Taxi Pick Up Location</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Bridge Highway Segment</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Facility Type</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Due Date</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Road Ramp</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Bridge Highway Direction</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Bridge Highway Name</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Taxi Company Borough</th>
+<td>13040</td>
+<td>100.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Additional Details</th>
+<td>12575</td>
+<td>96.43</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vehicle Type</th>
+<td>11996</td>
+<td>91.99</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">BBL</th>
+<td>1570</td>
+<td>12.04</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">City</th>
+<td>1066</td>
+<td>8.17</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Landmark</th>
+<td>1066</td>
+<td>8.17</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Longitude</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Latitude</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">X Coordinate (State Plane)</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Y Coordinate (State Plane)</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Council District</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Location</th>
+<td>99</td>
+<td>0.76</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Cross Street 1</th>
+<td>23</td>
+<td>0.18</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Intersection Street 1</th>
+<td>23</td>
+<td>0.18</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Intersection Street 2</th>
+<td>6</td>
+<td>0.05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Cross Street 2</th>
+<td>6</td>
+<td>0.05</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For this extract, fields unrelated to illegal parking can be entirely absent, while 99 requests lack latitude, longitude, and council district. The paired coordinate pattern should be checked directly. Whether to retain those rows depends on the analysis: they belong in overall request counts and may be excluded from a map or a spatial join, with the excluded number reported. Imputing a location from an address or neighboring field requires a validated geocoding source and should be recorded as a derived value, not a replacement for the original.</p>
+</section>
+<section id="standardize-representations-conservatively" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="standardize-representations-conservatively"><span class="header-section-number">6.3</span> Standardize representations conservatively</h2>
+<p>Representation changes make fields usable without asserting new facts about the observations. Dates should use datetime types, ZIP Codes and request keys should remain strings, and controlled categories can be stored consistently after their observed forms have been examined. A ZIP Code such as <code>00501</code> is an identifier, not a quantity; converting it to an integer would remove a leading zero and invite meaningless arithmetic. Likewise, recoding a blank, <code>N/A</code>, and <code>Unspecified</code> to one missing value is justified only when their documented meanings coincide.</p>
+<p>Column labels also need a deliberate representation policy. The NYC export uses spaces, capitalization, punctuation, and historical parenthetical labels such as “formerly Complaint Type.” Such names are valid, but cumbersome in code and inconsistent as an interface. Normalize labels in a derived table, not in the imported source, and preserve a complete mapping from each provider label to its analysis name. Before applying the mapping, check that two source columns do not collapse to the same normalized name. A collision needs an explicit disambiguation, not silent overwriting.</p>
+<div id="65ec6bde" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>detail_counts <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .rename_axis(<span class="st">"observed detail"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">"requests"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>detail_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">observed detail</th>
+<th data-quarto-table-cell-role="th">requests</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Blocked Hydrant</td>
+<td>3711</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Posted Parking Sign Violation</td>
+<td>3266</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Blocked Sidewalk</td>
+<td>1874</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Commercial Overnight Parking</td>
+<td>927</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Blocked Crosswalk</td>
+<td>780</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Double Parked Blocking Traffic</td>
+<td>672</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Parking Permit Improper Use</td>
+<td>485</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Blocked Bike Lane</td>
+<td>379</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Double Parked Blocking Vehicle</td>
+<td>372</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>License Plate Obscured</td>
+<td>269</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Unauthorized Bus Layover</td>
+<td>102</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Paper License Plates</td>
+<td>77</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Overnight Commercial Storage</td>
+<td>69</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Detached Trailer</td>
+<td>57</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>In the supplied extract, the detail categories have interpretable wording and the leading values are not spelling variants that should be merged automatically. Column-name normalization is separate from recoding category values: a convenient field name does not justify changing its contents. The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
+<div id="19bca4b5" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    source_name: re.sub(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="vs">r"_</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, re.sub(<span class="vs">r"</span><span class="pp">[^a-z0-9]</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, source_name.lower())</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ).strip(<span class="st">"_"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> source_name <span class="kw">in</span> parking.columns</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>name_map.update(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem (formerly Complaint Type)"</span>: <span class="st">"problem"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Status"</span>: <span class="st">"status"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>analysis_names <span class="op">=</span> pd.Index(name_map.values())</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> analysis_names.is_unique:</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Column-name normalization produced a collision."</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"source_name"</span>: name_map.keys(), <span class="st">"analysis_name"</span>: name_map.values()}</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>name_mapping</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">source_name</th>
+<th data-quarto-table-cell-role="th">analysis_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Unique Key</td>
+<td>request_id</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Created Date</td>
+<td>created_at</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Closed Date</td>
+<td>closed_at</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Agency</td>
+<td>agency</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Agency Name</td>
+<td>agency_name</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Problem (formerly Complaint Type)</td>
+<td>problem</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Problem Detail (formerly Descriptor)</td>
+<td>problem_detail</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Additional Details</td>
+<td>additional_details</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Location Type</td>
+<td>location_type</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Incident Zip</td>
+<td>incident_zip</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Incident Address</td>
+<td>incident_address</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Street Name</td>
+<td>street_name</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Cross Street 1</td>
+<td>cross_street_1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Cross Street 2</td>
+<td>cross_street_2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Intersection Street 1</td>
+<td>intersection_street_1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Intersection Street 2</td>
+<td>intersection_street_2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Address Type</td>
+<td>address_type</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>City</td>
+<td>city</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Landmark</td>
+<td>landmark</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Facility Type</td>
+<td>facility_type</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Status</td>
+<td>status</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Due Date</td>
+<td>due_date</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Resolution Description</td>
+<td>resolution_description</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Resolution Action Updated Date</td>
+<td>resolution_action_updated_date</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Community Board</td>
+<td>community_board</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Council District</td>
+<td>council_district</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Police Precinct</td>
+<td>police_precinct</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>BBL</td>
+<td>bbl</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Borough</td>
+<td>borough</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>X Coordinate (State Plane)</td>
+<td>x_coordinate_state_plane</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>Y Coordinate (State Plane)</td>
+<td>y_coordinate_state_plane</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>Open Data Channel Type</td>
+<td>open_data_channel_type</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>Park Facility Name</td>
+<td>park_facility_name</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>Park Borough</td>
+<td>park_borough</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>Vehicle Type</td>
+<td>vehicle_type</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>Taxi Company Borough</td>
+<td>taxi_company_borough</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>Taxi Pick Up Location</td>
+<td>taxi_pick_up_location</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>Bridge Highway Name</td>
+<td>bridge_highway_name</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>Bridge Highway Direction</td>
+<td>bridge_highway_direction</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>Road Ramp</td>
+<td>road_ramp</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>Bridge Highway Segment</td>
+<td>bridge_highway_segment</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>Latitude</td>
+<td>latitude</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>Longitude</td>
+<td>longitude</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>Location</td>
+<td>location</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The mapping table is part of the preparation record and can be saved with the analysis data dictionary. The parenthetical wording remains in <code>source_name</code>, so users can identify the provider’s historical label even though <code>problem</code> and <code>problem_detail</code> are more convenient in code. If a future export changes its labels, the mapping should be reviewed against the current data dictionary rather than applied by position or assumed to remain valid.</p>
+<div id="ae705148" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">request_id</th>
+<th data-quarto-table-cell-role="th">created_at</th>
+<th data-quarto-table-cell-role="th">problem_detail</th>
+<th data-quarto-table-cell-role="th">incident_zip</th>
+<th data-quarto-table-cell-role="th">status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1906</th>
+<td>70393841</td>
+<td>2026-09-12 23:59:29</td>
+<td>Blocked Hydrant</td>
+<td>10467</td>
+<td>Closed</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1915</th>
+<td>70397706</td>
+<td>2026-09-12 23:58:24</td>
+<td>Posted Parking Sign Violation</td>
+<td>11378</td>
+<td>Closed</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1937</th>
+<td>70390106</td>
+<td>2026-09-12 23:56:57</td>
+<td>Commercial Overnight Parking</td>
+<td>11378</td>
+<td>Closed</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1941</th>
+<td>70394982</td>
+<td>2026-09-12 23:56:38</td>
+<td>Blocked Hydrant</td>
+<td>10455</td>
+<td>Closed</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1943</th>
+<td>70387502</td>
+<td>2026-09-12 23:56:33</td>
+<td>Blocked Hydrant</td>
+<td>10454</td>
+<td>Closed</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Renaming a field changes its label, not its definition. The derived table should travel with the complete source-to-analysis mapping, particularly where provider terminology is historical or ambiguous. Uniform labels improve code readability, but they do not make field contents more accurate or comparable across agencies and years.</p>
+</section>
+<section id="derive-variables-from-documented-meanings" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="derive-variables-from-documented-meanings"><span class="header-section-number">6.4</span> Derive variables from documented meanings</h2>
+<p>Derived variables translate recorded fields into measurements required by a question. A useful derived variable has an explicit definition, units, and validity conditions. For example, elapsed time from creation to closure can be defined as the difference between the two recorded timestamps, measured in hours. It remains a closure interval, not necessarily a measure of service response or resolution. The name of a column should not imply more than the source establishes.</p>
+<div id="2990e5c3" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>duration_check <span class="op">=</span> pd.Series(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing"</span>: analysis[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"negative"</span>: analysis[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"median"</span>: analysis[<span class="st">"closure_hours"</span>].median(),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"maximum"</span>: analysis[<span class="st">"closure_hours"</span>].<span class="bu">max</span>(),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"value"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>duration_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">missing</th>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">negative</th>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">median</th>
+<td>1.670833</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">maximum</th>
+<td>199.825556</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Negative values would contradict the expected chronology if both timestamps refer to the same request timeline, but the value should be inspected before removal because parsing, corrections, or field definitions may explain it. Missing closure timestamps indicate that a closure interval cannot be calculated; replacing those times with the observation date would invent an event. Even nonnegative values can be unusually large, so summaries should include robust measures and later analysis should examine the full distribution.</p>
+<p>Time-of-day groups require a declared boundary. “Night” has no universal definition, so an analysis must state the local-time interval and explain why it is appropriate. The following example labels requests created from 8 p.m. through 5:59 a.m. as nighttime and all others as daytime. It is a convenient working definition, not an objective division between night and day.</p>
+<div id="5a59ceff" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.between(<span class="dv">6</span>, <span class="dv">19</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"day"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.ge(<span class="dv">20</span>) <span class="op">|</span> hour.lt(<span class="dv">6</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"night"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>time_period
+day      8977
+night    4063
+Name: count, dtype: int64[pyarrow]</code></pre>
+</div>
+</div>
+<p>Derived categories can support comparison, but they also discard detail. The original timestamp should remain available so that alternative boundaries, hourly summaries, or date-specific patterns can be examined later. This is another reason to retain source fields alongside derived fields instead of replacing one with the other.</p>
+</section>
+<section id="merge-geographic-context-with-checks" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="merge-geographic-context-with-checks"><span class="header-section-number">6.5</span> Merge geographic context with checks</h2>
+<p>Data merging combines tables that describe different units. An individual request table can be joined to a ZIP-level or ZIP Code Tabulation Area (ZCTA) table only after the identifier concepts, reference period, and expected relationship have been established. A valid postal ZIP Code and a Census ZCTA are related but not identical geographies; the Census Bureau cautions that not every ZIP Code has a corresponding ZCTA <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. A successful software join therefore does not establish geographic equivalence.</p>
+<p>For request-level data joined to a table with one row per ZCTA, the intended relationship is many requests to one area record. The lookup key should be unique on the contextual table, identifiers should have compatible string types, and unmatched request locations should be counted. The sample code assumes that a prepared ACS table has fields <code>zcta</code> and <code>population</code>; it illustrates validation without treating a missing supplied file as part of the chapter’s core data.</p>
+<div id="0a89e117" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a documented, year-specific ZIP/ZCTA lookup prepared for the project.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The table must contain one row per ZCTA and string-valued identifiers.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># zcta_context = pd.read_csv("data/zcta_context.csv", dtype={"zcta": "string"})</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># assert not zcta_context["zcta"].duplicated().any()</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># analysis = analysis.merge(</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     zcta_context,</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     how="left",</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     left_on="incident_zip",</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     right_on="zcta",</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#     validate="many_to_one",</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#     indicator=True,</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># analysis["_merge"].value_counts(dropna=False)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <code>validate</code> argument turns the assumed join cardinality into an executable check. If a lookup key is duplicated, the join can multiply request rows and inflate subsequent counts. A left join preserves requests that lack a match, while the merge indicator distinguishes matched from unmatched rows. Unmatched values should be examined for missing identifiers, non-ZCTA ZIP Codes, formatting differences, boundary mismatch, or a flawed lookup; they should not be silently dropped.</p>
+<p>A population column can provide a denominator for area-level request rates, but interpretation still requires care. Dividing requests by population describes requests per resident over the chosen interval; it is not necessarily a rate of illegal-parking events because the data count reports rather than verified conditions. Area-level associations also do not describe individual residents. A merge can enrich the context for a question, but it cannot repair coverage or reporting differences absent from the data.</p>
+</section>
+<section id="validate-and-save-the-prepared-data" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="validate-and-save-the-prepared-data"><span class="header-section-number">6.6</span> Validate and save the prepared data</h2>
+<p>Validation repeats important checks after transformations and documents how the analysis table differs from the source. The output should retain request identity, have the expected row count, contain the required derived fields, and preserve the source fields needed for audit. If a join was performed, its cardinality and unmatched keys should be part of the validation report. A table that writes successfully is not necessarily correct; its invariants must be checked after it is read back.</p>
+<div id="db09bde0" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"same request count"</span>: <span class="bu">len</span>(prepared) <span class="op">==</span> <span class="bu">len</span>(parking),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"unique request identifiers"</span>: prepared[<span class="st">"request_id"</span>].is_unique,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"all in intended week"</span>: prepared[<span class="st">"created_at"</span>].between(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        ).<span class="bu">all</span>(),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"all illegal parking"</span>: prepared[<span class="st">"problem"</span>].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"closure field present"</span>: <span class="st">"closure_hours"</span> <span class="kw">in</span> prepared.columns,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"passed"</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>final_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">passed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">same request count</th>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">unique request identifiers</th>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">all in intended week</th>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">all illegal parking</th>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">closure field present</th>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Feather is useful when repeated analysis benefits from typed columns and fast columnar access, while the ZIP-compressed CSV remains a broadly readable source artifact. Bates and Yan discuss Arrow-based representations for cross-platform analytical workflows <span class="citation" data-cites="bates2024from">(<a href="#ref-bates2024from" role="doc-biblioref">Bates &amp; Yan, 2024</a>)</span>. The choice of output format should follow the next use: a compact typed derivative does not replace provenance or make an analysis more reproducible by itself.</p>
+<div id="77830767" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tempfile <span class="im">import</span> TemporaryDirectory</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> temporary_directory:</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    prepared_path <span class="op">=</span> Path(temporary_directory) <span class="op">/</span> <span class="st">"illegal_parking.feather"</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    prepared.to_feather(prepared_path)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    round_trip <span class="op">=</span> pd.read_feather(prepared_path)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    pd.Series(</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same shape"</span>: prepared.shape <span class="op">==</span> round_trip.shape,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same columns"</span>: prepared.columns.equals(round_trip.columns),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"same values and types"</span>: prepared.equals(round_trip),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="st">"passed"</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    ).to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The round-trip test uses a temporary path so that rendering does not create a generated file in the project. A provenance record for a persistent derivative should identify the source archive, the NYPD and time filters, any recoding and derived-variable definitions, the external lookup and reference year if used, and the validation results. It should distinguish unchanged provider fields from analyst-created fields.</p>
+</section>
+<section id="preparation-as-a-documented-argument" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="preparation-as-a-documented-argument"><span class="header-section-number">6.7</span> Preparation as a documented argument</h2>
+<p>Data preparation is a sequence of claims about what the rows and fields represent. Filtering claims that the retained requests meet specified scope conditions; parsing claims that text follows a known format; derivation claims that a formula operationalizes a concept; and merging claims that records share a defensible key and geographic meaning. Each claim needs evidence and an executable check. The goal is not to make every table tidy, but to make every analytical change reviewable.</p>
+<p>The preparation process also returns to problem formulation. A request-level comparison can proceed with the current table, while neighborhood rates need compatible areas and denominators. A prediction task may require predictors available at the prediction time, whereas a descriptive analysis may retain later fields for outcome definition. The next chapters can therefore begin from this documented prepared table, with exploratory summaries and plots chosen to answer a specific question rather than to substitute for one.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>These exercises extend the import and checking work in the previous chapter. Use a new data frame for transformations, keep the distributed ZIP archive unchanged, and include both code and a concise explanation of each decision.</p>
+<div id="exr-wrangle-311" class="theorem exercise">
+<p><span class="theorem-title"><strong> 6.1</strong></span> Construct a documented analysis table from the NYPD illegal-parking requests.</p>
+<ol type="a">
+<li>Recreate the screened subset from the source archive using the two row restrictions. Record the starting and retained row counts, and verify that <code>Unique Key</code> remains unique. Explain why the filters belong in code.</li>
+<li>Make a missingness report for all columns. Choose one analysis that needs coordinates and one that does not; explain which rows each analysis can use and report how many would be excluded. Do not impute locations.</li>
+<li>Inspect the observed values of <code>Problem Detail (formerly Descriptor)</code> and <code>Status</code>. Propose any normalization only where evidence supports it. Show a mapping table for every recoding and retain the original field.</li>
+<li>Normalize every column name to a consistent convention in a derived table. Provide the complete mapping from each new name to its source name, check for collisions, preserve the imported names in the source table, and identify the observational unit.</li>
+<li>Derive closure time in hours from the two timestamps. Report missing and negative durations, and compare the median with the mean. Explain why the result is not automatically an officer-response-time measure.</li>
+<li>Define a day/night split by clock time, state the boundary, and report the number of requests in each group. Repeat the split with a different defensible boundary and note whether group sizes change substantially.</li>
+<li>Write a short data dictionary for the analysis table, including source fields, derived fields, units, and known limitations.</li>
+</ol>
+</div>
+<div id="exr-merge-311" class="theorem exercise">
+<p><span class="theorem-title"><strong> 6.2</strong></span> Plan and validate a merge with geographic context.</p>
+<ol type="a">
+<li>Identify a year-specific Census or other authoritative area-level table that could add context to a question from the previous chapter. Record its source, unit, geographic definition, and reference year.</li>
+<li>Explain the difference between a postal ZIP Code and a ZCTA. State why a direct string match is an approximation rather than proof that the geographies coincide.</li>
+<li>Before joining, check that the contextual key is unique and that both join keys have compatible types and formatting. State the expected join cardinality and use a merge validation option in pandas.</li>
+<li>Use a left join and report matched and unmatched requests. Diagnose unmatched records rather than dropping them automatically. Verify that the row count has not increased and that <code>Unique Key</code> remains unique.</li>
+<li>If population is included, calculate a clearly defined area-level request rate. Explain its denominator and why it is not an estimate of the rate of illegal-parking events or an individual-level relationship.</li>
+<li>Save the prepared table in Feather format, read it back, and compare shape, columns, values, and important data types. Keep the source archive intact.</li>
+</ol>
+</div>
+<div id="exr-wrangle-open" class="theorem exercise">
+<p><span class="theorem-title"><strong> 6.3</strong></span> Write a preparation plan for a different question suggested by the data.</p>
+<ol type="a">
+<li>State the question, intended audience, observational unit, outcome, and comparison. Specify whether the question is descriptive, comparative, predictive, or causal.</li>
+<li>List the fields and any additional data required. For each proposed transformation, explain its purpose and define a check that could detect an error.</li>
+<li>Identify one issue that should be raised with a data curator rather than silently corrected. Draft a concise recommendation that distinguishes evidence from conjecture.</li>
+<li>Describe what the prepared table will contain, what it will omit, and how its provenance will let another analyst reproduce the result.</li>
+</ol>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-bates2024from" class="csl-entry" role="listitem">
+Bates, D., &amp; Yan, J. (2024). From <span>CSV</span> to <span>Arrow</span>: Creating a unified data set for efficient cross-platform analysis. <em>CHANCE</em>, <em>37</em>(4), 48–52. <a href="https://doi.org/10.1080/09332480.2024.2434443">https://doi.org/10.1080/09332480.2024.2434443</a>
+</div>
+<div id="ref-tussey2025principles" class="csl-entry" role="listitem">
+Tussey, D., &amp; Yan, J. (2025). <em>Principles for open data curation: A case study with the new york city 311 service request data</em>. <a href="https://doi.org/10.48550/arXiv.2502.08649">https://doi.org/10.48550/arXiv.2502.08649</a>
+</div>
+<div id="ref-census2023zip" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2023). <em><span>ZIP</span> code tabulation areas (<span>ZCTAs</span>)</em>. <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html">https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html</a>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/statds\.github\.io\/ids-book");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./05-formulation.html" class="pagination-link" aria-label="Problem Formulation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Problem Formulation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./07-eda.html" class="pagination-link" aria-label="Exploration">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploration</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/06-wrangling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
