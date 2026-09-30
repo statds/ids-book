@@ -298,7 +298,7 @@ Series produces a Boolean mask; `.loc[mask]` selects the matching rows, and
 categories. These operations connect the import to a documented row
 selection without changing the downloaded data.
 
-## Checking Data
+## Checking Data {#sec-initial-checks}
 
 Basic checks test whether the imported object matches its stated scope before
 any values are cleaned or transformed. They do not prove that every record is
@@ -763,20 +763,14 @@ raw request counts across ZIP Codes is valid as a description of the file
 but can be misleading as a comparison of reporting rates because the areas
 contain different populations and opportunities for parking.
 
-Additional data can make a question more informative. Population or other
-area-level characteristics could supply denominators and context for ZIP-level
-request counts. Census demographic data, however, are commonly tabulated for
-ZIP Code Tabulation Areas (ZCTAs), which are generalized areas related to USPS
-ZIP Codes rather than identical geographic objects. The Census Bureau notes
-that not every valid ZIP Code is represented by a ZCTA [@census2023zip].
-
-A future merge therefore begins with a conceptual check, not with a line of
-code. The 311 table has many service requests per incident ZIP, while a
-well-formed ZCTA table should have at most one row per area and reference a
-specified year. A later data-preparation analysis can standardize the
-identifiers, validate a many-to-one merge, and investigate unmatched records.
-Even after a successful merge, area-level characteristics describe places
-rather than the individuals who submitted requests.
+Additional area-level data could supply denominators and context for ZIP-level
+request counts. Census characteristics are often tabulated for ZIP Code
+Tabulation Areas (ZCTAs), which are related to postal ZIP Codes but do not
+represent identical geographies [@census2023zip]. Chapter 6
+(@sec-zcta-context-merge) demonstrates one such enrichment and evaluates its
+key, reference period, join cardinality, and unmatched records. Even a
+validated match describes places rather than the individuals who submitted
+requests.
 
 ## A Working Formulation
 
