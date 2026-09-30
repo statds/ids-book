@@ -5,11 +5,12 @@ irregularities before a final account of findings is written. Its purpose is
 to learn what the observed data can show, what they cannot show, and which
 questions deserve closer investigation [@nistndexploratory]. This chapter
 first states principles that apply across datasets and then develops them
-through a case study. The next chapter treats visualization as a
-communication practice; here, plots support investigation alongside
-numerical summaries and checks of the records.
+through a case study. The next chapter develops principles for choosing and
+evaluating visual displays across the data-science workflow; here, plots
+support investigation alongside numerical summaries and checks of the
+records.
 
-## Principles of exploratory data analysis
+## Principles of Exploratory Data Analysis
 
 Exploration begins by establishing what each row and variable represents,
 which records are eligible, and how the measurements were produced. Counts of
@@ -49,7 +50,7 @@ examines whether reasonable alternatives change it, and states what
 additional data or design would be needed for a stronger claim
 [@wasserstein2016asa].
 
-## From formulation to exploration
+## Case Study: Question and Eligible Records
 
 The case study examines NYPD illegal-parking requests prepared in Chapter
 6. Its main question is how recorded closure-time distributions differ
@@ -76,8 +77,6 @@ compares the three detail groups, and then investigates variation across
 time and place. Each step can generate a revised question. The sequence
 also clarifies which comparisons came from the working formulation and
 which were motivated by patterns observed later.
-
-## The prepared data and its scope
 
 The following code reconstructs the relevant columns from the distributed
 archive using the filters and timestamp rules established in Chapter 6. It
@@ -149,7 +148,7 @@ table includes reports made during one week rather than a random sample of
 all parking incidents, and its records may reflect differences in reporting
 as well as differences in agency processing.
 
-## The distribution of closure time
+## Closure-Time Distributions and Problem Details
 
 A distribution should be described by its center, spread, and tails before
 groups are compared. The mean is sensitive to long intervals, whereas the
@@ -204,8 +203,6 @@ to a timestamp, or an operational exception; its presence alone does not
 establish an error. The next comparison therefore reports medians and
 quartiles alongside means.
 
-## Comparing problem details
-
 Group selection is an analytical decision. The working question asks about
 the three most frequent detail values in the eligible week, so the code
 computes those frequencies before summarizing closure time. It does not
@@ -254,7 +251,7 @@ proportion closed by any time on the horizontal axis; they retain more
 distributional information than a comparison of three means. Neither the
 table nor the plot identifies why the groups differ.
 
-## Patterns across time and place
+## Variation Across Time and Place
 
 Temporal and geographic comparisons can reveal whether a pooled contrast
 combines distinct patterns. Creation date measures when a report entered the
@@ -283,16 +280,14 @@ Brooklyn has the opposite ordering. Geographic composition can therefore
 affect the citywide comparison. A borough label still represents a broad
 area and cannot identify the practices of an individual precinct.
 
-## Associations with ZCTA context
-
 Area context offers a second exploratory question, but it changes the unit
 of analysis. Chapter 6 joins a request's postal ZIP string to a 2024
 American Community Survey (ACS) estimate for a matching ZIP Code Tabulation
 Area (ZCTA). Postal ZIP Codes and ZCTAs are not identical geographies
 [@census2023zip]. The same estimate is repeated on every matched request in
 that area, so treating those copies as independent area observations would
-overstate the information. This section instead constructs one summary row
-per matched ZCTA and records how many requests support each area's median.
+overstate the information. The area comparison instead constructs one summary
+row per matched ZCTA and records how many requests support each area's median.
 
 ```{python}
 context = pd.read_csv(
@@ -349,7 +344,7 @@ sampling uncertainty; the request-to-ZCTA match also has geographic limits
 association, not a conclusion about residents' incomes or an income effect
 on individual requests.
 
-## Hypothesis tests and uncertainty
+## Assessing Uncertainty and Robustness
 
 A hypothesis test can be part of EDA when its assumptions and limited
 purpose are explicit. Consider the median closure-time difference between
@@ -408,8 +403,6 @@ measurement, or group selection. A $p$-value should not be read as the
 probability that the null hypothesis is true or as a measure of practical
 importance [@wasserstein2016asa].
 
-## Sensitivity checks
-
 Sensitivity analysis asks whether a descriptive result depends strongly on
 a reasonable analytical choice. The first check removes intervals longer
 than 24 hours; this assesses the role of the upper tail without declaring
@@ -457,8 +450,6 @@ only 54 hydrant and 34 sidewalk requests. Group sizes and possible
 differences in case mix or processing limit the interpretation of these
 contrasts. The pooled result therefore does not describe every borough
 equally well.
-
-## Revising the question
 
 Exploration has answered the initial descriptive question for the recorded
 week: closure-time distributions differ among the three most reported
