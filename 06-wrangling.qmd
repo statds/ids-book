@@ -304,57 +304,124 @@ hourly summaries, or date-specific patterns can be examined later. This is
 another reason to retain source fields alongside derived fields instead of
 replacing one with the other.
 
-## Optional extension: Merge geographic context with checks
+## Merge area-level context with checks
 
-Data merging combines tables that describe different units. An individual
-request table can be joined to a ZIP-level or ZIP Code Tabulation Area (ZCTA)
-table only after the identifier concepts, reference period, and expected
-relationship have been established. A valid postal ZIP Code and a Census ZCTA
-are related but not identical geographies; the Census Bureau cautions that
-not every ZIP Code has a corresponding ZCTA [@census2023zip]. A successful
-software join therefore does not establish geographic equivalence.
+Data merging combines tables that describe different units. A request table
+can be joined to Census attributes summarized by ZIP Code Tabulation Area
+(ZCTA) only after the geographic identifiers, reference period, and expected
+relationship have been established. A postal ZIP Code and a Census ZCTA are
+related but not identical geographies; not every ZIP Code has a corresponding
+ZCTA [@census2023zip]. A successful software join therefore establishes a
+string match, not geographic equivalence.
 
 For request-level data joined to a table with one row per ZCTA, the intended
-relationship is many requests to one area record. This extension requires a
-separately acquired, documented, year-specific lookup; the chapter does not
-provide that file. The lookup key should be unique, identifiers should have
-compatible string types, and unmatched request locations should be counted.
-The schematic code assumes that a prepared ACS table has fields `zcta` and
-`population`, so it illustrates join validation rather than a complete
-download-and-prepare workflow.
+relationship is many requests to one area record. The supplied
+`data/zcta_context.csv` contains the 221 ZCTAs in NYC Open Data's city list and
+their 2024 American Community Survey (ACS) five-year population and median
+household income estimates [@nycopendata2026zip; @census2026american]. The
+file also includes margins of error, an income top-coding indicator, and the
+estimate year; its source and conversion rules are recorded in
+`data/zcta_context.md`. These estimates describe an earlier period than the
+2026 requests. The code below checks the prepared table and the join without
+assuming that postal ZIP Codes and ZCTAs are identical geographic units.
+
+The NYC ZCTA selection comes from the `zcta5` column of the city's published
+dataset, as the following acquisition code shows. The chapter uses the saved
+CSV during rendering so that a live web request cannot change its results.
+The complete extraction, including both ACS tables, is in
+`scripts/build_zcta_context.py`.
 
 ```{python}
-# Read a documented, year-specific ZIP/ZCTA lookup prepared for the project.
-# The table must contain one row per ZCTA and string-valued identifiers.
-# zcta_context = pd.read_csv("data/zcta_context.csv", dtype={"zcta": "string"})
+#| eval: false
+from io import StringIO
 
-# assert not zcta_context["zcta"].duplicated().any()
-# analysis = analysis.merge(
-#     zcta_context,
-#     how="left",
-#     left_on="incident_zip",
-#     right_on="zcta",
-#     validate="many_to_one",
-#     indicator=True,
-# )
-# analysis["_merge"].value_counts(dropna=False)
+import requests
+
+zcta_source = "https://data.cityofnewyork.us/resource/35j5-n34v.csv"
+response = requests.get(
+    zcta_source,
+    params={"$select": "zcta5", "$limit": 5000},
+    timeout=60,
+)
+response.raise_for_status()
+city_zctas = pd.read_csv(
+    StringIO(response.text), dtype={"zcta5": "string"}
+)["zcta5"].drop_duplicates()
+len(city_zctas)
+```
+
+```{python}
+zcta_context = pd.read_csv(
+    Path("data") / "zcta_context.csv",
+    dtype={"zcta": "string"},
+)
+zcta_context["zcta"] = zcta_context["zcta"].str.strip()
+
+if zcta_context["zcta"].isna().any():
+    raise ValueError("The ZCTA lookup contains missing keys.")
+if not zcta_context["zcta"].str.fullmatch(r"\d{5}").all():
+    raise ValueError("ZCTA keys must be five-digit strings.")
+if zcta_context["zcta"].duplicated().any():
+    raise ValueError("The ZCTA lookup must contain one row per key.")
+if not zcta_context["acs_year"].eq(2024).all():
+    raise ValueError("The ZCTA lookup contains an unexpected ACS year.")
+
+# Match only syntactically five-digit request ZIP values. Do not silently
+# pad or otherwise repair values that fail this check.
+incident_zip = analysis["incident_zip"].str.strip()
+analysis["zcta_match"] = incident_zip.where(
+    incident_zip.str.fullmatch(r"\d{5}", na=False)
+)
+
+contextual_analysis = analysis.merge(
+    zcta_context,
+    how="left",
+    left_on="zcta_match",
+    right_on="zcta",
+    validate="many_to_one",
+    indicator="zcta_match_status",
+)
+
+if len(contextual_analysis) != len(analysis):
+    raise ValueError("The area-level join changed the request count.")
+if not contextual_analysis["request_id"].is_unique:
+    raise ValueError("The area-level join duplicated request identifiers.")
+
+join_report = pd.Series({
+    "requests": len(contextual_analysis),
+    "matched requests": contextual_analysis[
+        "zcta_match_status"
+    ].eq("both").sum(),
+    "unmatched requests": contextual_analysis[
+        "zcta_match_status"
+    ].eq("left_only").sum(),
+    "distinct unmatched ZIP values": contextual_analysis.loc[
+        contextual_analysis["zcta_match_status"].eq("left_only"),
+        "incident_zip",
+    ].nunique(dropna=False),
+}, name="count")
+join_report.to_frame()
 ```
 
 The `validate` argument turns the assumed join cardinality into an executable
 check. If a lookup key is duplicated, the join can multiply request rows and
-inflate subsequent counts. A left join preserves requests that lack a match,
-while the merge indicator distinguishes matched from unmatched rows. Unmatched
-values should be examined for missing identifiers, non-ZCTA ZIP Codes,
-formatting differences, boundary mismatch, or a flawed lookup; they should not
-be silently dropped.
+inflate subsequent counts. The left join preserves requests that lack a match,
+and its indicator distinguishes matched from unmatched rows. Unmatched values
+should be examined for missing identifiers, non-ZCTA ZIP Codes, formatting
+differences, boundary mismatch, or a flawed lookup; they should not be silently
+dropped or repaired by adding leading zeros without evidence. In this extract,
+13,033 of 13,040 illegal-parking requests match a listed ZCTA; the seven
+unmatched requests remain in the table for other analyses.
 
 A population column can provide a denominator for area-level request rates,
 but interpretation still requires care. Dividing requests by population
 describes requests per resident over the chosen interval; it is not necessarily
 a rate of illegal-parking events because the data count reports rather than
-verified conditions. Area-level associations also do not describe individual
-residents. A merge can enrich the context for a question, but it cannot repair
-coverage or reporting differences absent from the data.
+verified conditions. Area-level characteristics can also be compared with
+request-level closure times, but an association does not show that the
+characteristics caused a difference in closure. Area-level associations do not
+describe individual residents, and a merge cannot repair coverage or reporting
+differences absent from the data.
 
 ## Validate the prepared data
 
@@ -367,7 +434,7 @@ table that writes successfully is not necessarily correct; its invariants must
 be checked after it is read back.
 
 ```{python}
-prepared = analysis.reset_index(drop=True)
+prepared = contextual_analysis.reset_index(drop=True)
 
 final_checks = pd.Series({
     "same request count": len(prepared) == len(parking),
@@ -462,26 +529,35 @@ g. Write a short data dictionary for the analysis table, including source
    fields, derived fields, units, and known limitations.
 :::
 
-::: {#exr-merge-311}
-Plan and validate a merge with geographic context.
+::: {#exr-precinct-distance}
+Construct and validate a request-level measure of straight-line distance to
+the nearest NYPD precinct station.
 
-a. Identify a year-specific Census or other authoritative area-level table
-   that could add context to a question from the previous chapter. Record its
-   source, unit, geographic definition, and reference year.
-b. Explain the difference between a postal ZIP Code and a ZCTA. State why a
-   direct string match is an approximation rather than proof that the
-   geographies coincide.
-c. Before joining, check that the contextual key is unique and that both
-   join keys have compatible types and formatting. State the expected join
-   cardinality and use a merge validation option in pandas.
-d. Use a left join and report matched and unmatched requests. Diagnose
-   unmatched records rather than dropping them automatically. Verify that the
-   row count has not increased and that `Unique Key` remains unique.
-e. If population is included, calculate a clearly defined area-level request
-   rate. Explain its denominator and why it is not an estimate of the rate of
-   illegal-parking events or an individual-level relationship.
-f. Save the prepared table in Feather format, read it back, and compare shape,
-   columns, values, and important data types. Keep the source archive intact.
+a. Obtain a precinct roster from an authoritative source. Record the source,
+   access date, precinct identifier, and address for each station. Explain why
+   the precinct code in a 311 request identifies an administrative area but
+   does not provide the station's point location.
+b. Geocode the precinct addresses and retain the original address, returned
+   coordinates, geocoding method, and any match-quality information. Review
+   unsuccessful or ambiguous matches rather than assigning coordinates
+   automatically. Save the reviewed geocodes with their provenance so that a
+   later render does not repeat external geocoding requests.
+c. Check that station and request coordinates are present and plausible.
+   Convert both sets of points to a suitable projected coordinate reference
+   system before calculating distances. State the projection and units, and
+   explain why distances calculated directly from longitude and latitude in
+   degrees are not suitable.
+d. For each request with coordinates, find the nearest station and calculate
+   the straight-line distance in a stated unit. Retain the nearest station's
+   identifier and the distance in the derived table. Report how many requests
+   could not receive a distance and why.
+e. Compare the nearest station's precinct identifier with the request's
+   `Police Precinct` value. Summarize matches and differences, and explain why
+   distance to the nearest station and assignment to a precinct are distinct
+   geographic measures.
+f. Validate that the distance calculation did not change the request count or
+   duplicate `Unique Key`. Discuss why straight-line distance is not travel
+   distance, response time, or evidence that proximity causes faster closure.
 :::
 
 ::: {#exr-wrangle-open}
