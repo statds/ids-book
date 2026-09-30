@@ -687,7 +687,7 @@ data curator when the intended meaning remains uncertain. Deleting or replacing
 an unusual value without that inquiry can hide the very process that needs to
 be understood.
 
-## Revising Questions from the Checked Data
+## Revising Questions from the Checked Data {#sec-problem-detail-counts}
 
 The checked extract supports a more specific question than the download alone
 suggested. The intended week contains several NYPD problem categories, with

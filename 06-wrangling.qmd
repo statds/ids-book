@@ -132,25 +132,32 @@ label to its analysis name. Before applying the mapping, check that two source
 columns do not collapse to the same normalized name. A collision needs an
 explicit disambiguation, not silent overwriting.
 
+Chapter 5's frequency table identifies the categories that motivate the
+working comparison (@sec-problem-detail-counts). Here, the distinct strings
+are inspected before any category recoding. The observed labels are
+interpretable and the leading values are not spelling variants that should
+be merged automatically. Column-name normalization is separate from
+recoding category values: a convenient field name does not justify changing
+its contents.
+
 ```{python}
 detail_column = "Problem Detail (formerly Descriptor)"
-detail_counts = (
+observed_details = (
     parking[detail_column]
-    .value_counts(dropna=False)
-    .rename_axis("observed detail")
-    .reset_index(name="requests")
+    .dropna()
+    .drop_duplicates()
+    .sort_values()
+    .reset_index(drop=True)
+    .rename("observed detail")
+    .to_frame()
 )
-detail_counts
+observed_details
 ```
 
-In the supplied extract, the detail categories have interpretable wording and
-the leading values are not spelling variants that should be merged
-automatically. Column-name normalization is separate from recoding category
-values: a convenient field name does not justify changing its contents. The
-following mapping converts all 44 labels to lowercase snake case and gives
-shorter analytical names to the fields used repeatedly below. The imported
-`parking` table retains the provider's original labels; `analysis` is the
-derived table with renamed columns.
+The following mapping converts all 44 labels to lowercase snake case and
+gives shorter analytical names to the fields used repeatedly below. The
+imported `parking` table retains the provider's original labels;
+`analysis` is the derived table with renamed columns.
 
 ```{python}
 import re
