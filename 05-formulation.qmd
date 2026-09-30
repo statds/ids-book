@@ -68,10 +68,13 @@ A candidate question becomes researchable when its unit, outcome, place,
 period, comparison, and intended claim are explicit. For this chapter, the
 broad topic of illegal parking can be narrowed to NYPD-directed 311 service
 requests, their reported problem details and closure times, and the week
-containing Labor Day 2026. An observed difference among problem categories
-could motivate a narrower comparison after the records have been checked.
-Each restriction should serve a domain purpose because the resulting
-conclusion applies only to the selected records.
+containing Labor Day 2026. The provisional question is: among NYPD-directed
+illegal-parking requests from this week, how did recorded closure-time
+distributions vary across reported problem details? The comparison is
+exploratory because the groups will be selected after inspecting the records,
+and it will require revision if the detail labels or closure timestamps do not
+measure the intended concepts. Each restriction should serve a domain purpose
+because the resulting conclusion applies only to the selected records.
 
 Four complementary checks assess whether a candidate question is worth
 pursuing and whether the available evidence can answer it.
@@ -94,8 +97,9 @@ pursuing and whether the available evidence can answer it.
 These checks are iterative rather than a one-time screen. A domain concern
 may lead to a data search, while an observed pattern may suggest a new
 question; in either direction, checking measurement, scope, and evidence can
-require revising the question. Later sections apply the same checks after the
-downloaded records have been examined.
+require revising the question. The sections that follow evaluate the
+provisional comparison against the downloaded records and refine it in light
+of what those records can establish.
 
 ## Interpreting the NYPD 311 Records
 
@@ -777,7 +781,9 @@ rather than the individuals who submitted requests.
 ## A Working Formulation
 
 A working formulation records the current alignment of domain, question, and
-data while remaining open to revision. The initial working scope is to study
+data while remaining open to revision. The provisional comparison introduced
+at the start of the chapter can now be refined using the observed category
+frequencies and the limits identified in the checks. The working scope is to study
 the volume, reported problem details, locations, and closure times of NYPD
 illegal-parking requests during the week containing Labor Day 2026. The
 problem-detail table identifies three frequently reported categories:
@@ -824,13 +830,14 @@ or domain knowledge would strengthen the answer.
 
 ## Exercises {.unnumbered}
 
-The first two problems establish the core analysis. The third is an optional
-curation extension that develops issues for later data preparation. Write one
-`.qmd` file containing your answers, using executable code, concise prose, and
-rendered tables. Put every result in the document rather than only in a
-terminal session: include code where computation is requested, the relevant
-output or a concise summary table, and a short interpretation. Do not print an
-entire data frame when a small sample or summary answers the question.
+Problems 5.1 and 5.2 establish the core analysis. Problem 5.3 is an optional
+curation extension that develops selected issues for later data preparation.
+Write one `.qmd` file containing your answers, using executable code,
+concise prose, and rendered tables. Put every result in the document rather
+than only in a terminal session: include code where computation is requested,
+the relevant output or a concise summary table, and a short interpretation.
+Do not print an entire data frame when a small sample or summary answers the
+question.
 
 Download the [supplied ZIP archive](https://github.com/statds/ids-book/raw/refs/heads/main/data/311_nypd_lbdwk_2026.csv.zip)
 into a local `data/` directory in your homework repository so the relative
@@ -948,63 +955,30 @@ l. Save the screened illegal-parking data frame as a persistent Feather file
 :::
 
 ::: {#exr-curate-311}
-Extend the quality checks into a documented cleaning plan. This problem
-bridges problem formulation and more extensive data preparation. Do not
-overwrite the source object, and do not remove an unusual record solely
-because it failed a warning-level check.
+Extend the quality checks into a documented cleaning plan. This optional
+problem bridges problem formulation and data preparation. Do not overwrite
+the source object or remove a record solely because it fails a warning-level
+check.
 
 a. Read Tussey and Yan [-@tussey2025principles]. Summarize the six curation
-   principles developed in the paper and explain why transparent documentation
-   is part of data quality rather than an optional addition after cleaning.
-b. Re-import the text fields without automatically interpreting strings as
-   missing values. Count and display the distinct forms used for empty fields,
-   literal codes such as `NA`, `N/A`, `<NA>`, and strings containing only
-   spaces. Check important categories for case or whitespace variants. Present
-   a small table of observed forms and counts, then propose any common
-   representation without changing the source values.
-c. Identify every column whose name contains `Date`. Parse each one with an
-   documented explicit format. Present a summary table with conversion
-   failures and years outside a plausible range for that field, then count
-   impossible chronological relationships. In particular, compare creation,
-   closure, and resolution-action update times. Treat a failed check as
-   evidence to investigate, not as an automatic instruction to delete a row.
-d. For `Created Date`, `Closed Date`, and `Resolution Action Updated Date`, count
-   timestamps exactly at midnight, exactly on an hour, and exactly on a minute.
-   Count closure durations that are zero, negative, or exact whole numbers of
-   hours. Perform the checks for both the full delivered extract and the
-   screened illegal-parking subset. Does this extract reproduce the unusually
-   large concentrations discussed in the paper? Explain why either answer is
-   specific to the fields, agency, and period checked.
-e. Check the syntax and length of nonmissing `Incident Zip` values, preserving
-   leading zeros. Report counts by observed string length and a small table of
-   values that fail your stated syntax rule. Describe what authoritative
-   reference would be needed to determine whether each code was valid during
-   the study period. Explain why a code that passes a five-digit pattern check
-   is not necessarily a valid New York City ZIP Code or a Census ZCTA.
-f. Investigate potentially redundant fields, including `Agency` and `Agency
-   Name`, `Borough` and `Park Borough`, and the coordinate columns and
-   `Location`. For each pair, report missingness and the number of matching
-   and differing values among rows where both fields are observed. Determine
-   whether the pair is identical, conditionally related, or substantively
-   different. Explain why deleting one member based only on similar names
-   would be unsafe.
-g. Create a cleaning log with one row per issue and columns for the affected
+   principles and explain why transparent documentation is part of data
+   quality. Then select **two** diagnostic areas for closer investigation:
+   missing-value representations and category variants; timestamp parsing and
+   chronological relationships; time heaping and closure durations; ZIP Code
+   syntax and geographic validity; or potentially redundant fields. For each
+   selected area, report the evidence, identify the records and fields in
+   scope, and explain what the diagnostic can and cannot establish. Do not
+   infer a correction from an anomaly alone.
+b. Create a cleaning log for the issues you investigated. Include the affected
    variables, evidence, scope, proposed action, justification, and whether
-   curator input is needed. Permissible actions include retaining a value,
-   standardizing a documented code, representing it as missing, quarantining
-   it for review, or asking the curator. Keep the original value available in
-   every case.
-h. Translate at least four checks into reusable validation code. Separate hard
-   failures, such as a duplicated `Unique Key`, from warnings, such as an
-   unexpected concentration at a round time. Make the output identify the
-   failed rule and number of affected records rather than stopping at the first
-   warning.
-i. Suppose that the NYC 311 data curator has invited feedback. Write three to
-   five specific recommendations based on your evidence. Separate
-   recommendations about definitions and documentation from recommendations
-   about automated validation or efficient representation. Do not recommend a
-   correction unless the available evidence establishes what the corrected
-   value should be.
+   curator input is needed. Keep original values available. Translate at least
+   four checks into reusable validation code, distinguish hard failures from
+   warnings, and report each rule with the number of affected records.
+c. Suppose that the NYC 311 data curator has invited feedback. Write three to
+   five recommendations based on your evidence. Separate recommendations about
+   definitions and documentation from those about automated validation or
+   representation. Do not recommend a correction unless the evidence
+   establishes what the corrected value should be.
 :::
 
 ## References {.unnumbered}

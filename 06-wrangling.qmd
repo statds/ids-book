@@ -2,26 +2,29 @@
 
 Data wrangling transforms acquired data into a form suited to a specified
 analysis while preserving the evidence needed to review those transformations.
-The goal of this chapter is to develop a reproducible preparation workflow
-using the NYPD illegal-parking requests introduced in the previous chapter.
-The four formulation checks in @sec-formulation-checks guide which variables
-to retain, which transformations to make, and what claims the prepared data
-can support.
-The emphasis is not on making every value look regular; it is on distinguishing
-documented facts, defensible transformations, and unresolved uncertainty.
-Exploratory data analysis and visualization will follow after the prepared
-data have been validated.
+This chapter develops a reproducible preparation workflow for the NYPD
+illegal-parking requests examined in the previous chapter. The input is the
+distributed ZIP archive and the documented time and problem filters; the core
+output is a derived table with the provider fields renamed consistently and
+closure time and time of day added. The four formulation checks in
+@sec-formulation-checks guide which variables to retain, which transformations
+to make, and what claims the prepared table can support. The emphasis is not
+on making every value look regular, but on distinguishing documented facts,
+defensible transformations, and unresolved uncertainty. Exploratory analysis
+and visualization follow after the prepared data have been validated.
 
 ## From source records to an analysis table
 
 Data preparation starts from a question and a retained source, not from an
 assumption that the downloaded table is already analysis-ready. The previous
 chapter established the observational unit, checked the requested time window,
-and selected illegal-parking requests. This chapter continues from those
-decisions: it standardizes representations where the meaning is clear, derives
-variables needed for analysis, joins contextual data only when the units and
-geographies align, and verifies the result. The steps are iterative because a
-transformation can expose a previously unnoticed problem or show that a
+and selected illegal-parking requests. Here, those checks become input
+conditions for the preparation workflow: scope assertions detect a changed or
+incorrect input, while later checks verify that transformations preserve the
+intended records. The chapter then standardizes representations where the
+meaning is clear, derives variables needed for analysis, and considers
+geographic enrichment only when units and geographies align. The steps are
+iterative because a transformation can expose a problem or show that a
 question requires different data.
 
 A useful preparation plan separates three classes of decisions. **Scope
@@ -301,7 +304,7 @@ hourly summaries, or date-specific patterns can be examined later. This is
 another reason to retain source fields alongside derived fields instead of
 replacing one with the other.
 
-## Merge geographic context with checks
+## Optional extension: Merge geographic context with checks
 
 Data merging combines tables that describe different units. An individual
 request table can be joined to a ZIP-level or ZIP Code Tabulation Area (ZCTA)
@@ -312,12 +315,13 @@ not every ZIP Code has a corresponding ZCTA [@census2023zip]. A successful
 software join therefore does not establish geographic equivalence.
 
 For request-level data joined to a table with one row per ZCTA, the intended
-relationship is many requests to one area record. The lookup key should be
-unique on the contextual table, identifiers should have compatible string
-types, and unmatched request locations should be counted. The sample code
-assumes that a prepared ACS table has fields `zcta` and `population`; it
-illustrates validation without treating a missing supplied file as part of
-the chapter's core data.
+relationship is many requests to one area record. This extension requires a
+separately acquired, documented, year-specific lookup; the chapter does not
+provide that file. The lookup key should be unique, identifiers should have
+compatible string types, and unmatched request locations should be counted.
+The schematic code assumes that a prepared ACS table has fields `zcta` and
+`population`, so it illustrates join validation rather than a complete
+download-and-prepare workflow.
 
 ```{python}
 # Read a documented, year-specific ZIP/ZCTA lookup prepared for the project.
@@ -352,7 +356,7 @@ verified conditions. Area-level associations also do not describe individual
 residents. A merge can enrich the context for a question, but it cannot repair
 coverage or reporting differences absent from the data.
 
-## Validate and save the prepared data
+## Validate the prepared data
 
 Validation repeats important checks after transformations and documents how
 the analysis table differs from the source. The output should retain request
@@ -377,12 +381,14 @@ final_checks = pd.Series({
 final_checks.to_frame()
 ```
 
-Feather is useful when repeated analysis benefits from typed columns and fast
-columnar access, while the ZIP-compressed CSV remains a broadly readable
-source artifact. Bates and Yan discuss Arrow-based representations for
-cross-platform analytical workflows [@bates2024from]. The choice of output
-format should follow the next use: a compact typed derivative does not replace
-provenance or make an analysis more reproducible by itself.
+### Optional: Save a reusable Feather derivative
+
+Feather provides one option for retaining the prepared table for repeated
+analysis, while the ZIP-compressed CSV remains the broadly readable source
+artifact. Bates and Yan discuss Arrow-based representations for cross-platform
+analytical workflows [@bates2024from]. The output format should follow the next
+use; a typed derivative does not replace provenance or make an analysis
+reproducible by itself.
 
 ```{python}
 from tempfile import TemporaryDirectory
