@@ -1,10 +1,519 @@
-# Exploration
+# Exploratory Data Analysis
 
-This chapter will develop exploratory analysis of the prepared NYPD 311 data.
-Planned topics include distributions, group and time comparisons, missingness,
-unusual observations, and the distinction between exploratory patterns and
-confirmatory evidence. Visualization techniques are developed in the next
-chapter. The analysis will revisit the four formulation checks in
-@sec-formulation-checks: domain fit motivates which patterns warrant attention,
-measurement and scope fit constrain their interpretation, and evidence fit
-distinguishes exploratory patterns from confirmatory claims.
+Exploratory data analysis (EDA) examines distributions, relationships, and
+irregularities before a final account of findings is written. Its purpose is
+to learn what the observed data can show, what they cannot show, and which
+questions deserve closer investigation [@nistndexploratory]. This chapter
+first states principles that apply across datasets and then develops them
+through a case study. The next chapter treats visualization as a
+communication practice; here, plots support investigation alongside
+numerical summaries and checks of the records.
+
+## Principles of exploratory data analysis
+
+Exploration begins by establishing what each row and variable represents,
+which records are eligible, and how the measurements were produced. Counts of
+rows, missing values, duplicate identifiers, implausible values, and failed
+joins can reveal limits that a polished summary conceals. Such checks do not
+serve only as preliminary cleaning: they define the set of observations to
+which a result applies. A decision to exclude an unusual value, for example,
+requires evidence about its validity and an account of how the exclusion
+changes the analysis. Retaining an original value and documenting a derived
+one makes that decision reviewable [@tussey2025principles]. These practices
+connect EDA to the formulation and wrangling work of the preceding chapters,
+because an exploratory pattern is interpretable only when its units, coverage,
+and measurement are clear.
+
+Exploration describes variation before reducing it to a single number.
+Center, spread, tails, missingness, and group sizes give different accounts
+of a distribution; a mean alone can conceal a long tail or distinct
+subgroups. Numerical summaries and plots should therefore be chosen to
+answer specific questions and checked against one another. Comparisons
+should also be repeated within relevant strata, such as time or place, when
+a pooled result may combine different processes. An unusual observation
+can prompt an inspection of its source, while a subgroup difference can
+prompt a revised question or a different summary. This cycle of inspection,
+comparison, and revision is the defining feature of EDA, rather than any
+particular chart or statistic [@nistndexploratory].
+
+Exploration separates observed differences from claims about a broader
+process. A table can describe every record in its stated scope without
+assuming that those records form a random sample. A hypothesis test or
+interval adds a model for how other records might arise, and its
+interpretation depends on that model's assumptions. When groups, cutoffs,
+or comparisons are chosen after viewing the data, their inferential status
+must be reported as exploratory. Statistical evidence also cannot repair
+missing coverage, uncertain measurement, or confounding. A useful
+exploratory report therefore records the choices that generated a pattern,
+examines whether reasonable alternatives change it, and states what
+additional data or design would be needed for a stronger claim
+[@wasserstein2016asa].
+
+## From formulation to exploration
+
+The case study examines NYPD illegal-parking requests prepared in Chapter
+6. Its main question is how recorded closure-time distributions differ
+among the three most frequently reported problem details during September
+6–12, 2026. Time, borough, and ZCTA comparisons provide context for the
+citywide result. A hypothesis test then illustrates the assumptions needed
+to move from a description of these records to an inferential claim.
+
+The working question in Chapter 5 identifies a population of records, a time
+window, a measurement, and groups to compare. Its outcome is the elapsed time
+between each request's recorded creation and closure timestamps. This
+quantity does not measure the time until an officer arrived or the time until
+a parking condition ended. The groups are values of the provider's
+problem-detail field, and their frequencies are determined from this week.
+Thus, even a precise group difference describes recorded requests under the
+chosen scope. The four formulation checks in @sec-formulation-checks remain
+useful: domain fit determines which comparisons matter, measurement fit
+governs the interpretation of closure time, scope fit limits the population
+described, and evidence fit governs the strength of a claim.
+
+The analysis follows the general principles in a visible sequence: it
+checks eligible records and the outcome, summarizes the full distribution,
+compares the three detail groups, and then investigates variation across
+time and place. Each step can generate a revised question. The sequence
+also clarifies which comparisons came from the working formulation and
+which were motivated by patterns observed later.
+
+## The prepared data and its scope
+
+The following code reconstructs the relevant columns from the distributed
+archive using the filters and timestamp rules established in Chapter 6. It
+creates a new table and retains the source archive unchanged. The five-digit
+ZIP check used later also follows the preceding chapter.
+
+```{python}
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+source = Path("data") / "311_nypd_lbdwk_2026.csv.zip"
+requests = pd.read_csv(
+    source,
+    compression="zip",
+    dtype={"Unique Key": "string", "Incident Zip": "string"},
+    low_memory=False,
+)
+date_format = "%m/%d/%Y %I:%M:%S %p"
+for column in ["Created Date", "Closed Date"]:
+    requests[column] = pd.to_datetime(
+        requests[column], format=date_format, errors="coerce"
+    )
+
+start = pd.Timestamp("2026-09-06")
+end = pd.Timestamp("2026-09-13")
+parking = requests.loc[
+    requests["Created Date"].between(start, end, inclusive="left")
+    & requests["Problem (formerly Complaint Type)"].eq("Illegal Parking"),
+    [
+        "Unique Key", "Created Date", "Closed Date",
+        "Problem Detail (formerly Descriptor)", "Borough", "Incident Zip",
+        "Latitude", "Longitude",
+    ],
+].copy()
+parking = parking.rename(columns={
+    "Unique Key": "request_id",
+    "Created Date": "created_at",
+    "Closed Date": "closed_at",
+    "Problem Detail (formerly Descriptor)": "problem_detail",
+    "Borough": "borough",
+    "Incident Zip": "incident_zip",
+    "Latitude": "latitude",
+    "Longitude": "longitude",
+})
+parking["closure_hours"] = (
+    parking["closed_at"] - parking["created_at"]
+).dt.total_seconds() / 3600
+
+scope_check = pd.Series({
+    "requests": len(parking),
+    "unique identifiers": parking["request_id"].nunique(),
+    "missing closure times": parking["closure_hours"].isna().sum(),
+    "negative closure times": parking["closure_hours"].lt(0).sum(),
+    "missing coordinates": parking[["latitude", "longitude"]]
+        .isna().any(axis=1).sum(),
+}, name="count")
+scope_check.to_frame()
+```
+
+The screened table contains 13,040 requests, with unique identifiers and no
+missing or negative closure intervals. Ninety-nine requests lack at least one
+coordinate, but coordinates are unnecessary for the main comparison. These
+checks justify retaining all 13,040 requests for that comparison; a spatial
+analysis requiring point locations would have a smaller eligible set. The
+table includes reports made during one week rather than a random sample of
+all parking incidents, and its records may reflect differences in reporting
+as well as differences in agency processing.
+
+## The distribution of closure time
+
+A distribution should be described by its center, spread, and tails before
+groups are compared. The mean is sensitive to long intervals, whereas the
+median marks the point below which half of the observed intervals fall. A
+quantile reports a position in the observed distribution. The table and
+figure below use all closure intervals for calculations. The figure stops at
+24 hours so that the main body can be inspected; longer values remain in the
+numerical summary.
+
+```{python}
+closure_summary = parking["closure_hours"].agg(
+    ["count", "mean", "median", "min", "max"]
+).to_frame("value")
+for label, probability in [
+    ("25th percentile", .25), ("75th percentile", .75),
+    ("90th percentile", .90), ("99th percentile", .99),
+]:
+    closure_summary.loc[label] = parking["closure_hours"].quantile(probability)
+closure_summary = closure_summary.rename(index={
+    "count": "requests",
+    "mean": "mean (hours)",
+    "median": "median (hours)",
+    "min": "minimum (hours)",
+    "max": "maximum (hours)",
+    "25th percentile": "25th percentile (hours)",
+    "75th percentile": "75th percentile (hours)",
+    "90th percentile": "90th percentile (hours)",
+    "99th percentile": "99th percentile (hours)",
+})
+closure_summary.round(2)
+```
+
+```{python}
+#| label: fig-eda-closure
+#| fig-cap: "Recorded closure times for eligible illegal-parking requests. The display stops at 24 hours; the numerical summary includes longer intervals."
+#| fig-format: svg
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.hist(parking["closure_hours"], bins=np.arange(0, 24.5, .5),
+        color="#4477aa", edgecolor="white")
+ax.set(xlabel="Recorded closure time (hours)", ylabel="Requests",
+       xlim=(0, 24))
+plt.show()
+```
+
+The median closure interval is about 1.67 hours, while the mean is about 3.51
+hours. The 90th percentile is about 8.73 hours, the 99th percentile is about
+23.58 hours, and the maximum is nearly 200 hours. This right tail makes the
+mean substantially larger than the median. It also makes a statement such as
+“requests close in about two hours” incomplete: it describes a typical
+request but omits the upper tail. A large interval may be valid, a correction
+to a timestamp, or an operational exception; its presence alone does not
+establish an error. The next comparison therefore reports medians and
+quartiles alongside means.
+
+## Comparing problem details
+
+Group selection is an analytical decision. The working question asks about
+the three most frequent detail values in the eligible week, so the code
+computes those frequencies before summarizing closure time. It does not
+combine similar sounding labels or choose groups because their closure
+summaries appear different. Because the groups are selected from the same
+records being described, later tests remain exploratory.
+
+```{python}
+top_details = parking["problem_detail"].value_counts().head(3).index.tolist()
+top = parking.loc[parking["problem_detail"].isin(top_details)].copy()
+detail_summary = top.groupby("problem_detail")["closure_hours"].agg(
+    requests="count",
+    mean_hours="mean",
+    median_hours="median",
+    lower_quartile=lambda values: values.quantile(.25),
+    upper_quartile=lambda values: values.quantile(.75),
+    ninetieth_percentile=lambda values: values.quantile(.90),
+).reindex(top_details)
+detail_summary.round(2)
+```
+
+```{python}
+#| label: fig-eda-detail-ecdf
+#| fig-cap: "Empirical cumulative distributions of closure time for the three most reported details. The horizontal axis stops at 24 hours."
+#| fig-format: svg
+fig, ax = plt.subplots(figsize=(7, 4))
+for detail in top_details:
+    durations = np.sort(top.loc[
+        top["problem_detail"].eq(detail), "closure_hours"
+    ].to_numpy())
+    fractions = np.arange(1, len(durations) + 1) / len(durations)
+    ax.step(durations, fractions, where="post", label=detail)
+ax.set(xlabel="Recorded closure time (hours)",
+       ylabel="Proportion closed by this time", xlim=(0, 24), ylim=(0, 1))
+ax.legend()
+plt.show()
+```
+
+Blocked Hydrant has the largest median of the three groups, about 2.05 hours,
+followed by Posted Parking Sign Violation at 1.62 hours and Blocked Sidewalk
+at 1.18 hours. The hydrant group's median exceeds the sidewalk group's by
+about 0.86 hours, or 52 minutes. Their distributions overlap substantially,
+so the difference in medians does not mean that every hydrant request took
+longer than every sidewalk request. The cumulative curves show the
+proportion closed by any time on the horizontal axis; they retain more
+distributional information than a comparison of three means. Neither the
+table nor the plot identifies why the groups differ.
+
+## Patterns across time and place
+
+Temporal and geographic comparisons can reveal whether a pooled contrast
+combines distinct patterns. Creation date measures when a report entered the
+system, while closure time measures the subsequent interval; grouping by
+creation date does not assign a request to the date on which it closed. The
+following tables examine request counts by creation date and detail counts
+by borough. Each count describes recorded requests, not underlying parking
+violations.
+
+```{python}
+daily_counts = parking.groupby(parking["created_at"].dt.date).size()
+daily_counts.to_frame("requests")
+```
+
+```{python}
+borough_counts = pd.crosstab(top["borough"], top["problem_detail"])
+borough_counts.loc[:, top_details]
+```
+
+Recorded daily volume ranges from 1,563 on September 6 to 2,080 on September
+10. The counts alone do not establish a weekday effect because they cover
+only one occurrence of each day of the week. The borough table shows that
+the mix of problem details also varies by place: Manhattan has more Posted
+Parking Sign Violation requests than Blocked Hydrant requests, whereas
+Brooklyn has the opposite ordering. Geographic composition can therefore
+affect the citywide comparison. A borough label still represents a broad
+area and cannot identify the practices of an individual precinct.
+
+## Associations with ZCTA context
+
+Area context offers a second exploratory question, but it changes the unit
+of analysis. Chapter 6 joins a request's postal ZIP string to a 2024
+American Community Survey (ACS) estimate for a matching ZIP Code Tabulation
+Area (ZCTA). Postal ZIP Codes and ZCTAs are not identical geographies
+[@census2023zip]. The same estimate is repeated on every matched request in
+that area, so treating those copies as independent area observations would
+overstate the information. This section instead constructs one summary row
+per matched ZCTA and records how many requests support each area's median.
+
+```{python}
+context = pd.read_csv(
+    Path("data") / "zcta_context.csv", dtype={"zcta": "string"}
+)
+if context["zcta"].duplicated().any():
+    raise ValueError("ZCTA context must have one row per area.")
+zip_text = parking["incident_zip"].str.strip()
+parking["zcta_match"] = zip_text.where(
+    zip_text.str.fullmatch(r"\d{5}", na=False)
+)
+with_context = parking.merge(
+    context,
+    left_on="zcta_match", right_on="zcta",
+    how="left", validate="many_to_one", indicator=True,
+)
+with_context["_merge"].value_counts()
+```
+
+```{python}
+areas = with_context.loc[with_context["_merge"].eq("both")].groupby(
+    "zcta", as_index=False
+).agg(
+    requests=("request_id", "size"),
+    median_closure_hours=("closure_hours", "median"),
+    median_household_income=("median_household_income", "first"),
+)
+eligible_areas = areas.loc[
+    areas["requests"].ge(20) & areas["median_household_income"].notna()
+].copy()
+eligible_areas["income_quartile"] = pd.qcut(
+    eligible_areas["median_household_income"], 4,
+    labels=["lowest", "lower-middle", "upper-middle", "highest"],
+)
+area_summary = eligible_areas.groupby(
+    "income_quartile", observed=True
+).agg(
+    areas=("zcta", "size"),
+    requests=("requests", "sum"),
+    median_of_area_medians=("median_closure_hours", "median"),
+)
+area_summary.round(2)
+```
+
+The join matches 13,033 of 13,040 requests. Among areas with at least 20
+requests and a reported median household income, 149 ZCTAs enter the grouped
+comparison. Their median closure times differ across income quartiles, but
+the ordering is not monotone: the lower-middle quartile has a higher median
+of area medians than the lowest or upper-middle quartile. The minimum count
+of 20 is a transparent stability rule, not a guarantee of accurate area
+estimates. The ACS income values describe an earlier period and have
+sampling uncertainty; the request-to-ZCTA match also has geographic limits
+[@census2026american]. This table supports a question about area-level
+association, not a conclusion about residents' incomes or an income effect
+on individual requests.
+
+## Hypothesis tests and uncertainty
+
+A hypothesis test can be part of EDA when its assumptions and limited
+purpose are explicit. Consider the median closure-time difference between
+Blocked Hydrant and Blocked Sidewalk requests. For the observed week, that
+difference is descriptive and needs no test. A test addresses a different
+question: under a model in which requests from the two detail groups have
+exchangeable closure-time distributions, how unusual would the observed
+difference be? The permutation calculation below pools the two groups and
+reallocates their labels while preserving their sizes. Its two-sided
+statistic is the absolute difference between medians. A bootstrap interval
+separately resamples requests within each group to show variability under
+an independent-request model.
+
+```{python}
+hydrant = top.loc[
+    top["problem_detail"].eq("Blocked Hydrant"), "closure_hours"
+].to_numpy()
+sidewalk = top.loc[
+    top["problem_detail"].eq("Blocked Sidewalk"), "closure_hours"
+].to_numpy()
+observed_gap = np.median(hydrant) - np.median(sidewalk)
+
+rng = np.random.default_rng(2026)
+bootstrap_gaps = np.array([
+    np.median(rng.choice(hydrant, size=len(hydrant), replace=True))
+    - np.median(rng.choice(sidewalk, size=len(sidewalk), replace=True))
+    for _ in range(2000)
+])
+interval = np.quantile(bootstrap_gaps, [.025, .975])
+combined = np.concatenate([hydrant, sidewalk])
+permuted_gaps = np.array([
+    np.median(shuffled[:len(hydrant)])
+    - np.median(shuffled[len(hydrant):])
+    for shuffled in (rng.permutation(combined) for _ in range(2000))
+])
+extreme = np.count_nonzero(np.abs(permuted_gaps) >= abs(observed_gap))
+p_value = (extreme + 1) / (len(permuted_gaps) + 1)
+pd.Series({
+    "observed median gap (hours)": observed_gap,
+    "bootstrap lower endpoint (hours)": interval[0],
+    "bootstrap upper endpoint (hours)": interval[1],
+    "permutation p-value": p_value,
+}).to_frame("value").round(4)
+```
+
+The observed median gap is about 0.865 hours, and the bootstrap interval is
+approximately 0.712 to 1.016 hours. The estimated permutation $p$-value is
+about 0.0005, with the added one in the numerator and denominator preventing
+a reported zero from a finite set of permutations. These results show that
+the observed separation is large relative to these relabelings and
+resamples. They do not establish that the detail label causes a closure-time
+difference. Requests may be related through place, time, repeat reporting,
+or agency practice, and the analysis was chosen after inspection of this
+week. The bootstrap interval does not include uncertainty from coverage,
+measurement, or group selection. A $p$-value should not be read as the
+probability that the null hypothesis is true or as a measure of practical
+importance [@wasserstein2016asa].
+
+## Sensitivity checks
+
+Sensitivity analysis asks whether a descriptive result depends strongly on
+a reasonable analytical choice. The first check removes intervals longer
+than 24 hours; this assesses the role of the upper tail without declaring
+those records invalid. The remaining checks repeat the hydrant-sidewalk
+comparison within all five boroughs. These summaries do not remove all
+possible confounding, but they show whether the citywide contrast has a
+similar form in several geographic subsets.
+
+```{python}
+def median_gap(frame):
+    left = frame.loc[
+        frame["problem_detail"].eq("Blocked Hydrant"), "closure_hours"
+    ]
+    right = frame.loc[
+        frame["problem_detail"].eq("Blocked Sidewalk"), "closure_hours"
+    ]
+    return pd.Series({
+        "hydrant_requests": len(left),
+        "sidewalk_requests": len(right),
+        "median_gap_hours": left.median() - right.median(),
+    })
+
+sensitivity = pd.DataFrame({
+    "all requests": median_gap(top),
+    "closure at most 24 hours": median_gap(
+        top.loc[top["closure_hours"].le(24)]
+    ),
+}).T
+for borough in sorted(top["borough"].dropna().unique()):
+    sensitivity.loc[borough.title()] = median_gap(
+        top.loc[top["borough"].eq(borough)]
+    )
+sensitivity[["hydrant_requests", "sidewalk_requests"]] = sensitivity[[
+    "hydrant_requests", "sidewalk_requests"
+]].astype(int)
+sensitivity.round(3)
+```
+
+The all-request median gap is about 0.865 hours and changes little, to about
+0.848 hours, after intervals above 24 hours are excluded. The geographic
+comparisons are less uniform: the gap is about 1.07 hours in Brooklyn and
+1.09 hours in Queens, but only 0.10 hours in the Bronx and approximately
+zero in Manhattan. Staten Island has a larger gap, but its comparison uses
+only 54 hydrant and 34 sidewalk requests. Group sizes and possible
+differences in case mix or processing limit the interpretation of these
+contrasts. The pooled result therefore does not describe every borough
+equally well.
+
+## Revising the question
+
+Exploration has answered the initial descriptive question for the recorded
+week: closure-time distributions differ among the three most reported
+details, with a long right tail and the largest median among Blocked Hydrant
+requests. It has also identified conditions for a more focused next
+analysis. A future question could compare those details within borough and
+creation-time strata across multiple weeks, while documenting changes in
+request volume and closure practices. A causal question about why closure
+times differ would require a design that addresses confounding and the
+meaning of the recorded outcome. The ZCTA analysis similarly motivates
+area-level questions but does not turn area income into a request-level
+explanation. EDA makes observed patterns and the limits of their
+interpretation explicit enough to guide that next question.
+
+## Exercises {.unnumbered}
+
+These exercises use the distributed request archive and, where indicated,
+`data/zcta_context.csv`. Report the record counts behind each summary,
+state units and exclusions, and distinguish descriptive findings from
+claims about processes outside the observed week.
+
+::: {#exr-eda-time}
+Examine whether the closure-time comparison varies by the hour when a request
+was created.
+
+a. Divide creation hours into four six-hour intervals, state their boundaries,
+   and report the request count and median closure time for each interval.
+b. Repeat the table for the three most frequent problem details. Identify one
+   contrast that changes across intervals and compare its group sizes.
+c. Explain why the tables cannot by themselves distinguish a time-of-day
+   effect from changes in location, reporting behavior, or case mix.
+:::
+
+::: {#exr-eda-area}
+Revisit the ZCTA comparison under alternative inclusion rules.
+
+a. Construct one row per matched ZCTA with request count, median closure time,
+   and ACS median household income. Report missing income values and explain
+   why the area, rather than the request, is the observational unit here.
+b. Compare the quartile summary using minimum request counts of 10, 20, and
+   40 per ZCTA. State how many areas and requests enter each version.
+c. Assess whether the direction of the area-level association is stable.
+   Describe at least two limitations of a postal ZIP to ZCTA string match.
+:::
+
+::: {#exr-eda-inference}
+Evaluate a proposed claim that hydrant requests generally take longer to
+close than sidewalk requests.
+
+a. Reproduce the observed median difference, bootstrap interval, and
+   permutation calculation using a documented random seed.
+b. Repeat the median comparison within each borough with at least 50
+   requests of each detail. Report the eligible group counts.
+c. Write a conclusion that separates the observed week's pattern, inference
+   under the resampling assumptions, and the unsupported causal claim.
+:::
+
+## References {.unnumbered}
