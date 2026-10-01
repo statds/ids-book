@@ -127,7 +127,7 @@ mini-report shows how headings, emphasis, a list, a labeled equation, a table,
 a figure, a citation, and cross-references work together:
 
 ````markdown
-## Assessment results {#sec-assessment-results}
+## Assessment Results {#sec-assessment-results}
 
 The **mean score** summarizes performance in each subject, but it does not show
 the variation among students. The sample mean for subject $s$ is
@@ -353,11 +353,11 @@ title: "A Data-Science Result"
 format: revealjs
 ---
 
-## The question
+## The Question
 
 What decision does this analysis support?
 
-## The evidence
+## The Evidence
 
 Explain the important figure and its limitations.
 ```

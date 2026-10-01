@@ -13,7 +13,7 @@ on making every value look regular, but on distinguishing documented facts,
 defensible transformations, and unresolved uncertainty. Exploratory analysis
 and visualization follow after the prepared data have been validated.
 
-## From source records to an analysis table
+## From Source Records to an Analysis Table
 
 Data preparation starts from a question and a retained source, not from an
 assumption that the downloaded table is already analysis-ready. The previous
@@ -79,7 +79,7 @@ conditions require separate diagnostics. Nor does this subset represent all
 parking conditions in New York City, since it includes only requests sent to
 NYPD during one week.
 
-## Recheck scope before transforming
+## Recheck Scope Before Transforming
 
 Chapter 5 profiles the source extract in detail, including its requested
 scope, missing fields, coordinate coverage, status and timestamp relationships,
@@ -112,7 +112,7 @@ recorded ZIP field, not latitude and longitude. A later point-distance
 analysis would need to address coordinate missingness separately; it should
 not infer a point location from the area-level match.
 
-## Standardize representations conservatively
+## Standardize Representations Conservatively
 
 Representation changes make fields usable without asserting new facts about
 the observations. Dates should use datetime types, ZIP Codes and request keys
@@ -212,7 +212,7 @@ provider terminology is historical or ambiguous. Uniform labels improve code
 readability, but they do not make field contents more accurate or comparable
 across agencies and years.
 
-## Derive variables from documented meanings
+## Derive Variables from Documented Meanings
 
 Derived variables translate recorded fields into measurements required by a
 question. A useful derived variable has an explicit definition, units, and
@@ -267,7 +267,7 @@ hourly summaries, or date-specific patterns can be examined later. This is
 another reason to retain source fields alongside derived fields instead of
 replacing one with the other.
 
-## Merge area-level context with checks {#sec-zcta-context-merge}
+## Merge Area-Level Context with Checks {#sec-zcta-context-merge}
 
 Data merging combines tables that describe different units. A request table
 can be joined to Census attributes summarized by ZIP Code Tabulation Area
@@ -386,7 +386,7 @@ characteristics caused a difference in closure. Area-level associations do not
 describe individual residents, and a merge cannot repair coverage or reporting
 differences absent from the data.
 
-## Validate the prepared data
+## Validate the Prepared Data
 
 Validation repeats important checks after transformations and documents how
 the analysis table differs from the source. The output should retain request
@@ -411,7 +411,7 @@ final_checks = pd.Series({
 final_checks.to_frame()
 ```
 
-## Preparation as a documented argument
+## Preparation as a Documented Argument
 
 Each transformation in this chapter makes a claim about the records: filters
 define the scope, derived fields operationalize measurements, and a merge
