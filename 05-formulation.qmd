@@ -766,8 +766,8 @@ contain different populations and opportunities for parking.
 Additional area-level data could supply denominators and context for ZIP-level
 request counts. Census characteristics are often tabulated for ZIP Code
 Tabulation Areas (ZCTAs), which are related to postal ZIP Codes but do not
-represent identical geographies [@census2023zip]. Chapter 6
-(@sec-zcta-context-merge) demonstrates one such enrichment and evaluates its
+represent identical geographies [@census2023zip].
+@sec-zcta-context-merge demonstrates one such enrichment and evaluates its
 key, reference period, join cardinality, and unmatched records. Even a
 validated match describes places rather than the individuals who submitted
 requests.

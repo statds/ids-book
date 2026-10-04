@@ -1,4 +1,4 @@
-# Ethics
+# Ethics {#sec-ethics}
 
 Ethical reasoning is part of every data-science decision because choices about
 questions, data, methods, and communication affect people and institutions.
@@ -391,8 +391,8 @@ Evaluate an ethical decision involving the NYPD 311 data. Work individually or
 in a small group, and distinguish evidence in the data from assumptions about
 people or agency processes.
 
-a. Select one question proposed in Chapter 5. State its purpose, intended
-   audience, observational unit, and potential use. Identify at least three
+a. Select one question proposed in @sec-problem-formulation. State its purpose,
+   intended audience, observational unit, and potential use. Identify at least three
    affected parties and describe one possible benefit and one possible harm
    for each.
 b. Trace how a request enters the dataset, including who may report, what is

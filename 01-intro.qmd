@@ -69,7 +69,7 @@ frameworks for responsible data science. A particularly close related text is
 Yu and Barter's *Veridical Data Science*, which develops the PCS framework
 through real-world case studies across the data-science life cycle
 [@yu2024veridical]. This book draws on its nonlinear view of that life cycle,
-while taking a different route for beginning students: the first four chapters
+while taking a different route for beginning students: the opening chapters
 build practical foundations in computing, Git, Quarto, and Python before the
 later chapters apply them to a sustained NYC 311 example. The workflow makes
 both problem-to-data and data-to-question reasoning explicit, then carries the
@@ -307,7 +307,7 @@ as a disposable file submitted only for a grade; attractive output is valuable
 because it helps readers understand trustworthy work, not because appearance
 can substitute for sound reasoning [@quarto2025guide].
 
-### Installing Quarto
+### Installing Quarto {#sec-install-quarto}
 
 Quarto is the publishing tool used throughout this book, so install it before
 you try to render a `.qmd` file. Follow the official [Quarto installation
@@ -321,7 +321,7 @@ quarto check
 
 The `quarto` command must be available on your `PATH`. If the shell reports
 `command not found`, finish the installation or reopen the shell so it reloads
-the updated `PATH`. Chapter 3 combines Quarto with Python and Jupyter to
+the updated `PATH`. @sec-quarto combines Quarto with Python and Jupyter to
 produce executable documents [@quarto2025guide].
 
 You can test the installation with a minimal document before working on the
@@ -356,7 +356,7 @@ Quarto should create `hello.html`. Open that file in a browser and check that
 the title and sentence appear. The source file is the record of what you wrote;
 the HTML file is generated output and should not replace the source.
 
-### Installing Git
+### Installing Git {#sec-install-git}
 
 Git is the version-control tool used throughout this book, so install it before
 you begin the collaboration exercises. Follow the [official Git installation
@@ -371,8 +371,8 @@ git config --global user.email "you@example.com"
 git config --list --show-origin
 ```
 
-Chapter 2 explains repositories, commits, branches, remotes, and pull
-requests. Chapter 1 only asks you to install and verify Git; do not install
+@sec-git explains repositories, commits, branches, remotes, and pull
+requests. This chapter only asks you to install and verify Git; do not install
 project packages globally.
 
 ## Responsible Practice

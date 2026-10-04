@@ -96,7 +96,7 @@ plt.show()
 ```
 
 The call to `default_rng(2026)` creates a seeded random-number generator, so
-the simulated 30-student, three-subject score table and Figure @fig-scores are
+the simulated 30-student, three-subject score table and @fig-scores are
 reproducible on another computer. The three `loc` values create subjects with
 different underlying mean scores. The bar heights are subject means; the error
 bars show standard errors across students.
@@ -136,7 +136,7 @@ $$
 \bar{x}_s = \frac{1}{n}\sum_{i=1}^{n}x_{is}.
 $$ {#eq-subject-mean}
 
-Table @tbl-subject-means reports the results calculated with
+@tbl-subject-means reports the results calculated with
 @eq-subject-mean.
 
 | subject | mean score |
@@ -149,9 +149,9 @@ Table @tbl-subject-means reports the results calculated with
 
 ![Mean score by subject, with standard-error bars.](figures/scores.png){#fig-subject-means}
 
-Figure @fig-subject-means makes the difference among subjects easier to see.
+@fig-subject-means makes the difference among subjects easier to see.
 The interpretation should also consider the variation, as explained in
-Section @sec-assessment-results. The analysis follows reproducible-authoring
+@sec-assessment-results. The analysis follows reproducible-authoring
 practices [@quarto2025guide].
 
 ````
@@ -371,9 +371,9 @@ presentation.
 
 ## Exercises {.unnumbered}
 
-Complete the Git setup from Chapter 2 and the Quarto installation from Chapter
-1 before beginning. Write one `.qmd` file containing your answers to all
-problems.
+Complete the Git setup in @sec-install-git and the Quarto installation in
+@sec-install-quarto before beginning. Write one `.qmd` file containing your
+answers to all problems.
 
 ::: {#exr-python-environment}
 Follow the complete workflow in @sec-rendering-the-book to clone and render

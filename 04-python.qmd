@@ -67,8 +67,8 @@ installation and its packages. It prevents one project’s package version from
 silently changing another project’s behavior. The exact package versions in
 `requirements.txt` are part of a reproducible analysis because another person
 can install the same set with `python -m pip install -r requirements.txt`
-[@python2026venv; @wilson2017good]. Chapter 3 showed how this book uses the
-`.ids` environment; the important practice here is to check the interpreter,
+[@python2026venv; @wilson2017good]. @sec-python-environment showed how this
+book uses the `.ids` environment; the important practice here is to check the interpreter,
 not merely the command prompt.
 
 ## Imports
@@ -532,7 +532,7 @@ message.
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems. Use the same
-Python 3.12 environment that you created for Chapter 3.
+Python 3.12 environment that you created in @sec-python-environment.
 
 ::: {#exr-python-provenance}
 Inspect the Python environment that will run your analysis.
