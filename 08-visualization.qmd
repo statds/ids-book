@@ -1,382 +1,878 @@
-# Visualization
+# Visualization {#sec-visualization}
 
-Visualization is a method for examining data, checking analytical choices,
-diagnosing models, and communicating evidence. The same graphic can serve more
-than one purpose, but its design should reflect the task at hand: an analyst
-may need to reveal unexpected structure, while a reader may need to compare a
-small number of estimates accurately. This chapter develops principles for
-making those choices and applies them to Census area estimates and other New
-York City open data. Chapter 7 used plots as one part of exploratory data
-analysis; this chapter examines how visual encodings shape what analysts and
-readers can see. Chapter 9 will use the same principles for model checking,
-interpretation, and prediction. Chapter 5 defined questions and the claims
-their evidence can support, Chapter 6 prepared analysis tables, and Chapter 7
-used plots to investigate distributions and relationships. This chapter
-builds on that sequence without treating visualization as the final step of
-an analysis.
+Visualization serves three related analytical purposes: to discover patterns
+in data, to diagnose the adequacy of a proposed explanation, and to
+communicate a result to a specified audience. The analysis in @sec-eda
+used graphics for exploration; the present chapter examines how choices
+about aggregation, visual encoding, and annotation determine which comparisons a
+reader can make. A figure is therefore a sequence of analytical decisions
+rather than a decorative rendering of a completed calculation. The analyst
+selects eligible records, defines the quantity of interest, maps that
+quantity to visible marks, and supplies enough context to evaluate the
+result. Each decision can change the apparent pattern even when the source
+data remain fixed. The same principles will apply to prediction and
+diagnostic figures in @sec-modeling. The worked examples use NYPD-directed 311
+illegal-parking requests created during September 6–12, 2026; maps and a
+small simulated dataset expose design problems that the request records
+alone cannot isolate [@munzner2014visualization; @wilke2019fundamentals].
 
-## Match the Display to the Task
+The goal of this chapter is to provide a procedure that can be applied when
+the appropriate figure is not specified in advance. The procedure begins
+with a substantive question and a definition of the observational unit,
+eligible records, measurement, and comparison. It then requires a visual
+form that preserves the information needed for that comparison, followed by
+a review of the inference a reader is likely to draw. The code examples
+make these decisions visible, while the exercises progressively transfer
+responsibility for the question, chart form, and data source to students
+preparing a midterm project. A successful project figure must therefore be
+accompanied by a defensible interpretation and a statement of its limits;
+executable code alone does not establish that the graphic answers its
+question. Earlier course demonstrations by Sonia Lucey (Plotnine),
+Alejandro Haerter (GeoPandas), and Jack Perkins (Google Maps) informed the
+selection of tools. The figures here use the current book data and can be
+reproduced from the files distributed with this repository.
 
-The first design decision is the question the display must help answer.
-Exploration often begins with an open question, such as whether two variables
-vary together or whether a distribution has more than one cluster. A
-communication display usually has a more specific task, such as comparing
-group estimates or showing the change in a measure over time. Both tasks
-require the analyst to identify the observational unit, the variables, their
-measurement scales, and the evidence behind them. These requirements connect
-visualization to the domain, measurement, scope, and evidence checks in
-@sec-formulation-checks. A graph can encode values correctly and still support
-an incorrect conclusion if the question, units, or population are unclear.
-Task-oriented frameworks make this design process explicit by asking what
-data are available, why a display is needed, and how it should represent the
-data [@munzner2014visualization].
+## Purpose
 
-A useful way to describe a statistical graphic is through its data, mappings,
-marks, scales, and layout. The **data** are the observations to display; a
-**mapping** assigns variables to visual properties; **marks** are the visible
-elements such as points, lines, and bars; **scales** translate data values to
-positions, sizes, or colors; and **layout** arranges panels, labels, and
-legends. This vocabulary is shared across visualization systems. Wickham's
-layered grammar formalizes these components and is implemented by ggplot2 in
-R, while this book uses Matplotlib in Python [@wickham2010layered]. Wilke's
-practical treatment offers a companion reference for applying these design
-ideas in statistical graphics [@wilke2019fundamentals]. The code below uses a
-scatterplot to map ZCTA population to horizontal position and
-median household income to vertical position. It uses one point per area, so
-the observational unit remains visible rather than being replaced by an
-unexplained aggregate.
+The purpose of a figure determines the data transformation and visual
+encoding that are appropriate. A comparison of two numerical levels benefits
+from positions on a common scale, because readers can judge aligned
+positions more accurately than similar areas or color intensities
+[@cleveland1984graphical; @mackinlay1986automating]. A question about a
+distribution instead requires information about spread, shape, or tails;
+two groups with equal means can have different distributions. A geographic
+question may require points when individual recorded locations matter, or
+polygons when the quantity has been aggregated to areas. These requirements
+do not define a single universal chart type. Exploration may require
+several displays that reveal different aspects of a dataset, whereas a
+communication figure should make its principal comparison immediately
+identifiable and still disclose the context that qualifies it. In either
+case, the analyst must first specify the observational unit, measured
+variable, eligible population, and observation period introduced in
+@sec-problem-formulation and @sec-wrangling [@tussey2025principles]. A
+change in any of these four elements changes the quantity the figure
+represents.
+
+The illegal-parking example makes the relationship between a record and a
+claim especially important. Each row is a 311 service request directed to
+the NYPD, not an independently verified parking event, and `Closed Date`
+records administrative closure rather than the precise time of an officer's
+arrival. The latitude and longitude describe a recorded incident location;
+their presence does not establish that a violation occurred at that point.
+Consequently, a count of rows quantifies requests in the selected extract,
+while a closure-time summary describes a recorded administrative interval.
+Neither quantity alone estimates the prevalence of illegal parking or the
+risk faced by an individual resident. The following code loads the same
+screened table used in @sec-eda through the
+[shared preparation function](scripts/parking_requests.py). The filters
+and timestamp rules are explained in @sec-wrangling; the function keeps
+those decisions in one place while both chapters remain independently
+executable. The compact report below checks the number of requests,
+identifiers, and missing coordinates before any figure uses the table
+[@nycopendatand311].
 
 ```{python}
-#| label: fig-viz-zcta-scatter
-#| fig-cap: "Population and 2020–2024 ACS median household income estimates for NYC ZCTAs; income values top-coded by the source are excluded."
-#| fig-alt: "Scatterplot with one point per NYC ZCTA. Population is on a logarithmic horizontal axis and median household income is on the vertical axis."
-#| fig-format: svg
 from pathlib import Path
 
+import geopandas as gpd
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from plotnine import (
+    aes, facet_grid, facet_wrap, geom_line, geom_point, ggplot, labs,
+    scale_color_manual, scale_x_continuous, theme, theme_minimal,
+)
+from scripts.parking_requests import load_parking_requests
 
-zcta_context = pd.read_csv(
-    Path("data") / "zcta_context.csv",
-    dtype={"zcta": "string"},
+parking = load_parking_requests()
+parking["hour"] = parking["created_at"].dt.hour
+parking["day_type"] = np.where(
+    parking["created_at"].dt.dayofweek >= 5, "Weekend", "Weekday"
 )
-income_areas = zcta_context.loc[
-    zcta_context["median_household_income"].notna()
-    & ~zcta_context["median_household_income_top_coded"]
-].copy()
 
-fig, ax = plt.subplots(figsize=(7, 4.5))
-ax.scatter(
-    income_areas["population"],
-    income_areas["median_household_income"],
-    alpha=0.65,
-    color="#4477aa",
-)
-ax.set_xscale("log")
-ax.set(
-    xlabel="ZCTA population (log scale)",
-    ylabel="Median household income (2024 dollars)",
-    title="Population and median household income by NYC ZCTA",
-)
-ax.grid(axis="y", color="0.9")
-fig.tight_layout()
-plt.show()
+pd.Series({
+    "requests": len(parking),
+    "unique request IDs": parking["request_id"].nunique(),
+    "missing coordinates": parking[["latitude", "longitude"]]
+        .isna().any(axis=1).sum(),
+}).to_frame("count")
 ```
 
-This plot supports several exploratory tasks: identifying unusual areas,
-checking whether income varies systematically with population, and deciding
-whether a transformation or additional stratification is warranted. The
-logarithmic population scale allocates more display space to differences
-among smaller ZCTAs; it also changes how horizontal distances should be
-interpreted, so the axis label states the scale. The scatterplot does not
-establish that population explains income, and each point is an area rather
-than a resident. The estimates come from the 2020–2024 American Community
-Survey and describe ZCTAs selected from the city's published geography list;
-postal ZIP Codes and ZCTAs are not identical [@nycopendata2026zip;
-@census2026american]. A display should retain these units and reference
-periods in its caption or accompanying text, especially when those details
-change the scope of the conclusion.
+The screening step yields 13,040 distinct requests, of which 99 have at
+least one missing geographic coordinate. This difference matters whenever
+figures are compared: an hourly plot can include all selected requests,
+whereas a point map excludes those without usable coordinates. If missing
+locations are concentrated in a particular borough or problem detail, the
+map can represent a different subset from the nonspatial plot even though
+both originate in the same archive. A caption should therefore identify the
+eligible records, the measured quantity and its unit, the observation
+period, and exclusions that could affect interpretation. These elements
+are part of the evidence, not optional formatting. The archive is stored
+locally so that the examples render without a network request;
+@sec-problem-formulation documents its download and provenance. Later maps
+add further eligibility rules for a valid five-digit ZIP label or a matched polygon. Those rules
+will be reported at the point where they affect the displayed quantity.
 
-## Encode Comparisons and Uncertainty
+## Grammar
 
-Visual channels differ in how accurately people can compare values.
-Experiments in graphical perception find that position along a common scale
-and length generally support more accurate comparisons than area, volume, or
-color intensity [@cleveland1984graphical; @mackinlay1986automating]. This
-evidence explains why aligned dot plots and bars work well for comparing a
-modest number of values, while a bubble chart can make close values difficult
-to distinguish. The appropriate channel also depends on the variable: color
-hue distinguishes categories, while ordered lightness is better suited to
-quantitative magnitude. Color should not carry information by itself when
-shape, line style, direct labels, or position can make the same distinction
-available through another channel. Perceptually uneven palettes can distort
-gradients, and color choices that depend on red-green differences can exclude
-some readers [@crameri2020misuse]. Researchers can also test perceptual claims
-rather than accept them only as convention. Heer and Bostock used
-crowdsourced experiments to reproduce established results and evaluate
-design choices [@heer2010crowdsourcing]. Their work supports treating design
-principles as evidence-based guidance while recognizing that a channel's
-effectiveness still depends on the comparison and audience.
+The grammar of graphics provides a language for specifying how data become
+a figure. Its components are **data**, **aesthetic mappings**, **geometric
+marks**, **statistical transformations**, **scales**, **coordinates**, and
+**facets**. The data component identifies the table used by a layer. A
+mapping assigns columns to properties such as horizontal position, vertical
+position, or color; a fixed property, such as the color of every point, is
+instead set independently of a column. A geom draws the resulting marks.
+A statistical transformation can summarize rows before drawing them, while
+scales define how data values become positions or colors. Coordinates
+specify the space in which the marks appear, and facets repeat a common
+specification for subsets of the data. This decomposition makes a figure
+revisable: the analyst can change a mapping or facet layout without
+reconstructing the entire graphic. Wilkinson developed the general
+framework, Wickham formalized a layered implementation in ggplot2, and
+Plotnine implements that layered approach in Python
+[@wilkinson2005grammar; @wickham2010layered; @plotnine2026facets].
 
-Uncertainty is part of the data description when estimates come from a sample
-or a model. The ZCTA file includes American Community Survey margins of error
-for its estimates; the following figure displays estimates and their
-published margins for the twelve areas with the largest non-top-coded median
-household income. This is an interval display, not a ranking of exact
-underlying incomes. ACS margins of error describe sampling uncertainty, not
-all possible sources of measurement or coverage error. The dataset also
-marks four top-coded income estimates and does not supply exact numeric values
-for them, so those areas are omitted from this particular plot and the
-exclusion is explicit in the code. The Census Bureau bases published ACS
-margins on a 90% confidence level [@census2024accuracy]. These distinctions
-affect how readers compare areas and interpret the displayed ranking.
+The first grammar example compares the hours at which requests were
+created on weekdays and weekend days. This observation week contains five
+weekdays and two weekend days, so raw totals would give the weekday group
+more exposure time. For borough $b$, day type $d$, and hour $h$, let
+$n_{bdh}$ denote the number of requests and let $D_d$ denote the number of
+observed days of type $d$. The plotted value is $n_{bdh}/D_d$, measured in
+requests per observed day during hour $h$. The code first counts requests
+for each combination, then inserts zeroes for combinations with no request,
+and finally divides by $D_d$. Explicit zeroes are necessary because an
+absent combination should appear at zero rather than disappear from a line.
+This normalization addresses unequal numbers of observed weekdays and
+weekend days. It does not adjust for borough population, the number of
+vehicles, reporting propensity, or the possibility that a particular day
+was unusual.
 
 ```{python}
-#| label: fig-viz-zcta-moe
-#| fig-cap: "Twelve largest non-top-coded 2020–2024 ACS median household income estimates among NYC ZCTAs, with published 90% margins of error."
-#| fig-alt: "Horizontal dot plot of twelve ZCTA income estimates with horizontal intervals showing the published margins of error."
-#| fig-format: svg
-top_income = income_areas.nlargest(
-    12, "median_household_income"
-).sort_values("median_household_income")
+borough_order = ["BRONX", "BROOKLYN", "MANHATTAN", "QUEENS", "STATEN ISLAND"]
+hour_index = pd.MultiIndex.from_product(
+    [borough_order, ["Weekday", "Weekend"], range(24)],
+    names=["borough", "day_type", "hour"],
+)
+hourly = (
+    parking.groupby(["borough", "day_type", "hour"])
+    .size()
+    .reindex(hour_index, fill_value=0)
+    .rename("requests")
+    .reset_index()
+)
+hourly["days_observed"] = hourly["day_type"].map(
+    {"Weekday": 5, "Weekend": 2}
+)
+hourly["requests_per_day"] = hourly["requests"] / hourly["days_observed"]
+hourly["borough"] = pd.Categorical(
+    hourly["borough"], categories=borough_order, ordered=True
+)
+```
 
-fig, ax = plt.subplots(figsize=(8, 5.5))
+The Brooklyn figure demonstrates how a layered specification assigns a
+different role to each visual component. Hour is mapped to horizontal
+position, the normalized request count to vertical position, and day type
+to color. The line geom connects adjacent hourly summaries within each day
+type, while the point geom marks the 24 discrete hours from which those
+lines are constructed. A connecting line helps readers follow the temporal
+pattern, but it does not imply that requests were observed continuously
+between the hourly bins. The manual color scale assigns stable colors to
+the two categories, and the labeled horizontal breaks make the time scale
+legible without printing every hour. The code supplies a legend because
+color is mapped to a variable; changing a constant line color would not
+create a second group. Brooklyn provides a compact example before the
+same specification is repeated across boroughs. Readers should compare
+the timing and level of recorded requests, while retaining the one-week
+scope of the data [@heer2010crowdsourcing].
+
+```{python}
+#| label: fig-viz-grammar
+#| fig-cap: "Average requests per observed day by hour and day type in Brooklyn, September 6–12, 2026."
+#| fig-alt: "Two lines compare the hourly pattern of Brooklyn illegal-parking requests on weekdays and weekend days."
+#| fig-format: svg
+brooklyn_hours = hourly.loc[hourly["borough"].eq("BROOKLYN")]
+hour_plot = (
+    ggplot(brooklyn_hours, aes("hour", "requests_per_day", color="day_type"))
+    + geom_line(size=1)
+    + geom_point(size=1.5)
+    + scale_color_manual(values={"Weekday": "#3366AA", "Weekend": "#CC6677"})
+    + scale_x_continuous(breaks=[0, 6, 12, 18, 23])
+    + labs(
+        x="Hour request was created", y="Requests per observed day",
+        color="Day type", title="When Brooklyn requests were created",
+    )
+    + theme_minimal()
+    + theme(figure_size=(7, 4))
+)
+hour_plot
+```
+
+Faceting extends the same grammar by repeating a common display for defined
+subsets. In `facet_wrap()`, borough determines the panel, while color still
+distinguishes day type within each panel. This arrangement helps a reader
+compare the two temporal profiles in each borough and then scan for
+differences across the city. In `facet_grid()`, day type determines rows
+and borough determines columns. The resulting layout makes the two
+grouping variables explicit in position, so color is no longer required
+to identify day type. Both examples retain fixed vertical scales. Under
+a fixed scale, a height in the Bronx has the same numerical meaning as
+the same height in Brooklyn; the cost is that variation in a low-count
+panel may be visually compressed. Free vertical scales emphasize shape
+within panels but remove direct height comparability. The analyst should
+choose between these alternatives according to whether the question
+concerns absolute level or within-group temporal structure, and should
+make that choice visible in the caption [@plotnine2026facets].
+
+```{python}
+#| label: fig-viz-facet-wrap
+#| fig-cap: "Average hourly request counts per observed day, with a separate panel for each borough."
+#| fig-alt: "Five borough panels show weekday and weekend hourly request patterns with a common vertical scale."
+#| fig-format: svg
+(
+    ggplot(hourly, aes("hour", "requests_per_day", color="day_type"))
+    + geom_line(size=.8)
+    + facet_wrap("borough", ncol=3)
+    + scale_color_manual(values={"Weekday": "#3366AA", "Weekend": "#CC6677"})
+    + scale_x_continuous(breaks=[0, 6, 12, 18, 23])
+    + labs(x="Hour request was created", y="Requests per observed day",
+           color="Day type")
+    + theme_minimal()
+    + theme(figure_size=(10, 6))
+)
+```
+
+```{python}
+#| label: fig-viz-facet-grid
+#| fig-cap: "The same hourly summaries arranged by day type (rows) and borough (columns), with fixed scales."
+#| fig-alt: "A two-by-five grid compares hourly request patterns across weekday and weekend rows and borough columns."
+#| fig-format: svg
+(
+    ggplot(hourly, aes("hour", "requests_per_day"))
+    + geom_line(color="#3366AA", size=.8)
+    + facet_grid("day_type ~ borough")
+    + scale_x_continuous(breaks=[0, 12, 23])
+    + labs(x="Hour request was created", y="Requests per observed day")
+    + theme_minimal()
+    + theme(figure_size=(12, 5))
+)
+```
+
+The two facet arrangements answer related but distinct questions. The wrap
+retains the colored weekday and weekend profiles in each borough, which
+supports a within-borough comparison of their timing. The grid places
+weekday and weekend profiles in separate rows, which reduces overlap but
+requires readers to compare positions across panels. Neither layout
+resolves a limitation in the underlying classification: Labor Day fell on
+the Monday labeled as a weekday in this extract. The weekday average is
+therefore an average over five calendar weekdays, one of which was a
+holiday, rather than an estimate of a typical workday profile. If the
+project question concerns ordinary commuting days, the analyst should
+define a holiday indicator, obtain more weeks, or narrow the interpretation.
+This example shows why visual grammar and study design must be considered
+together. A technically correct facet specification can still organize
+observations into groups that do not correspond to the intended substantive
+comparison.
+
+## Comparisons
+
+A statistical figure should retain the aspect of the observations that is
+needed to answer its question. Counts have a defined zero and can be
+shown by lengths that begin at that reference; estimates or group summaries
+often benefit from dots on a common axis, especially when several values
+are close. Questions about spread, skewness, or unusual observations
+require a distribution display or a summary that explicitly represents
+variation. A mean bar cannot distinguish a tightly concentrated group
+from a group with long tails [@cleveland1984graphical;
+@weissgerber2015beyond]. The analyst must also distinguish comparisons of
+levels from comparisons of change: a line is useful for an ordered sequence
+such as time, but connecting unordered categories can imply an artificial
+continuity. Color hue can identify categories, while ordered lightness can
+represent magnitude. When color carries an essential distinction, position,
+labels, or another redundant cue can help readers who cannot distinguish
+the chosen hues [@crameri2020misuse; @harrower2003colorbrewer].
+
+The closure-time example compares the three problem details with the most
+requests in the selected week, so the selection rule precedes the display.
+For each group, the code calculates the first quartile, median, and third
+quartile of recorded closure hours. A dot locates the median on a shared
+horizontal scale, and a line extends from the first to the third quartile.
+That line describes the middle half of the observed closure times; it is
+**not a confidence interval** for a population median or for the difference
+between groups. A confidence interval would require an inferential target
+and a procedure for quantifying sampling uncertainty, whereas these
+quartiles summarize variation among records in the extract
+[@correll2014error]. The figure complements the empirical cumulative
+distribution in @sec-eda by making a small number of center-and-spread
+comparisons easy to read. It does not replace the distribution display
+when the shape or extreme tail of closure time is the main concern.
+
+```{python}
+#| label: fig-viz-detail-intervals
+#| fig-cap: "Median and middle-half range of recorded closure times for the three most reported illegal-parking details, September 6–12, 2026."
+#| fig-alt: "Three horizontal point-and-interval marks compare median closure hours and the observed interquartile range."
+#| fig-format: svg
+top_details = parking["problem_detail"].value_counts().head(3).index
+top = parking.loc[parking["problem_detail"].isin(top_details)]
+detail_summary = (
+    top.groupby("problem_detail")["closure_hours"]
+    .quantile([.25, .5, .75])
+    .unstack()
+    .rename(columns={.25: "q25", .5: "median", .75: "q75"})
+    .sort_values("median")
+)
+
+fig, ax = plt.subplots(figsize=(8, 3.6))
+positions = range(len(detail_summary))
 ax.errorbar(
-    top_income["median_household_income"],
-    top_income["zcta"],
-    xerr=top_income["median_household_income_moe"],
-    fmt="o",
-    color="#4477aa",
-    ecolor="#888888",
-    capsize=2,
+    detail_summary["median"], positions,
+    xerr=[detail_summary["median"] - detail_summary["q25"],
+          detail_summary["q75"] - detail_summary["median"]],
+    fmt="o", color="#3366AA", ecolor="#666666", capsize=3,
 )
-ax.set(
-    xlabel="Estimated median household income (2024 dollars)",
-    ylabel="ZIP Code Tabulation Area",
-    title="ACS estimates with published margins of error",
-)
+ax.set_yticks(list(positions), detail_summary.index)
+ax.set(xlabel="Recorded closure time (hours)",
+       title="Medians and middle-half ranges by problem detail")
 ax.grid(axis="x", color="0.9")
 fig.tight_layout()
 plt.show()
 ```
 
-Intervals require a definition and should not be treated as decorative
-whiskers. These published margins communicate sampling uncertainty for each
-estimate, but overlap alone is not a formal test of a difference between two
-areas. Experiments identify a within-the-bar bias: viewers can judge values
-inside a bar's filled region as more likely than values outside it even when
-error bars display uncertainty. Point-and-interval or distribution displays
-may therefore communicate inferential comparisons more effectively than a
-bar with error bars [@correll2014error]. The caption and surrounding text
-should state what the interval represents. Other displays, such as
-distributions of bootstrap estimates, may suit different inferential tasks.
-Chapter 7 introduced resampling uncertainty for a comparison; here the focus
-is on making the uncertainty visible and identifying its source. Chapter 9
-will return to visual uncertainty when it examines the variability of
-predictions and model estimates. A clear caption helps prevent uncertainty
-marks from being mistaken for the range of observed values.
+The plotted medians are approximately 2.05 hours for Blocked Hydrant,
+1.62 hours for Posted Parking Sign Violation, and 1.18 hours for Blocked
+Sidewalk. The respective middle-half ranges are approximately 0.87–5.14,
+0.70–3.70, and 0.46–3.03 hours. The common axis supports comparison of
+their centers, while the interval lengths show substantial within-group
+variation that a median-only display would conceal. These descriptive
+differences should not be interpreted as effects of the problem-detail
+label: reporting time, geography, operating procedures, and other
+attributes can differ between groups. The upper quartiles also do not
+describe the longest recorded closures, so a question about delayed
+closure would require a tail-focused plot or quantile. Finally, the
+recorded closure interval does not equal response time. A caption or
+nearby interpretation should state these limits where readers encounter
+the figure, because they determine which claims the displayed values can
+support.
 
-## Read and Revise a Graphic
+## Mistakes
 
-Axes, labels, scales, and context determine what a comparison appears to say.
-A bar encodes a value through length, so a zero baseline is normally needed
-when the length is intended to represent the full magnitude. A line chart
-encodes change through position and slope, so a restricted vertical range can
-be appropriate when it exposes variation that would otherwise be compressed;
-the range and its effect must remain apparent. Experiments on axis truncation
-show why a single rule does not cover every chart type or task
-[@correll2020truncating]. Other risky choices include 3D perspective that
-changes apparent area, a dual axis that invites unsupported comparisons,
-unordered categories, omitted denominators, and aggregation that hides
-variation. These choices become misleading when they cause a reader to infer
-a comparison the data or design do not support, not simply because a chart
-violates a style preference [@pandey2015deceptive].
+Misleading figures can arise at several points between the source data and
+the reader's conclusion. Selection can change which observations are
+eligible; aggregation can suppress variation; visual encoding can make
+small differences appear large; and a title can convert a descriptive
+association into an unsupported causal claim. These are distinct failure
+mechanisms, so a review confined to axis labels or color choice is
+insufficient. Wainer cataloged recurring ways to obscure data, while later
+work experimentally studied visual distortion and classified misleading
+figures in published material [@tufte2001visual; @wainer1984how;
+@pandey2015deceptive; @lo2022misinformed]. The operational review question
+is what inference a reasonable viewer is likely to draw and whether the
+selected records and displayed quantity justify it. This standard does not
+depend on the maker's intent. A polished plot can still communicate the
+wrong denominator, conceal a distribution, or suggest a relationship that
+the study design cannot identify. The table identifies common choices and
+the corresponding diagnostic checks.
 
-The next display uses the same ZCTA income values twice to show how an axis
-baseline changes the visual impression of a bar chart. The left panel starts
-above zero and magnifies differences in bar length; the right panel starts at
-zero and makes the full encoded magnitudes comparable. The first view is a
-deliberate counterexample for this task, not evidence that every nonzero axis
-is misleading. A line graph of the same values could use a restricted range
-to reveal small changes, provided its purpose and scale were clear. Tufte's
-work on graphical integrity remains an influential source for examining
-distortion, but later empirical work cautions against treating minimalism or
-any one visual rule as universally optimal [@tufte2001visual;
-@bateman2010useful].
+| Choice to inspect | Possible false inference | Check or repair |
+|---|---|---|
+| A bar axis starts above zero | Small differences appear large in length | Compare with a zero baseline; use dots if exact levels matter |
+| Panels use different scales without a clear cue | Heights are comparable across panels | Use fixed scales for level comparisons or label free scales prominently |
+| A mean or median appears alone | Groups have little internal variation | Add a distribution, observations, or defined interval |
+| A 3D shape or bubble encodes magnitude by area | Apparent size is proportional to the value | Use aligned points or lengths for precise comparisons |
+| A rainbow palette encodes an ordered variable | Color boundaries mark real changes in the data | Use an ordered, perceptually consistent palette |
+| An area map shows request counts | Dark areas have more illegal parking risk | Examine a suitable denominator and retain the count map for context |
+| The title claims a cause or citywide trend | A one-week association establishes the claim | State the scope and separate description from explanation |
+
+Baseline decisions should follow the visual quantity the reader is asked
+to compare. A bar represents a numerical value through its length from a
+common origin; when the origin is cut off, the apparent ratios between bar
+lengths no longer represent ratios between values. A line or dot plot
+primarily uses position, so a restricted range can help expose a small
+change if the axis limits are conspicuous and the plot does not invite an
+unwarranted comparison of physical lengths. Truncation can nevertheless
+alter perceived effect size across chart types, even when a visual cue
+signals the change [@correll2020truncating]. The paired figure holds the
+three median closure times fixed and changes only the horizontal limits.
+The left panel makes the differences occupy a larger fraction of the
+available bar length; the right panel restores the zero baseline required
+for a literal length comparison. Both panels omit the within-group spread
+shown in @fig-viz-detail-intervals, which is a separate loss of information.
 
 ```{python}
-#| label: fig-viz-truncated-axis
-#| fig-cap: "The same eight ZCTA income estimates shown with a truncated and a zero baseline. The truncated baseline magnifies differences in bar length."
-#| fig-alt: "Two horizontal bar charts show identical ZCTA income values. The left chart starts its horizontal axis above zero and exaggerates differences; the right starts at zero."
+#| label: fig-viz-baseline
+#| fig-cap: "Identical median closure times with a truncated baseline (left) and a zero baseline (right). The left bars exaggerate differences in length."
+#| fig-alt: "Two horizontal bar charts show the same three median closure times. The left axis begins above zero, making differences appear larger."
 #| fig-format: svg
-example_areas = income_areas.nlargest(
-    8, "median_household_income"
-).sort_values("median_household_income")
-income_values = example_areas["median_household_income"]
-income_labels = example_areas["zcta"]
-
-fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
-axes[0].barh(income_labels, income_values, color="#4477aa")
-axes[0].set_xlim(income_values.min() * 0.9, income_values.max() * 1.05)
-axes[0].set_title("Truncated baseline")
-axes[1].barh(income_labels, income_values, color="#4477aa")
-axes[1].set_xlim(0, income_values.max() * 1.05)
-axes[1].set_title("Zero baseline")
+medians = detail_summary["median"]
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), sharey=True)
 for ax in axes:
-    ax.set_xlabel("Median household income (2024 dollars)")
-fig.suptitle("The same estimates under two axis choices")
+    ax.barh(medians.index, medians, color="#3366AA")
+    ax.set_xlabel("Median closure time (hours)")
+axes[0].set_xlim(medians.min() * .85, medians.max() * 1.08)
+axes[0].set_title("Truncated baseline")
+axes[1].set_xlim(0, medians.max() * 1.08)
+axes[1].set_title("Zero baseline")
 fig.tight_layout()
 plt.show()
 ```
 
-A review should test whether a reader can identify the unit, comparison, and
-scale without guessing. Titles should state the subject or claim, axes should
-include units, categories should follow an order that supports the task, and
-captions should identify the source, period, and important exclusions. A
-legend should be close to the encodings it explains; direct labels or small
-multiple panels can reduce the effort of comparing several series. Grid lines
-and annotations should aid value reading without competing with the data.
-Accessibility also requires that distinctions remain legible when color is
-unavailable or perceived differently. Check contrast, avoid using color as
-the sole distinction, and provide a concise text description that states the
-main pattern and relevant scale. A chart can be visually polished while
-remaining analytically weak if it leaves these interpretive conditions
-implicit.
+Summary statistics can conceal differences even when the axes and scales
+are technically correct. In the following constructed example, both groups
+have a mean of two units. Group A contains three zeroes and two fives,
+whereas all five observations in group B equal two. The equal-height bars
+correctly display the two means, but they cannot communicate the different
+concentration and range of the observations. The point display retains the
+five individual values in each group and makes that difference visible.
+This example isolates information loss due to aggregation; it does not show
+that individual points are always the appropriate marks. Thousands of
+service requests would create severe overplotting, for which a histogram,
+empirical cumulative distribution, density display, or selected quantiles
+could better represent variation. The choice depends on whether the
+question concerns center, spread, tail behavior, or individual cases, and
+on how many observations can be displayed legibly
+[@weissgerber2015beyond; @correll2014error].
 
-## Visualization in Exploration, Modeling, and Communication
+```{python}
+#| label: fig-viz-summary-loss
+#| fig-cap: "Two simulated groups have the same mean but different observed distributions."
+#| fig-alt: "Equal-height mean bars conceal that group A has values at zero and five while every value in group B is two."
+#| fig-format: svg
+simulated = {"A": np.array([0, 0, 0, 5, 5]),
+             "B": np.array([2, 2, 2, 2, 2])}
+fig, axes = plt.subplots(1, 2, figsize=(8, 3.7))
+axes[0].bar(list(simulated), [values.mean() for values in simulated.values()],
+            color="#3366AA")
+axes[0].set(title="Means only", ylabel="Observed value", ylim=(0, 6))
+for position, (name, values) in enumerate(simulated.items()):
+    offsets = np.linspace(-.13, .13, len(values))
+    axes[1].scatter(position + offsets, values, color="#3366AA", s=35)
+axes[1].set(xticks=[0, 1], xticklabels=list(simulated),
+            title="Individual values", ylabel="Observed value", ylim=(0, 6))
+fig.tight_layout()
+plt.show()
+```
 
-The same design principles support different stages of analysis, but the
-displays need not be identical. During EDA, small multiples, residual plots,
-and distributional views can expose structure or anomalies that were not
-anticipated. During data validation, plots can reveal impossible values,
-coding changes, missingness patterns, or geographic gaps. For communication,
-the analyst may reduce competing detail, add direct labels, and state the
-main comparison while preserving the variation needed to interpret it. These
-different decisions follow from the task and audience, not from an opposition
-between analysis and presentation. The transition from exploration to
-explanation should not remove inconvenient observations or uncertainty. It
-should make the analytical purpose more explicit and retain sufficient detail
-for the reader to assess the claim. An exploratory figure may also be revised
-as the question becomes more specific or the intended audience changes.
-Selecting a display that represents the evidence and uncertainty accurately
-is also part of responsible statistical communication; Chapter 10 develops
-the ethical obligations that govern these choices
-[@asastatistical2022guidelines].
+Color and annotation should be evaluated by the comparisons they enable.
+Distinct hues can identify unordered categories; progressively ordered
+lightness can represent increasing magnitude; and a diverging scale is
+appropriate when a defined reference, such as zero change, separates two
+directions. An uneven gradient can create apparent thresholds where the
+data are continuous, while a distinction conveyed only by red and green
+can be inaccessible to some readers [@crameri2020misuse;
+@harrower2003colorbrewer]. Decoration is not categorically harmful:
+experiments with embellished figures complicate a blanket prohibition
+[@bateman2010useful]. The appropriate test is whether an element helps
+readers locate or compare evidence without implying an unsupported result.
+Every plot should also be reviewed as a claim. Its title should match the
+measured quantity; its axes and legend should state units; and its caption
+should identify the source, observation period, aggregation, and exclusions.
+When a figure is revised, the analyst should inspect the source records
+again to confirm that the repaired display still represents the intended
+population and denominator.
 
-NYC Open Data offers useful settings for practicing these distinctions. The
-Motor Vehicle Collisions dataset records dates, locations, boroughs, and
-injury counts, so it can support time-series, geographic, and categorical
-comparisons; its documentation cautions that records are preliminary and may
-be amended [@nycopendata2026motor]. The Parks Inspection Program records
-inspection dates and ratings, which support comparisons across inspection
-seasons, years, or park properties [@nycopendata2026parks]. Those units and
-collection processes differ from service requests and ACS estimates, so
-students should read each data dictionary before plotting. A map of collision
-points, for example, answers a location question but does not by itself
-compare risk unless exposure or an appropriate denominator is also considered.
-The collision dataset's row is a reported collision, whereas the Parks
-inspection dataset's row is an inspection; neither row is equivalent to a
-person's experience of a crash or a park. These examples therefore support
-practice with data provenance and measurement as well as with chart design.
+## Maps
 
-Visualization also carries into predictive modeling. A model's residual plot
-can reveal systematic errors that a single accuracy statistic conceals, and
-predicted-versus-observed displays can show whether predictions are
-calibrated across the range of outcomes. Such plots are diagnostics rather
-than proof that a model will perform well on future data; their interpretation
-depends on the evaluation design and data scope. Chapter 9 will define the
-target, training and test data, and performance measures before developing
-these model-specific views. The present chapter provides their visual
-foundation: map variables to channels that suit the task, state scales and
-units, display relevant uncertainty, and evaluate whether the figure supports
-the intended claim. A diagnostic graphic can suggest where a model fails,
-but only a suitable evaluation design can establish how well it predicts
-observations that were not used to fit it. This distinction keeps the visual
-evidence aligned with the predictive question and prepares readers to
-interpret the model comparisons in the following chapter.
+Spatial graphics require a definition of both the measured unit and the
+geographic unit. The 311 extract supplies latitude and longitude for most
+requests, while the NYC Open Data ZIP Code Tabulation Area (ZCTA) file
+supplies polygons for 221 areas [@nycopendata2026zip]. A point map retains
+the recorded location of an individual request; a choropleth assigns a
+summary value to an entire polygon. The two displays therefore answer
+different questions. The point map can show concentrations and gaps in
+recorded locations, subject to overplotting and geocoding quality. An area
+map can support comparisons of counts or rates across defined units, but
+it removes within-area location information. Neither map, by itself,
+measures the prevalence of illegal parking. The Census population data
+introduced in @sec-wrangling can supply a denominator for requests per
+resident, but resident counts are not counts of vehicles, curb spaces, trips, or
+parking opportunities [@census2023zip; @census2026american]. The
+substantive question must determine which geography and denominator are
+appropriate before the analyst chooses a map.
+
+The geometry construction makes the coordinate reference system explicit.
+The request coordinates are recorded as longitude and latitude, so the
+point table is created with the geographic system EPSG:4326. The ZCTA
+boundaries are read from a compact local file derived from the official NYC
+source; its [provenance note](data/nyc_zcta_boundaries.md) records the
+derivation and boundary simplification. GeoPandas uses coordinate reference
+system metadata to transform geometries, but a declared system does not
+verify that every source coordinate is accurate. The static figures use
+New York State Plane coordinates (EPSG:2263) so that the city is displayed
+in a suitable projected system. Projection is especially important for
+distance or area calculations because longitude and latitude are angular
+coordinates, and a degree of longitude does not represent a constant
+ground distance. A projection changes the representation of a recorded
+location; it cannot repair a wrong address, an approximate geocode, or a
+missing coordinate [@geopandas2026projections].
+
+```{python}
+zcta_polygons = gpd.read_file(Path("data") / "nyc_zcta_boundaries.geojson")
+zcta_context = pd.read_csv(
+    Path("data") / "zcta_context.csv", dtype={"zcta": "string"}
+)
+with_coordinates = parking.dropna(subset=["latitude", "longitude"]).copy()
+request_points = gpd.GeoDataFrame(
+    with_coordinates,
+    geometry=gpd.points_from_xy(
+        with_coordinates["longitude"], with_coordinates["latitude"]
+    ),
+    crs="EPSG:4326",
+)
+pd.Series({
+    "requests in scope": len(parking),
+    "requests with coordinates": len(request_points),
+    "ZCTA polygons": len(zcta_polygons),
+}).to_frame("count")
+```
+
+A point map with many observations needs a display rule that accounts for
+overlap. Several requests can share a geocoded address, and opaque markers
+would cover earlier marks at the same or nearby positions. The following
+figure therefore uses a reproducible random sample of 2,000 geocoded
+requests and draws small, transparent points over ZCTA outlines. Sampling
+reduces the number of overlapping marks while preserving, in expectation,
+the distribution of locations among geocoded records. It also makes the
+plot unsuitable for reading exact counts at a location: the absence of a
+sampled point does not imply the absence of requests. Transparency helps
+show accumulation, but apparent density still depends on point size,
+opacity, and map scale. The polygon outlines provide orientation rather
+than an area-level measurement. A density surface would introduce further
+choices, especially a smoothing bandwidth and treatment of boundaries;
+those choices would need to be reported before the surface could support a
+quantitative comparison.
+
+```{python}
+#| label: fig-viz-request-points
+#| fig-cap: "A reproducible sample of 2,000 geocoded illegal-parking requests over NYC ZCTA boundaries, September 6–12, 2026."
+#| fig-alt: "Small transparent points from a 2,000-request sample appear over outlines of New York City ZIP Code Tabulation Areas."
+#| fig-format: svg
+sample_points = request_points.sample(n=2000, random_state=2026)
+fig, ax = plt.subplots(figsize=(8, 7))
+zcta_polygons.to_crs("EPSG:2263").boundary.plot(
+    ax=ax, color="#999999", linewidth=.3
+)
+sample_points.to_crs("EPSG:2263").plot(
+    ax=ax, color="#225588", markersize=3, alpha=.3
+)
+ax.set_axis_off()
+ax.set_title("Recorded request locations and ZCTA boundaries")
+fig.tight_layout()
+plt.show()
+```
+
+An area map additionally requires a reproducible assignment of requests to
+polygons. The merge in @sec-zcta-context-merge matched the five-digit
+`Incident Zip` label in a request to a ZCTA with the same code in the
+Census context table. Postal ZIP Codes
+and Census ZCTAs are related geographic systems, but they are not identical
+areas, and some ZCTAs extend beyond city limits [@census2023zip]. A
+point-in-polygon join offers a different rule: it assigns a request to the
+polygon that contains its recorded coordinate. That rule depends on usable
+coordinates, the polygon boundaries, and the chosen spatial predicate.
+Requests near a boundary may move between areas when a geocode is
+imprecise; a point exactly on a boundary may not satisfy `within`; and
+overlapping polygons may assign one point more than once. These outcomes
+can change area totals, so the analyst should count one-to-one, unmatched,
+and multiple matches before aggregating. The diagnostic below performs
+that check using the supplied polygons [@nycopendata2026zip].
+
+```{python}
+point_zcta = gpd.sjoin(
+    request_points[["request_id", "incident_zip", "geometry"]],
+    zcta_polygons[["zcta", "geometry"]],
+    how="left", predicate="within",
+)
+match_count = point_zcta.groupby(level=0)["zcta"].count()
+pd.Series({
+    "one polygon": match_count.eq(1).sum(),
+    "no polygon": match_count.eq(0).sum(),
+    "more than one polygon": match_count.gt(1).sum(),
+}).to_frame("geocoded requests")
+```
+
+The spatial diagnostic shows that 21 geocoded requests have no polygon
+match and 28 have more than one match in the compact boundary file. These
+counts establish that the join cannot be substituted silently for the
+provider's ZIP field. A boundary point may fail the `within` predicate;
+overlapping polygons may produce multiple rows for one request; and
+boundary simplification can change a near-edge result. Each mechanism
+requires a different response. For a precise point-to-area study, the
+analyst should inspect the ambiguous records against the original
+boundaries, state a tie-breaking rule if one is justified, and report the
+remaining exclusions. The maps below instead retain the ZIP-label match
+introduced in @sec-zcta-context-merge, which keeps their area summaries
+comparable to the earlier data-wrangling example. The point-in-polygon results remain a
+diagnostic of geographic disagreement rather than an unexamined source of
+replacement labels.
+
+The paired choropleths separate the effect of a numerator from the effect
+of a denominator. For ZCTA $z$, let $N_z$ be the number of selected requests
+whose valid five-digit provider ZIP label matches its code, and let $P_z$
+be its 2020–2024 American Community Survey population estimate. The first
+map shows $N_z$; the second shows $10{,}000N_z/P_z$ when $P_z>0$. Its unit
+is requests per 10,000 estimated residents during the selected week.
+The formula does not measure the probability that a resident experiences
+illegal parking, because the numerator consists of requests rather than
+verified events and the population is not the number of parking
+opportunities. It also combines 2026 requests with an earlier population
+estimate. Twenty-seven ZCTAs have a zero population estimate; their rates
+are undefined and appear in gray rather than as zero. A polygon with no
+matched ZIP-label requests can still contain geocoded requests assigned
+another label. Both maps use ordered color, but separate legends identify
+their different quantities and units [@harrower2003colorbrewer;
+@crameri2020misuse].
+
+```{python}
+valid_zip = parking["incident_zip"].str.fullmatch(r"\d{5}", na=False)
+area_counts = (
+    parking.loc[valid_zip]
+    .groupby("incident_zip")
+    .agg(requests=("request_id", "size"),
+         median_hours=("closure_hours", "median"))
+    .reset_index()
+    .rename(columns={"incident_zip": "zcta"})
+)
+area_map = (
+    zcta_polygons
+    .merge(zcta_context[["zcta", "population"]],
+           on="zcta", validate="one_to_one")
+    .merge(area_counts, on="zcta", how="left", validate="one_to_one")
+)
+area_map["requests"] = area_map["requests"].fillna(0).astype(int)
+area_map["requests_per_10k"] = np.where(
+    area_map["population"].gt(0),
+    area_map["requests"] / area_map["population"] * 10_000,
+    np.nan,
+)
+```
+
+```{python}
+#| label: fig-viz-zcta-maps
+#| fig-cap: "Illegal-parking request counts (left) and requests per 10,000 estimated residents (right) by matched NYC ZCTA label, September 6–12, 2026. Gray areas have undefined rates because their population estimate is zero."
+#| fig-alt: "Two New York City ZCTA choropleths display request counts and population-adjusted request rates with separate legends."
+#| fig-format: svg
+projected_map = area_map.to_crs("EPSG:2263")
+fig, axes = plt.subplots(1, 2, figsize=(13, 6))
+for ax, variable, title in [
+    (axes[0], "requests", "Recorded requests"),
+    (axes[1], "requests_per_10k", "Requests per 10,000 residents"),
+]:
+    projected_map.plot(
+        column=variable, ax=ax, cmap="viridis", legend=True,
+        legend_kwds={"shrink": .6}, edgecolor="white", linewidth=.15,
+        missing_kwds={"color": "#dddddd", "label": "Rate unavailable"},
+    )
+    ax.set_title(title)
+    ax.set_axis_off()
+fig.tight_layout()
+plt.show()
+```
+
+Differences between the count and rate maps require substantive
+interpretation before they are treated as evidence of geographic risk.
+Residential population need not be proportional to the number of drivers,
+visitors, curb spaces, or people likely to report a problem. A commercial
+area with few residents can therefore have a high per-resident request rate
+without having an unusually high number of requests. Map color also
+depends on the chosen boundaries: combining ZCTAs into boroughs can conceal
+local variation, while a different grouping of neighborhoods can change
+the apparent association between location and requests
+[@openshaw1984modifiable; @armstrong2014visualizing]. Even a stable
+area-level pattern does not establish the behavior or exposure of
+individual residents [@robinson1950ecological]. A defensible map should
+therefore state the numerator, denominator, time period, assignment rule,
+and treatment of unmatched records. The analyst should also ask whether
+the geographic arrangement answers a question that a sorted table or dot
+plot could not answer as clearly.
+
+## Interactive Maps
+
+An interactive figure is useful when a reader has a specific task that a
+static display cannot perform as conveniently. A reader may need to find a
+ZCTA, inspect its exact value, or move between a citywide view and a local
+street context. Interaction does not correct a weak denominator, uncertain
+geocode, or unsupported interpretation; those analytical decisions are
+fixed before a tooltip or zoom control is added. GeoPandas `.explore()`
+uses Folium and Leaflet to generate the interactive map below from the
+same ZCTA summaries as the static choropleths. Its polygon color represents
+the per-resident request rate, while its tooltip reports the ZCTA code,
+request count, population estimate, and calculated rate. Showing the
+numerator and denominator next to the rate helps readers diagnose an
+unusually high value. The static companion remains necessary for readers
+who cannot interact with the page and for a stable comparison of the full
+city at one scale [@geopandas2026interactive].
+
+```{python}
+#| label: fig-viz-interactive-map
+#| fig-cap: "Interactive ZCTA map of recorded requests per 10,000 estimated residents. Hover to inspect the count and denominator."
+#| fig-alt: "Interactive New York City ZCTA map with a legend and tooltips for area code, request count, population estimate, and request rate."
+interactive_map = area_map.loc[area_map["population"].gt(0)].explore(
+    column="requests_per_10k",
+    cmap="viridis",
+    tooltip=["zcta", "requests", "population", "requests_per_10k"],
+    legend=True,
+    tiles="CartoDB positron",
+)
+interactive_map
+```
+
+Interactive design requires a hierarchy between what is visible at first
+glance and what is available on request. In this example, color provides
+an overview of the rate, and the tooltip reveals exact values needed to
+understand its construction. Adding every source field to the tooltip
+would shift work to the reader without improving the comparison. The map
+also omits the 27 areas with zero estimated population because their
+per-resident rates are undefined; the static map marks them in gray. This
+difference in eligibility should be stated when the two displays are
+presented together. Online tile layers can fail to load, and hover
+interaction can be difficult to use with a keyboard or on a touch device.
+A static counterpart, concise text description, and accessible table of
+key values preserve the principal result when interaction is unavailable.
+The evaluation questions remain the same as for static figures: which
+records are represented, which quantity is encoded, and which comparison
+does the display allow a reader to make?
+
+Google Maps provides a different route to an interactive street map and
+offers associated services such as geocoding. The Fall 2025 course material
+used `gmplot` to draw points, polygons, and routes on a Google basemap. The
+optional code below places the reproducible request sample on that map,
+using the same latitude and longitude fields as the GeoPandas example. It
+is not executed during the book build because the Maps JavaScript API
+requires a key. The key authorizes access to a service; it is not itself
+a substitute for a reproducible data source or a documented geographic
+calculation. Google documents setup and key restrictions, and a generated
+HTML page can contain a browser key, so the key should be restricted and
+generated pages or credentials should not be committed to the repository
+[@google2026maps]. If a project geocodes new addresses, it should also
+record the service used and inspect unsuccessful or ambiguous matches
+before calculating distances or drawing routes.
+
+```{python}
+#| eval: false
+import os
+
+import gmplot
+
+google_map = gmplot.GoogleMapPlotter(
+    40.7128, -74.0060, 11,
+    apikey=os.environ["GOOGLE_MAPS_API_KEY"],
+)
+google_map.scatter(
+    sample_points["latitude"].tolist(),
+    sample_points["longitude"].tolist(),
+    color="#225588", size=25, marker=False,
+)
+google_map.draw("parking_requests_google.html")
+```
+
+The choice between interactive tools should follow the geographic question
+and the intended reader action. The GeoPandas–Folium–Leaflet route uses
+the local ZCTA geometries and runs in the book environment; it supports
+inspection of the area summaries already constructed. A Google map may be
+appropriate when the question requires a familiar street basemap or a
+particular Google service, but the optional example requires key management
+and produces a separate HTML page. Neither tool decides whether a point
+should be assigned to an area, which distance measure is substantively
+relevant, or whether a route is a valid proxy for travel time. For example,
+straight-line distance from a complaint location to a police precinct is
+different from network distance and does not include dispatch procedures.
+A project should therefore define the reader's task, geographic operation,
+and units before selecting the interface. It should also account for
+accessibility, reproducibility, and any information sent to an external
+map service.
+
+The same visual discipline applies when the course moves from description
+to modeling. A predicted-versus-observed plot can show where a model
+systematically overpredicts or underpredicts an outcome; a residual plot
+can reveal structure that an average error measure conceals. Neither plot
+is interpretable until the target, prediction unit, eligible observations,
+and evaluation data are defined. A plot of training residuals, for
+example, answers a different question from one based on held-out
+predictions. @sec-modeling develops that framework. The present chapter
+establishes the complementary visual procedure: preserve units, expose
+variation relevant to the question, label transformations and exclusions,
+and check whether the displayed evidence supports the claim in the title
+and interpretation [@munzner2014visualization; @yu2024veridical]. These
+requirements make a figure useful across exploration, communication, and
+model diagnosis. They also give students a way to revise a first attempt:
+identify the inference the reader is invited to make, then inspect each
+data and design decision that supports it.
 
 ## Exercises {.unnumbered}
 
-Use the distributed data where specified. For NYC Open Data exercises, record
-the dataset title, identifier, access date, row unit, filters, and any changes
-made to the downloaded source. For every display, state the analytical task,
-the visual encodings, the observational unit, and one limitation on
-interpretation. Submit the code and a rendered figure with your written
-responses.
+The exercises move from a specified comparison to a self-directed project
+question. Submit source code, rendered figures, captions, and brief written
+interpretations. For each figure, identify the row unit, eligible records,
+variables, visual mappings, source, observation period, and a limit on the
+claim. For a new NYC Open Data source, record its dataset identifier, access
+date, relevant data-dictionary definitions, and any filtering or aggregation.
+An attractive plot alone does not satisfy these requirements.
 
-::: {#exr-viz-encoding}
-Examine population and median household income across NYC ZCTAs using
-`data/zcta_context.csv`.
+::: {#exr-viz-grammar}
+Use the distributed illegal-parking archive to compare the creation hour of
+requests across problem details and boroughs.
 
-a. Construct a scatterplot and describe the variables mapped to each visual
-   channel. Compare a linear population axis with a logarithmic population
-   axis, and state which exploratory question each version makes easier to
-   inspect.
-b. Identify two areas that appear unusual relative to the overall pattern.
-   Check their values and margins of error in the data before interpreting
-   their positions.
-c. Explain why the relationship cannot be interpreted as an individual-level
-   income effect or as a causal effect of population.
+a. Choose three problem details by a rule stated before plotting. Construct
+   one plot with color and one with facets. Explain which comparison becomes
+   easier in each.
+b. Build a `facet_grid()` with problem detail in one direction and borough
+   in the other. Explain what the fixed scale allows a reader to compare.
+   Then use free vertical scales and explain how the interpretation changes.
+c. If the groups have unequal numbers of observed days or records, define a
+   summary that makes the comparison relevant to your question. State the
+   denominator and one limitation that remains.
 :::
 
-::: {#exr-viz-uncertainty}
-Revise the ZCTA income interval display.
+::: {#exr-viz-repair}
+Create and repair two misleading plots from the illegal-parking data. Use
+two *different* mistakes from the table in the Mistakes section; at least
+one must concern data selection, aggregation, or interpretation rather than
+only styling.
 
-a. Display estimates and published margins of error for ten areas chosen by
-   a rule you state in advance. Identify the confidence level represented by
-   the Census margins and explain the treatment of top-coded values.
-b. Create a second version that uses a different ordering or annotation.
-   Explain which comparison becomes easier and which information becomes less
-   prominent.
-c. Explain why interval overlap alone does not establish whether two
-   population quantities differ.
+a. For each pair, show the same underlying records and explain the inference
+   the flawed version invites.
+b. Revise the mapping, scale, summary, label, or caption as needed. State
+   which information the repair reveals and which limitation it cannot fix.
+c. Cite one of the chapter's empirical or methodological references that
+   supports each revision. Explain how its finding applies to your example.
 :::
 
-::: {#exr-viz-critique}
-Use the NYC Motor Vehicle Collisions dataset, identified as `h9gi-nx95` in
-NYC Open Data [@nycopendata2026motor]. Choose one date range and one
-well-defined outcome, such as crashes per month or crashes involving an
-injury.
+::: {#exr-viz-space}
+Investigate the geographic pattern of illegal-parking requests using both
+the supplied point coordinates and the ZCTA boundary file.
 
-a. Produce an exploratory display for a question about time, borough, or
-   location. State the row unit and explain how missing locations or values
-   affect the eligible records.
-b. Create a deliberately flawed alternative by changing one design decision,
-   such as the axis baseline, aggregation, scale, or denominator. Explain the
-   inference that the alternative could encourage and why it is unsupported.
-c. Revise the display for communication. Include a descriptive title, units,
-   source and period, and a text description of the principal pattern.
-d. State why a count of collisions by area is not automatically a measure of
-   collision risk.
+a. Make a point map with a defensible display rule for overlap. Report the
+   number of requests without coordinates and explain what a point means.
+b. Compare the provider's five-digit ZIP-label match with a point-in-polygon
+   spatial join. Report unmatched and multiply matched points before choosing
+   an area-assignment rule.
+c. Map one count and one normalized quantity. Define the denominator and
+   explain why neither map alone measures the risk of illegal parking. Add
+   an interactive version only if it helps a specified reader task.
 :::
 
-::: {#exr-viz-transfer}
-Use the Parks Inspection Program – Inspections dataset from NYC Open Data
-[@nycopendata2026parks]. Read its data dictionary before selecting variables.
+::: {#exr-viz-project}
+Prepare a small visualization proposal for a midterm project. Select a
+dataset beyond the distributed 311 extract, such as NYC Open Data's Motor
+Vehicle Collisions or Parks Inspection Program records
+[@nycopendata2026motor; @nycopendata2026parks].
 
-a. Ask a question comparing an inspection rating over time or across park
-   properties. Specify the observational unit and construct a display suited
-   to that comparison.
-b. Make one alternative display that changes the visual encoding. Compare
-   how accurately a reader can recover the values and whether either display
-   conceals differences in inspection counts.
-c. Write a caption that separates what the inspection records show from what
-   they do not establish about park users' experiences or conditions between
-   inspections.
+a. State one question the data can address and one tempting question it
+   cannot address without further information. Inspect the data dictionary
+   before choosing a figure.
+b. Make an exploratory graphic and revise it for an identified audience.
+   Choose the chart form and tool yourself, and justify their visual
+   mappings, aggregation, and any interaction.
+c. Write a caption and alternative text. Record one analytical decision
+   that changed after inspecting the first plot, and explain how you checked
+   that decision against the source data.
 :::
 
-::: {#exr-viz-model-bridge}
-After completing Chapter 9, use one fitted model with a continuous outcome to
-construct a predicted-versus-observed plot and a residual plot.
-
-a. Define the prediction target and the data used to produce predictions.
-   Use held-out predictions if the goal is to assess performance on new
-   observations.
-b. Identify one pattern in each plot that would suggest a problem with the
-   model. Explain why a plot of training predictions alone could give an
-   overly favorable assessment.
-c. Write a short caption that states what the plots diagnose and what they
-   cannot establish about future performance.
+::: {#exr-viz-model}
+After @sec-modeling, use held-out predictions from a model with a continuous
+outcome to make a predicted-versus-observed plot and a residual plot. Define
+the target, prediction unit, and held-out observations. Identify one pattern
+that an average performance measure conceals, and explain what the plots
+cannot establish about future observations.
 :::
 
 ## References {.unnumbered}

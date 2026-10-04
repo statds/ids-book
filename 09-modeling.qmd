@@ -1,4 +1,4 @@
-# Modeling
+# Modeling {#sec-modeling}
 
 This chapter will introduce predictive modeling as a workflow built around a
 well-defined target and an appropriate evaluation design. Planned topics
