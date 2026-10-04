@@ -269,7 +269,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></h1>
+<h1 class="title"><span id="sec-ethics" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span></h1>
 </div>
 
 
@@ -304,7 +304,7 @@ div.csl-indent {
 <p>Privacy risk depends on context, not only on whether a table contains names. Precise locations, timestamps, rare categories, and external information can combine to reveal details about a person, household, or business. Removing direct identifiers may reduce risk, but it does not guarantee anonymity. Public accessibility also does not establish that every downstream use is expected, harmless, or consistent with the original collection purpose.</p>
 <p>The distributed 311 extract does not provide a reporter name, but individual addresses and coordinates can still expose the location of a reported condition. A citywide count may need no street address at all; a neighborhood comparison may require only an aggregated geography. Data minimization asks the analyst to use and disclose the least detailed data adequate for the stated task. The appropriate resolution depends on the question, the population at risk, the possibility of linkage, and the consequences of disclosure.</p>
 <p>The following example prepares a borough-by-detail summary without importing request identifiers, street addresses, or coordinates. It suppresses small cells in the displayed release table to illustrate one possible safeguard. The threshold is a teaching choice, not a universal privacy standard, and the internal count is not included in the table intended for release.</p>
-<div id="5efaf058" class="cell" data-execution_count="1">
+<div id="adae69d7" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -493,7 +493,7 @@ div.csl-indent {
 <div id="exr-ethics-311" class="theorem exercise">
 <p><span class="theorem-title"><strong> 10.1</strong></span> Evaluate an ethical decision involving the NYPD 311 data. Work individually or in a small group, and distinguish evidence in the data from assumptions about people or agency processes.</p>
 <ol type="a">
-<li>Select one question proposed in Chapter 5. State its purpose, intended audience, observational unit, and potential use. Identify at least three affected parties and describe one possible benefit and one possible harm for each.</li>
+<li>Select one question proposed in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a>. State its purpose, intended audience, observational unit, and potential use. Identify at least three affected parties and describe one possible benefit and one possible harm for each.</li>
 <li>Trace how a request enters the dataset, including who may report, what is recorded, how the request reaches NYPD, and what closure means. Mark which parts are documented and which require further evidence or curator input.</li>
 <li>Identify a privacy risk in the selected analysis. Explain whether the public archive, row-level coordinates, or a proposed map changes the risk. Propose a safeguard and describe its analytical cost.</li>
 <li>Identify at least two plausible sources of bias in the data-generating process. Explain why request counts cannot by themselves establish the frequency of underlying illegal-parking events.</li>

@@ -294,7 +294,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploratory Data Analysis</span></h1>
+<h1 class="title"><span id="sec-eda" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploratory Data Analysis</span></span></h1>
 </div>
 
 
@@ -320,64 +320,29 @@ window.Quarto = {
 </section>
 <section id="case-study-question-and-eligible-records" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="case-study-question-and-eligible-records"><span class="header-section-number">7.2</span> Case Study: Question and Eligible Records</h2>
-<p>The case study examines NYPD illegal-parking requests prepared in Chapter 6. Its main question is how recorded closure-time distributions differ among the three most frequently reported problem details during September 6–12, 2026. Time, borough, and ZCTA comparisons provide context for the citywide result. A hypothesis test then illustrates the assumptions needed to move from a description of these records to an inferential claim.</p>
-<p>The working question in Chapter 5 identifies a population of records, a time window, a measurement, and groups to compare. Its outcome is the elapsed time between each request’s recorded creation and closure timestamps. This quantity does not measure the time until an officer arrived or the time until a parking condition ended. The groups are values of the provider’s problem-detail field, and their frequencies are determined from this week. Thus, even a precise group difference describes recorded requests under the chosen scope. The four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> remain useful: domain fit determines which comparisons matter, measurement fit governs the interpretation of closure time, scope fit limits the population described, and evidence fit governs the strength of a claim.</p>
+<p>The case study examines NYPD illegal-parking requests prepared in <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. Its main question is how recorded closure-time distributions differ among the three most frequently reported problem details during September 6–12, 2026. Time, borough, and ZCTA comparisons provide context for the citywide result. A hypothesis test then illustrates the assumptions needed to move from a description of these records to an inferential claim.</p>
+<p>The working question in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> identifies a population of records, a time window, a measurement, and groups to compare. Its outcome is the elapsed time between each request’s recorded creation and closure timestamps. This quantity does not measure the time until an officer arrived or the time until a parking condition ended. The groups are values of the provider’s problem-detail field, and their frequencies are determined from this week. Thus, even a precise group difference describes recorded requests under the chosen scope. The four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> remain useful: domain fit determines which comparisons matter, measurement fit governs the interpretation of closure time, scope fit limits the population described, and evidence fit governs the strength of a claim.</p>
 <p>The analysis follows the general principles in a visible sequence: it checks eligible records and the outcome, summarizes the full distribution, compares the three detail groups, and then investigates variation across time and place. Each step can generate a revised question. The sequence also clarifies which comparisons came from the working formulation and which were motivated by patterns observed later.</p>
-<p>The following code reconstructs the relevant columns from the distributed archive using the filters and timestamp rules established in Chapter 6. It creates a new table and retains the source archive unchanged. The five-digit ZIP check used later also follows the preceding chapter.</p>
-<div id="23a4d387" class="cell" data-execution_count="1">
+<p>The following code loads the screened table through the shared <a href="scripts/parking_requests.py">preparation function</a>. That function applies the filters, timestamp parsing, field names, and closure-time definition established in the wrangling chapter. Both this chapter and the visualization chapter use the same source, and the distributed archive remains unchanged. The five-digit ZIP check used later also follows the wrangling chapter.</p>
+<div id="f81fb6da" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"311_nypd_lbdwk_2026.csv.zip"</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>requests <span class="op">=</span> pd.read_csv(</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    source,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    compression<span class="op">=</span><span class="st">"zip"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"Unique Key"</span>: <span class="st">"string"</span>, <span class="st">"Incident Zip"</span>: <span class="st">"string"</span>},</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    low_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>date_format <span class="op">=</span> <span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>]:</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    requests[column] <span class="op">=</span> pd.to_datetime(</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        requests[column], <span class="bu">format</span><span class="op">=</span>date_format, errors<span class="op">=</span><span class="st">"coerce"</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> requests.loc[</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    requests[<span class="st">"Created Date"</span>].between(start, end, inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> requests[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(<span class="st">"Illegal Parking"</span>),</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    [</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Unique Key"</span>, <span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem Detail (formerly Descriptor)"</span>, <span class="st">"Borough"</span>, <span class="st">"Incident Zip"</span>,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Latitude"</span>, <span class="st">"Longitude"</span>,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    ],</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>].copy()</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> parking.rename(columns<span class="op">=</span>{</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Borough"</span>: <span class="st">"borough"</span>,</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>parking[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"closed_at"</span>] <span class="op">-</span> parking[<span class="st">"created_at"</span>]</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>scope_check <span class="op">=</span> pd.Series({</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"requests"</span>: <span class="bu">len</span>(parking),</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique identifiers"</span>: parking[<span class="st">"request_id"</span>].nunique(),</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing closure times"</span>: parking[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"negative closure times"</span>: parking[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing coordinates"</span>: parking[[<span class="st">"latitude"</span>, <span class="st">"longitude"</span>]]</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>        .isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>(),</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"count"</span>)</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>scope_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scripts.parking_requests <span class="im">import</span> load_parking_requests</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> load_parking_requests()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>scope_check <span class="op">=</span> pd.Series({</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"requests"</span>: <span class="bu">len</span>(parking),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique identifiers"</span>: parking[<span class="st">"request_id"</span>].nunique(),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing closure times"</span>: parking[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"negative closure times"</span>: parking[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing coordinates"</span>: parking[[<span class="st">"latitude"</span>, <span class="st">"longitude"</span>]]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        .isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>(),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>scope_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -421,7 +386,7 @@ window.Quarto = {
 <section id="closure-time-distributions-and-problem-details" class="level2" data-number="7.3">
 <h2 data-number="7.3" class="anchored" data-anchor-id="closure-time-distributions-and-problem-details"><span class="header-section-number">7.3</span> Closure-Time Distributions and Problem Details</h2>
 <p>A distribution should be described by its center, spread, and tails before groups are compared. The mean is sensitive to long intervals, whereas the median marks the point below which half of the observed intervals fall. A quantile reports a position in the observed distribution. The table and figure below use all closure intervals for calculations. The figure stops at 24 hours so that the main body can be inspected; longer values remain in the numerical summary.</p>
-<div id="c878581b" class="cell" data-execution_count="2">
+<div id="1829e4eb" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>closure_summary <span class="op">=</span> parking[<span class="st">"closure_hours"</span>].agg(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"min"</span>, <span class="st">"max"</span>]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).to_frame(<span class="st">"value"</span>)</span>
@@ -518,7 +483,7 @@ Figure&nbsp;7.1: Recorded closure times for eligible illegal-parking requests. T
 </div>
 <p>The median closure interval is about 1.67 hours, while the mean is about 3.51 hours. The 90th percentile is about 8.73 hours, the 99th percentile is about 23.58 hours, and the maximum is nearly 200 hours. This right tail makes the mean substantially larger than the median. It also makes a statement such as “requests close in about two hours” incomplete: it describes a typical request but omits the upper tail. A large interval may be valid, a correction to a timestamp, or an operational exception; its presence alone does not establish an error. The next comparison therefore reports medians and quartiles alongside means.</p>
 <p>Group selection is an analytical decision. The working question asks about the three most frequent detail values in the eligible week, so the code computes those frequencies before summarizing closure time. It does not combine similar sounding labels or choose groups because their closure summaries appear different. Because the groups are selected from the same records being described, later tests remain exploratory.</p>
-<div id="1c5f4645" class="cell" data-execution_count="4">
+<div id="4ca40c7e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>top_details <span class="op">=</span> parking[<span class="st">"problem_detail"</span>].value_counts().head(<span class="dv">3</span>).index.tolist()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>top <span class="op">=</span> parking.loc[parking[<span class="st">"problem_detail"</span>].isin(top_details)].copy()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>detail_summary <span class="op">=</span> top.groupby(<span class="st">"problem_detail"</span>)[<span class="st">"closure_hours"</span>].agg(</span>
@@ -619,7 +584,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 <section id="variation-across-time-and-place" class="level2" data-number="7.4">
 <h2 data-number="7.4" class="anchored" data-anchor-id="variation-across-time-and-place"><span class="header-section-number">7.4</span> Variation Across Time and Place</h2>
 <p>Temporal and geographic comparisons can reveal whether a pooled contrast combines distinct patterns. Creation date measures when a report entered the system, while closure time measures the subsequent interval; grouping by creation date does not assign a request to the date on which it closed. The following tables examine request counts by creation date and detail counts by borough. Each count describes recorded requests, not underlying parking violations.</p>
-<div id="41967554" class="cell" data-execution_count="6">
+<div id="2811cf4f" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>daily_counts <span class="op">=</span> parking.groupby(parking[<span class="st">"created_at"</span>].dt.date).size()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>daily_counts.to_frame(<span class="st">"requests"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
@@ -672,7 +637,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 </div>
 </div>
-<div id="2e83f2f5" class="cell" data-execution_count="7">
+<div id="e217b44a" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>borough_counts <span class="op">=</span> pd.crosstab(top[<span class="st">"borough"</span>], top[<span class="st">"problem_detail"</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>borough_counts.loc[:, top_details]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -732,8 +697,8 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 </div>
 <p>Recorded daily volume ranges from 1,563 on September 6 to 2,080 on September 10. The counts alone do not establish a weekday effect because they cover only one occurrence of each day of the week. The borough table shows that the mix of problem details also varies by place: Manhattan has more Posted Parking Sign Violation requests than Blocked Hydrant requests, whereas Brooklyn has the opposite ordering. Geographic composition can therefore affect the citywide comparison. A borough label still represents a broad area and cannot identify the practices of an individual precinct.</p>
-<p>Area context offers a second exploratory question, but it changes the unit of analysis. Chapter 6 joins a request’s postal ZIP string to a 2024 American Community Survey (ACS) estimate for a matching ZIP Code Tabulation Area (ZCTA). Postal ZIP Codes and ZCTAs are not identical geographies <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. The same estimate is repeated on every matched request in that area, so treating those copies as independent area observations would overstate the information. The area comparison instead constructs one summary row per matched ZCTA and records how many requests support each area’s median.</p>
-<div id="a655d7d6" class="cell" data-execution_count="8">
+<p>Area context offers a second exploratory question, but it changes the unit of analysis. <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.5</span></a> joins a request’s postal ZIP string to a 2024 American Community Survey (ACS) estimate for a matching ZIP Code Tabulation Area (ZCTA). Postal ZIP Codes and ZCTAs are not identical geographies <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. The same estimate is repeated on every matched request in that area, so treating those copies as independent area observations would overstate the information. The area comparison instead constructs one summary row per matched ZCTA and records how many requests support each area’s median.</p>
+<div id="104605a6" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> pd.read_csv(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>, dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>}</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -757,7 +722,7 @@ right_only        0
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="e8314c3e" class="cell" data-execution_count="9">
+<div id="c4e232f7" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>areas <span class="op">=</span> with_context.loc[with_context[<span class="st">"_merge"</span>].eq(<span class="st">"both"</span>)].groupby(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcta"</span>, as_index<span class="op">=</span><span class="va">False</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>).agg(</span>
@@ -835,7 +800,7 @@ Name: count, dtype: int64</code></pre>
 <section id="assessing-uncertainty-and-robustness" class="level2" data-number="7.5">
 <h2 data-number="7.5" class="anchored" data-anchor-id="assessing-uncertainty-and-robustness"><span class="header-section-number">7.5</span> Assessing Uncertainty and Robustness</h2>
 <p>A hypothesis test can be part of EDA when its assumptions and limited purpose are explicit. Consider the median closure-time difference between Blocked Hydrant and Blocked Sidewalk requests. For the observed week, that difference is descriptive and needs no test. A test addresses a different question: under a model in which requests from the two detail groups have exchangeable closure-time distributions, how unusual would the observed difference be? The permutation calculation below pools the two groups and reallocates their labels while preserving their sizes. Its two-sided statistic is the absolute difference between medians. A bootstrap interval separately resamples requests within each group to show variability under an independent-request model.</p>
-<div id="2940aa4c" class="cell" data-execution_count="10">
+<div id="ed198984" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>].to_numpy()</span>
@@ -901,7 +866,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 <p>The observed median gap is about 0.865 hours, and the bootstrap interval is approximately 0.712 to 1.016 hours. The estimated permutation <span class="math inline">\(p\)</span>-value is about 0.0005, with the added one in the numerator and denominator preventing a reported zero from a finite set of permutations. These results show that the observed separation is large relative to these relabelings and resamples. They do not establish that the detail label causes a closure-time difference. Requests may be related through place, time, repeat reporting, or agency practice, and the analysis was chosen after inspection of this week. The bootstrap interval does not include uncertainty from coverage, measurement, or group selection. A <span class="math inline">\(p\)</span>-value should not be read as the probability that the null hypothesis is true or as a measure of practical importance <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
 <p>Sensitivity analysis asks whether a descriptive result depends strongly on a reasonable analytical choice. The first check removes intervals longer than 24 hours; this assesses the role of the upper tail without declaring those records invalid. The remaining checks repeat the hydrant-sidewalk comparison within all five boroughs. These summaries do not remove all possible confounding, but they show whether the citywide contrast has a similar form in several geographic subsets.</p>
-<div id="adbf1f35" class="cell" data-execution_count="11">
+<div id="f5e1bc6c" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> median_gap(frame):</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    left <span class="op">=</span> frame.loc[</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>

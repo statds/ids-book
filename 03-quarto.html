@@ -378,7 +378,7 @@ Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; err
 </div>
 </div>
 </div>
-<p>The call to <code>default_rng(2026)</code> creates a seeded random-number generator, so the simulated 30-student, three-subject score table and Figure <a href="#fig-scores" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> are reproducible on another computer. The three <code>loc</code> values create subjects with different underlying mean scores. The bar heights are subject means; the error bars show standard errors across students. Quarto itself is documented in the Quarto Guide <span class="citation" data-cites="quarto2025guide">(<a href="#ref-quarto2025guide" role="doc-biblioref">Quarto Developers, 2025b</a>)</span>.</p>
+<p>The call to <code>default_rng(2026)</code> creates a seeded random-number generator, so the simulated 30-student, three-subject score table and <a href="#fig-scores" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> are reproducible on another computer. The three <code>loc</code> values create subjects with different underlying mean scores. The bar heights are subject means; the error bars show standard errors across students. Quarto itself is documented in the Quarto Guide <span class="citation" data-cites="quarto2025guide">(<a href="#ref-quarto2025guide" role="doc-biblioref">Quarto Developers, 2025b</a>)</span>.</p>
 <p>The opening and closing lines between <code>---</code> define YAML metadata. Headings use one or more <code>#</code> characters, ordinary text forms paragraphs, dollar signs mark LaTeX equations, and a fenced code chunk begins with <code>```{python}</code>. The <code>jupyter: python3</code> setting tells Quarto which Jupyter kernel should execute Python chunks. Expressions whose values are displayed, such as <code>scores</code>, and figures returned by the chunk become part of the rendered document.</p>
 <p>Render the document from its directory:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render hello.qmd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -396,7 +396,7 @@ Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; err
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>\bar{x}_s = \frac{1}{n}\sum_{i=1}^{n}x_{is}.</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>$$ {#eq-subject-mean}</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>Table @tbl-subject-means reports the results calculated with</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>@tbl-subject-means reports the results calculated with</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>@eq-subject-mean.</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> subject <span class="pp">|</span> mean score <span class="pp">|</span></span>
@@ -409,9 +409,9 @@ Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; err
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="al">![Mean score by subject, with standard-error bars.](figures/scores.png)</span>{#fig-subject-means}</span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>Figure @fig-subject-means makes the difference among subjects easier to see.</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>@fig-subject-means makes the difference among subjects easier to see.</span>
 <span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>The interpretation should also consider the variation, as explained in</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>Section @sec-assessment-results. The analysis follows reproducible-authoring</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>@sec-assessment-results. The analysis follows reproducible-authoring</span>
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>practices <span class="co">[</span><span class="ot">@quarto2025guide</span><span class="co">]</span>.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A label in braces, such as <code>{#eq-subject-mean}</code>, identifies an object that Quarto should number. Use the prefixes <code>eq-</code>, <code>tbl-</code>, <code>fig-</code>, and <code>sec-</code> for equations, tables, figures, and sections. A cross-reference begins with <code>@</code> and uses the matching label, as in <code>@tbl-subject-means</code>. During rendering, Quarto replaces that source text with the current object number. If an earlier table or figure is added, references update automatically instead of leaving a stale number in the prose.</p>
 <p>Use a heading hierarchy rather than bold text to organize a document. Put blank lines around paragraphs, tables, and lists; write descriptive link text; keep code that should execute in a Quarto code chunk; and use meaningful captions for figures and tables. Cite sources near the claim they support. The <a href="https://quarto.org/docs/authoring/markdown-basics.html">Markdown basics reference</a> covers tables, images, citations, cross-references, callouts, and other features.</p>
@@ -483,7 +483,7 @@ Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; err
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
-<p>Complete the Git setup from Chapter 2 and the Quarto installation from Chapter 1 before beginning. Write one <code>.qmd</code> file containing your answers to all problems.</p>
+<p>Complete the Git setup in <a href="01-intro.html#sec-install-git" class="quarto-xref"><span>Section 1.6.2</span></a> and the Quarto installation in <a href="01-intro.html#sec-install-quarto" class="quarto-xref"><span>Section 1.6.1</span></a> before beginning. Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <div id="exr-python-environment" class="theorem exercise">
 <p><span class="theorem-title"><strong> 3.1</strong></span> Follow the complete workflow in <a href="#sec-rendering-the-book" class="quarto-xref"><span>Section 3.6</span></a> to clone and render this book from source. In the assignment <code>.qmd</code>, report the following evidence:</p>
 <ol type="a">

@@ -266,7 +266,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></h1>
+<h1 class="title"><span id="sec-wrangling" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></span></h1>
 </div>
 
 
@@ -288,8 +288,8 @@ div.csl-indent {
 <h2 data-number="6.1" class="anchored" data-anchor-id="from-source-records-to-an-analysis-table"><span class="header-section-number">6.1</span> From Source Records to an Analysis Table</h2>
 <p>Data preparation starts from a question and a retained source, not from an assumption that the downloaded table is already analysis-ready. The previous chapter established the observational unit, checked the requested time window, and selected illegal-parking requests. Here, those checks become input conditions for the preparation workflow: scope assertions detect a changed or incorrect input, while later checks verify that transformations preserve the intended records. The chapter then standardizes representations where the meaning is clear, derives variables needed for analysis, and considers geographic enrichment only when units and geographies align. The steps are iterative because a transformation can expose a problem or show that a question requires different data.</p>
 <p>A useful preparation plan separates three classes of decisions. <strong>Scope decisions</strong> select which observations and fields belong to an analysis. <strong>Representation decisions</strong> change how a value is encoded without changing its meaning, such as parsing a date string or storing a ZIP Code as text. <strong>Analytical decisions</strong> define derived measurements or handle uncertain values, such as defining nighttime or excluding requests without coordinates. The first two are often mechanical once documented; the third require an explicit rationale because they can change the population, measurement, or conclusion.</p>
-<p>The original ZIP archive should remain unchanged. Chapter 5 demonstrated importing and profiling this source; the code below repeats its path, timestamp parsing, and filters so this chapter can run independently. The Feather examples in that chapter use temporary files, so they do not create an input for this workflow. Each stage here instead creates a derived data frame and records the transformations and checks needed to review it.</p>
-<div id="90f9a555" class="cell" data-execution_count="1">
+<p>The original ZIP archive should remain unchanged. <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> demonstrated importing and profiling this source; the code below repeats its path, timestamp parsing, and filters so this chapter can run independently. The Feather examples in that chapter use temporary files, so they do not create an input for this workflow. Each stage here instead creates a derived data frame and records the transformations and checks needed to review it.</p>
+<div id="0e5a032b" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -319,8 +319,8 @@ div.csl-indent {
 </section>
 <section id="recheck-scope-before-transforming" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="recheck-scope-before-transforming"><span class="header-section-number">6.2</span> Recheck Scope Before Transforming</h2>
-<p>Chapter 5 profiles the source extract in detail, including its requested scope, missing fields, coordinate coverage, status and timestamp relationships, and unusual time values (<a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a>). This chapter uses those findings to motivate specific transformations rather than repeat the full diagnostic tables. Because each chapter can also be rendered on its own, the import block above reconstructs the screened subset and the following compact report rechecks the invariants required here. A failed check means the input or filter has changed and should be investigated before any recoding or merge.</p>
-<div id="b665da2c" class="cell" data-execution_count="2">
+<p><a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a> profiles the source extract in detail, including its requested scope, missing fields, coordinate coverage, status and timestamp relationships, and unusual time values. This chapter uses those findings to motivate specific transformations rather than repeat the full diagnostic tables. Because each chapter can also be rendered on its own, the import block above reconstructs the screened subset and the following compact report rechecks the invariants required here. A failed check means the input or filter has changed and should be investigated before any recoding or merge.</p>
+<div id="ea65881b" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_checks <span class="op">=</span> pd.Series({</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no missing request identifiers"</span>: <span class="kw">not</span> parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">any</span>(),</span>
@@ -371,14 +371,14 @@ div.csl-indent {
 </div>
 </div>
 </div>
-<p>The checks confirm that the expected requests and identifiers remain intact before transformations. Chapter 5 found 99 requests without coordinates. Those rows remain eligible for the ZCTA join below because it uses the recorded ZIP field, not latitude and longitude. A later point-distance analysis would need to address coordinate missingness separately; it should not infer a point location from the area-level match.</p>
+<p>The checks confirm that the expected requests and identifiers remain intact before transformations. <a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a> found 99 requests without coordinates. Those rows remain eligible for the ZCTA join below because it uses the recorded ZIP field, not latitude and longitude. A later point-distance analysis would need to address coordinate missingness separately; it should not infer a point location from the area-level match.</p>
 </section>
 <section id="standardize-representations-conservatively" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="standardize-representations-conservatively"><span class="header-section-number">6.3</span> Standardize Representations Conservatively</h2>
 <p>Representation changes make fields usable without asserting new facts about the observations. Dates should use datetime types, ZIP Codes and request keys should remain strings, and controlled categories can be stored consistently after their observed forms have been examined. A ZIP Code such as <code>00501</code> is an identifier, not a quantity; converting it to an integer would remove a leading zero and invite meaningless arithmetic. Likewise, recoding a blank, <code>N/A</code>, and <code>Unspecified</code> to one missing value is justified only when their documented meanings coincide.</p>
 <p>Column labels also need a deliberate representation policy. The NYC export uses spaces, capitalization, punctuation, and historical parenthetical labels such as “formerly Complaint Type.” Such names are valid, but cumbersome in code and inconsistent as an interface. Normalize labels in a derived table, not in the imported source, and preserve a complete mapping from each provider label to its analysis name. Before applying the mapping, check that two source columns do not collapse to the same normalized name. A collision needs an explicit disambiguation, not silent overwriting.</p>
-<p>Chapter 5’s frequency table identifies the categories that motivate the working comparison (<a href="05-formulation.html#sec-problem-detail-counts" class="quarto-xref"><span>Section 5.7</span></a>). Here, the distinct strings are inspected before any category recoding. The observed labels are interpretable and the leading values are not spelling variants that should be merged automatically. Column-name normalization is separate from recoding category values: a convenient field name does not justify changing its contents.</p>
-<div id="4a27179c" class="cell" data-execution_count="3">
+<p>The frequency table in <a href="05-formulation.html#sec-problem-detail-counts" class="quarto-xref"><span>Section 5.7</span></a> identifies the categories that motivate the working comparison. Here, the distinct strings are inspected before any category recoding. The observed labels are interpretable and the leading values are not spelling variants that should be merged automatically. Column-name normalization is separate from recoding category values: a convenient field name does not justify changing its contents.</p>
+<div id="4a1749c0" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>observed_details <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
@@ -465,7 +465,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
-<div id="d5209ec8" class="cell" data-execution_count="4">
+<div id="9966a86e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
@@ -737,7 +737,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The mapping table is part of the preparation record and can be saved with the analysis data dictionary. The parenthetical wording remains in <code>source_name</code>, so users can identify the provider’s historical label even though <code>problem</code> and <code>problem_detail</code> are more convenient in code. If a future export changes its labels, the mapping should be reviewed against the current data dictionary rather than applied by position or assumed to remain valid.</p>
-<div id="90d85415" class="cell" data-execution_count="5">
+<div id="0db10250" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -808,7 +808,7 @@ div.csl-indent {
 <section id="derive-variables-from-documented-meanings" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="derive-variables-from-documented-meanings"><span class="header-section-number">6.4</span> Derive Variables from Documented Meanings</h2>
 <p>Derived variables translate recorded fields into measurements required by a question. A useful derived variable has an explicit definition, units, and validity conditions. For example, elapsed time from creation to closure can be defined as the difference between the two recorded timestamps, measured in hours. It remains a closure interval, not necessarily a measure of service response or resolution. The name of a column should not imply more than the source establishes.</p>
-<div id="cd789a8d" class="cell" data-execution_count="6">
+<div id="e573b5fb" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
@@ -856,7 +856,7 @@ div.csl-indent {
 </div>
 <p>Negative values would contradict the expected chronology if both timestamps refer to the same request timeline, but the value should be inspected before removal because parsing, corrections, or field definitions may explain it. Missing closure timestamps indicate that a closure interval cannot be calculated; replacing those times with the observation date would invent an event. Even nonnegative values can be unusually large, so summaries should include robust measures and later analysis should examine the full distribution.</p>
 <p>Time-of-day groups require a declared boundary. “Night” has no universal definition, so an analysis must state the local-time interval and explain why it is appropriate. The following example labels requests created from 8 p.m. through 5:59 a.m. as nighttime and all others as daytime. It is a convenient working definition, not an objective division between night and day.</p>
-<div id="b06dd5cd" class="cell" data-execution_count="7">
+<div id="6714f90b" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
@@ -879,7 +879,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <p>Data merging combines tables that describe different units. A request table can be joined to Census attributes summarized by ZIP Code Tabulation Area (ZCTA) only after the geographic identifiers, reference period, and expected relationship have been established. A postal ZIP Code and a Census ZCTA are related but not identical geographies; not every ZIP Code has a corresponding ZCTA <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. A successful software join therefore establishes a string match, not geographic equivalence.</p>
 <p>For request-level data joined to a table with one row per ZCTA, the intended relationship is many requests to one area record. The supplied <code>data/zcta_context.csv</code> contains the 221 ZCTAs in NYC Open Data’s city list and their 2024 American Community Survey (ACS) five-year population and median household income estimates <span class="citation" data-cites="nycopendata2026zip census2026american">(<a href="#ref-nycopendata2026zip" role="doc-biblioref">NYC Open Data, 2026</a>; <a href="#ref-census2026american" role="doc-biblioref">U.S. Census Bureau, 2026</a>)</span>. The file also includes margins of error, an income top-coding indicator, and the estimate year; its source and conversion rules are recorded in <code>data/zcta_context.md</code>. These estimates describe an earlier period than the 2026 requests. The code below checks the prepared table and the join without assuming that postal ZIP Codes and ZCTAs are identical geographic units.</p>
 <p>The NYC ZCTA selection comes from the <code>zcta5</code> column of the city’s published dataset, as the following acquisition code shows. The chapter uses the saved CSV during rendering so that a live web request cannot change its results. The complete extraction, including both ACS tables, is in <code>scripts/build_zcta_context.py</code>.</p>
-<div id="9314e4b8" class="cell" data-execution_count="8">
+<div id="da98788e" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
@@ -896,7 +896,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)[<span class="st">"zcta5"</span>].drop_duplicates()</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(city_zctas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="f83705f3" class="cell" data-execution_count="9">
+<div id="197e09ee" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
@@ -987,7 +987,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <section id="validate-the-prepared-data" class="level2" data-number="6.6">
 <h2 data-number="6.6" class="anchored" data-anchor-id="validate-the-prepared-data"><span class="header-section-number">6.6</span> Validate the Prepared Data</h2>
 <p>Validation repeats important checks after transformations and documents how the analysis table differs from the source. The output should retain request identity, have the expected row count, contain the required derived fields, and preserve the source fields needed for audit. If a join was performed, its cardinality and unmatched keys should be part of the validation report. A table that writes successfully is not necessarily correct; its invariants must be checked after it is read back.</p>
-<div id="9350eb74" class="cell" data-execution_count="10">
+<div id="067e56ef" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> contextual_analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>
@@ -1041,7 +1041,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </section>
 <section id="preparation-as-a-documented-argument" class="level2" data-number="6.7">
 <h2 data-number="6.7" class="anchored" data-anchor-id="preparation-as-a-documented-argument"><span class="header-section-number">6.7</span> Preparation as a Documented Argument</h2>
-<p>Each transformation in this chapter makes a claim about the records: filters define the scope, derived fields operationalize measurements, and a merge asserts that keys connect units in a defensible way. The executable checks make those claims reviewable. Chapter 5 establishes the question and source limitations; Chapter 7 repeats the preparation needed for its own executable examples, then explores those definitions and distinguishes descriptions from claims that require additional evidence.</p>
+<p>Each transformation in this chapter makes a claim about the records: filters define the scope, derived fields operationalize measurements, and a merge asserts that keys connect units in a defensible way. The executable checks make those claims reviewable. The formulation chapter establishes the question and source limitations. The exploratory and visualization chapters reuse a <a href="scripts/parking_requests.py">shared preparation function</a> that implements the screening and derived closure-time field described here. They then distinguish descriptions from claims that require additional evidence.</p>
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
