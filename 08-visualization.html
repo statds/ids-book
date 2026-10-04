@@ -26,7 +26,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -187,8 +242,19 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#match-the-display-to-the-task" id="toc-match-the-display-to-the-task" class="nav-link active" data-scroll-target="#match-the-display-to-the-task"><span class="header-section-number">8.1</span> Match the Display to the Task</a></li>
+  <li><a href="#encode-comparisons-and-uncertainty" id="toc-encode-comparisons-and-uncertainty" class="nav-link" data-scroll-target="#encode-comparisons-and-uncertainty"><span class="header-section-number">8.2</span> Encode Comparisons and Uncertainty</a></li>
+  <li><a href="#read-and-revise-a-graphic" id="toc-read-and-revise-a-graphic" class="nav-link" data-scroll-target="#read-and-revise-a-graphic"><span class="header-section-number">8.3</span> Read and Revise a Graphic</a></li>
+  <li><a href="#visualization-in-exploration-modeling-and-communication" id="toc-visualization-in-exploration-modeling-and-communication" class="nav-link" data-scroll-target="#visualization-in-exploration-modeling-and-communication"><span class="header-section-number">8.4</span> Visualization in Exploration, Modeling, and Communication</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/08-visualization.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -212,9 +278,249 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This chapter will develop visual methods for examining and communicating data. Planned topics include visual encodings, selecting displays for analytical tasks, uncertainty and context, and diagnosing misleading design choices. Ethical communication will connect visual design to responsible interpretation. Display choices will also be evaluated against the domain purpose and evidence fit specified in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>.</p>
+<p>Visualization is a method for examining data, checking analytical choices, diagnosing models, and communicating evidence. The same graphic can serve more than one purpose, but its design should reflect the task at hand: an analyst may need to reveal unexpected structure, while a reader may need to compare a small number of estimates accurately. This chapter develops principles for making those choices and applies them to Census area estimates and other New York City open data. Chapter 7 used plots as one part of exploratory data analysis; this chapter examines how visual encodings shape what analysts and readers can see. Chapter 9 will use the same principles for model checking, interpretation, and prediction. Chapter 5 defined questions and the claims their evidence can support, Chapter 6 prepared analysis tables, and Chapter 7 used plots to investigate distributions and relationships. This chapter builds on that sequence without treating visualization as the final step of an analysis.</p>
+<section id="match-the-display-to-the-task" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="match-the-display-to-the-task"><span class="header-section-number">8.1</span> Match the Display to the Task</h2>
+<p>The first design decision is the question the display must help answer. Exploration often begins with an open question, such as whether two variables vary together or whether a distribution has more than one cluster. A communication display usually has a more specific task, such as comparing group estimates or showing the change in a measure over time. Both tasks require the analyst to identify the observational unit, the variables, their measurement scales, and the evidence behind them. These requirements connect visualization to the domain, measurement, scope, and evidence checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>. A graph can encode values correctly and still support an incorrect conclusion if the question, units, or population are unclear. Task-oriented frameworks make this design process explicit by asking what data are available, why a display is needed, and how it should represent the data <span class="citation" data-cites="munzner2014visualization">(<a href="#ref-munzner2014visualization" role="doc-biblioref">Munzner, 2014</a>)</span>.</p>
+<p>A useful way to describe a statistical graphic is through its data, mappings, marks, scales, and layout. The <strong>data</strong> are the observations to display; a <strong>mapping</strong> assigns variables to visual properties; <strong>marks</strong> are the visible elements such as points, lines, and bars; <strong>scales</strong> translate data values to positions, sizes, or colors; and <strong>layout</strong> arranges panels, labels, and legends. This vocabulary is shared across visualization systems. Wickham’s layered grammar formalizes these components and is implemented by ggplot2 in R, while this book uses Matplotlib in Python <span class="citation" data-cites="wickham2010layered">(<a href="#ref-wickham2010layered" role="doc-biblioref">Wickham, 2010</a>)</span>. Wilke’s practical treatment offers a companion reference for applying these design ideas in statistical graphics <span class="citation" data-cites="wilke2019fundamentals">(<a href="#ref-wilke2019fundamentals" role="doc-biblioref">Wilke, 2019</a>)</span>. The code below uses a scatterplot to map ZCTA population to horizontal position and median household income to vertical position. It uses one point per area, so the observational unit remains visible rather than being replaced by an unexplained aggregate.</p>
+<div id="cell-fig-viz-zcta-scatter" class="cell" data-fig-format="svg" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>income_areas <span class="op">=</span> zcta_context.loc[</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    zcta_context[<span class="st">"median_household_income"</span>].notna()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> <span class="op">~</span>zcta_context[<span class="st">"median_household_income_top_coded"</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">4.5</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>ax.scatter(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    income_areas[<span class="st">"population"</span>],</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    income_areas[<span class="st">"median_household_income"</span>],</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.65</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"#4477aa"</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>ax.set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">"ZCTA population (log scale)"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">"Median household income (2024 dollars)"</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Population and median household income by NYC ZCTA"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>ax.grid(axis<span class="op">=</span><span class="st">"y"</span>, color<span class="op">=</span><span class="st">"0.9"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-viz-zcta-scatter" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Scatterplot with one point per NYC ZCTA. Population is on a logarithmic horizontal axis and median household income is on the vertical axis.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-viz-zcta-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-visualization_files/figure-html/fig-viz-zcta-scatter-output-1.png" alt="Scatterplot with one point per NYC ZCTA. Population is on a logarithmic horizontal axis and median household income is on the vertical axis." width="665" height="421" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-viz-zcta-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: Population and 2020–2024 ACS median household income estimates for NYC ZCTAs; income values top-coded by the source are excluded.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot supports several exploratory tasks: identifying unusual areas, checking whether income varies systematically with population, and deciding whether a transformation or additional stratification is warranted. The logarithmic population scale allocates more display space to differences among smaller ZCTAs; it also changes how horizontal distances should be interpreted, so the axis label states the scale. The scatterplot does not establish that population explains income, and each point is an area rather than a resident. The estimates come from the 2020–2024 American Community Survey and describe ZCTAs selected from the city’s published geography list; postal ZIP Codes and ZCTAs are not identical <span class="citation" data-cites="nycopendata2026zip census2026american">(<a href="#ref-nycopendata2026zip" role="doc-biblioref">NYC Open Data, 2026c</a>; <a href="#ref-census2026american" role="doc-biblioref">U.S. Census Bureau, 2026</a>)</span>. A display should retain these units and reference periods in its caption or accompanying text, especially when those details change the scope of the conclusion.</p>
+</section>
+<section id="encode-comparisons-and-uncertainty" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="encode-comparisons-and-uncertainty"><span class="header-section-number">8.2</span> Encode Comparisons and Uncertainty</h2>
+<p>Visual channels differ in how accurately people can compare values. Experiments in graphical perception find that position along a common scale and length generally support more accurate comparisons than area, volume, or color intensity <span class="citation" data-cites="cleveland1984graphical mackinlay1986automating">(<a href="#ref-cleveland1984graphical" role="doc-biblioref">Cleveland &amp; McGill, 1984</a>; <a href="#ref-mackinlay1986automating" role="doc-biblioref">Mackinlay, 1986</a>)</span>. This evidence explains why aligned dot plots and bars work well for comparing a modest number of values, while a bubble chart can make close values difficult to distinguish. The appropriate channel also depends on the variable: color hue distinguishes categories, while ordered lightness is better suited to quantitative magnitude. Color should not carry information by itself when shape, line style, direct labels, or position can make the same distinction available through another channel. Perceptually uneven palettes can distort gradients, and color choices that depend on red-green differences can exclude some readers <span class="citation" data-cites="crameri2020misuse">(<a href="#ref-crameri2020misuse" role="doc-biblioref">Crameri et al., 2020</a>)</span>. Researchers can also test perceptual claims rather than accept them only as convention. Heer and Bostock used crowdsourced experiments to reproduce established results and evaluate design choices <span class="citation" data-cites="heer2010crowdsourcing">(<a href="#ref-heer2010crowdsourcing" role="doc-biblioref">Heer &amp; Bostock, 2010</a>)</span>. Their work supports treating design principles as evidence-based guidance while recognizing that a channel’s effectiveness still depends on the comparison and audience.</p>
+<p>Uncertainty is part of the data description when estimates come from a sample or a model. The ZCTA file includes American Community Survey margins of error for its estimates; the following figure displays estimates and their published margins for the twelve areas with the largest non-top-coded median household income. This is an interval display, not a ranking of exact underlying incomes. ACS margins of error describe sampling uncertainty, not all possible sources of measurement or coverage error. The dataset also marks four top-coded income estimates and does not supply exact numeric values for them, so those areas are omitted from this particular plot and the exclusion is explicit in the code. The Census Bureau bases published ACS margins on a 90% confidence level <span class="citation" data-cites="census2024accuracy">(<a href="#ref-census2024accuracy" role="doc-biblioref">U.S. Census Bureau, 2024</a>)</span>. These distinctions affect how readers compare areas and interpret the displayed ranking.</p>
+<div id="cell-fig-viz-zcta-moe" class="cell" data-fig-format="svg" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>top_income <span class="op">=</span> income_areas.nlargest(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dv">12</span>, <span class="st">"median_household_income"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"median_household_income"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">5.5</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>ax.errorbar(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    top_income[<span class="st">"median_household_income"</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    top_income[<span class="st">"zcta"</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    xerr<span class="op">=</span>top_income[<span class="st">"median_household_income_moe"</span>],</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    fmt<span class="op">=</span><span class="st">"o"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"#4477aa"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    ecolor<span class="op">=</span><span class="st">"#888888"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    capsize<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">"Estimated median household income (2024 dollars)"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">"ZIP Code Tabulation Area"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"ACS estimates with published margins of error"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>ax.grid(axis<span class="op">=</span><span class="st">"x"</span>, color<span class="op">=</span><span class="st">"0.9"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-viz-zcta-moe" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal dot plot of twelve ZCTA income estimates with horizontal intervals showing the published margins of error.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-viz-zcta-moe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-visualization_files/figure-html/fig-viz-zcta-moe-output-1.png" alt="Horizontal dot plot of twelve ZCTA income estimates with horizontal intervals showing the published margins of error." width="760" height="518" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-viz-zcta-moe-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.2: Twelve largest non-top-coded 2020–2024 ACS median household income estimates among NYC ZCTAs, with published 90% margins of error.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Intervals require a definition and should not be treated as decorative whiskers. These published margins communicate sampling uncertainty for each estimate, but overlap alone is not a formal test of a difference between two areas. Experiments identify a within-the-bar bias: viewers can judge values inside a bar’s filled region as more likely than values outside it even when error bars display uncertainty. Point-and-interval or distribution displays may therefore communicate inferential comparisons more effectively than a bar with error bars <span class="citation" data-cites="correll2014error">(<a href="#ref-correll2014error" role="doc-biblioref">Correll &amp; Gleicher, 2014</a>)</span>. The caption and surrounding text should state what the interval represents. Other displays, such as distributions of bootstrap estimates, may suit different inferential tasks. Chapter 7 introduced resampling uncertainty for a comparison; here the focus is on making the uncertainty visible and identifying its source. Chapter 9 will return to visual uncertainty when it examines the variability of predictions and model estimates. A clear caption helps prevent uncertainty marks from being mistaken for the range of observed values.</p>
+</section>
+<section id="read-and-revise-a-graphic" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="read-and-revise-a-graphic"><span class="header-section-number">8.3</span> Read and Revise a Graphic</h2>
+<p>Axes, labels, scales, and context determine what a comparison appears to say. A bar encodes a value through length, so a zero baseline is normally needed when the length is intended to represent the full magnitude. A line chart encodes change through position and slope, so a restricted vertical range can be appropriate when it exposes variation that would otherwise be compressed; the range and its effect must remain apparent. Experiments on axis truncation show why a single rule does not cover every chart type or task <span class="citation" data-cites="correll2020truncating">(<a href="#ref-correll2020truncating" role="doc-biblioref">Correll et al., 2020</a>)</span>. Other risky choices include 3D perspective that changes apparent area, a dual axis that invites unsupported comparisons, unordered categories, omitted denominators, and aggregation that hides variation. These choices become misleading when they cause a reader to infer a comparison the data or design do not support, not simply because a chart violates a style preference <span class="citation" data-cites="pandey2015deceptive">(<a href="#ref-pandey2015deceptive" role="doc-biblioref">Pandey et al., 2015</a>)</span>.</p>
+<p>The next display uses the same ZCTA income values twice to show how an axis baseline changes the visual impression of a bar chart. The left panel starts above zero and magnifies differences in bar length; the right panel starts at zero and makes the full encoded magnitudes comparable. The first view is a deliberate counterexample for this task, not evidence that every nonzero axis is misleading. A line graph of the same values could use a restricted range to reveal small changes, provided its purpose and scale were clear. Tufte’s work on graphical integrity remains an influential source for examining distortion, but later empirical work cautions against treating minimalism or any one visual rule as universally optimal <span class="citation" data-cites="tufte2001visual bateman2010useful">(<a href="#ref-bateman2010useful" role="doc-biblioref">Bateman et al., 2010</a>; <a href="#ref-tufte2001visual" role="doc-biblioref">Tufte, 2001</a>)</span>.</p>
+<div id="cell-fig-viz-truncated-axis" class="cell" data-fig-format="svg" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>example_areas <span class="op">=</span> income_areas.nlargest(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dv">8</span>, <span class="st">"median_household_income"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"median_household_income"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>income_values <span class="op">=</span> example_areas[<span class="st">"median_household_income"</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>income_labels <span class="op">=</span> example_areas[<span class="st">"zcta"</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].barh(income_labels, income_values, color<span class="op">=</span><span class="st">"#4477aa"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlim(income_values.<span class="bu">min</span>() <span class="op">*</span> <span class="fl">0.9</span>, income_values.<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.05</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Truncated baseline"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].barh(income_labels, income_values, color<span class="op">=</span><span class="st">"#4477aa"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlim(<span class="dv">0</span>, income_values.<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.05</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Zero baseline"</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"Median household income (2024 dollars)"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"The same estimates under two axis choices"</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-viz-truncated-axis" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two horizontal bar charts show identical ZCTA income values. The left chart starts its horizontal axis above zero and exaggerates differences; the right starts at zero.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-viz-truncated-axis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-visualization_files/figure-html/fig-viz-truncated-axis-output-1.png" alt="Two horizontal bar charts show identical ZCTA income values. The left chart starts its horizontal axis above zero and exaggerates differences; the right starts at zero." width="953" height="381" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-viz-truncated-axis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.3: The same eight ZCTA income estimates shown with a truncated and a zero baseline. The truncated baseline magnifies differences in bar length.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A review should test whether a reader can identify the unit, comparison, and scale without guessing. Titles should state the subject or claim, axes should include units, categories should follow an order that supports the task, and captions should identify the source, period, and important exclusions. A legend should be close to the encodings it explains; direct labels or small multiple panels can reduce the effort of comparing several series. Grid lines and annotations should aid value reading without competing with the data. Accessibility also requires that distinctions remain legible when color is unavailable or perceived differently. Check contrast, avoid using color as the sole distinction, and provide a concise text description that states the main pattern and relevant scale. A chart can be visually polished while remaining analytically weak if it leaves these interpretive conditions implicit.</p>
+</section>
+<section id="visualization-in-exploration-modeling-and-communication" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="visualization-in-exploration-modeling-and-communication"><span class="header-section-number">8.4</span> Visualization in Exploration, Modeling, and Communication</h2>
+<p>The same design principles support different stages of analysis, but the displays need not be identical. During EDA, small multiples, residual plots, and distributional views can expose structure or anomalies that were not anticipated. During data validation, plots can reveal impossible values, coding changes, missingness patterns, or geographic gaps. For communication, the analyst may reduce competing detail, add direct labels, and state the main comparison while preserving the variation needed to interpret it. These different decisions follow from the task and audience, not from an opposition between analysis and presentation. The transition from exploration to explanation should not remove inconvenient observations or uncertainty. It should make the analytical purpose more explicit and retain sufficient detail for the reader to assess the claim. An exploratory figure may also be revised as the question becomes more specific or the intended audience changes. Selecting a display that represents the evidence and uncertainty accurately is also part of responsible statistical communication; Chapter 10 develops the ethical obligations that govern these choices <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>.</p>
+<p>NYC Open Data offers useful settings for practicing these distinctions. The Motor Vehicle Collisions dataset records dates, locations, boroughs, and injury counts, so it can support time-series, geographic, and categorical comparisons; its documentation cautions that records are preliminary and may be amended <span class="citation" data-cites="nycopendata2026motor">(<a href="#ref-nycopendata2026motor" role="doc-biblioref">NYC Open Data, 2026a</a>)</span>. The Parks Inspection Program records inspection dates and ratings, which support comparisons across inspection seasons, years, or park properties <span class="citation" data-cites="nycopendata2026parks">(<a href="#ref-nycopendata2026parks" role="doc-biblioref">NYC Open Data, 2026b</a>)</span>. Those units and collection processes differ from service requests and ACS estimates, so students should read each data dictionary before plotting. A map of collision points, for example, answers a location question but does not by itself compare risk unless exposure or an appropriate denominator is also considered. The collision dataset’s row is a reported collision, whereas the Parks inspection dataset’s row is an inspection; neither row is equivalent to a person’s experience of a crash or a park. These examples therefore support practice with data provenance and measurement as well as with chart design.</p>
+<p>Visualization also carries into predictive modeling. A model’s residual plot can reveal systematic errors that a single accuracy statistic conceals, and predicted-versus-observed displays can show whether predictions are calibrated across the range of outcomes. Such plots are diagnostics rather than proof that a model will perform well on future data; their interpretation depends on the evaluation design and data scope. Chapter 9 will define the target, training and test data, and performance measures before developing these model-specific views. The present chapter provides their visual foundation: map variables to channels that suit the task, state scales and units, display relevant uncertainty, and evaluate whether the figure supports the intended claim. A diagnostic graphic can suggest where a model fails, but only a suitable evaluation design can establish how well it predicts observations that were not used to fit it. This distinction keeps the visual evidence aligned with the predictive question and prepares readers to interpret the model comparisons in the following chapter.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>Use the distributed data where specified. For NYC Open Data exercises, record the dataset title, identifier, access date, row unit, filters, and any changes made to the downloaded source. For every display, state the analytical task, the visual encodings, the observational unit, and one limitation on interpretation. Submit the code and a rendered figure with your written responses.</p>
+<div id="exr-viz-encoding" class="theorem exercise">
+<p><span class="theorem-title"><strong> 8.1</strong></span> Examine population and median household income across NYC ZCTAs using <code>data/zcta_context.csv</code>.</p>
+<ol type="a">
+<li>Construct a scatterplot and describe the variables mapped to each visual channel. Compare a linear population axis with a logarithmic population axis, and state which exploratory question each version makes easier to inspect.</li>
+<li>Identify two areas that appear unusual relative to the overall pattern. Check their values and margins of error in the data before interpreting their positions.</li>
+<li>Explain why the relationship cannot be interpreted as an individual-level income effect or as a causal effect of population.</li>
+</ol>
+</div>
+<div id="exr-viz-uncertainty" class="theorem exercise">
+<p><span class="theorem-title"><strong> 8.2</strong></span> Revise the ZCTA income interval display.</p>
+<ol type="a">
+<li>Display estimates and published margins of error for ten areas chosen by a rule you state in advance. Identify the confidence level represented by the Census margins and explain the treatment of top-coded values.</li>
+<li>Create a second version that uses a different ordering or annotation. Explain which comparison becomes easier and which information becomes less prominent.</li>
+<li>Explain why interval overlap alone does not establish whether two population quantities differ.</li>
+</ol>
+</div>
+<div id="exr-viz-critique" class="theorem exercise">
+<p><span class="theorem-title"><strong> 8.3</strong></span> Use the NYC Motor Vehicle Collisions dataset, identified as <code>h9gi-nx95</code> in NYC Open Data <span class="citation" data-cites="nycopendata2026motor">(<a href="#ref-nycopendata2026motor" role="doc-biblioref">NYC Open Data, 2026a</a>)</span>. Choose one date range and one well-defined outcome, such as crashes per month or crashes involving an injury.</p>
+<ol type="a">
+<li>Produce an exploratory display for a question about time, borough, or location. State the row unit and explain how missing locations or values affect the eligible records.</li>
+<li>Create a deliberately flawed alternative by changing one design decision, such as the axis baseline, aggregation, scale, or denominator. Explain the inference that the alternative could encourage and why it is unsupported.</li>
+<li>Revise the display for communication. Include a descriptive title, units, source and period, and a text description of the principal pattern.</li>
+<li>State why a count of collisions by area is not automatically a measure of collision risk.</li>
+</ol>
+</div>
+<div id="exr-viz-transfer" class="theorem exercise">
+<p><span class="theorem-title"><strong> 8.4</strong></span> Use the Parks Inspection Program – Inspections dataset from NYC Open Data <span class="citation" data-cites="nycopendata2026parks">(<a href="#ref-nycopendata2026parks" role="doc-biblioref">NYC Open Data, 2026b</a>)</span>. Read its data dictionary before selecting variables.</p>
+<ol type="a">
+<li>Ask a question comparing an inspection rating over time or across park properties. Specify the observational unit and construct a display suited to that comparison.</li>
+<li>Make one alternative display that changes the visual encoding. Compare how accurately a reader can recover the values and whether either display conceals differences in inspection counts.</li>
+<li>Write a caption that separates what the inspection records show from what they do not establish about park users’ experiences or conditions between inspections.</li>
+</ol>
+</div>
+<div id="exr-viz-model-bridge" class="theorem exercise">
+<p><span class="theorem-title"><strong> 8.5</strong></span> After completing Chapter 9, use one fitted model with a continuous outcome to construct a predicted-versus-observed plot and a residual plot.</p>
+<ol type="a">
+<li>Define the prediction target and the data used to produce predictions. Use held-out predictions if the goal is to assess performance on new observations.</li>
+<li>Identify one pattern in each plot that would suggest a problem with the model. Explain why a plot of training predictions alone could give an overly favorable assessment.</li>
+<li>Write a short caption that states what the plots diagnose and what they cannot establish about future performance.</li>
+</ol>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-asastatistical2022guidelines" class="csl-entry" role="listitem">
+American Statistical Association. (2022). <em>Ethical guidelines for statistical practice</em>. <a href="https://www.amstat.org/your-career/ethical-guidelines-for-statistical-practice">https://www.amstat.org/your-career/ethical-guidelines-for-statistical-practice</a>
+</div>
+<div id="ref-bateman2010useful" class="csl-entry" role="listitem">
+Bateman, S., Mandryk, R. L., Gutwin, C., Genest, A., McDine, D., &amp; Brooks, C. (2010). Useful junk? The effects of visual embellishment on comprehension and memorability of charts. <em>Proceedings of the SIGCHI Conference on Human Factors in Computing Systems</em>, 2573–2582. <a href="https://doi.org/10.1145/1753326.1753716">https://doi.org/10.1145/1753326.1753716</a>
+</div>
+<div id="ref-cleveland1984graphical" class="csl-entry" role="listitem">
+Cleveland, W. S., &amp; McGill, R. (1984). Graphical perception: Theory, experimentation, and application to the development of graphical methods. <em>Journal of the American Statistical Association</em>, <em>79</em>(387), 531–554. <a href="https://doi.org/10.1080/01621459.1984.10478080">https://doi.org/10.1080/01621459.1984.10478080</a>
+</div>
+<div id="ref-correll2020truncating" class="csl-entry" role="listitem">
+Correll, M., Bertini, E., &amp; Franconeri, S. (2020). Truncating the <span>Y</span>-axis: Threat or menace? <em>Proceedings of the 2020 CHI Conference on Human Factors in Computing Systems</em>. <a href="https://doi.org/10.1145/3313831.3376222">https://doi.org/10.1145/3313831.3376222</a>
+</div>
+<div id="ref-correll2014error" class="csl-entry" role="listitem">
+Correll, M., &amp; Gleicher, M. (2014). Error bars considered harmful: Exploring alternate encodings for mean and error. <em>IEEE Transactions on Visualization and Computer Graphics</em>, <em>20</em>(12), 2142–2151. <a href="https://doi.org/10.1109/TVCG.2014.2346298">https://doi.org/10.1109/TVCG.2014.2346298</a>
+</div>
+<div id="ref-crameri2020misuse" class="csl-entry" role="listitem">
+Crameri, F., Shephard, G. E., &amp; Heron, P. J. (2020). The misuse of colour in science communication. <em>Nature Communications</em>, <em>11</em>, 5444. <a href="https://doi.org/10.1038/s41467-020-19160-7">https://doi.org/10.1038/s41467-020-19160-7</a>
+</div>
+<div id="ref-heer2010crowdsourcing" class="csl-entry" role="listitem">
+Heer, J., &amp; Bostock, M. (2010). Crowdsourcing graphical perception: Using mechanical turk to assess visualization design. <em>Proceedings of the SIGCHI Conference on Human Factors in Computing Systems</em>, 203–212. <a href="https://doi.org/10.1145/1753326.1753357">https://doi.org/10.1145/1753326.1753357</a>
+</div>
+<div id="ref-mackinlay1986automating" class="csl-entry" role="listitem">
+Mackinlay, J. D. (1986). Automating the design of graphical presentations of relational information. <em>ACM Transactions on Graphics</em>, <em>5</em>(2), 110–141. <a href="https://doi.org/10.1145/22949.22950">https://doi.org/10.1145/22949.22950</a>
+</div>
+<div id="ref-munzner2014visualization" class="csl-entry" role="listitem">
+Munzner, T. (2014). <em>Visualization analysis and design</em>. A K Peters/CRC Press. <a href="https://doi.org/10.1201/b17511">https://doi.org/10.1201/b17511</a>
+</div>
+<div id="ref-nycopendata2026motor" class="csl-entry" role="listitem">
+NYC Open Data. (2026a). <em>Motor vehicle collisions - crashes</em>. <a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95</a>
+</div>
+<div id="ref-nycopendata2026parks" class="csl-entry" role="listitem">
+NYC Open Data. (2026b). <em>Parks inspection program - inspections</em>. <a href="https://data.cityofnewyork.us/dataset/Parks-Inspection-Program-Inspections/yg3y-7juh">https://data.cityofnewyork.us/dataset/Parks-Inspection-Program-Inspections/yg3y-7juh</a>
+</div>
+<div id="ref-nycopendata2026zip" class="csl-entry" role="listitem">
+NYC Open Data. (2026c). <em><span>ZIP</span> code tabulation areas</em>. <a href="https://data.cityofnewyork.us/City-Government/ZIP-Code-Tabulation-Areas/35j5-n34v">https://data.cityofnewyork.us/City-Government/ZIP-Code-Tabulation-Areas/35j5-n34v</a>
+</div>
+<div id="ref-pandey2015deceptive" class="csl-entry" role="listitem">
+Pandey, A. V., Rall, K., Satterthwaite, M. L., Nov, O., &amp; Bertini, E. (2015). How deceptive are deceptive visualizations? An empirical analysis of common distortion techniques. <em>Proceedings of the 2015 CHI Conference on Human Factors in Computing Systems</em>, 1469–1478. <a href="https://doi.org/10.1145/2702123.2702608">https://doi.org/10.1145/2702123.2702608</a>
+</div>
+<div id="ref-tufte2001visual" class="csl-entry" role="listitem">
+Tufte, E. R. (2001). <em>The visual display of quantitative information</em> (2nd ed.). Graphics Press.
+</div>
+<div id="ref-census2024accuracy" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2024). <em>American community survey accuracy of the data (2024)</em>. <a href="https://www2.census.gov/programs-surveys/acs/tech_docs/accuracy/MultiyearACSAccuracyofData2024.pdf">https://www2.census.gov/programs-surveys/acs/tech_docs/accuracy/MultiyearACSAccuracyofData2024.pdf</a>
+</div>
+<div id="ref-census2026american" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2026). <em>2024 american community survey 5-year summary file</em>. <a href="https://www.census.gov/programs-surveys/acs/data/summary-file/2024.html">https://www.census.gov/programs-surveys/acs/data/summary-file/2024.html</a>
+</div>
+<div id="ref-wickham2010layered" class="csl-entry" role="listitem">
+Wickham, H. (2010). A layered grammar of graphics. <em>Journal of Computational and Graphical Statistics</em>, <em>19</em>(1), 3–28. <a href="https://doi.org/10.1198/jcgs.2009.07098">https://doi.org/10.1198/jcgs.2009.07098</a>
+</div>
+<div id="ref-wilke2019fundamentals" class="csl-entry" role="listitem">
+Wilke, C. O. (2019). <em>Fundamentals of data visualization: A primer on making informative and compelling figures</em>. O’Reilly Media. <a href="https://clauswilke.com/dataviz/">https://clauswilke.com/dataviz/</a>
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -634,4 +940,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/08-visualization.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/08-visualization.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
