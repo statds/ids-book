@@ -1,4 +1,4 @@
-# Data Wrangling
+# Data Wrangling {#sec-wrangling}
 
 Data wrangling transforms acquired data into a form suited to a specified
 analysis while preserving the evidence needed to review those transformations.
@@ -37,8 +37,8 @@ The first two are often mechanical once documented; the third require an
 explicit rationale because they can change the population, measurement, or
 conclusion.
 
-The original ZIP archive should remain unchanged. Chapter 5 demonstrated
-importing and profiling this source; the code below repeats its path,
+The original ZIP archive should remain unchanged. @sec-problem-formulation
+demonstrated importing and profiling this source; the code below repeats its path,
 timestamp parsing, and filters so this chapter can run independently. The
 Feather examples in that chapter use temporary files, so they do not create an
 input for this workflow. Each stage here instead creates a derived data frame
@@ -81,9 +81,9 @@ NYPD during one week.
 
 ## Recheck Scope Before Transforming
 
-Chapter 5 profiles the source extract in detail, including its requested
-scope, missing fields, coordinate coverage, status and timestamp relationships,
-and unusual time values (@sec-initial-checks). This chapter uses those findings
+@sec-initial-checks profiles the source extract in detail, including its
+requested scope, missing fields, coordinate coverage, status and timestamp
+relationships, and unusual time values. This chapter uses those findings
 to motivate specific transformations rather than repeat the full diagnostic
 tables. Because each chapter can also be rendered on its own, the import block
 above reconstructs the screened subset and the following compact report
@@ -106,7 +106,7 @@ scope_checks.to_frame()
 ```
 
 The checks confirm that the expected requests and identifiers remain intact
-before transformations. Chapter 5 found 99 requests without coordinates.
+before transformations. @sec-initial-checks found 99 requests without coordinates.
 Those rows remain eligible for the ZCTA join below because it uses the
 recorded ZIP field, not latitude and longitude. A later point-distance
 analysis would need to address coordinate missingness separately; it should
@@ -132,8 +132,8 @@ label to its analysis name. Before applying the mapping, check that two source
 columns do not collapse to the same normalized name. A collision needs an
 explicit disambiguation, not silent overwriting.
 
-Chapter 5's frequency table identifies the categories that motivate the
-working comparison (@sec-problem-detail-counts). Here, the distinct strings
+The frequency table in @sec-problem-detail-counts identifies the categories
+that motivate the working comparison. Here, the distinct strings
 are inspected before any category recoding. The observed labels are
 interpretable and the leading values are not spelling variants that should
 be merged automatically. Column-name normalization is separate from
@@ -416,10 +416,12 @@ final_checks.to_frame()
 Each transformation in this chapter makes a claim about the records: filters
 define the scope, derived fields operationalize measurements, and a merge
 asserts that keys connect units in a defensible way. The executable checks
-make those claims reviewable. Chapter 5 establishes the question and source
-limitations; Chapter 7 repeats the preparation needed for its own executable
-examples, then explores those definitions and distinguishes descriptions
-from claims that require additional evidence.
+make those claims reviewable. The formulation chapter establishes the
+question and source limitations. The exploratory and visualization chapters
+reuse a [shared preparation function](scripts/parking_requests.py) that
+implements the screening and derived closure-time field described here.
+They then distinguish descriptions from claims that require additional
+evidence.
 
 ## Exercises {.unnumbered}
 

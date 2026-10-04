@@ -1,4 +1,4 @@
-# Exploratory Data Analysis
+# Exploratory Data Analysis {#sec-eda}
 
 Exploratory data analysis (EDA) examines distributions, relationships, and
 irregularities before a final account of findings is written. Its purpose is
@@ -52,15 +52,15 @@ additional data or design would be needed for a stronger claim
 
 ## Case Study: Question and Eligible Records
 
-The case study examines NYPD illegal-parking requests prepared in Chapter
-6. Its main question is how recorded closure-time distributions differ
-among the three most frequently reported problem details during September
+The case study examines NYPD illegal-parking requests prepared in
+@sec-wrangling. Its main question is how recorded closure-time distributions
+differ among the three most frequently reported problem details during September
 6–12, 2026. Time, borough, and ZCTA comparisons provide context for the
 citywide result. A hypothesis test then illustrates the assumptions needed
 to move from a description of these records to an inferential claim.
 
-The working question in Chapter 5 identifies a population of records, a time
-window, a measurement, and groups to compare. Its outcome is the elapsed time
+The working question in @sec-problem-formulation identifies a population of
+records, a time window, a measurement, and groups to compare. Its outcome is the elapsed time
 between each request's recorded creation and closure timestamps. This
 quantity does not measure the time until an officer arrived or the time until
 a parking condition ended. The groups are values of the provider's
@@ -78,10 +78,12 @@ time and place. Each step can generate a revised question. The sequence
 also clarifies which comparisons came from the working formulation and
 which were motivated by patterns observed later.
 
-The following code reconstructs the relevant columns from the distributed
-archive using the filters and timestamp rules established in Chapter 6. It
-creates a new table and retains the source archive unchanged. The five-digit
-ZIP check used later also follows the preceding chapter.
+The following code loads the screened table through the shared
+[preparation function](scripts/parking_requests.py). That function applies
+the filters, timestamp parsing, field names, and closure-time definition
+established in the wrangling chapter. Both this chapter and the visualization
+chapter use the same source, and the distributed archive remains unchanged.
+The five-digit ZIP check used later also follows the wrangling chapter.
 
 ```{python}
 from pathlib import Path
@@ -89,44 +91,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scripts.parking_requests import load_parking_requests
 
-source = Path("data") / "311_nypd_lbdwk_2026.csv.zip"
-requests = pd.read_csv(
-    source,
-    compression="zip",
-    dtype={"Unique Key": "string", "Incident Zip": "string"},
-    low_memory=False,
-)
-date_format = "%m/%d/%Y %I:%M:%S %p"
-for column in ["Created Date", "Closed Date"]:
-    requests[column] = pd.to_datetime(
-        requests[column], format=date_format, errors="coerce"
-    )
-
-start = pd.Timestamp("2026-09-06")
-end = pd.Timestamp("2026-09-13")
-parking = requests.loc[
-    requests["Created Date"].between(start, end, inclusive="left")
-    & requests["Problem (formerly Complaint Type)"].eq("Illegal Parking"),
-    [
-        "Unique Key", "Created Date", "Closed Date",
-        "Problem Detail (formerly Descriptor)", "Borough", "Incident Zip",
-        "Latitude", "Longitude",
-    ],
-].copy()
-parking = parking.rename(columns={
-    "Unique Key": "request_id",
-    "Created Date": "created_at",
-    "Closed Date": "closed_at",
-    "Problem Detail (formerly Descriptor)": "problem_detail",
-    "Borough": "borough",
-    "Incident Zip": "incident_zip",
-    "Latitude": "latitude",
-    "Longitude": "longitude",
-})
-parking["closure_hours"] = (
-    parking["closed_at"] - parking["created_at"]
-).dt.total_seconds() / 3600
+parking = load_parking_requests()
 
 scope_check = pd.Series({
     "requests": len(parking),
@@ -281,8 +248,8 @@ affect the citywide comparison. A borough label still represents a broad
 area and cannot identify the practices of an individual precinct.
 
 Area context offers a second exploratory question, but it changes the unit
-of analysis. Chapter 6 joins a request's postal ZIP string to a 2024
-American Community Survey (ACS) estimate for a matching ZIP Code Tabulation
+of analysis. @sec-zcta-context-merge joins a request's postal ZIP string to
+a 2024 American Community Survey (ACS) estimate for a matching ZIP Code Tabulation
 Area (ZCTA). Postal ZIP Codes and ZCTAs are not identical geographies
 [@census2023zip]. The same estimate is repeated on every matched request in
 that area, so treating those copies as independent area observations would
