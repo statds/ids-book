@@ -803,18 +803,22 @@ date, relevant data-dictionary definitions, and any filtering or aggregation.
 An attractive plot alone does not satisfy these requirements.
 
 ::: {#exr-viz-grammar}
-Use the distributed illegal-parking archive to compare the creation hour of
-requests across problem details and boroughs.
+Use the results of @exr-eda-time to visualize how the proportion of requests
+taking at least two hours to close varies across the four six-hour creation
+intervals and problem details. Use the same threshold and eligible records;
+focus on translating the EDA comparison into a figure rather than rebuilding
+its contingency tables.
 
-a. Choose three problem details by a rule stated before plotting. Construct
-   one plot with color and one with facets. Explain which comparison becomes
-   easier in each.
-b. Build a `facet_grid()` with problem detail in one direction and borough
-   in the other. Explain what the fixed scale allows a reader to compare.
-   Then use free vertical scales and explain how the interpretation changes.
-c. If the groups have unequal numbers of observed days or records, define a
-   summary that makes the comparison relevant to your question. State the
-   denominator and one limitation that remains.
+a. Use the three most frequent problem details identified in the EDA
+   exercise. Construct one plot with color and one with facets. Explain which
+   comparison becomes easier in each, and show the number of eligible
+   requests behind the proportions.
+b. Build a `facet_grid()` with problem detail in rows and borough in columns.
+   Explain what fixed vertical scales allow readers to compare. Then use free
+   vertical scales and explain how the interpretation changes.
+c. State the denominator for each plotted proportion and how requests with
+   missing closure time are handled. Explain one way unequal group sizes
+   affect interpretation and identify a limitation that remains.
 :::
 
 ::: {#exr-viz-repair}
