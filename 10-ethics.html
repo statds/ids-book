@@ -212,7 +212,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06-wrangling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Wrangling</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Preparation</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -304,7 +304,7 @@ div.csl-indent {
 <p>Privacy risk depends on context, not only on whether a table contains names. Precise locations, timestamps, rare categories, and external information can combine to reveal details about a person, household, or business. Removing direct identifiers may reduce risk, but it does not guarantee anonymity. Public accessibility also does not establish that every downstream use is expected, harmless, or consistent with the original collection purpose.</p>
 <p>The distributed 311 extract does not provide a reporter name, but individual addresses and coordinates can still expose the location of a reported condition. A citywide count may need no street address at all; a neighborhood comparison may require only an aggregated geography. Data minimization asks the analyst to use and disclose the least detailed data adequate for the stated task. The appropriate resolution depends on the question, the population at risk, the possibility of linkage, and the consequences of disclosure.</p>
 <p>The following example prepares a borough-by-detail summary without importing request identifiers, street addresses, or coordinates. It suppresses small cells in the displayed release table to illustrate one possible safeguard. The threshold is a teaching choice, not a universal privacy standard, and the internal count is not included in the table intended for release.</p>
-<div id="adae69d7" class="cell" data-execution_count="1">
+<div id="28dcf743" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>

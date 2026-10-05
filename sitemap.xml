@@ -2,15 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://statds.github.io/ids-book/index.html</loc>
-    <lastmod>2026-09-28T02:59:32.519Z</lastmod>
+    <lastmod>2026-10-05T01:04:41.991Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/01-intro.html</loc>
-    <lastmod>2026-10-04T11:04:33.771Z</lastmod>
+    <lastmod>2026-10-05T01:04:42.027Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/02-git.html</loc>
-    <lastmod>2026-09-14T16:34:11.888Z</lastmod>
+    <lastmod>2026-10-05T01:04:42.063Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/03-quarto.html</loc>
@@ -22,19 +22,19 @@
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/05-formulation.html</loc>
-    <lastmod>2026-10-04T11:03:31.767Z</lastmod>
+    <lastmod>2026-10-05T01:04:42.099Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/06-wrangling.html</loc>
-    <lastmod>2026-10-04T11:05:05.107Z</lastmod>
+    <lastmod>2026-10-05T12:29:52.070Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/07-eda.html</loc>
-    <lastmod>2026-10-04T11:05:05.147Z</lastmod>
+    <lastmod>2026-10-05T12:24:44.766Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/08-visualization.html</loc>
-    <lastmod>2026-10-04T11:03:31.911Z</lastmod>
+    <lastmod>2026-10-05T12:28:46.510Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/09-modeling.html</loc>
@@ -42,6 +42,6 @@
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/10-ethics.html</loc>
-    <lastmod>2026-10-04T11:05:05.207Z</lastmod>
+    <lastmod>2026-10-05T01:04:42.235Z</lastmod>
   </url>
 </urlset>
