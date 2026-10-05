@@ -488,33 +488,32 @@ together.
 ## Exercises {.unnumbered}
 
 These exercises extend the import and checking work in the previous chapter.
-Use a new data frame for transformations, keep the distributed ZIP archive
-unchanged, and include both code and a concise explanation of each decision.
+For the first exercise, begin with the screened table saved as
+`data/illegal_parking.feather` in that assignment. Do not repeat its import,
+scope filters, key checks, missingness report, or closure-time calculation.
+Keep the distributed ZIP archive unchanged, and include code with a concise
+explanation of each decision.
 
 ::: {#exr-wrangle-311}
-Construct a documented analysis table from the NYPD illegal-parking requests.
+Prepare an analysis table that can support exploratory comparisons and a
+subsequent logistic-regression analysis.
 
-a. Recreate the screened subset from the source archive using the two row
-   restrictions. Record the starting and retained row counts, and verify that
-   `Unique Key` remains unique. Explain why the filters belong in code.
-b. Make a missingness report for all columns. Choose one analysis that needs
-   coordinates and one that does not; explain which rows each analysis can
-   use and report how many would be excluded. Do not impute locations.
-c. Inspect the observed values of `Problem Detail (formerly Descriptor)` and
-   `Status`. Propose any normalization only where evidence supports it. Show
-   a mapping table for every recoding and retain the original field.
-d. Normalize every column name to a consistent convention in a derived table.
-   Provide the complete mapping from each new name to its source name, check
-   for collisions, preserve the imported names in the source table, and
-   identify the observational unit.
-e. Derive closure time in hours from the two timestamps. Report missing and
-   negative durations, and compare the median with the mean. Explain why the
-   result is not automatically an officer-response-time measure.
-f. Define a day/night split by clock time, state the boundary, and report the
-   number of requests in each group. Repeat the split with a different
-   defensible boundary and note whether group sizes change substantially.
-g. Write a short data dictionary for the analysis table, including source
-   fields, derived fields, units, and known limitations.
+a. Inspect the observed values of `Problem Detail` and `Status`. Propose
+   recoding only where the values support it. Show a mapping table, retain
+   source values, and explain how unknown or rare values will be handled.
+b. Rename only the fields needed for your analysis using a consistent
+   convention. Show the old-to-new mapping, check for name collisions, and
+   leave the imported table unchanged.
+c. Merge `data/zcta_context.csv` using the documented ZIP-to-ZCTA match
+   described in @sec-zcta-context-merge. Validate the merge cardinality,
+   unmatched records, and preservation of one row per request. Explain why
+   the match does not make ZIP Codes and ZCTAs equivalent.
+d. Write a concise data dictionary for the fields used, including source or
+   derived status, units, and limitations. Propose a binary closure-time
+   outcome that marks requests taking at least two hours to close, and explain
+   whether this threshold suits your question. Identify candidate predictors
+   available when a request is created. Keep post-creation fields out of that
+   predictor list and explain why.
 :::
 
 ::: {#exr-precinct-distance}
@@ -549,14 +548,16 @@ f. Validate that the distance calculation did not change the request count or
 :::
 
 ::: {#exr-wrangle-open}
-Write a preparation plan for a different question suggested by the data.
+Write a preparation plan for a different question suggested by the data. This
+exercise concerns the table and its checks; the visualization proposal in
+@sec-visualization addresses figure design.
 
 a. State the question, intended audience, observational unit, outcome, and
    comparison. Specify whether the question is descriptive, comparative,
    predictive, or causal.
 b. List the fields and any additional data required. For each proposed
-   transformation, explain its purpose and define a check that could detect
-   an error.
+   transformation, state its purpose, expected row unit, and a check that
+   could detect an error.
 c. Identify one issue that should be raised with a data curator rather than
    silently corrected. Draft a concise recommendation that distinguishes
    evidence from conjecture.
