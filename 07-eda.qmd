@@ -470,15 +470,20 @@ state units and exclusions, and distinguish descriptive findings from
 claims about processes outside the observed week.
 
 ::: {#exr-eda-time}
-Examine whether the closure-time comparison varies by the hour when a request
-was created.
+Examine whether long-closure requests vary by the hour when a request was
+created. Define a request as long-closure when its closure time is at least
+two hours; exclude requests without a usable closure time and report their
+number.
 
-a. Divide creation hours into four six-hour intervals, state their boundaries,
-   and report the request count and median closure time for each interval.
+a. Divide creation hours into four six-hour intervals and state their
+   boundaries. Construct a contingency table of interval by long-closure
+   status, showing both counts and within-interval proportions. Include the
+   eligible request count for each interval.
 b. Repeat the table for the three most frequent problem details. Identify one
    contrast that changes across intervals and compare its group sizes.
-c. Explain why the tables cannot by themselves distinguish a time-of-day
-   effect from changes in location, reporting behavior, or case mix.
+c. Compare the binary outcome with the continuous closure-time summaries.
+   Explain why either table alone cannot distinguish a time-of-day pattern
+   from changes in location, reporting behavior, or case mix.
 :::
 
 ::: {#exr-eda-area}
