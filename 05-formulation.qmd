@@ -42,13 +42,14 @@ observed variation warrants investigation. Both routes require iteration:
 questions direct further inspection, and the meaning and limitations of the
 data can change the questions. A pattern noticed while inspecting data remains
 exploratory until domain knowledge, alternative explanations, and further
-evidence have been considered.
-
-Yu and Barter describe the data science life cycle as nonlinear, while noting
-that projects often begin with a vague domain question [@yu2024veridical].
-Because administrative data may already be available before a project is
-defined, this chapter gives equal attention to the complementary route from
-data to question.
+evidence have been considered. @yu2024veridical describe this movement among
+questions, data, and analysis as a nonlinear data science life cycle. The
+present example begins with an administrative extract
+that was collected for service operations rather than for the proposed
+comparison. The analyst must therefore establish a domain purpose for any
+pattern found in the file and revise the question if the recorded fields do
+not represent the desired concept. This sequence keeps the data-to-question
+route connected to the intended use of an answer.
 
 The first activity in the data-science workflow aligns three components:
 
@@ -103,42 +104,48 @@ of what those records can establish.
 
 ## Interpreting the NYPD 311 Records
 
-New York City 311 provides a point of contact for nonemergency government
-services and information. The public service-request dataset records requests
-that 311 directs to responding agencies. This chapter uses only requests
-directed to NYPD, with reported problems, timestamps, status, and available
-geographic information [@nycopendatand311].
+The observational unit in this chapter is one New York City 311 service
+request directed to NYPD. The public
+dataset records requests routed to responding agencies, and its `Unique Key`
+field identifies rows [@nycopendatand311]. A row is neither an independently
+verified violation nor necessarily a unique street condition: several
+requests may concern the same situation, while other conditions may never
+be reported. Request counts therefore measure activity recorded by this
+service system within a defined scope. A location with few requests may
+have fewer conditions, less use of 311, or both; the table alone cannot
+separate those explanations. The identifier must be present and unique if
+each row is to represent one request in subsequent counts. The downloaded
+records must also be checked against the stated agency and time restrictions
+before the illegal-parking problem filter defines the working subset.
 
-The observational unit is one service request. The official data page names
-`Unique Key` as its row identifier [@nycopendatand311]. One request is not
-necessarily one verified incident: several requests could describe
-the same condition, and some conditions may never be reported. A location with
-few requests may have little illegal parking, limited awareness of 311, or a
-different pattern of reporting. The key should therefore be present and unique,
-and request counts should be interpreted as recorded demand on this service
-system. The downloaded rows should also satisfy the stated NYPD restriction;
-the time restriction must be checked, and the problem restriction will be
-applied later to create an analysis subset.
+The timestamp fields define an administrative interval rather than a
+direct measure of field response. `Created Date` records the creation of a
+request, and `Closed Date` records its closure by the responding agency;
+their difference is the recorded **closure time**. An officer could arrive
+before that closure, and the reported condition could end at another time.
+The archive does not contain observations of those events, so relabeling
+the difference as response or resolution time would change the measured
+concept without evidence. The timestamps in this extract are local New
+York clock times without an explicit timezone. The selected week does not
+cross a daylight-saving transition, which avoids one source of ambiguity
+in subtracting its recorded times but does not validate each timestamp.
+An analysis of individual reporting behavior would additionally require
+information about reporters that the public table does not provide.
 
-The meanings of the time fields determine which outcomes can be constructed.
-The `Created Date` field records when a request was created, and `Closed Date`
-records when the responding agency closed it. Their difference is a
-**closure time**.
-Calling it a police response time would require evidence that closure coincides
-with an officer's response. The timestamps in this extract are recorded as
-local New York clock times without an explicit timezone; the selected week
-does not contain a daylight-saving transition. A study of individual reporting
-behavior would require information about reporters that the public data do not
-contain.
-
-Variable roles depend on the question. `Borough` can define comparison groups,
-`Problem Detail (formerly Descriptor)` can distinguish types of reported
-illegal parking, and `Closed Date` can help derive a closure time. The `Unique
-Key` and `Incident Zip` fields are identifiers whose digits do not represent
-measured magnitudes; importing them as text preserves their meaning. Coordinates
-identify a point, precincts identify administrative areas, and incident ZIP
-Codes identify postal areas. Their values may disagree or be missing because
-they describe different spatial concepts.
+Variable roles depend on the question and the geographic concept being
+represented. `Borough` can define broad comparison groups, while `Problem
+Detail (formerly Descriptor)` distinguishes reported categories within
+illegal parking. `Unique Key` identifies a request and `Incident Zip`
+identifies a postal area; their digits are labels rather than measured
+magnitudes and should be imported as text. Latitude and longitude locate
+a recorded incident point, whereas a police precinct code refers to an
+administrative unit. A coordinate, precinct, and ZIP label can disagree
+or be missing because they are recorded through different fields and
+describe different spatial objects. These distinctions govern later
+preparation: an area merge can use a ZIP label, but a point-to-precinct
+distance requires a usable coordinate, a precinct location, and a defined
+distance metric. Treating all geographic fields as interchangeable would
+conceal both coverage limits and the units of the resulting analysis.
 
 ## Acquiring and Importing Data
 
@@ -669,10 +676,11 @@ precinct summaries should avoid displaying individual addresses. Public
 availability does not eliminate the responsibility to minimize unnecessary
 detail and to follow the source's terms of use.
 
-Open-data curation requires more than distributing a readable file. Tussey and
-Yan propose six principles from their study of NYC 311: cross-organizational
-consistency, accurate data entry, efficient storage, current data dictionaries,
-automated quality assurance, and transparency [@tussey2025principles]. Their
+Open-data curation requires more than distributing a readable file.
+Tussey and Yan propose six principles from their study of NYC 311:
+cross-organizational consistency, accurate data entry, efficient storage,
+current data dictionaries, automated quality assurance, and transparency
+[@tussey2025principles]. Their
 examples include inconsistent representations of missing values, invalid ZIP
 Codes, implausible date relationships, unusual concentrations at particular
 times, redundant fields, and categories whose meaning varies by agency or
@@ -709,19 +717,20 @@ detail_counts = (
 detail_counts
 ```
 
-The table can generate several kinds of questions. A descriptive question asks
-which reported illegal-parking problems were most common during the week. A
-comparative question asks whether the distribution of problem details differed
-between daytime and nighttime requests or across boroughs. A predictive
-question asks whether information available when a request was created can
-predict a long closure time. Each question refers to service requests, not to
-all illegal-parking events in New York City.
-
-Domain questions connect the observed variation to what residents, agencies,
-and policymakers might need to understand. The same fields can support
-different questions, but the evidence needed grows as the intended claim moves
-beyond a description of requests. Every row in this extract was directed to
-NYPD; requests handled by other agencies are outside its scope.
+The problem-detail table can motivate several kinds of questions, but each
+requires a different target and standard of evidence. A descriptive question
+asks which categories were most common among the selected requests. A
+comparative question asks whether the category distribution differed across
+boroughs or creation-time periods. A predictive question asks whether fields
+available when a request was created can predict a subsequent closure
+interval; it would require an evaluation on data withheld from model fitting.
+These questions concern recorded NYPD-directed requests rather than all
+illegal-parking events in the city. Domain knowledge identifies which
+differences matter to residents or agencies, while the intended claim
+determines whether additional data are necessary. The following table
+separates quantities that the extract can describe from the evidence required
+for broader operational, safety, equity, or reporting claims. It also makes
+the exclusion of requests handled by other agencies explicit.
 
 | Domain concern | Possible question | Evidence in this extract | Evidence still needed |
 |---|---|---|---|
@@ -748,20 +757,19 @@ hydrants, and did their median closure times differ?” The revision identifies
 the unit, category, place, period, and comparison, while still acknowledging
 that the result describes recorded requests rather than all blocked hydrants.
 
-A causal question requires stronger evidence. The records may show that night
-requests had different closure times from day requests, but the comparison
-does not establish that submitting a request at night causes a delay. Problem
-detail, location, staffing, reporting behavior, and other factors can differ
-with time of day. Causal language would require a design and assumptions that
-address such alternatives.
-
-A final evaluation applies the domain, measurement, scope, and evidence checks
-introduced earlier. These checks eliminate questions that are computationally
-possible but substantively weak. For example, averaging ZIP Codes is possible after they are
-misread as numbers, but the result has no useful geographic meaning. Comparing
-raw request counts across ZIP Codes is valid as a description of the file
-but can be misleading as a comparison of reporting rates because the areas
-contain different populations and opportunities for parking.
+A final evaluation applies the domain, measurement, scope, and evidence
+checks to the proposed claim rather than merely to its computational form.
+The records may show that requests created at night have different closure
+times from those created during the day, but the comparison does not establish
+an effect of reporting time: problem detail, location, staffing, and reporting
+behavior may also vary with the hour. Similarly, averaging ZIP Codes after
+they have been imported as numbers is computationally possible but has no
+geographic interpretation. Raw request counts by ZIP label describe the
+file, yet they are not comparable as per-resident reporting rates when areas
+differ in population and parking opportunities. Each proposed analysis must
+therefore name its measured quantity, eligible requests, comparison basis,
+and intended inference. A causal claim would additionally require a design
+and assumptions that address competing explanations.
 
 Additional area-level data could supply denominators and context for ZIP-level
 request counts. Census characteristics are often tabulated for ZIP Code
@@ -774,26 +782,36 @@ requests.
 
 ## A Working Formulation
 
-A working formulation records the current alignment of domain, question, and
-data while remaining open to revision. The provisional comparison introduced
-at the start of the chapter can now be refined using the observed category
-frequencies and the limits identified in the checks. The working scope is to study
-the volume, reported problem details, locations, and closure times of NYPD
-illegal-parking requests during the week containing Labor Day 2026. The
-problem-detail table identifies three frequently reported categories:
-`Blocked Hydrant`, `Posted Parking Sign Violation`, and `Blocked Sidewalk`.
-Those observed categories motivate a more focused comparative question:
+A working formulation records the current alignment of purpose, target,
+population, and evidence while allowing later checks to revise it. The
+eligible population consists of NYPD-directed illegal-parking requests
+created during September 6–12, 2026; the outcome is each request's recorded
+creation-to-closure interval in hours. The three most frequently reported
+problem details are `Blocked Hydrant`, `Posted Parking Sign Violation`, and
+`Blocked Sidewalk`. For a detail group $g$, the descriptive target is the
+distribution of those closure intervals among eligible requests labeled
+$g$, rather than a causal effect of the label or a citywide incident rate.
+Selecting groups by their observed frequencies avoids choosing them because
+their closure summaries appear different, but the selection still uses the
+same week under study. These definitions yield the working comparison:
 
 > Among NYPD illegal-parking requests created from September 6 through
 > September 12, 2026, how did recorded closure-time distributions differ
 > among the three most frequently reported problem details?
 
-This question specifies the observational unit, period, measurements, and
-comparison groups. The groups were selected after inspecting the data, so the
-comparison is exploratory. Location and reporting practices could also differ
-among the categories. Closure time remains an administrative measure; a
-difference would describe recorded requests during one holiday week without
-establishing that problem detail caused the difference in closure.
+The working comparison has a defined unit, period, outcome, and group rule,
+but its interpretation remains descriptive. Groups were selected after
+inspecting the week's category frequencies, and the records were collected
+through a reporting system rather than a probability sample of parking
+conditions. Location, reporting time, and agency practices may also differ
+among the categories. A difference between their closure-time distributions
+would therefore characterize these recorded requests during a holiday week;
+it would not identify the effect of changing a request's problem label.
+Exploratory analysis can examine distribution shape and subgroup variation,
+while a later study could define a broader target period or collect process
+data to investigate the operational reasons for a difference. The present
+formulation makes those later requirements visible before a summary statistic
+or plot is chosen.
 
 Other features of the checked extract support different formulations. The
 problem-detail table records 3,711 requests about blocked hydrants and 379

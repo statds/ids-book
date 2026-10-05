@@ -53,23 +53,22 @@ variable, eligible population, and observation period introduced in
 change in any of these four elements changes the quantity the figure
 represents.
 
-The illegal-parking example makes the relationship between a record and a
-claim especially important. Each row is a 311 service request directed to
-the NYPD, not an independently verified parking event, and `Closed Date`
-records administrative closure rather than the precise time of an officer's
-arrival. The latitude and longitude describe a recorded incident location;
-their presence does not establish that a violation occurred at that point.
-Consequently, a count of rows quantifies requests in the selected extract,
-while a closure-time summary describes a recorded administrative interval.
-Neither quantity alone estimates the prevalence of illegal parking or the
-risk faced by an individual resident. The following code loads the same
-screened table used in @sec-eda through the
-[shared preparation function](scripts/parking_requests.py). The filters
-and timestamp rules are explained in @sec-wrangling; the function keeps
-those decisions in one place while both chapters remain independently
-executable. The compact report below checks the number of requests,
-identifiers, and missing coordinates before any figure uses the table
-[@nycopendatand311].
+The worked figures use the same screened request table as @sec-eda, but
+they serve different reader tasks. @sec-problem-formulation established the
+request as the observational unit and limited the interpretation of closure
+time; @sec-wrangling documented the transformations; and @sec-eda examined
+the resulting distributions. This chapter asks how a visual specification
+can preserve those distinctions while making an intended comparison clear.
+An hourly line plot summarizes all eligible requests, a closure-time
+interval plot shows selected distributional features, and a point map
+requires usable coordinates. The corresponding displays therefore do not
+all contain the same records or support the same claim. The following code
+loads the common screened table through its
+[shared preparation function](scripts/parking_requests.py), derives only
+the time fields needed for the examples, and reports counts that will
+matter when the eligible set changes. This compact audit links each later
+figure to a reproducible input without repeating the source import and
+filtering procedure [@nycopendatand311].
 
 ```{python}
 from pathlib import Path
@@ -82,7 +81,7 @@ from plotnine import (
     aes, facet_grid, facet_wrap, geom_line, geom_point, ggplot, labs,
     scale_color_manual, scale_x_continuous, theme, theme_minimal,
 )
-from scripts.parking_requests import load_parking_requests
+from scripts.parking_requests import load_parking_requests, load_zcta_context
 
 parking = load_parking_requests()
 parking["hour"] = parking["created_at"].dt.hour
@@ -98,20 +97,20 @@ pd.Series({
 }).to_frame("count")
 ```
 
-The screening step yields 13,040 distinct requests, of which 99 have at
-least one missing geographic coordinate. This difference matters whenever
-figures are compared: an hourly plot can include all selected requests,
-whereas a point map excludes those without usable coordinates. If missing
-locations are concentrated in a particular borough or problem detail, the
-map can represent a different subset from the nonspatial plot even though
-both originate in the same archive. A caption should therefore identify the
-eligible records, the measured quantity and its unit, the observation
-period, and exclusions that could affect interpretation. These elements
-are part of the evidence, not optional formatting. The archive is stored
-locally so that the examples render without a network request;
-@sec-problem-formulation documents its download and provenance. Later maps
-add further eligibility rules for a valid five-digit ZIP label or a matched polygon. Those rules
-will be reported at the point where they affect the displayed quantity.
+The compact report establishes the denominator for the chapter's figures
+and identifies the requests that cannot appear as points. The hourly and
+closure-time displays use the full screened table, whereas a point map
+must exclude rows without usable coordinates. The subset represented by
+the map could differ systematically if missing locations are concentrated
+in a borough or problem-detail group; marker transparency does not correct
+that coverage difference. An area map introduces another eligibility rule
+when it requires a five-digit ZIP label or a polygon assignment. Each
+caption should therefore name its eligible records, measured quantity,
+units, observation period, and any exclusion relevant to interpretation.
+These facts belong next to the display because the same source archive can
+produce different plotted populations. The locally held archive and its
+provenance are documented in @sec-problem-formulation; the remaining
+sections concentrate on how analysis choices become visible in a figure.
 
 ## Grammar
 
@@ -337,21 +336,20 @@ fig.tight_layout()
 plt.show()
 ```
 
-The plotted medians are approximately 2.05 hours for Blocked Hydrant,
-1.62 hours for Posted Parking Sign Violation, and 1.18 hours for Blocked
-Sidewalk. The respective middle-half ranges are approximately 0.87–5.14,
-0.70–3.70, and 0.46–3.03 hours. The common axis supports comparison of
-their centers, while the interval lengths show substantial within-group
-variation that a median-only display would conceal. These descriptive
-differences should not be interpreted as effects of the problem-detail
-label: reporting time, geography, operating procedures, and other
-attributes can differ between groups. The upper quartiles also do not
-describe the longest recorded closures, so a question about delayed
-closure would require a tail-focused plot or quantile. Finally, the
-recorded closure interval does not equal response time. A caption or
-nearby interpretation should state these limits where readers encounter
-the figure, because they determine which claims the displayed values can
-support.
+The visual design changes the question a reader can answer from the same
+closure-time records summarized in @sec-eda. Sorting the three details by
+their medians and placing the dots on one horizontal scale makes their
+central ordering easy to inspect. The quartile intervals show substantial
+within-group variation and overlap, so the distance between median dots
+cannot be read as separation between individual requests. The marks do
+not encode group counts or the longest closure intervals; those quantities
+remain in the exploratory tables and cumulative distributions. This is a
+deliberate reduction of information for a focused comparison, and its
+caption names the statistic represented by each mark. If delayed closures
+were the communication goal, an upper-tail quantile or cumulative display
+would be more appropriate. The figure also remains descriptive: a visual
+gap between groups does not identify the effect of a problem-detail label
+when reporting time, location, and administrative practices may differ.
 
 ## Mistakes
 
@@ -471,22 +469,21 @@ population and denominator.
 
 ## Maps
 
-Spatial graphics require a definition of both the measured unit and the
-geographic unit. The 311 extract supplies latitude and longitude for most
-requests, while the NYC Open Data ZIP Code Tabulation Area (ZCTA) file
-supplies polygons for 221 areas [@nycopendata2026zip]. A point map retains
-the recorded location of an individual request; a choropleth assigns a
-summary value to an entire polygon. The two displays therefore answer
-different questions. The point map can show concentrations and gaps in
-recorded locations, subject to overplotting and geocoding quality. An area
-map can support comparisons of counts or rates across defined units, but
-it removes within-area location information. Neither map, by itself,
-measures the prevalence of illegal parking. The Census population data
-introduced in @sec-wrangling can supply a denominator for requests per
-resident, but resident counts are not counts of vehicles, curb spaces, trips, or
-parking opportunities [@census2023zip; @census2026american]. The
-substantive question must determine which geography and denominator are
-appropriate before the analyst chooses a map.
+Spatial graphics add a choice of geographic unit to the visual design.
+The 311 extract supplies recorded coordinates for most requests, while
+NYC Open Data supplies polygons for 221 ZIP Code Tabulation Areas (ZCTAs)
+[@nycopendata2026zip]. A point map retains the approximate location of an
+individual request and can expose concentration or gaps at a fine scale,
+subject to overlapping marks and geocoding quality. A choropleth instead
+assigns one aggregate value to an entire polygon, which supports area
+comparison but removes within-area variation. The maps answer different
+questions even when they use the same request archive. The choice between
+them should follow the intended comparison: where reports were recorded,
+how many matched an area, or how an area summary varies across the city.
+Population estimates from @sec-zcta-context-merge can provide one possible
+denominator, but the resulting rate still measures requests per resident
+over the stated period. The map's color and legend must identify that
+quantity rather than imply verified illegal-parking prevalence.
 
 The geometry construction makes the coordinate reference system explicit.
 The request coordinates are recorded as longitude and latitude, so the
@@ -506,9 +503,7 @@ missing coordinate [@geopandas2026projections].
 
 ```{python}
 zcta_polygons = gpd.read_file(Path("data") / "nyc_zcta_boundaries.geojson")
-zcta_context = pd.read_csv(
-    Path("data") / "zcta_context.csv", dtype={"zcta": "string"}
-)
+zcta_context = load_zcta_context()
 with_coordinates = parking.dropna(subset=["latitude", "longitude"]).copy()
 request_points = gpd.GeoDataFrame(
     with_coordinates,
@@ -559,21 +554,21 @@ fig.tight_layout()
 plt.show()
 ```
 
-An area map additionally requires a reproducible assignment of requests to
-polygons. The merge in @sec-zcta-context-merge matched the five-digit
-`Incident Zip` label in a request to a ZCTA with the same code in the
-Census context table. Postal ZIP Codes
-and Census ZCTAs are related geographic systems, but they are not identical
-areas, and some ZCTAs extend beyond city limits [@census2023zip]. A
-point-in-polygon join offers a different rule: it assigns a request to the
-polygon that contains its recorded coordinate. That rule depends on usable
-coordinates, the polygon boundaries, and the chosen spatial predicate.
-Requests near a boundary may move between areas when a geocode is
-imprecise; a point exactly on a boundary may not satisfy `within`; and
-overlapping polygons may assign one point more than once. These outcomes
-can change area totals, so the analyst should count one-to-one, unmatched,
-and multiple matches before aggregating. The diagnostic below performs
-that check using the supplied polygons [@nycopendata2026zip].
+An area map requires an assignment rule that maps each request to a named
+polygon or reports why it remains unassigned. @sec-zcta-context-merge
+used equality of the provider's five-digit postal ZIP label and a Census
+ZCTA code; it also explained why equal labels do not imply identical
+geographies [@census2023zip]. Coordinates permit an alternative
+point-in-polygon assignment. That operation answers a different question,
+because it uses the recorded point rather than the provider's postal label.
+It requires valid coordinates, a selected polygon file, and a spatial
+predicate. Under `within`, a point exactly on a boundary does not belong
+to either adjoining polygon, while overlaps can assign one request to
+several polygons. An imprecise geocode or simplified boundary can also
+change a near-edge match. Before shading a map, the analyst should count
+one-to-one, unmatched, and multiple assignments and decide which rule
+corresponds to the geographic target. The diagnostic below makes those
+outcomes visible for the supplied ZCTA polygons [@nycopendata2026zip].
 
 ```{python}
 point_zcta = gpd.sjoin(
@@ -600,9 +595,9 @@ analyst should inspect the ambiguous records against the original
 boundaries, state a tie-breaking rule if one is justified, and report the
 remaining exclusions. The maps below instead retain the ZIP-label match
 introduced in @sec-zcta-context-merge, which keeps their area summaries
-comparable to the earlier data-wrangling example. The point-in-polygon results remain a
-diagnostic of geographic disagreement rather than an unexamined source of
-replacement labels.
+comparable to the earlier data-preparation example. The point-in-polygon
+results remain a diagnostic of geographic disagreement rather than an
+unexamined source of replacement labels.
 
 The paired choropleths separate the effect of a numerator from the effect
 of a denominator. For ZCTA $z$, let $N_z$ be the number of selected requests
@@ -626,8 +621,8 @@ valid_zip = parking["incident_zip"].str.fullmatch(r"\d{5}", na=False)
 area_counts = (
     parking.loc[valid_zip]
     .groupby("incident_zip")
-    .agg(requests=("request_id", "size"),
-         median_hours=("closure_hours", "median"))
+    .size()
+    .rename("requests")
     .reset_index()
     .rename(columns={"incident_zip": "zcta"})
 )

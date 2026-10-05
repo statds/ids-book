@@ -1,17 +1,19 @@
-# Data Wrangling {#sec-wrangling}
+# Data Preparation {#sec-wrangling}
 
-Data wrangling transforms acquired data into a form suited to a specified
-analysis while preserving the evidence needed to review those transformations.
-This chapter develops a reproducible preparation workflow for the NYPD
-illegal-parking requests examined in the previous chapter. The input is the
-distributed ZIP archive and the documented time and problem filters; the core
-output is a derived table with the provider fields renamed consistently and
-closure time and time of day added. The four formulation checks in
-@sec-formulation-checks guide which variables to retain, which transformations
-to make, and what claims the prepared table can support. The emphasis is not
-on making every value look regular, but on distinguishing documented facts,
-defensible transformations, and unresolved uncertainty. Exploratory analysis
-and visualization follow after the prepared data have been validated.
+Data preparation constructs an analysis table from acquired records while
+preserving the evidence needed to evaluate each transformation. The input in
+this chapter is the distributed NYPD-directed 311 archive and the scope
+defined in @sec-problem-formulation. Its principal output is a request-level
+table with documented field names, derived closure hours, a creation-time
+category, and matched Census area context where a valid match exists. The domain,
+measurement, scope, and evidence checks in @sec-formulation-checks determine
+which fields are retained and which operations require justification. A
+successful transformation need not make every value regular: an unmatched
+ZIP label or an unusual timestamp can be a finding about the source rather
+than a value to overwrite. The workflow therefore separates changes in
+representation from new analytical assumptions, checks that request identity
+and scope survive each stage, and records what remains uncertain before the
+prepared table is used for exploration or visualization.
 
 ## From Source Records to an Analysis Table
 
@@ -27,22 +29,21 @@ geographic enrichment only when units and geographies align. The steps are
 iterative because a transformation can expose a problem or show that a
 question requires different data.
 
-A useful preparation plan separates three classes of decisions. **Scope
-decisions** select which observations and fields belong to an analysis.
-**Representation decisions** change how a value is encoded without changing
-its meaning, such as parsing a date string or storing a ZIP Code as text.
-**Analytical decisions** define derived measurements or handle uncertain
-values, such as defining nighttime or excluding requests without coordinates.
-The first two are often mechanical once documented; the third require an
-explicit rationale because they can change the population, measurement, or
-conclusion.
-
-The original ZIP archive should remain unchanged. @sec-problem-formulation
-demonstrated importing and profiling this source; the code below repeats its path,
-timestamp parsing, and filters so this chapter can run independently. The
-Feather examples in that chapter use temporary files, so they do not create an
-input for this workflow. Each stage here instead creates a derived data frame
-and records the transformations and checks needed to review it.
+A preparation plan separates three classes of decisions because they have
+different implications for the resulting claim. **Scope decisions** select
+eligible observations and fields. **Representation decisions** encode a
+recorded value for reliable computation without changing its documented
+meaning, as when a ZIP Code is stored as text. **Analytical decisions**
+define new measurements or resolve uncertain values, as when a particular
+hour range is designated nighttime. Every class should leave an auditable
+record, but analytical choices especially require a rationale because they
+can change the outcome or comparison. The original ZIP archive remains
+unchanged. @sec-problem-formulation demonstrated its acquisition and initial
+profile; the code below repeats only the import, timestamp parsing, and row
+filters needed for this chapter to run independently. Temporary Feather
+examples in that chapter do not provide an input here. Each subsequent stage
+creates a derived data frame and verifies the assumptions that its operation
+introduces.
 
 ```{python}
 from pathlib import Path
@@ -71,24 +72,38 @@ parking = requests.loc[
 ].copy()
 ```
 
-The code applies the two documented row restrictions without overwriting the
-download. Its output has the same observational unit as its source: one row
-per service request. A row filter does not resolve missing values, invalid
-categories, duplicate identifiers, or disagreement among fields; those
-conditions require separate diagnostics. Nor does this subset represent all
-parking conditions in New York City, since it includes only requests sent to
-NYPD during one week.
+The import block reconstructs the intended analysis scope without
+overwriting the downloaded archive. The half-open timestamp interval includes
+requests created on every day of the selected week and excludes those
+returned from the following Sunday; the problem condition restricts the
+subset to illegal-parking requests. The observational unit remains one
+service request, so a row restriction changes the eligible population but
+does not aggregate or validate individual observations. The explicit
+datetime format also exposes parsing failures as missing timestamps, which
+must be checked rather than silently interpreted as absent service
+activity. The resulting frame can still contain missing fields, unexpected
+category values, duplicate identifiers, or disagreements among geographic
+descriptors. Those issues require separate diagnostics before a derived
+variable or merge can be trusted. The subset also remains limited to
+NYPD-directed requests from one week, regardless of how consistently its
+columns are represented.
 
 ## Recheck Scope Before Transforming
 
-@sec-initial-checks profiles the source extract in detail, including its
-requested scope, missing fields, coordinate coverage, status and timestamp
-relationships, and unusual time values. This chapter uses those findings
-to motivate specific transformations rather than repeat the full diagnostic
-tables. Because each chapter can also be rendered on its own, the import block
-above reconstructs the screened subset and the following compact report
-rechecks the invariants required here. A failed check means the input or filter
-has changed and should be investigated before any recoding or merge.
+The compact scope report tests the conditions on which this preparation
+workflow depends. @sec-initial-checks documented the delivered extract's
+agency, timestamp, identifier, and missingness patterns; reproducing those
+diagnostic tables would add little to a chapter about transformation. The
+present check instead treats the expected row unit and filters as executable
+invariants: identifiers must be present and unique, creation times must
+fall within the selected half-open week, and every retained row must carry
+the illegal-parking problem label. These tests serve a different purpose
+from the initial profile. They detect a changed input file, an altered
+filter, or a parsing failure before derived columns are constructed. A
+failed invariant should prompt inspection of the source and the preparation
+code; it should not be repaired by automatically dropping records until the
+check passes. This chapter remains independently executable while the
+substantive diagnosis stays in the formulation chapter.
 
 ```{python}
 scope_checks = pd.Series({
@@ -105,40 +120,48 @@ scope_checks = pd.Series({
 scope_checks.to_frame()
 ```
 
-The checks confirm that the expected requests and identifiers remain intact
-before transformations. @sec-initial-checks found 99 requests without coordinates.
-Those rows remain eligible for the ZCTA join below because it uses the
-recorded ZIP field, not latitude and longitude. A later point-distance
-analysis would need to address coordinate missingness separately; it should
-not infer a point location from the area-level match.
+The invariant report confirms that the selected requests and their
+identifiers remain intact before transformations. Coordinate completeness is
+not a condition for the ZIP-label merge below, because that operation uses
+the provider's `Incident Zip` field rather than latitude and longitude.
+Removing requests without coordinates at this stage would therefore change
+the population for a reason unrelated to the planned join. A subsequent
+point map or distance calculation has a different eligibility rule and
+must report the resulting exclusions separately. An area match also cannot
+restore a missing point location: an area label identifies a region, while distance
+to a precinct requires a location and a specified distance metric. These
+examples illustrate why eligibility should be defined for each analytical
+quantity instead of imposed once as a generic complete-case filter.
 
 ## Standardize Representations Conservatively
 
 Representation changes make fields usable without asserting new facts about
-the observations. Dates should use datetime types, ZIP Codes and request keys
-should remain strings, and controlled categories can be stored consistently
-after their observed forms have been examined. A ZIP Code such as `00501` is
-an identifier, not a quantity; converting it to an integer would remove a
-leading zero and invite meaningless arithmetic. Likewise, recoding a blank,
-`N/A`, and `Unspecified` to one missing value is justified only when their
-documented meanings coincide.
+the observations. Dates should use datetime types, while ZIP Codes and
+request keys should remain strings because their digits are labels rather
+than measured magnitudes. Converting a ZIP Code such as `00501` to an integer
+would remove its leading zero; recoding a blank, `N/A`, and `Unspecified` to
+one missing value would be justified only if their documented meanings
+coincide. Column names require the same care. The NYC export uses spaces,
+punctuation, capitalization, and historical parenthetical wording; these
+labels are valid but inconvenient for repeated analysis. A derived table
+can use consistent names while the imported source and a complete
+source-to-analysis mapping retain the provider's terminology. The mapping
+must be checked for collisions because two distinct source fields can
+normalize to the same string. A collision requires explicit disambiguation
+before either field is renamed.
 
-Column labels also need a deliberate representation policy. The NYC export
-uses spaces, capitalization, punctuation, and historical parenthetical labels
-such as “formerly Complaint Type.” Such names are valid, but cumbersome in
-code and inconsistent as an interface. Normalize labels in a derived table,
-not in the imported source, and preserve a complete mapping from each provider
-label to its analysis name. Before applying the mapping, check that two source
-columns do not collapse to the same normalized name. A collision needs an
-explicit disambiguation, not silent overwriting.
-
-The frequency table in @sec-problem-detail-counts identifies the categories
-that motivate the working comparison. Here, the distinct strings
-are inspected before any category recoding. The observed labels are
-interpretable and the leading values are not spelling variants that should
-be merged automatically. Column-name normalization is separate from
-recoding category values: a convenient field name does not justify changing
-its contents.
+Category standardization requires evidence about the meanings of values,
+not only a preference for uniform text. The frequency table in
+@sec-problem-detail-counts established which problem details motivate the
+working comparison. The following code inspects the distinct source
+strings before any recoding. The observed leading labels are interpretable,
+and apparent similarity between two labels would not by itself establish
+that they describe the same reporting condition. A data dictionary or
+curator explanation would be needed before combining categories with
+different names. By contrast, the code below changes column *names* to
+make operations easier while leaving category *values* unchanged. Keeping
+those two decisions separate preserves the provider's distinctions and
+allows later readers to evaluate a proposed recode against the source.
 
 ```{python}
 detail_column = "Problem Detail (formerly Descriptor)"
@@ -193,34 +216,40 @@ analysis = parking.rename(columns=name_map).copy()
 name_mapping
 ```
 
-The mapping table is part of the preparation record and can be saved with the
-analysis data dictionary. The parenthetical wording remains in
-`source_name`, so users can identify the provider's historical label even
-though `problem` and `problem_detail` are more convenient in code. If a future
-export changes its labels, the mapping should be reviewed against the current
-data dictionary rather than applied by position or assumed to remain valid.
-
 ```{python}
 analysis[[
     "request_id", "created_at", "problem_detail", "incident_zip", "status"
 ]].head()
 ```
 
-Renaming a field changes its label, not its definition. The derived table
-should travel with the complete source-to-analysis mapping, particularly where
-provider terminology is historical or ambiguous. Uniform labels improve code
-readability, but they do not make field contents more accurate or comparable
-across agencies and years.
+The short display confirms that the derived table exposes analytical names
+while retaining the provider's values. The mapping table above records the
+correspondence between the two schemas; it should accompany any exported
+analysis table so that a future reader can trace a variable back to its
+source. This distinction matters when a provider changes a label but not a
+definition, or retains a label while changing how a field is populated.
+Neither case can be resolved from normalized column names alone. A later
+comparison across agencies or years would require a data-dictionary review
+of field definitions and collection rules in addition to consistent code
+syntax. Thus, standardization improves the reliability of operations on
+the table without claiming that all similarly named values are measured in
+the same way.
 
 ## Derive Variables from Documented Meanings
 
-Derived variables translate recorded fields into measurements required by a
-question. A useful derived variable has an explicit definition, units, and
-validity conditions. For example, elapsed time from creation to closure can be
-defined as the difference between the two recorded timestamps, measured in
-hours. It remains a closure interval, not necessarily a measure of service
-response or resolution. The name of a column should not imply more than the
-source establishes.
+Derived variables translate recorded fields into measurements required by
+the question while making new assumptions explicit. Let $C_i$ and $L_i$
+denote the recorded creation and closure timestamps for request $i$. The
+derived value $T_i=(L_i-C_i)/3600$ is the elapsed interval in hours when the
+timestamp difference is measured in seconds and both times are available.
+Its validity requires successful parsing and a nonnegative chronology. The
+definition does not assert that an officer arrived at $L_i$ or that the
+reported condition ended then; those are distinct events that the archive
+does not measure. Keeping the two timestamps alongside $T_i$ permits an
+analyst to inspect a surprising value or revise the definition. A variable
+name such as `closure_hours` communicates the measurement more accurately
+than a label that would imply field response. The following calculation
+checks the resulting field before it is used as an outcome.
 
 ```{python}
 analysis["closure_hours"] = (
@@ -236,19 +265,31 @@ duration_check = pd.Series({
 duration_check.to_frame()
 ```
 
-Negative values would contradict the expected chronology if both timestamps
-refer to the same request timeline, but the value should be inspected before
-removal because parsing, corrections, or field definitions may explain it.
-Missing closure timestamps indicate that a closure interval cannot be
-calculated; replacing those times with the observation date would invent an
-event. Even nonnegative values can be unusually large, so summaries should
-include robust measures and later analysis should examine the full distribution.
+The duration check distinguishes missing outcomes, impossible chronology,
+and unusually long but nonnegative intervals. A negative value contradicts
+the expected order of creation and closure if both timestamps refer to the
+same request timeline; its source should be inspected before exclusion
+because parsing or a later correction may explain it. A missing closure
+timestamp leaves the interval undefined, and substituting the observation
+date would invent a closure event. A large positive interval is not
+automatically erroneous because administrative closure may occur well
+after a report is made. The median and maximum in the report serve different
+diagnostic purposes: one characterizes the center, while the other prompts
+inspection of the upper tail. @sec-eda examines that distribution rather
+than imposing an arbitrary cutoff during preparation.
 
-Time-of-day groups require a declared boundary. “Night” has no universal
-definition, so an analysis must state the local-time interval and explain why
-it is appropriate. The following example labels requests created from 8 p.m.
-through 5:59 a.m. as nighttime and all others as daytime. It is a convenient
-working definition, not an objective division between night and day.
+Time-of-day groups require a boundary that reflects the intended comparison.
+“Night” has no universal definition, so the example assigns requests created
+from 8 p.m. through 5:59 a.m. to nighttime and those from 6 a.m. through
+7:59 p.m. to daytime. The code leaves a missing creation hour unclassified
+instead of treating it as daytime. This categorical field can support a
+simple comparison, but it compresses variation across hours and ignores
+differences among individual dates, including the holiday in the selected
+week. The original timestamp remains in the table so that an analyst can
+examine hourly patterns or repeat the comparison under a different boundary.
+If the substantive question concerns staffing or reporting conditions, the
+boundary should be justified with relevant domain information rather than
+adopted solely because the resulting groups have convenient sizes.
 
 ```{python}
 hour = analysis["created_at"].dt.hour
@@ -261,32 +302,35 @@ analysis.loc[hour.ge(20) | hour.lt(6), "time_period"] = "night"
 analysis["time_period"].value_counts(dropna=False)
 ```
 
-Derived categories can support comparison, but they also discard detail. The
-original timestamp should remain available so that alternative boundaries,
-hourly summaries, or date-specific patterns can be examined later. This is
-another reason to retain source fields alongside derived fields instead of
-replacing one with the other.
-
 ## Merge Area-Level Context with Checks {#sec-zcta-context-merge}
 
-Data merging combines tables that describe different units. A request table
-can be joined to Census attributes summarized by ZIP Code Tabulation Area
-(ZCTA) only after the geographic identifiers, reference period, and expected
-relationship have been established. A postal ZIP Code and a Census ZCTA are
-related but not identical geographies; not every ZIP Code has a corresponding
-ZCTA [@census2023zip]. A successful software join therefore establishes a
-string match, not geographic equivalence.
+An area-level merge attaches contextual measurements to request records
+only under an explicit geographic matching rule. The request table has one
+row per service request; the Census context table has one row per ZIP Code
+Tabulation Area (ZCTA). The provider's `Incident Zip` is a postal ZIP Code
+label, whereas a ZCTA is a Census statistical area derived from address
+patterns. Equal five-digit strings permit a lookup but do not make the
+geographies identical, and some postal ZIP Codes have no corresponding ZCTA
+[@census2023zip]. The intended join is many requests to one context row,
+so a duplicate key on the right would incorrectly multiply requests. The
+reference period of the attached estimate also matters: a value measured
+before the request week describes earlier area context, not a contemporaneous
+attribute of an individual report. These conditions must be stated before
+the software merge is interpreted as evidence about place.
 
-For request-level data joined to a table with one row per ZCTA, the intended
-relationship is many requests to one area record. The supplied
-`data/zcta_context.csv` contains the 221 ZCTAs in NYC Open Data's city list and
-their 2024 American Community Survey (ACS) five-year population and median
-household income estimates [@nycopendata2026zip; @census2026american]. The
-file also includes margins of error, an income top-coding indicator, and the
-estimate year; its source and conversion rules are recorded in
-`data/zcta_context.md`. These estimates describe an earlier period than the
-2026 requests. The code below checks the prepared table and the join without
-assuming that postal ZIP Codes and ZCTAs are identical geographic units.
+The supplied `data/zcta_context.csv` contains the 221 ZCTAs in NYC Open
+Data's city list and their 2024 American Community Survey (ACS) five-year
+population and median household income estimates [@nycopendata2026zip;
+@census2026american]. It also records margins of error, an income
+top-coding indicator, and the estimate year. The provenance and conversion
+rules in `data/zcta_context.md` distinguish the Census estimates from the
+NYC boundary list used to select areas. These fields allow an analyst to
+check both the statistical meaning of an attached value and the geographic
+coverage of the lookup. The code verifies that each context key is a
+five-digit string, occurs once, and has the expected reference year before
+the merge. It then retains unmatched requests and reports them separately.
+The result is a documented link between labels, not an assertion that a
+postal area and its similarly named ZCTA have identical boundaries.
 
 The NYC ZCTA selection comes from the `zcta5` column of the city's published
 dataset, as the following acquisition code shows. The chapter uses the saved
@@ -376,25 +420,37 @@ dropped or repaired by adding leading zeros without evidence. In this extract,
 13,033 of 13,040 illegal-parking requests match a listed ZCTA; the seven
 unmatched requests remain in the table for other analyses.
 
-A population column can provide a denominator for area-level request rates,
-but interpretation still requires care. Dividing requests by population
-describes requests per resident over the chosen interval; it is not necessarily
-a rate of illegal-parking events because the data count reports rather than
-verified conditions. Area-level characteristics can also be compared with
-request-level closure times, but an association does not show that the
-characteristics caused a difference in closure. Area-level associations do not
-describe individual residents, and a merge cannot repair coverage or reporting
-differences absent from the data.
+Area context permits new comparisons only after the target quantity has
+been specified at the appropriate unit. A ZCTA population estimate can
+serve as the denominator of requests per resident during the observation
+week, but the numerator counts reports rather than verified conditions and
+the denominator does not measure curb space or vehicle exposure. Income
+and other area characteristics can also be attached to requests, yet the
+repeated area value does not become an independently measured attribute of
+each reporter. If the question concerns differences among places, the
+analysis should first aggregate to one row per area and state how many
+requests support each area summary. If the question concerns individual
+behavior or a causal effect of neighborhood conditions, the available
+merge does not supply the necessary individual measurements or design.
+The join therefore expands the set of descriptive questions that can be
+asked while leaving reporting coverage, geographic mismatch, and temporal
+alignment as explicit limitations.
 
 ## Validate the Prepared Data
 
-Validation repeats important checks after transformations and documents how
-the analysis table differs from the source. The output should retain request
-identity, have the expected row count, contain the required derived fields,
-and preserve the source fields needed for audit. If a join was performed, its
-cardinality and unmatched keys should be part of the validation report. A
-table that writes successfully is not necessarily correct; its invariants must
-be checked after it is read back.
+Validation compares the prepared table with the input and with the stated
+analytical contract. The following checks require the request count and
+identifier uniqueness to survive filtering, renaming, derivation, and the
+area merge. They also require the retained timestamps and problem label to
+remain within the intended scope and confirm that the closure field exists.
+The join report above separately records unmatched keys, so a passing row
+count does not conceal incomplete geographic coverage. These checks detect
+specific implementation errors, but they cannot prove that a source value
+is true or that the selected week represents a broader population. If the
+prepared table is saved for later use, its schema, source-to-analysis name
+mapping, join report, and relevant invariants should be stored with it and
+checked again after reading it back. A successful write operation alone
+does not establish semantic or numerical validity.
 
 ```{python}
 prepared = contextual_analysis.reset_index(drop=True)
@@ -413,15 +469,21 @@ final_checks.to_frame()
 
 ## Preparation as a Documented Argument
 
-Each transformation in this chapter makes a claim about the records: filters
-define the scope, derived fields operationalize measurements, and a merge
-asserts that keys connect units in a defensible way. The executable checks
-make those claims reviewable. The formulation chapter establishes the
-question and source limitations. The exploratory and visualization chapters
-reuse a [shared preparation function](scripts/parking_requests.py) that
-implements the screening and derived closure-time field described here.
-They then distinguish descriptions from claims that require additional
-evidence.
+The prepared table is a documented argument about which records and values
+can support the working question. Filters define scope, derived fields
+operationalize measurements, and the merge asserts a limited relationship
+between two geographic identifiers. The checks make those claims reviewable
+without implying that the source is error free. The exploratory and
+visualization chapters call a [shared preparation function](scripts/parking_requests.py)
+for the screened request fields and closure hours; that compact function
+does not reproduce this chapter's full 44-column mapping, time-period
+category, or enriched context table. Those later chapters construct only
+the additional fields their questions require. This division keeps the
+transformation logic visible here while avoiding a second long import and
+renaming sequence in each chapter. It also identifies a reproducibility
+obligation: if the screening rule or closure-time definition changes, the
+shared function and the explanations in this chapter must be reviewed
+together.
 
 ## Exercises {.unnumbered}
 
