@@ -18,6 +18,10 @@
 
 ## Editing the book
 
+- At the start of each task involving book content, load both the installed
+  `technical-writing` and `book-writing` skills. If Codex does not offer them
+  as skills, read their `SKILL.md` files from `~/.codex/skills/` or the
+  neighboring `wit-skills` clone.
 - Write for general readers, including college and advanced high-school
   readers. Keep explanations accessible and technically precise.
 - Give each paragraph a clear topic sentence. Start sentences with words,
