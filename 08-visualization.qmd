@@ -1,6 +1,8 @@
 # Visualization {#sec-visualization}
 
+
 Figures can help answer three different questions:
+
 
 - **What patterns should we investigate?** Use plots to explore distributions
   and relationships, as in @sec-eda.
@@ -8,6 +10,7 @@ Figures can help answer three different questions:
   patterns that a summary statistic can hide.
 - **What should an audience understand?** Choose a display that makes the
   main comparison clear and gives readers enough context to evaluate it.
+
 
 The same dataset can produce different impressions when the selected
 records, denominator, scale, or visual form changes. A figure is therefore
@@ -18,12 +21,15 @@ September 6–12, 2026, with maps and a small simulated dataset to illustrate
 design problems that the request data alone cannot isolate
 [@munzner2014visualization; @wilke2019fundamentals].
 
+
 When no chart is obvious, work through four questions:
+
 
 1. What is the observational unit and which records are eligible?
 2. What quantity and comparison answer the substantive question?
 3. Which visual form preserves the information needed for that comparison?
 4. What conclusion might a reader draw, and does the evidence support it?
+
 
 The code examples demonstrate these decisions. The exercises ask students to
 apply them to new questions and data sources while preparing for the midterm
@@ -31,10 +37,13 @@ project. Examples build on course demonstrations by Sonia Lucey (Plotnine),
 Alejandro Haerter (GeoPandas), and Jack Perkins (Google Maps), and use files
 distributed with the book.
 
+
 ## Purpose
+
 
 The question determines which information a figure needs to show. For
 example:
+
 
 - **Compare numerical levels:** positions on a shared scale help readers
   judge values more accurately than areas or color intensities
@@ -44,6 +53,7 @@ example:
 - **Compare locations:** plot points when individual recorded locations
   matter; use polygons when comparing area summaries.
 
+
 There is no one chart type for every purpose. During exploration, several
 views may reveal different aspects of the data. A figure for communication
 should make its main comparison easy to identify and retain the context that
@@ -51,6 +61,7 @@ qualifies it. First specify the observational unit, measured variable,
 eligible records, and period from @sec-problem-formulation and
 @sec-wrangling [@tussey2025principles]. Changing any of these changes the
 quantity being displayed.
+
 
 The examples use the screened request table from @sec-eda, but each display
 has its own eligible set. The hourly and closure-time plots use all screened
@@ -63,6 +74,7 @@ needed later, and reports the starting counts. It gives readers a concrete
 denominator to compare with later maps without repeating the import and
 filtering code [@nycopendatand311].
 
+
 ```{python}
 from pathlib import Path
 
@@ -70,11 +82,15 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+from IPython.display import display
 from plotnine import (
     aes, facet_grid, facet_wrap, geom_line, geom_point, ggplot, labs,
     scale_color_manual, scale_x_continuous, theme, theme_minimal,
 )
 from scripts.parking_requests import load_parking_requests, load_zcta_context
+
+set_matplotlib_formats("svg")
 
 parking = load_parking_requests()
 parking["hour"] = parking["created_at"].dt.hour
@@ -89,6 +105,7 @@ pd.Series({
         .isna().any(axis=1).sum(),
 }).to_frame("count")
 ```
+
 
 The compact report establishes the denominator for the chapter's figures
 and identifies the requests that cannot appear as points. The hourly and
@@ -105,11 +122,14 @@ produce different plotted populations. The locally held archive and its
 provenance are documented in @sec-problem-formulation; the remaining
 sections concentrate on how analysis choices become visible in a figure.
 
+
 ## Grammar of Graphics
+
 
 The grammar of graphics provides a language for specifying how data become
 a figure. Its components describe the choices that connect observations to
 visible marks:
+
 
 - **Data.** The data component identifies the observations and variables
   used by a layer.
@@ -127,11 +147,13 @@ visible marks:
 - **Facets.** Facets repeat a common specification across subsets of the
   data so that panels can be compared.
 
+
 This decomposition makes a figure revisable: an analyst can change a
 mapping, geom, or facet layout without reconstructing the entire graphic.
 Wilkinson developed the general framework, Wickham formalized a layered
 implementation in ggplot2, and Plotnine implements that approach in Python
 [@wilkinson2005grammar; @wickham2010layered; @plotnine2026facets].
+
 
 The first example compares the hours when requests were created on weekdays
 and weekend days. The study week has five weekdays but only two weekend days,
@@ -141,14 +163,17 @@ count and $D_d$ the number of observed days of that type. The plotted value
 $n_{bdh}/D_d$ is the average number of requests per observed day in that hour.
 The code constructs it in three steps:
 
+
 1. Count requests for each borough, day type, and hour.
 2. Add any missing combinations with a count of zero. Without these zeroes,
    a line would skip hours with no requests.
 3. Divide each count by five for weekdays or two for weekend days.
 
+
 This puts the two day types on a comparable time basis. It does not account
 for borough population, vehicles, reporting behavior, or an unusual day in
 this one-week period.
+
 
 ```{python}
 borough_order = ["BRONX", "BROOKLYN", "MANHATTAN", "QUEENS", "STATEN ISLAND"]
@@ -172,6 +197,7 @@ hourly["borough"] = pd.Categorical(
 )
 ```
 
+
 The Brooklyn figure demonstrates how a layered specification assigns a
 different role to each visual component. Hour is mapped to horizontal
 position, the normalized request count to vertical position, and day type
@@ -187,6 +213,7 @@ create a second group. Brooklyn provides a compact example before the
 same specification is repeated across boroughs. Readers should compare
 the timing and level of recorded requests, while retaining the one-week
 scope of the data [@heer2010crowdsourcing].
+
 
 ```{python}
 #| label: fig-viz-grammar
@@ -205,13 +232,15 @@ hour_plot = (
         color="Day type", title="When Brooklyn requests were created",
     )
     + theme_minimal()
-    + theme(figure_size=(7, 4))
+    + theme(figure_size=(6.4, 3.7))
 )
-hour_plot
+display(hour_plot.draw())
 ```
+
 
 Faceting repeats one plot specification across subsets of the data. These
 two layouts answer related questions:
+
 
 - **`facet_wrap("borough")`:** each borough gets a panel, and color
   distinguishes weekdays from weekends. Compare the two time profiles
@@ -220,18 +249,20 @@ two layouts answer related questions:
   defines columns. The panel position identifies both groups, so color is
   not needed to distinguish weekdays and weekends.
 
+
 Both plots use a fixed vertical scale. A height of 20 requests per observed
 day means the same thing in every panel, though low-count panels can look
 flatter. Free scales make within-panel shapes easier to see but remove direct
 comparisons of levels. Choose the scale according to the question and state
 the choice in the caption [@plotnine2026facets].
 
+
 ```{python}
 #| label: fig-viz-facet-wrap
 #| fig-cap: "Average hourly request counts per observed day, with a separate panel for each borough."
 #| fig-alt: "Five borough panels show weekday and weekend hourly request patterns with a common vertical scale."
 #| fig-format: svg
-(
+borough_facet_plot = (
     ggplot(hourly, aes("hour", "requests_per_day", color="day_type"))
     + geom_line(size=.8)
     + facet_wrap("borough", ncol=3)
@@ -240,25 +271,29 @@ the choice in the caption [@plotnine2026facets].
     + labs(x="Hour request was created", y="Requests per observed day",
            color="Day type")
     + theme_minimal()
-    + theme(figure_size=(10, 6))
+    + theme(figure_size=(6.4, 4.4))
 )
+display(borough_facet_plot.draw())
 ```
+
 
 ```{python}
 #| label: fig-viz-facet-grid
 #| fig-cap: "The same hourly summaries arranged by day type (rows) and borough (columns), with fixed scales."
 #| fig-alt: "A two-by-five grid compares hourly request patterns across weekday and weekend rows and borough columns."
 #| fig-format: svg
-(
+day_borough_facet_plot = (
     ggplot(hourly, aes("hour", "requests_per_day"))
     + geom_line(color="#3366AA", size=.8)
     + facet_grid("day_type ~ borough")
     + scale_x_continuous(breaks=[0, 12, 23])
     + labs(x="Hour request was created", y="Requests per observed day")
     + theme_minimal()
-    + theme(figure_size=(12, 5))
+    + theme(figure_size=(6.4, 4.4))
 )
+display(day_borough_facet_plot.draw())
 ```
+
 
 Use the wrap when readers should compare weekday and weekend patterns inside
 each borough. Use the grid when separating the day types makes the panels
@@ -269,10 +304,13 @@ workday. For a commuting question, the analysis would need a holiday flag,
 more weeks of data, or a narrower interpretation. A valid facet design can
 still compare groups that do not match the intended question.
 
+
 ## Comparisons
+
 
 Choose a visual form that preserves the part of the data needed for the
 question:
+
 
 - **Counts:** bars should begin at zero because their lengths encode size.
 - **Close estimates:** aligned dots on a shared scale make small differences
@@ -288,8 +326,10 @@ question:
   be difficult to distinguish [@crameri2020misuse;
   @harrower2003colorbrewer].
 
+
 The closure-time plot compares the three details with the most requests in
 the selected week. Each mark has a specific meaning:
+
 
 - The **dot** is the median recorded closure time.
 - The **line** extends from the first quartile to the third quartile, covering
@@ -298,9 +338,11 @@ the selected week. Each mark has a specific meaning:
   records in this extract, not uncertainty about a population median or a
   difference between groups [@correll2014error].
 
+
 This display makes group centers and middle spreads easy to compare. Use
 the empirical cumulative distribution in @sec-eda when distribution shape
 or the extreme tail is the main question.
+
 
 ```{python}
 #| label: fig-viz-detail-intervals
@@ -317,7 +359,7 @@ detail_summary = (
     .sort_values("median")
 )
 
-fig, ax = plt.subplots(figsize=(8, 3.6))
+fig, ax = plt.subplots(figsize=(6.4, 3.4))
 positions = range(len(detail_summary))
 ax.errorbar(
     detail_summary["median"], positions,
@@ -333,7 +375,9 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 Read the figure in this order:
+
 
 1. Follow the common horizontal scale to compare the median dots.
 2. Compare each line's length to see how widely the middle half of closure
@@ -342,6 +386,7 @@ Read the figure in this order:
    that individual requests in one group always closed sooner or later than
    those in another.
 
+
 The plot leaves out group counts and extreme closure times; the table and
 cumulative distributions in @sec-eda retain those details. If the audience
 needs to see delayed closures, use an upper-tail summary or cumulative plot.
@@ -349,15 +394,19 @@ This is a descriptive comparison. Location, reporting time, and agency
 practices may differ among groups, so the visual gaps do not show an effect
 of the problem-detail label.
 
+
 ## Common Mistakes {#sec-viz-common-mistakes}
 
+
 Misleading figures can enter at several stages:
+
 
 - **Selection:** omitted records change the population shown.
 - **Aggregation:** a summary can conceal variation within groups.
 - **Encoding:** a scale or mark can exaggerate small differences.
 - **Interpretation:** a title can turn a description into an unsupported
   causal or citywide claim.
+
 
 Wainer cataloged recurring ways to obscure data. Later studies examined how
 visual distortions affect readers and classified misleading figures in
@@ -370,6 +419,7 @@ deliberately poor example of each, and offers a repair check. The plots use
 the illegal-parking data or small simulated examples; their captions name
 the defect so the misleading design is not mistaken for a recommended one.
 
+
 | Mistake and likely false inference | Bad-plot example | Check or repair | References |
 |---|---|---|---|
 | Records without usable coordinates are dropped; the plot appears to include all requests. | @fig-viz-mistake-selection | Report the excluded count and label the figure as geocoded records, or use a field that supports the full eligible set. | [@lo2022misinformed; @tufte2001visual] |
@@ -381,7 +431,9 @@ the defect so the misleading design is not mistaken for a recommended one.
 | An area map shows request counts; darker areas appear to have greater illegal-parking risk. | @fig-viz-mistake-count-map | Examine a suitable denominator and retain the count map for context. | [@openshaw1984modifiable; @robinson1950ecological] |
 | A title claims a cause or citywide trend; a one-week association appears to establish that claim. | @fig-viz-mistake-title | State the observation period and measured quantity; separate description from explanation. | [@heer2010crowdsourcing; @tufte2001visual] |
 
+
 : Common visualization mistakes, their misleading examples, and checks for revision. {#tbl-viz-mistakes}
+
 
 The first example drops requests without usable coordinates but gives the
 remaining counts a title that implies full coverage. This selection can
@@ -389,6 +441,7 @@ change borough comparisons if missing locations are not distributed evenly.
 The repair should either use all eligible borough records or state that the
 figure summarizes geocoded requests and report how many records were
 excluded.
+
 
 ```{python}
 #| label: fig-viz-mistake-selection
@@ -401,7 +454,7 @@ geocoded_by_borough = (
     .size()
     .reindex(borough_order, fill_value=0)
 )
-fig, ax = plt.subplots(figsize=(8, 4))
+fig, ax = plt.subplots(figsize=(6.4, 3.8))
 ax.bar(geocoded_by_borough.index, geocoded_by_borough.values,
        color="#4477AA")
 ax.set(title="All illegal-parking requests by borough",
@@ -411,18 +464,20 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 The faceted example uses borough-specific vertical scales without
 explaining that they differ. This makes the local peaks appear similar even
 though the request levels are not. Fixed scales allow level comparisons; free
 scales can help readers compare within-borough shape, but the caption and
 axes must make that purpose clear.
 
+
 ```{python}
 #| label: fig-viz-mistake-facets
 #| fig-cap: "A misleading faceted plot: each borough has its own vertical range, so similar panel heights do not indicate similar request levels."
 #| fig-alt: "Five borough panels show weekday and weekend request rates with free vertical scales, making the peaks appear similar despite different levels."
 #| fig-format: svg
-(
+mistake_facet_plot = (
     ggplot(hourly, aes("hour", "requests_per_day", color="day_type"))
     + geom_line(size=.8)
     + facet_wrap("borough", ncol=3, scales="free_y")
@@ -431,9 +486,11 @@ axes must make that purpose clear.
     + labs(x="Hour request was created", y="Requests per observed day",
            color="Day type", title="Similar hourly request levels by borough")
     + theme_minimal()
-    + theme(figure_size=(10, 6))
+    + theme(figure_size=(6.4, 4.4))
 )
+display(mistake_facet_plot.draw())
 ```
+
 
 Baseline decisions should follow the visual quantity the reader is asked
 to compare. A bar represents a numerical value through its length from a
@@ -450,13 +507,14 @@ available bar length; the right panel restores the zero baseline required
 for a literal length comparison. Both panels omit the within-group spread
 shown in @fig-viz-detail-intervals, which is a separate loss of information.
 
+
 ```{python}
 #| label: fig-viz-baseline
 #| fig-cap: "Identical median closure times with a truncated baseline (left) and a zero baseline (right). The left bars exaggerate differences in length."
 #| fig-alt: "Two horizontal bar charts show the same three median closure times. The left axis begins above zero, making differences appear larger."
 #| fig-format: svg
 medians = detail_summary["median"]
-fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), sharey=True)
+fig, axes = plt.subplots(1, 2, figsize=(6.4, 3.4), sharey=True)
 for ax in axes:
     ax.barh(medians.index, medians, color="#3366AA")
     ax.set_xlabel("Median closure time (hours)")
@@ -467,6 +525,7 @@ axes[1].set_title("Zero baseline")
 fig.tight_layout()
 plt.show()
 ```
+
 
 Summary statistics can conceal differences even when the axes and scales
 are technically correct. In the following constructed example, both groups
@@ -484,6 +543,7 @@ question concerns center, spread, tail behavior, or individual cases, and
 on how many observations can be displayed legibly
 [@weissgerber2015beyond; @correll2014error].
 
+
 ```{python}
 #| label: fig-viz-summary-loss
 #| fig-cap: "Two simulated groups have the same mean but different observed distributions."
@@ -491,7 +551,7 @@ on how many observations can be displayed legibly
 #| fig-format: svg
 simulated = {"A": np.array([0, 0, 0, 5, 5]),
              "B": np.array([2, 2, 2, 2, 2])}
-fig, axes = plt.subplots(1, 2, figsize=(8, 3.7))
+fig, axes = plt.subplots(1, 2, figsize=(6.4, 3.4))
 axes[0].bar(list(simulated), [values.mean() for values in simulated.values()],
             color="#3366AA")
 axes[0].set(title="Means only", ylabel="Observed value", ylim=(0, 6))
@@ -504,10 +564,12 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 The next plot uses circle radius, rather than circle area, to encode median
 closure time. Because the area of a circle grows with the square of its
 radius, this choice exaggerates differences between the three problem
 details. A position or length encoding supports more reliable comparisons.
+
 
 ```{python}
 #| label: fig-viz-mistake-bubbles
@@ -515,7 +577,7 @@ details. A position or length encoding supports more reliable comparisons.
 #| fig-alt: "Three circles represent median closure times, with radii proportional to the values and areas therefore growing quadratically."
 #| fig-format: svg
 bubble_values = detail_summary["median"]
-fig, ax = plt.subplots(figsize=(8, 3.5))
+fig, ax = plt.subplots(figsize=(6.4, 3.4))
 x_positions = np.arange(len(bubble_values))
 ax.scatter(x_positions, np.zeros(len(bubble_values)),
            s=(bubble_values.to_numpy() * 30) ** 2,
@@ -527,6 +589,7 @@ for spine in ["left", "right", "top"]:
 fig.tight_layout()
 plt.show()
 ```
+
 
 Color and annotation should be evaluated by the comparisons they enable.
 Distinct hues can identify unordered categories; progressively ordered
@@ -546,11 +609,13 @@ When a figure is revised, the analyst should inspect the source records
 again to confirm that the repaired display still represents the intended
 population and denominator.
 
+
 The final example gives one week of request counts a title that claims a
 citywide trend. The bars describe recorded requests in this extract; they
 do not establish a long-term increase in illegal parking across New York
 City. The repaired title and caption should name the observation period
 and avoid extending the conclusion beyond the available records.
+
 
 ```{python}
 #| label: fig-viz-mistake-title
@@ -558,7 +623,7 @@ and avoid extending the conclusion beyond the available records.
 #| fig-alt: "Daily illegal-parking request counts from September 6 through September 12, 2026, shown under a title claiming a citywide increase."
 #| fig-format: svg
 daily_counts = parking.groupby(parking["created_at"].dt.normalize()).size()
-fig, ax = plt.subplots(figsize=(8, 3.8))
+fig, ax = plt.subplots(figsize=(6.4, 3.6))
 ax.bar(daily_counts.index, daily_counts.values, color="#4477AA")
 ax.set(title="Illegal parking is increasing across New York City",
        xlabel="Date in the one-week extract", ylabel="Recorded requests")
@@ -567,16 +632,20 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 ## Maps
+
 
 Maps require a choice of geographic unit as well as a visual form. This
 chapter uses request coordinates and polygons for the city's 221 ZIP Code
 Tabulation Areas (ZCTAs) [@nycopendata2026zip]:
 
+
 - A **point map** shows where requests were recorded. Points are approximate,
   may overlap, and may be missing for some requests.
 - A **choropleth** colors each area according to an aggregate value. It makes
   area summaries comparable but hides variation within each polygon.
+
 
 Choose the map according to the question: where were reports recorded, how
 many matched an area, or how did an area summary vary? Population estimates
@@ -585,6 +654,7 @@ rate is requests per resident during the stated period. The map's title,
 legend, and caption should name that quantity; request rates are not verified
 illegal-parking prevalence.
 
+
 The map code must also identify how coordinates are represented. The request
 table stores longitude and latitude, so its points begin in EPSG:4326. The
 local ZCTA boundary file is derived from the official NYC source; its
@@ -592,12 +662,14 @@ local ZCTA boundary file is derived from the official NYC source; its
 simplification. GeoPandas can transform between coordinate systems, but
 metadata alone does not prove that a point is located correctly.
 
+
 The static city maps use New York State Plane coordinates (EPSG:2263). This
 projected system is useful for displaying the city and for calculations in
 linear units. Longitude and latitude are angular coordinates: a degree of
 longitude does not represent the same ground distance everywhere. A
 projection changes how coordinates are represented; it cannot fix a wrong
 address, approximate geocode, or missing location [@geopandas2026projections].
+
 
 ```{python}
 zcta_polygons = gpd.read_file(Path("data") / "nyc_zcta_boundaries.geojson")
@@ -617,6 +689,7 @@ pd.Series({
 }).to_frame("count")
 ```
 
+
 A point map with many observations needs a display rule that accounts for
 overlap. Several requests can share a geocoded address, and opaque markers
 would cover earlier marks at the same or nearby positions. The following
@@ -633,13 +706,14 @@ choices, especially a smoothing bandwidth and treatment of boundaries;
 those choices would need to be reported before the surface could support a
 quantitative comparison.
 
+
 ```{python}
 #| label: fig-viz-request-points
 #| fig-cap: "A reproducible sample of 2,000 geocoded illegal-parking requests over NYC ZCTA boundaries, September 6–12, 2026."
 #| fig-alt: "Small transparent points from a 2,000-request sample appear over outlines of New York City ZIP Code Tabulation Areas."
 #| fig-format: svg
 sample_points = request_points.sample(n=2000, random_state=2026)
-fig, ax = plt.subplots(figsize=(8, 7))
+fig, ax = plt.subplots(figsize=(6.2, 6.2))
 zcta_polygons.to_crs("EPSG:2263").boundary.plot(
     ax=ax, color="#999999", linewidth=.3
 )
@@ -651,6 +725,7 @@ ax.set_title("Recorded request locations and ZCTA boundaries")
 fig.tight_layout()
 plt.show()
 ```
+
 
 An area map requires an assignment rule that maps each request to a named
 polygon or reports why it remains unassigned. @sec-zcta-context-merge
@@ -668,6 +743,7 @@ one-to-one, unmatched, and multiple assignments and decide which rule
 corresponds to the geographic target. The diagnostic below makes those
 outcomes visible for the supplied ZCTA polygons [@nycopendata2026zip].
 
+
 ```{python}
 point_zcta = gpd.sjoin(
     request_points[["request_id", "incident_zip", "geometry"]],
@@ -681,6 +757,7 @@ pd.Series({
     "more than one polygon": match_count.gt(1).sum(),
 }).to_frame("geocoded requests")
 ```
+
 
 The spatial diagnostic shows that 21 geocoded requests have no polygon
 match and 28 have more than one match in the compact boundary file. These
@@ -696,6 +773,7 @@ introduced in @sec-zcta-context-merge, which keeps their area summaries
 comparable to the earlier data-preparation example. The point-in-polygon
 results remain a diagnostic of geographic disagreement rather than an
 unexamined source of replacement labels.
+
 
 The paired choropleths separate the effect of a numerator from the effect
 of a denominator. For ZCTA $z$, let $N_z$ be the number of selected requests
@@ -713,6 +791,7 @@ matched ZIP-label requests can still contain geocoded requests assigned
 another label. Both maps use ordered color, but separate legends identify
 their different quantities and units [@harrower2003colorbrewer;
 @crameri2020misuse].
+
 
 ```{python}
 valid_zip = parking["incident_zip"].str.fullmatch(r"\d{5}", na=False)
@@ -738,6 +817,7 @@ area_map["requests_per_10k"] = np.where(
 )
 ```
 
+
 The next two plots illustrate the map-specific mistakes in
 @tbl-viz-mistakes. The first pairs a continuous rate with a rainbow palette,
 which can suggest abrupt boundaries that are not present in the data. The
@@ -745,13 +825,14 @@ second presents counts as risk even though ZCTAs differ in population and
 other exposure. The count map can describe service workload, but it does
 not by itself identify where illegal parking is more likely.
 
+
 ```{python}
 #| label: fig-viz-mistake-rainbow
 #| fig-cap: "A misleading choropleth: the rainbow palette introduces strong hue boundaries into a continuous request rate."
 #| fig-alt: "New York City ZCTA polygons colored by requests per 10,000 residents with a rainbow gradient."
 #| fig-format: svg
 projected_map = area_map.to_crs("EPSG:2263")
-fig, ax = plt.subplots(figsize=(7, 7))
+fig, ax = plt.subplots(figsize=(6.2, 6.2))
 projected_map.plot(column="requests_per_10k", cmap="rainbow", legend=True,
                    ax=ax, legend_kwds={"shrink": 0.6},
                    missing_kwds={"color": "#bdbdbd"})
@@ -761,12 +842,13 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 ```{python}
 #| label: fig-viz-mistake-count-map
 #| fig-cap: "A misleading choropleth: raw request counts are titled as illegal-parking risk, although areas differ in population and exposure."
 #| fig-alt: "New York City ZCTA polygons show raw illegal-parking request counts under a title claiming to show risk."
 #| fig-format: svg
-fig, ax = plt.subplots(figsize=(7, 7))
+fig, ax = plt.subplots(figsize=(6.2, 6.2))
 projected_map.plot(column="requests", cmap="OrRd", legend=True, ax=ax,
                    legend_kwds={"shrink": 0.6})
 ax.set_title("Illegal-parking risk by ZCTA")
@@ -775,13 +857,14 @@ fig.tight_layout()
 plt.show()
 ```
 
+
 ```{python}
 #| label: fig-viz-zcta-maps
 #| fig-cap: "Illegal-parking request counts (left) and requests per 10,000 estimated residents (right) by matched NYC ZCTA label, September 6–12, 2026. Gray areas have undefined rates because their population estimate is zero."
 #| fig-alt: "Two New York City ZCTA choropleths display request counts and population-adjusted request rates with separate legends."
 #| fig-format: svg
 projected_map = area_map.to_crs("EPSG:2263")
-fig, axes = plt.subplots(1, 2, figsize=(13, 6))
+fig, axes = plt.subplots(1, 2, figsize=(6.4, 3.5))
 for ax, variable, title in [
     (axes[0], "requests", "Recorded requests"),
     (axes[1], "requests_per_10k", "Requests per 10,000 residents"),
@@ -796,6 +879,7 @@ for ax, variable, title in [
 fig.tight_layout()
 plt.show()
 ```
+
 
 Differences between the count and rate maps require substantive
 interpretation before they are treated as evidence of geographic risk.
@@ -814,7 +898,9 @@ and treatment of unmatched records. The analyst should also ask whether
 the geographic arrangement answers a question that a sorted table or dot
 plot could not answer as clearly.
 
+
 ## Interactive Maps
+
 
 An interactive map helps when a reader needs to find an area, inspect an
 exact value, or move between a city view and a street view. It does not fix
@@ -822,11 +908,13 @@ a poor denominator, uncertain geocode, or unsupported conclusion. The
 GeoPandas `.explore()` method uses Folium and Leaflet to map the same ZCTA
 summaries as the static figures:
 
+
 - Polygon color gives requests per 10,000 estimated residents.
 - The tooltip gives the ZCTA, request count, population estimate, and rate.
 - CARTO's Positron tiles provide a basemap when a key is available; otherwise
   the example uses OpenStreetMap [@geopandas2026interactive;
   @carto2026basemaps].
+
 
 Showing the count and population beside the rate helps a reader understand
 an unusually high value. Keep the static map as a stable comparison and for
@@ -836,6 +924,7 @@ the `CARTO_BASEMAP_API_KEY` environment variable or a local
 restrict it to the intended site or local preview, keep the file out of Git,
 and do not publish an HTML page containing an unrestricted key
 [@carto2026basemaps].
+
 
 ```{python}
 #| label: fig-viz-interactive-map
@@ -869,11 +958,14 @@ interactive_map = area_map.loc[area_map["population"].gt(0)].explore(
 interactive_map
 ```
 
+
 The map uses two levels of information:
+
 
 - **Overview:** color lets the reader compare rates across areas.
 - **On demand:** a tooltip gives the exact numerator and denominator behind
   a selected rate.
+
 
 Adding every source field to the tooltip would make inspection harder rather
 than clearer. The interactive map omits 27 areas with zero estimated
@@ -883,6 +975,7 @@ fail, and hover controls can be difficult with a keyboard or touch device.
 Keep a static figure, concise text description, and accessible table of key
 values available as alternatives. Ask the same questions as for any plot:
 which records appear, what is encoded, and what comparison does it support?
+
 
 Google Maps can provide an alternative basemap for the same ZCTA choropleth.
 The Maps JavaScript API data layer accepts GeoJSON polygons and supports
@@ -895,12 +988,14 @@ by this dataset; its colors therefore do not match the continuous Folium
 scale one for one. The Folium version remains the default and uses
 OpenStreetMap if a CARTO key is unavailable.
 
+
 The Google version runs only when an API key is supplied through the
 `GOOGLE_MAPS_API_KEY` environment variable. The key must be enabled for the
 Maps JavaScript API, restricted to that API and to the site or local server
 that will display the map, and associated with billing. The generated HTML
 contains the browser key and should stay local; do not commit it or publish
 it with the book [@google2026maps; @google2026billing].
+
 
 ```{python}
 #| eval: false
@@ -1016,6 +1111,7 @@ print("Wrote parking_requests_google_zcta.html")
 
 ```
 
+
 The choice between interactive tools should follow the geographic question
 and the intended reader action. The GeoPandas–Folium–Leaflet route uses
 the local ZCTA geometries and runs in the book environment; it supports
@@ -1032,7 +1128,9 @@ and units before selecting the interface. It should also account for
 accessibility, reproducibility, and any information sent to an external
 map service.
 
+
 ## Animate Change
+
 
 Animation extends a static display by changing one part of the figure across
 frames. Matplotlib's `FuncAnimation` repeatedly calls an update function,
@@ -1046,12 +1144,14 @@ period. The examples use the week of illegal-parking requests to animate a
 borough count and the spatial distribution of recorded locations
 [@matplotlib2026funcanimation].
 
+
 The first animation shows cumulative request counts by borough at the end
 of each day. Each frame adds a day of observations, so the bar lengths show
 how the total grows over the week. A fixed horizontal scale keeps lengths
 comparable from frame to frame. The animation describes request volume in
 this extract; it does not measure illegal-parking prevalence or borough
 performance.
+
 
 ```{python}
 import base64
@@ -1068,6 +1168,7 @@ def display_gif(animation, *, alt_text, caption):
         ).decode("ascii")
         return HTML(
             f'<figure><img src="data:image/gif;base64,{encoded_gif}" '
+            'style="display:block;max-width:100%;height:auto;" '
             f'alt="{alt_text}"><figcaption>{caption}</figcaption></figure>'
         )
 
@@ -1090,6 +1191,7 @@ daily_borough_counts = (
 )
 ```
 
+
 The update function redraws the horizontal bars for the date associated with
 each frame. The animation is saved as a GIF with Matplotlib's Pillow writer;
 the file is created temporarily during rendering, so the figure does not
@@ -1097,8 +1199,9 @@ add a generated binary to the repository. The `FuncAnimation` object remains
 assigned to `count_animation` while the GIF is written, which prevents it
 from being discarded before all frames are rendered.
 
+
 ```{python}
-fig, ax = plt.subplots(figsize=(7, 4))
+fig, ax = plt.subplots(figsize=(6.4, 3.8))
 count_limit = daily_borough_counts.to_numpy().max() * 1.1
 
 def update_count(frame):
@@ -1125,6 +1228,7 @@ plt.close(fig)
 count_gif
 ```
 
+
 The map animation changes the points while retaining the same ZCTA outlines
 and projected view in every frame. Each frame displays requests created on
 one calendar day, using the coordinates supplied with the request data.
@@ -1134,6 +1238,7 @@ does not establish the exact location of an event. The display shows where
 requests were recorded, not how vehicles moved. It uses locally stored
 boundaries and does not depend on a live basemap, which makes the animation
 reproducible when the book is built.
+
 
 ```{python}
 map_points = request_points.to_crs("EPSG:2263")
@@ -1147,7 +1252,7 @@ min_x, min_y, max_x, max_y = map_boundaries.total_bounds
 x_margin = (max_x - min_x) * 0.03
 y_margin = (max_y - min_y) * 0.03
 
-fig, ax = plt.subplots(figsize=(7, 7))
+fig, ax = plt.subplots(figsize=(6.2, 6.2))
 map_boundaries.boundary.plot(ax=ax, color="#999999", linewidth=0.3)
 points = ax.scatter([], [], color="#225588", s=5, alpha=0.45)
 frame_title = ax.set_title("")
@@ -1181,6 +1286,7 @@ plt.close(fig)
 map_gif
 ```
 
+
 The two animations make different comparisons: the bars emphasize
 accumulation, while the map shows the daily distribution of recorded
 locations. Neither should be read as evidence of a stable pattern from one
@@ -1189,6 +1295,7 @@ the static hourly, daily, and area summaries elsewhere in this chapter
 provide more reliable comparisons across groups. Students should state the
 frame unit, whether values accumulate or reset, the fixed scales, and the
 data excluded from each animation.
+
 
 The same visual discipline applies when the course moves from description
 to modeling. A predicted-versus-observed plot can show where a model
@@ -1206,7 +1313,6 @@ requirements make a figure useful across exploration, communication, and
 model diagnosis. They also give students a way to revise a first attempt:
 identify the inference the reader is invited to make, then inspect each
 data and design decision that supports it.
-
 ## Exercises {.unnumbered}
 
 The exercises move from a specified comparison to a self-directed project
