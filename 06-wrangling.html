@@ -285,7 +285,6 @@ window.Quarto = {
   <li><a href="#sec-zcta-context-merge" id="toc-sec-zcta-context-merge" class="nav-link" data-scroll-target="#sec-zcta-context-merge"><span class="header-section-number">6.4</span> Merge Area Context</a></li>
   <li><a href="#validate-data" id="toc-validate-data" class="nav-link" data-scroll-target="#validate-data"><span class="header-section-number">6.5</span> Validate Data</a></li>
   <li><a href="#document-decisions" id="toc-document-decisions" class="nav-link" data-scroll-target="#document-decisions"><span class="header-section-number">6.6</span> Document Decisions</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/06-wrangling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -323,7 +322,7 @@ window.Quarto = {
 </ul>
 <p>Every class should leave an auditable record. Analytical choices especially require a rationale because they can change the outcome or comparison.</p>
 <p>The original ZIP archive remains unchanged. <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> demonstrated its acquisition and initial profile; the code below repeats only the import, timestamp parsing, and row filters needed for this chapter to run independently. Temporary Feather examples in that chapter do not provide an input here. Each subsequent stage creates a derived data frame and verifies the assumptions that its operation introduces.</p>
-<div id="66b409c1" class="cell" data-execution_count="1">
+<div id="50faf3fd" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -351,7 +350,7 @@ window.Quarto = {
 </div>
 <p>The import block reconstructs the intended analysis scope without overwriting the downloaded archive. The half-open timestamp interval includes requests created on every day of the selected week and excludes those returned from the following Sunday; the problem condition restricts the subset to illegal-parking requests. The observational unit remains one service request, so a row restriction changes the eligible population but does not aggregate or validate individual observations. The explicit datetime format also exposes parsing failures as missing timestamps, which must be checked rather than silently interpreted as absent service activity. The resulting frame can still contain missing fields, unexpected category values, duplicate identifiers, or disagreements among geographic descriptors. Those issues require separate diagnostics before a derived variable or merge can be trusted. The subset also remains limited to NYPD-directed requests from one week, regardless of how consistently its columns are represented.</p>
 <p>The checks in <a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a> profile the delivered extract before filtering, including its agency values, date boundaries, and missingness. Here, the scope report instead tests whether the reconstructed subset meets the preparation workflow’s input conditions: identifiers must be present and unique, creation times must fall within the selected week, and every retained row must carry the illegal-parking label. These executable invariants detect a changed input, altered filter, or parsing failure before derived columns are constructed. A failed check should prompt inspection of the source and preparation code, not automatic deletion until the report passes. This chapter remains independently executable while the substantive source diagnosis stays in the formulation chapter.</p>
-<div id="6b6711b3" class="cell" data-execution_count="2">
+<div id="a497079c" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_checks <span class="op">=</span> pd.Series({</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no missing request identifiers"</span>: <span class="kw">not</span> parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">any</span>(),</span>
@@ -406,9 +405,16 @@ window.Quarto = {
 </section>
 <section id="standardize-data" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="standardize-data"><span class="header-section-number">6.2</span> Standardize Data</h2>
-<p>Representation changes make fields usable without asserting new facts about the observations. Dates should use datetime types, while ZIP Codes and request keys should remain strings because their digits are labels rather than measured magnitudes. Converting a ZIP Code such as <code>00501</code> to an integer would remove its leading zero; recoding a blank, <code>N/A</code>, and <code>Unspecified</code> to one missing value would be justified only if their documented meanings coincide. Column names require the same care. The NYC export uses spaces, punctuation, capitalization, and historical parenthetical wording; these labels are valid but inconvenient for repeated analysis. A derived table can use consistent names while the imported source and a complete source-to-analysis mapping retain the provider’s terminology. The mapping must be checked for collisions because two distinct source fields can normalize to the same string. A collision requires explicit disambiguation before either field is renamed.</p>
+<p>Standardization changes how values are represented so that they are easier to work with. It should not quietly change what the values mean. Common decisions include:</p>
+<ul>
+<li><strong>Dates:</strong> parse date strings as datetimes so that time comparisons and durations can be calculated.</li>
+<li><strong>Identifiers:</strong> keep ZIP Codes and request keys as strings. Converting <code>00501</code> to an integer would remove its leading zero.</li>
+<li><strong>Missing values:</strong> combine blanks, <code>N/A</code>, and <code>Unspecified</code> only when the source documentation supports treating them as the same kind of missing information.</li>
+<li><strong>Column names:</strong> create consistent analysis names while keeping a mapping to the provider’s original labels. Check for collisions because distinct source names can normalize to the same name.</li>
+</ul>
+<p>These choices distinguish a representation change from a data correction. For example, renaming <code>Created Date</code> to <code>created_at</code> makes code easier to read; changing an unexpected date to a plausible one would alter the source information and needs separate evidence.</p>
 <p>Category standardization requires evidence about the meanings of values, not only a preference for uniform text. The frequency table in <a href="05-formulation.html#sec-problem-detail-counts" class="quarto-xref"><span>Section 5.7</span></a> established which problem details motivate the working comparison. The following code inspects the distinct source strings before any recoding. The observed leading labels are interpretable, and apparent similarity between two labels would not by itself establish that they describe the same reporting condition. A data dictionary or curator explanation would be needed before combining categories with different names. By contrast, the code below changes column <em>names</em> to make operations easier while leaving category <em>values</em> unchanged. Keeping those two decisions separate preserves the provider’s distinctions and allows later readers to evaluate a proposed recode against the source.</p>
-<div id="ea7bab4f" class="cell" data-execution_count="3">
+<div id="d26308dd" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>observed_details <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
@@ -495,7 +501,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
-<div id="f5423f08" class="cell" data-execution_count="4">
+<div id="b87a4cb1" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
@@ -766,7 +772,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="75ded510" class="cell" data-execution_count="5">
+<div id="d6acead6" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -836,8 +842,12 @@ window.Quarto = {
 </section>
 <section id="derive-variables" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="derive-variables"><span class="header-section-number">6.3</span> Derive Variables</h2>
-<p>Derived variables translate recorded fields into measurements required by the question while making new assumptions explicit. Let <span class="math inline">\(C_i\)</span> and <span class="math inline">\(L_i\)</span> denote the recorded creation and closure timestamps for request <span class="math inline">\(i\)</span>. The derived value <span class="math inline">\(T_i=(L_i-C_i)/3600\)</span> is the elapsed interval in hours when the timestamp difference is measured in seconds and both times are available. Its validity requires successful parsing and a nonnegative chronology. The definition does not assert that an officer arrived at <span class="math inline">\(L_i\)</span> or that the reported condition ended then; those are distinct events that the archive does not measure. Keeping the two timestamps alongside <span class="math inline">\(T_i\)</span> permits an analyst to inspect a surprising value or revise the definition. A variable name such as <code>closure_hours</code> communicates the measurement more accurately than a label that would imply field response. The following calculation checks the resulting field before it is used as an outcome.</p>
-<div id="ade36cb1" class="cell" data-execution_count="6">
+<p>Derived variables translate recorded fields into measurements needed for a question. Let <span class="math inline">\(C_i\)</span> and <span class="math inline">\(L_i\)</span> be the recorded creation and closure times for request <span class="math inline">\(i\)</span>. We calculate the elapsed interval in hours as follows:</p>
+<p><span class="math display">\[
+T_i = (L_i - C_i)/3600.
+\]</span></p>
+<p>The timestamp difference is in seconds, so division by 3,600 converts it to hours. The calculation is defined when both timestamps parse successfully and closure follows creation. It measures administrative closure, not officer arrival or the time when the reported condition ended. Keep the original timestamps so that a surprising value can be inspected and the derived value recalculated if needed. The name <code>closure_hours</code> describes the measurement more accurately than a name that implies a field response. The check below looks for issues before this value is used as an outcome.</p>
+<div id="e81a8782" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
@@ -883,9 +893,21 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>The duration check distinguishes missing outcomes, impossible chronology, and unusually long but nonnegative intervals. A negative value contradicts the expected order of creation and closure if both timestamps refer to the same request timeline; its source should be inspected before exclusion because parsing or a later correction may explain it. A missing closure timestamp leaves the interval undefined, and substituting the observation date would invent a closure event. A large positive interval is not automatically erroneous because administrative closure may occur well after a report is made. The median and maximum in the report serve different diagnostic purposes: one characterizes the center, while the other prompts inspection of the upper tail. <a href="07-eda.html" class="quarto-xref"><span>Chapter 7</span></a> examines that distribution rather than imposing an arbitrary cutoff during preparation.</p>
-<p>Time-of-day groups require a boundary that reflects the intended comparison. “Night” has no universal definition, so the example assigns requests created from 8 p.m. through 5:59 a.m. to nighttime and those from 6 a.m. through 7:59 p.m. to daytime. The code leaves a missing creation hour unclassified instead of treating it as daytime. This categorical field can support a simple comparison, but it compresses variation across hours and ignores differences among individual dates, including the holiday in the selected week. The original timestamp remains in the table so that an analyst can examine hourly patterns or repeat the comparison under a different boundary. If the substantive question concerns staffing or reporting conditions, the boundary should be justified with relevant domain information rather than adopted solely because the resulting groups have convenient sizes.</p>
-<div id="4df5b3d3" class="cell" data-execution_count="7">
+<p>The duration check distinguishes three cases that need different responses:</p>
+<ul>
+<li>A <strong>missing interval</strong> may result from a missing or unparseable timestamp. Do not fill it with an assumed closure time.</li>
+<li>A <strong>negative interval</strong> conflicts with the expected event order. Inspect the source row and parsing before deciding whether to exclude it.</li>
+<li>A <strong>large positive interval</strong> may be unusual but valid because an agency can close a request long after it is created.</li>
+</ul>
+<p>The median summarizes the center; the maximum helps flag the upper tail for inspection. Chapter <a href="07-eda.html" class="quarto-xref"><span>Chapter 7</span></a> examines the full distribution rather than removing long intervals with an arbitrary preparation cutoff.</p>
+<p>The category “night” has no universal boundary. For this example, requests created from 8 p.m. through 5:59 a.m. are labeled nighttime; those from 6 a.m. through 7:59 p.m. are labeled daytime. The choice has consequences:</p>
+<ul>
+<li>A missing creation hour remains unclassified rather than being assigned to daytime.</li>
+<li>Grouping compresses 24 hourly values into two categories and hides within-group variation.</li>
+<li>The groups do not account for differences across individual dates, such as the holiday in this week.</li>
+</ul>
+<p>The original timestamp remains available for hourly analysis or a comparison using different boundaries. If the question concerns staffing or reporting conditions, use domain information to justify the boundary rather than choosing it only because the groups are convenient.</p>
+<div id="3c7ab4a0" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
@@ -904,11 +926,24 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </section>
 <section id="sec-zcta-context-merge" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="sec-zcta-context-merge"><span class="header-section-number">6.4</span> Merge Area Context</h2>
-<p>An area-level merge attaches contextual measurements to request records only under an explicit geographic matching rule. The request table has one row per service request; the Census context table has one row per ZIP Code Tabulation Area (ZCTA). The provider’s <code>Incident Zip</code> is a postal ZIP Code label, whereas a ZCTA is a Census statistical area derived from address patterns. Equal five-digit strings permit a lookup but do not make the geographies identical, and some postal ZIP Codes have no corresponding ZCTA <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. The intended join is many requests to one context row, so a duplicate key on the right would incorrectly multiply requests. The reference period of the attached estimate also matters: a value measured before the request week describes earlier area context, not a contemporaneous attribute of an individual report. These conditions must be stated before the software merge is interpreted as evidence about place.</p>
+<p>An area-level merge attaches contextual measurements to requests, but only after we define how the geographic labels match. Here, each request has one row and each Census context row describes one ZIP Code Tabulation Area (ZCTA). A provider’s <code>Incident Zip</code> is a postal ZIP label; a ZCTA is a Census statistical area derived from address patterns. Equal five-digit strings allow a lookup, but do not mean the geographies have identical boundaries, and some postal ZIP Codes have no matching ZCTA <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>.</p>
+<p>Before interpreting a merge, check these conditions:</p>
+<ul>
+<li><strong>Key:</strong> the context table has one row per ZCTA, so a duplicate lookup key cannot multiply request rows.</li>
+<li><strong>Match:</strong> the request ZIP label and ZCTA code use compatible formats.</li>
+<li><strong>Time:</strong> the Census estimate describes its reference period, which may precede the request week.</li>
+<li><strong>Unit:</strong> an area estimate describes a place, not an individual requester.</li>
+</ul>
+<p>These checks make clear what the software joined and what the result means.</p>
 <p>The supplied <code>data/zcta_context.csv</code> contains the 221 ZCTAs in NYC Open Data’s city list and their 2024 American Community Survey (ACS) five-year population, median household income, and household vehicle-availability estimates <span class="citation" data-cites="nycopendata2026zip census2026american census2024vehicles">(<a href="#ref-nycopendata2026zip" role="doc-biblioref">NYC Open Data, 2026</a>; <a href="#ref-census2024vehicles" role="doc-biblioref">U.S. Census Bureau, 2024b</a>, <a href="#ref-census2026american" role="doc-biblioref">2026</a>)</span>. It also records margins of error, an income top-coding indicator, the estimate year, and ZCTA land area from the 2024 Census Gazetteer <span class="citation" data-cites="census2024gazetteer">(<a href="#ref-census2024gazetteer" role="doc-biblioref">U.S. Census Bureau, 2024a</a>)</span>. The provenance and conversion rules in <code>data/zcta_context.md</code> distinguish the Census estimates from the NYC boundary list used to select areas. These fields allow an analyst to check both the statistical meaning of an attached value and the geographic coverage of the lookup. The code verifies that each context key is a five-digit string, occurs once, and has the expected reference year before the merge. It then retains unmatched requests and reports them separately. The result is a documented link between labels, not an assertion that a postal area and its similarly named ZCTA have identical boundaries.</p>
-<p>The lookup derives population density by dividing the ACS population estimate by ZCTA land area. It also derives the share of households with at least one vehicle from the B08201 household total and no-vehicle count. These measures add context, but neither measures parking directly. Resident density does not describe curb length or parking supply, and household vehicle availability does not identify vehicle ownership, registration, parking location, or illegal-parking behavior. The share is a ratio of survey estimates, and its sampling uncertainty is not calculated from the published margins of error. The attached estimates describe areas, not individual requesters; they cannot support an individual-level or causal interpretation.</p>
+<p>The lookup derives two measures from Census estimates:</p>
+<ul>
+<li><strong>Population density</strong> divides the population estimate by ZCTA land area.</li>
+<li><strong>Household vehicle availability</strong> is the share of households with at least one vehicle, calculated from the total and no-vehicle household estimates in table B08201.</li>
+</ul>
+<p>Neither measure describes parking directly. Population density does not measure curb length or parking supply. Household vehicle availability does not identify vehicle ownership, registration, parking location, or illegal- parking behavior. The vehicle share is a ratio of survey estimates, and its sampling uncertainty is not calculated from the published margins of error. Both measures describe areas, not individual requesters, so the merge cannot support an individual-level or causal interpretation.</p>
 <p>The NYC ZCTA selection comes from the <code>zcta5</code> column of the city’s published dataset, as the following acquisition code shows. The chapter uses the saved CSV during rendering so that a live web request cannot change its results. The complete extraction, including the Gazetteer file and three ACS tables, is in <code>scripts/build_zcta_context.py</code>.</p>
-<div id="676d7fcb" class="cell" data-execution_count="8">
+<div id="ce49b40d" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
@@ -925,7 +960,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)[<span class="st">"zcta5"</span>].drop_duplicates()</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(city_zctas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cc7f3fe6" class="cell" data-execution_count="9">
+<div id="23b26503" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
@@ -1025,13 +1060,26 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </div>
 </div>
 </div>
-<p>The <code>validate</code> argument turns the assumed join cardinality into an executable check. If a lookup key is duplicated, the join can multiply request rows and inflate subsequent counts. The left join preserves requests that lack a match, and its indicator distinguishes matched from unmatched rows. Unmatched values should be examined for missing identifiers, non-ZCTA ZIP Codes, formatting differences, boundary mismatch, or a flawed lookup; they should not be silently dropped or repaired by adding leading zeros without evidence. In this extract, 13,033 of 13,040 illegal-parking requests match a listed ZCTA; the seven unmatched requests remain in the table for other analyses.</p>
-<p>Area context permits new comparisons only after the target quantity has been specified at the appropriate unit. A ZCTA population estimate can serve as the denominator of requests per resident during the observation week, but the numerator counts reports rather than verified conditions and the denominator does not measure curb space or vehicle exposure. Income and other area characteristics can also be attached to requests, yet the repeated area value does not become an independently measured attribute of each reporter. If the question concerns differences among places, the analysis should first aggregate to one row per area and state how many requests support each area summary. If the question concerns individual behavior or a causal effect of neighborhood conditions, the available merge does not supply the necessary individual measurements or design. The join therefore expands the set of descriptive questions that can be asked while leaving reporting coverage, geographic mismatch, and temporal alignment as explicit limitations.</p>
+<p>The <code>validate</code> argument checks the assumed many-to-one join. If a lookup key is duplicated, the merge could multiply request rows and inflate counts. The left join keeps unmatched requests, and its indicator identifies which rows matched. For an unmatched request, inspect whether its ZIP is:</p>
+<ul>
+<li>missing or not a five-digit label;</li>
+<li>a postal ZIP Code with no listed ZCTA;</li>
+<li>formatted differently from the lookup key; or</li>
+<li>evidence of a mismatch or error in the lookup.</li>
+</ul>
+<p>Do not silently drop unmatched requests or add leading zeros without evidence. In this extract, 13,033 of 13,040 requests match a listed ZCTA; the seven unmatched requests remain available for analyses that do not require area context.</p>
+<p>The merge makes some place-level summaries possible, but the unit of each question must still be clear:</p>
+<ul>
+<li>A <strong>request-rate comparison</strong> can divide reports by estimated residents, but it remains a rate of reports, not verified parking conditions. The denominator also does not measure curb space or vehicle exposure.</li>
+<li>A <strong>comparison among areas</strong> should first aggregate to one row per area and report how many requests support each summary.</li>
+<li>An <strong>individual-level or causal question</strong> cannot be answered by repeating area estimates across requests. The merge supplies neither individual measurements nor a design that identifies an effect.</li>
+</ul>
+<p>The join expands the descriptive questions available while leaving reporting coverage, geographic mismatch, and reference-period differences as limits.</p>
 </section>
 <section id="validate-data" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="validate-data"><span class="header-section-number">6.5</span> Validate Data</h2>
 <p>Validation compares the prepared table with the input and with the stated analytical contract. The following checks require the request count and identifier uniqueness to survive filtering, renaming, derivation, and the area merge. They also require the retained timestamps and problem label to remain within the intended scope and confirm that the closure field exists. The join report above separately records unmatched keys, so a passing row count does not conceal incomplete geographic coverage. These checks detect specific implementation errors, but they cannot prove that a source value is true or that the selected week represents a broader population. If the prepared table is saved for later use, its schema, source-to-analysis name mapping, join report, and relevant invariants should be stored with it and checked again after reading it back. A successful write operation alone does not establish semantic or numerical validity.</p>
-<div id="244ec3a3" class="cell" data-execution_count="10">
+<div id="c81915d3" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> contextual_analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>
@@ -1085,10 +1133,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </section>
 <section id="document-decisions" class="level2" data-number="6.6">
 <h2 data-number="6.6" class="anchored" data-anchor-id="document-decisions"><span class="header-section-number">6.6</span> Document Decisions</h2>
-<p>The prepared table is a documented argument about which records and values can support the working question. Filters define scope, derived fields operationalize measurements, and the merge asserts a limited relationship between two geographic identifiers. The checks make those claims reviewable without implying that the source is error free. The exploratory and visualization chapters call a <a href="scripts/parking_requests.py">shared preparation function</a> for the screened request fields and closure hours; that compact function does not reproduce this chapter’s full 44-column mapping, time-period category, or enriched context table. Those later chapters construct only the additional fields their questions require. This division keeps the transformation logic visible here while avoiding a second long import and renaming sequence in each chapter. It also identifies a reproducibility obligation: if the screening rule or closure-time definition changes, the shared function and the explanations in this chapter must be reviewed together.</p>
-</section>
-<section id="exercises" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The prepared table is a documented argument about which records and values can support the working question. Filters define scope, derived fields operationalize measurements, and the merge asserts a limited relationship between two geographic identifiers. The checks make those claims reviewable without implying that the source is error free. The exploratory and visualization chapters call a <a href="scripts/parking_requests.py">shared preparation function</a> for the screened request fields and closure hours; that compact function does not reproduce this chapter’s full 44-column mapping, time-period category, or enriched context table. Those later chapters construct only the additional fields their questions require. This division keeps the transformation logic visible here while avoiding a second long import and renaming sequence in each chapter. It also identifies a reproducibility obligation: if the screening rule or closure-time definition changes, the shared function and the explanations in this chapter must be reviewed together. ## Exercises {.unnumbered}</p>
 <p>These exercises extend the import and checking work in the previous chapter. For the first exercise, begin with the screened table saved as <code>data/illegal_parking.feather</code> in that assignment. Do not repeat its import, scope filters, key checks, missingness report, or closure-time calculation. Keep the distributed ZIP archive unchanged, and include code with a concise explanation of each decision.</p>
 <div id="exr-wrangle-311" class="theorem exercise">
 <p><span class="theorem-title"><strong> 6.1</strong></span> Prepare an analysis table that can support exploratory comparisons and a subsequent logistic-regression analysis.</p>

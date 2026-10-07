@@ -254,7 +254,6 @@ div.csl-indent {
   <li><a href="#branches-and-remotes" id="toc-branches-and-remotes" class="nav-link" data-scroll-target="#branches-and-remotes"><span class="header-section-number">2.5</span> Branches and Remotes</a></li>
   <li><a href="#github-and-pull-requests" id="toc-github-and-pull-requests" class="nav-link" data-scroll-target="#github-and-pull-requests"><span class="header-section-number">2.6</span> GitHub and Pull Requests</a></li>
   <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">2.7</span> Practical Recommendations</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/02-git.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -282,12 +281,19 @@ div.csl-indent {
 
 
 <p>Git records the history of a project so that an analyst can work reproducibly, recover from mistakes, and collaborate without exchanging unnamed copies of files. GitHub and similar services host Git repositories online; they add backup, discussion, and review around Git’s local history. This chapter introduces the ideas and commands needed for the projects in this book. The free <em>Pro Git</em> book provides a fuller reference <span class="citation" data-cites="chacon2014progit">(<a href="#ref-chacon2014progit" role="doc-biblioref">Chacon &amp; Straub, 2014</a>)</span>.</p>
-<p>Several hands-on resources complement this chapter. The <a href="https://www.youtube.com/watch?v=RGOj5yH7evk">Git and GitHub for Beginners crash course</a> provides a visual overview, <a href="https://gitexercises.fracz.com/">Git Exercises</a> offers short command-line practice, and <a href="https://ohmygit.org/">Oh My Git!</a> teaches Git through an open-source game. Version control is useful beyond Git because it preserves history, supports recovery, and coordinates work across collaborators. Hofert’s beginner-friendly tutorial compares the fundamentals of Git and Subversion and is a useful additional reading <span class="citation" data-cites="hofert2025version">(<a href="#ref-hofert2025version" role="doc-biblioref">Hofert, 2025</a>)</span>. Use all of these resources for practice, but check each command against <code>git status</code> and the repository’s documentation.</p>
+<p>Several resources provide additional ways to practice:</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=RGOj5yH7evk">Git and GitHub for Beginners</a> gives a visual overview.</li>
+<li><a href="https://gitexercises.fracz.com/">Git Exercises</a> offers short command-line practice.</li>
+<li><a href="https://ohmygit.org/">Oh My Git!</a> teaches Git through an open-source game.</li>
+<li>Hofert’s tutorial compares Git with Subversion <span class="citation" data-cites="hofert2025version">(<a href="#ref-hofert2025version" role="doc-biblioref">Hofert, 2025</a>)</span>.</li>
+</ul>
+<p>These resources also introduce ideas used by other version-control systems: keeping a history, recovering earlier work, and coordinating contributions. As you practice, check the result of a command with <code>git status</code> and read the repository’s instructions before changing its files.</p>
 <p>GitHub is one hosting service for Git repositories; <a href="https://bitbucket.org/">Bitbucket</a> and <a href="https://gitlab.com/">GitLab</a> offer similar services. Hosting a repository online provides a backup of committed work and makes collaboration with classmates and coworkers easier.</p>
 <section id="the-git-model" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="the-git-model"><span class="header-section-number">2.1</span> The Git Model</h2>
 <p>A Git repository is a project directory together with a database of its history. The <strong>working tree</strong> contains files being edited, the <strong>staging area</strong> records changes intended for the next snapshot, and a <strong>commit</strong> stores that snapshot with an author, time, and message. Thinking in these three states prevents the common mistake of treating <code>git add</code> as a backup or <code>git commit</code> as an upload.</p>
-<p>The staging area makes a commit a deliberate unit of work. You can inspect a change, stage only the part that belongs together, and then commit a coherent snapshot. A good commit should explain one change in the imperative mood, such as <code>content: clarify relative paths</code>; generated files, credentials, and large local data should not be committed.</p>
+<p>The staging area lets you choose exactly what enters the next commit. Suppose you edit a chapter and also download a large dataset for local analysis. You can stage the chapter alone, inspect it, and commit that coherent change while leaving the dataset out. A commit message should state the change in the imperative mood, such as <code>content: clarify relative paths</code>. Generated files, credentials, and large local data should not be committed.</p>
 </section>
 <section id="installing-and-configuring-git" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="installing-and-configuring-git"><span class="header-section-number">2.2</span> Installing and Configuring Git</h2>
@@ -314,9 +320,24 @@ div.csl-indent {
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--staged</span>        <span class="co"># changes that will enter the commit</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"content: explain the Git workflow"</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The <code>git add</code> command copies the selected version into the staging area; it does not send anything to GitHub. The <code>git commit</code> command saves the staged snapshot locally; it does not publish it. The <code>git push</code> command sends local commits to a remote. This distinction is the foundation of a reliable backup and collaboration workflow.</p>
+<p>These commands have separate effects:</p>
+<ul>
+<li><code>git add</code> places selected changes in the staging area. It does not upload them.</li>
+<li><code>git commit</code> saves a snapshot of staged changes in the local repository. It does not publish them.</li>
+<li><code>git push</code> sends local commits to a remote repository, such as GitHub.</li>
+</ul>
+<p>After <code>git add</code>, use <code>git diff --staged</code> to check what the next commit will contain. After <code>git commit</code>, use <code>git status</code> to check whether anything remains uncommitted. This sequence helps distinguish saved local work from work that has been shared or backed up remotely.</p>
 <p>Beginners should avoid <code>git add .</code> because it stages every unignored change below the current directory, including files they may not have inspected or intended to commit. Stage named files, such as <code>git add 02-git.qmd</code>, and review <code>git diff --staged</code> before committing. Use <code>git add .</code> only when you have deliberately checked every change in the directory.</p>
-<p>The seven commands used most often in this book are <code>git clone</code>, <code>git pull</code>, <code>git status</code>, <code>git add</code>, <code>git rm</code>, <code>git commit</code>, and <code>git push</code>. The first clones a repository using an HTTPS URL or an SSH key; <code>pull</code> downloads and integrates updates; <code>status</code> reports changed, staged, and untracked files and whether the local branch is ahead of or behind its remote; <code>add</code> stages selected changes; <code>rm</code> removes a file from the index and working tree; <code>commit</code> records a snapshot with a message; and <code>push</code> sends commits to a remote. The commands <code>git diff</code>, <code>git branch</code>, and <code>git reset</code> are useful for more advanced work; use <code>git reset</code> only after learning how it changes history.</p>
+<p>The commands used most often in this book are:</p>
+<ul>
+<li><code>git clone</code> copies a remote repository to your computer.</li>
+<li><code>git pull</code> downloads and integrates updates from a remote.</li>
+<li><code>git status</code> shows changed, staged, and untracked files and whether the local branch is ahead of or behind its remote.</li>
+<li><code>git add</code> stages selected changes; <code>git rm</code> removes a file from the index and working tree.</li>
+<li><code>git commit</code> records a local snapshot with a message.</li>
+<li><code>git push</code> sends local commits to a remote repository.</li>
+</ul>
+<p>The commands <code>git diff</code> and <code>git branch</code> help review changes and manage lines of work. Use <code>git reset</code> only after learning how it changes the branch and staging area.</p>
 </section>
 <section id="inspecting-and-recovering-history" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="inspecting-and-recovering-history"><span class="header-section-number">2.4</span> Inspecting and Recovering History</h2>
@@ -398,10 +419,7 @@ div.csl-indent {
 <li><strong>Track:</strong> source code (<code>.py</code>, <code>.qmd</code>, and <code>.R</code>), documentation, small example data, configuration needed to reproduce the project, environment specifications, and <code>.gitignore</code>.</li>
 <li><strong>Do not track:</strong> passwords, API keys, private keys, personal data, huge raw datasets, downloaded installers, temporary files, caches, virtual environments, rendered <code>_book/</code> output, or other files generated from the tracked source.</li>
 </ul>
-<p>Put the exclusion rule in <code>.gitignore</code> before creating files that should not be tracked. If sensitive information is accidentally committed, deleting the file in a later commit does not remove it from the earlier history; change the exposed credential and seek help to remove the history safely.</p>
-</section>
-<section id="exercises" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>Put the exclusion rule in <code>.gitignore</code> before creating files that should not be tracked. If sensitive information is accidentally committed, deleting the file in a later commit does not remove it from the earlier history; change the exposed credential and seek help to remove the history safely. ## Exercises {.unnumbered}</p>
 <p>Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <div id="exr-git-working-copy" class="theorem exercise">
 <p><span class="theorem-title"><strong> 2.1</strong></span> Establish a local working copy of the course class-notes repository. For Fall 2026, use <a href="https://github.com/statds/ids-f26"><code>statds/ids-f26</code></a>.</p>

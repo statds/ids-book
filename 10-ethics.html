@@ -259,7 +259,6 @@ div.csl-indent {
   <li><a href="#transparency" id="toc-transparency" class="nav-link" data-scroll-target="#transparency"><span class="header-section-number">10.8</span> Transparency</a></li>
   <li><a href="#accountability" id="toc-accountability" class="nav-link" data-scroll-target="#accountability"><span class="header-section-number">10.9</span> Accountability</a></li>
   <li><a href="#review" id="toc-review" class="nav-link" data-scroll-target="#review"><span class="header-section-number">10.10</span> Review</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/10-ethics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -286,25 +285,54 @@ div.csl-indent {
 </header>
 
 
-<p>Ethical reasoning is part of every data-science decision because choices about questions, data, methods, and communication affect people and institutions. This chapter develops a practical framework for identifying those effects, evaluating competing responsibilities, and documenting a defensible course of action. It draws on principles in research ethics, professional statistical practice, and risk management, while treating none of these frameworks as a substitute for contextual judgment. The NYPD 311 requests used throughout the book provide a recurring case: the data are public, but their interpretation and reuse can still create privacy, equity, and accountability concerns.</p>
+<p>Choices about questions, data, methods, and communication can affect people and institutions. This chapter offers a way to identify those effects, consider responsibilities, and document a decision. It draws on research ethics, professional statistical practice, and risk management, while recognizing that no framework replaces judgment about the setting. We use the NYPD 311 requests from earlier chapters as a case: public data can still raise privacy, equity, and accountability concerns.</p>
 <section id="ethical-reasoning" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="ethical-reasoning"><span class="header-section-number">10.1</span> Ethical Reasoning</h2>
 <p>Ethical analysis asks more than whether an action is legal or technically possible. Legal rules establish requirements in particular jurisdictions and contexts; professional standards describe responsibilities attached to practice; ethical reasoning also considers foreseeable benefits, harms, power, and the interests of affected people. A project may satisfy a data license and still expose a vulnerable person, produce a misleading comparison, or support a harmful decision. Conversely, identifying a possible risk does not by itself show that a project must stop. The analyst should specify the purpose, who is affected, what evidence is available, which alternatives exist, and who has the authority to decide.</p>
-<p>Ethical review revisits the four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>, because purpose, measurement, scope, and evidence shape who may be affected and what consequences the analysis can have. Several established frameworks help organize this reasoning. The Belmont Report identifies respect for persons, beneficence, and justice as principles for research involving human subjects; its original scope should be kept clear when applying its ideas to administrative data or nonresearch settings <span class="citation" data-cites="belmont1979report">(<a href="#ref-belmont1979report" role="doc-biblioref">National Commission for the Protection of Human Subjects of Biomedical and Behavioral Research, 1979</a>)</span>. The American Statistical Association’s Ethical Guidelines address statistical practice across data collection, processing, analysis, interpretation, communication, and model development <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>. The January 2026 Journal of Data Science editorial on trustworthy machine learning connects concerns such as fairness, privacy, transparency, robustness, and uncertainty to statistical reasoning and human judgment <span class="citation" data-cites="hicks2026statistical">(<a href="#ref-hicks2026statistical" role="doc-biblioref">Hicks et al., 2026</a>)</span>. For systems involving artificial intelligence, the NIST AI Risk Management Framework organizes risk work around governance, context mapping, measurement, and management <span class="citation" data-cites="nist2023ai">(<a href="#ref-nist2023ai" role="doc-biblioref">Tabassi, 2023</a>)</span>. These frameworks differ in scope, but all reject the idea that technical correctness alone establishes responsible practice.</p>
-<p>The chapter uses six questions as a working review: What purpose does the analysis serve? Whose data or experiences are represented? Who could benefit or be harmed? What assumptions or uncertainties could change the result? What safeguards or alternatives are available? Who is responsible for the decision and its consequences? These questions should be revisited as the project changes. They do not produce an automatic ethical score; they make judgments and unresolved issues visible to collaborators, reviewers, and decision makers.</p>
+<p>Ethical review returns to the purpose, measurement, scope, and evidence checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>. These choices shape who may be affected and what consequences an analysis could have. Several frameworks offer useful, but different, starting points:</p>
+<ul>
+<li>The Belmont Report sets out respect for persons, beneficence, and justice for research involving human subjects. Keep its original scope in mind when applying its ideas to administrative data or nonresearch settings <span class="citation" data-cites="belmont1979report">(<a href="#ref-belmont1979report" role="doc-biblioref">National Commission for the Protection of Human Subjects of Biomedical and Behavioral Research, 1979</a>)</span>.</li>
+<li>The American Statistical Association’s Ethical Guidelines address practice across data collection, processing, analysis, interpretation, communication, and model development <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>.</li>
+<li>A 2026 Journal of Data Science editorial connects trustworthy machine learning with fairness, privacy, transparency, robustness, uncertainty, statistical reasoning, and human judgment <span class="citation" data-cites="hicks2026statistical">(<a href="#ref-hicks2026statistical" role="doc-biblioref">Hicks et al., 2026</a>)</span>.</li>
+<li>The NIST AI Risk Management Framework organizes risk work around governance, context mapping, measurement, and management <span class="citation" data-cites="nist2023ai">(<a href="#ref-nist2023ai" role="doc-biblioref">Tabassi, 2023</a>)</span>.</li>
+</ul>
+<p>Use these six questions as a working review:</p>
+<ol type="1">
+<li>What purpose does the analysis serve?</li>
+<li>Whose data or experiences are represented or missing?</li>
+<li>Who could benefit, and who could be harmed?</li>
+<li>Which assumptions or uncertainties could change the result?</li>
+<li>What safeguards or alternatives are available?</li>
+<li>Who is responsible for the decision and its consequences?</li>
+</ol>
+<p>Return to these questions as the project changes. They do not produce an automatic ethical score; they make judgments and unresolved issues visible to collaborators, reviewers, and decision makers.</p>
 </section>
 <section id="purpose" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="purpose"><span class="header-section-number">10.2</span> Purpose</h2>
-<p>A defensible project begins with a purpose that is sufficiently specific to evaluate. The analyst should identify the intended audience, the decision or understanding the analysis may support, and the limits on its use. Broad goals such as “improve safety” do not explain which intervention is contemplated, who will receive it, or what costs it may impose. Purpose also constrains data use: information collected to administer a service may not be appropriate for every secondary use simply because it is accessible.</p>
+<p>A defensible project begins with a purpose specific enough to evaluate. State:</p>
+<ul>
+<li>who needs the analysis;</li>
+<li>what decision or understanding it may support; and</li>
+<li>what uses are outside its scope.</li>
+</ul>
+<p>“Improve safety” is too broad by itself. It does not identify an intervention, who would receive it, or what costs it could impose. Purpose also constrains data use: information collected to administer a service is not automatically appropriate for every secondary use just because it is accessible.</p>
 <p>The NYPD 311 extract records requests directed to NYPD, not a census of illegal-parking events. A project might describe how these requests vary by time or location. That is different from identifying where violations occur, which neighborhoods are less compliant, or where enforcement should be increased. Each transition changes the claim and may affect residents differently. Before proceeding, the project team should state which claim it intends to support and whether that claim is compatible with the collection process and available evidence.</p>
-<p>Affected parties include more than the people represented by rows. In this case they may include people who submitted requests, people whose vehicles or locations were reported, residents and businesses in mapped areas, NYPD staff, 311 administrators, and decision makers who may rely on the analysis. These groups can have different interests and different opportunities to challenge an interpretation. Stakeholder consultation is most useful when it can alter the question, the safeguards, or the decision, rather than serving only as approval after the analysis is complete.</p>
+<p>Affected parties include more than the people represented by rows. For this case, they may include:</p>
+<ul>
+<li>people who submitted requests;</li>
+<li>people whose vehicles or locations were reported;</li>
+<li>residents and businesses in mapped areas;</li>
+<li>NYPD staff and 311 administrators; and</li>
+<li>decision makers who may rely on the analysis.</li>
+</ul>
+<p>These groups can have different interests and different opportunities to challenge an interpretation. Consultation is most useful when it can change the question, safeguards, or decision, rather than serving only as approval after analysis is complete.</p>
 </section>
 <section id="privacy" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="privacy"><span class="header-section-number">10.3</span> Privacy</h2>
 <p>Privacy risk depends on context, not only on whether a table contains names. Precise locations, timestamps, rare categories, and external information can combine to reveal details about a person, household, or business. Removing direct identifiers may reduce risk, but it does not guarantee anonymity. Public accessibility also does not establish that every downstream use is expected, harmless, or consistent with the original collection purpose.</p>
 <p>The distributed 311 extract does not provide a reporter name, but individual addresses and coordinates can still expose the location of a reported condition. A citywide count may need no street address at all; a neighborhood comparison may require only an aggregated geography. Data minimization asks the analyst to use and disclose the least detailed data adequate for the stated task. The appropriate resolution depends on the question, the population at risk, the possibility of linkage, and the consequences of disclosure.</p>
 <p>The following example prepares a borough-by-detail summary without importing request identifiers, street addresses, or coordinates. It suppresses small cells in the displayed release table to illustrate one possible safeguard. The threshold is a teaching choice, not a universal privacy standard, and the internal count is not included in the table intended for release.</p>
-<div id="28dcf743" class="cell" data-execution_count="1">
+<div id="50baf661" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -443,20 +471,42 @@ div.csl-indent {
 </div>
 </div>
 <p>The aggregate supports a limited comparison while excluding direct location fields and request-level identifiers. Suppression reduces the detail shown for small groups, but it does not establish that reidentification is impossible. A person may combine released values with outside information, and totals or overlapping tables can reveal a suppressed count by subtraction. The analyst should assess the release as a whole, state the purpose and threshold, and avoid publishing complementary summaries that undo the suppression.</p>
-<p>Privacy safeguards include limiting access, reducing precision, aggregating results, suppressing small cells where disclosure risk warrants it, and setting retention and deletion rules. Each safeguard has analytical costs: aggregation can conceal local variation, while suppression can make groups unequally visible. The analyst should state the risk being reduced and check whether the safeguard distorts the intended comparison. Data security and privacy protection are related but distinct; secure storage does not resolve whether a collection or analysis is appropriate.</p>
+<p>Possible privacy safeguards include:</p>
+<ul>
+<li>limiting access to request-level records;</li>
+<li>reducing location or time precision;</li>
+<li>aggregating results;</li>
+<li>suppressing small cells when disclosure risk warrants it; and</li>
+<li>setting retention and deletion rules.</li>
+</ul>
+<p>Each safeguard has analytical costs. Aggregation can conceal local patterns, and suppression can make some groups less visible than others. State which risk a safeguard addresses and check whether it distorts the comparison. Data security and privacy protection are related but distinct: secure storage does not decide whether a collection or analysis is appropriate.</p>
 </section>
 <section id="bias" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="bias"><span class="header-section-number">10.4</span> Bias</h2>
 <p>Bias can enter before a model is fitted. Administrative data reflect how a system defines categories, who can access it, what people choose to report, how staff record events, and which records are retained. Consequently, a large dataset can measure a process precisely while representing the underlying phenomenon incompletely. Bias is not limited to a mistaken algorithm; it can arise from the purpose, measurement, sampling, labels, missingness, and decisions surrounding the analysis.</p>
 <p>311 requests illustrate the distinction between an event and its observation. The data contain reported conditions, not all conditions on city streets. Reporting may vary with awareness of 311, access to a phone or internet, language, trust in public agencies, time available, and expectations about response. A neighborhood with more requests could have more underlying conditions, more reporting, or both. A population denominator may improve one comparison but cannot correct every difference in exposure or reporting behavior. The data alone may not identify those mechanisms.</p>
 <p>Missing values and outcome labels can also encode system processes. Requests without coordinates may be less suitable for mapping, but dropping them can change which areas or categories appear in the analysis. A label such as “closed” describes an administrative state and should not be treated as proof that a reported condition was resolved. The data-curation issues documented for NYC 311, including inconsistent representations and temporal anomalies, show why analysts should investigate how fields were produced before treating them as neutral measurements <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>.</p>
-<p>An ethical bias assessment therefore begins with a map of the data-generating process. Analysts should ask who is included, who may be missing, what the labels mean, how measurement varies across groups, and whether a proposed comparison has adequate support. When relevant group information is absent, the responsible conclusion may be that fairness cannot be evaluated from the available extract. Inferring sensitive attributes from location as a shortcut can add privacy risks and introduce new classification errors.</p>
+<p>An ethical bias assessment begins by examining how the records were created. Ask:</p>
+<ul>
+<li>Who is included, and who may be missing?</li>
+<li>What do the categories and outcome labels mean?</li>
+<li>Could reporting, measurement, or missingness differ across groups?</li>
+<li>Does each comparison have enough data to support it?</li>
+</ul>
+<p>If the extract lacks relevant group information, fairness may not be evaluated from the available records. Inferring sensitive attributes from location can add privacy risks and classification errors.</p>
 </section>
 <section id="fairness" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="fairness"><span class="header-section-number">10.5</span> Fairness</h2>
 <p>Fairness concerns how benefits, errors, burdens, and opportunities are distributed. It is not a single property that can be established by reporting one metric. A descriptive comparison may raise fairness questions even when no predictive model is used; a prediction system makes those questions more consequential when its output changes access, scrutiny, enforcement, or resources. The relevant groups, outcomes, and harms depend on the decision context and should be identified before selecting a metric.</p>
 <p>Suppose an analyst predicts which locations will receive future illegal- parking complaints and proposes that the city use the predictions to allocate enforcement. The target is future complaints, not verified violations. Historical complaint patterns can reproduce differences in reporting and enforcement, while enforcement can generate new records that appear to confirm the original pattern. A high overall prediction score would not establish that the system identifies violations accurately or distributes enforcement fairly. The team would need validated outcome measures, a specified decision process, subgroup error analysis where suitable data and sample sizes permit, and a justification for the costs of false positives and false negatives.</p>
-<p>Group metrics can conflict, and apparent parity can conceal unequal harms or poor measurement. Analysts should explain which errors matter, to whom, and why a chosen comparison is appropriate. They should also consider whether a model is needed at all: a transparent aggregate description or a nonalgorithmic process may achieve the stated purpose with fewer risks. If a proposed use cannot be evaluated with the available data, that limitation is a reason to collect better evidence, narrow the use, or decline deployment, not a reason to claim that the system is fair by default.</p>
+<p>Fairness review should make several decisions explicit:</p>
+<ul>
+<li>Which groups and outcomes are relevant to the proposed decision?</li>
+<li>Which errors matter, to whom, and with what consequences?</li>
+<li>Why is the selected comparison appropriate for that use?</li>
+<li>Could a transparent aggregate description or nonalgorithmic process meet the purpose with fewer risks?</li>
+</ul>
+<p>Group metrics can conflict, and apparent parity can conceal unequal harms or poor measurement. If the available data cannot evaluate the proposed use, the project may need better evidence, a narrower use, or no deployment. That limitation is not evidence that the system is fair by default.</p>
 </section>
 <section id="uncertainty" class="level2" data-number="10.6">
 <h2 data-number="10.6" class="anchored" data-anchor-id="uncertainty"><span class="header-section-number">10.6</span> Uncertainty</h2>
@@ -486,10 +536,7 @@ div.csl-indent {
 <section id="review" class="level2" data-number="10.10">
 <h2 data-number="10.10" class="anchored" data-anchor-id="review"><span class="header-section-number">10.10</span> Review</h2>
 <p>Ethical review is a continuing part of data-science work rather than a final approval step. A practical review asks whether the question remains justified, whether the data represent the intended population, whether the measurement and model fit the proposed decision, whether risks are proportionate to expected benefits, and whether affected people can understand or challenge the use. Sometimes the result is to proceed with safeguards; sometimes it is to change the question, seek additional evidence, limit release, or stop.</p>
-<p>The frameworks discussed here provide vocabulary and structure, but they do not remove disagreement. Respect, benefit, justice, privacy, and fairness can point in different directions, and a technically precise analysis may still leave the central value choice unresolved. Responsible practice makes those choices explicit, considers who has authority and voice, records the basis for action, and remains open to revision as evidence and consequences become clearer.</p>
-</section>
-<section id="exercises" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The frameworks discussed here provide vocabulary and structure, but they do not remove disagreement. Respect, benefit, justice, privacy, and fairness can point in different directions, and a technically precise analysis may still leave the central value choice unresolved. Responsible practice makes those choices explicit, considers who has authority and voice, records the basis for action, and remains open to revision as evidence and consequences become clearer. ## Exercises {.unnumbered}</p>
 <div id="exr-ethics-311" class="theorem exercise">
 <p><span class="theorem-title"><strong> 10.1</strong></span> Evaluate an ethical decision involving the NYPD 311 data. Work individually or in a small group, and distinguish evidence in the data from assumptions about people or agency processes.</p>
 <ol type="a">

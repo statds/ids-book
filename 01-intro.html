@@ -294,7 +294,6 @@ window.Quarto = {
   </ul></li>
   <li><a href="#responsible-practice" id="toc-responsible-practice" class="nav-link" data-scroll-target="#responsible-practice"><span class="header-section-number">1.7</span> Responsible Practice</a></li>
   <li><a href="#communicating-data-science" id="toc-communicating-data-science" class="nav-link" data-scroll-target="#communicating-data-science"><span class="header-section-number">1.8</span> Communicating Data Science</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/01-intro.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -328,8 +327,16 @@ window.Quarto = {
 <p><span class="math display">\[
 \text{Data science} = S D C^3,
 \]</span></p>
-<p>Yu’s notation names the capabilities that must work together in data science. The <span class="math inline">\(S\)</span> represents statistics, the <span class="math inline">\(D\)</span> represents domain or scientific knowledge, and the three <span class="math inline">\(C\)</span>s represent computing, collaboration, and communication. Statistics provides ways to reason from observations while accounting for variation and uncertainty. Domain knowledge connects an analysis to a meaningful question and helps us judge whether its assumptions are sensible. Computing makes it possible to acquire, organize, explore, and model data at useful scales.</p>
+<p>Yu’s notation names five capabilities that need to work together:</p>
+<ul>
+<li><strong>Statistics</strong> helps us reason from observations while accounting for variation and uncertainty.</li>
+<li><strong>Domain knowledge</strong> connects an analysis to a question in a particular setting and helps us judge whether its assumptions are sensible.</li>
+<li><strong>Computing</strong> lets us acquire, organize, explore, and model data.</li>
+<li><strong>Collaboration</strong> brings together people who understand different parts of a problem, its data, or its methods.</li>
+<li><strong>Communication</strong> explains the question, evidence, assumptions, and conclusions to people who need to use or evaluate the work.</li>
+</ul>
 <p>Collaboration and communication are not additions made after the technical work is complete. Data-science problems are commonly defined and solved by people with different forms of expertise. Their work becomes useful only when the question, evidence, assumptions, limitations, and conclusions can be understood by others. Data science is therefore both a technical and a social practice.</p>
+<p>Consider a study of 311 reports about blocked bicycle lanes. Statistics can help compare report counts across neighborhoods, but domain knowledge is needed to decide whether counts should be divided by lane mileage or another measure of exposure. Computing is needed to combine request records with a map of bicycle lanes. Residents and transportation staff may help explain how reports are made and used. The final analysis must then explain what the counts measure and what they leave out. Each capability answers a different part of the problem.</p>
 </section>
 <section id="the-data-science-workflow" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="the-data-science-workflow"><span class="header-section-number">1.2</span> The Data-Science Workflow</h2>
@@ -346,7 +353,13 @@ window.Quarto = {
 </section>
 <section id="this-books-emphasis" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="this-books-emphasis"><span class="header-section-number">1.3</span> This Book’s Emphasis</h2>
-<p>This book is an introductory, implementation-focused companion to broader frameworks for responsible data science. A particularly close related text is Yu and Barter’s <em>Veridical Data Science</em>, which develops the PCS framework through real-world case studies across the data-science life cycle <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. This book draws on its nonlinear view of that life cycle, while taking a different route for beginning students: the opening chapters build practical foundations in computing, Git, Quarto, and Python before the later chapters apply them to a sustained NYC 311 example. The workflow makes both problem-to-data and data-to-question reasoning explicit, then carries the example through preparation, exploration, visualization, modeling, and ethical review. Rather than reproduce VDS’s full PCS framework, this text emphasizes hands-on implementation, careful checks on what the records measure, and claims proportionate to the available evidence.</p>
+<p>This book develops practical skills for carrying out and explaining a data-science project. It draws on the nonlinear life-cycle perspective in Yu and Barter’s <em>Veridical Data Science</em>, which develops the PCS framework through case studies <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. The book takes a different route for beginning students:</p>
+<ul>
+<li>The opening chapters build foundations in computing, Git, Quarto, and Python.</li>
+<li>The later chapters use a sustained example based on New York City 311 records.</li>
+<li>The analysis moves from formulating a question through preparation, exploration, visualization, and modeling to ethical review.</li>
+</ul>
+<p>The goal is to connect hands-on implementation with careful checks on what records measure and with conclusions that fit the available evidence.</p>
 </section>
 <section id="goals-of-this-course" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="goals-of-this-course"><span class="header-section-number">1.4</span> Goals of This Course</h2>
@@ -485,16 +498,29 @@ window.Quarto = {
 <section id="responsible-practice" class="level2" data-number="1.7">
 <h2 data-number="1.7" class="anchored" data-anchor-id="responsible-practice"><span class="header-section-number">1.7</span> Responsible Practice</h2>
 <p>Ethical questions occur throughout a project, not only when results are published. Data may have been collected without meaningful consent, omit groups affected by a decision, encode historical inequities, or reveal private information when combined with other sources. A model may distribute errors unevenly, and a technically correct analysis may still be used for a harmful or unjustified purpose.</p>
-<p>Responsible practice begins by asking who created the data, who is represented, who is missing, who benefits from the analysis, and who bears the risks. Collect and retain only what is needed; protect sensitive information; document provenance and transformations; examine performance across relevant groups; and communicate limitations. Legal compliance is necessary in regulated settings, but it is not a substitute for ethical judgment.</p>
+<p>Responsible practice starts with questions about the data and the decisions they may inform:</p>
+<ul>
+<li>Who created the data, and who is represented or missing?</li>
+<li>Who may benefit from the analysis, and who may bear its risks?</li>
+<li>What information is necessary to collect and retain?</li>
+<li>How will sensitive information be protected, and how will the data source and transformations be documented?</li>
+<li>Could results or model errors differ across relevant groups?</li>
+<li>What limitations should readers know before acting on a result?</li>
+</ul>
+<p>Legal compliance is necessary in regulated settings, but it does not replace ethical judgment. A dataset can be public and still raise questions about privacy, coverage, or how its results will be used.</p>
 <p>Accountability remains with the people conducting and deploying an analysis. This is especially important when AI generates code, models, or prose. The apparent fluency of an output is not evidence that the data were appropriate, the computation was correct, or the conclusion was justified. Every result must be examined with the same statistical, computational, contextual, and ethical scrutiny regardless of how it was produced.</p>
 </section>
 <section id="communicating-data-science" class="level2" data-number="1.8">
 <h2 data-number="1.8" class="anchored" data-anchor-id="communicating-data-science"><span class="header-section-number">1.8</span> Communicating Data Science</h2>
-<p>An analysis has little value if its audience cannot understand what was learned or decide how to respond. Effective communication begins with the question and the main finding, then supplies the evidence needed to support that finding. Tables and graphics should have a clear purpose, informative labels, honest scales, and enough context to be interpreted without guesswork.</p>
-<p>Good communication also makes uncertainty and limitations visible. Report what the data cover, distinguish observed patterns from explanations, and avoid causal language when the design supports only association. Provide enough information about data sources, software, and analytical choices for others to inspect or reproduce the work. The objective is not to make a result sound certain; it is to make the reasoning transparent and useful.</p>
-</section>
-<section id="exercises" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>An analysis is useful when its audience can understand what was learned and decide how to respond. A clear explanation usually answers four questions:</p>
+<ul>
+<li>What question did the analysis address?</li>
+<li>What did the data show?</li>
+<li>What evidence supports that finding?</li>
+<li>What can and cannot be concluded from it?</li>
+</ul>
+<p>Tables and graphics should have a clear purpose, informative labels, honest scales, and enough context to be interpreted without guesswork. For example, a chart titled “Illegal parking increased” makes a stronger claim than a chart titled “311 illegal-parking requests by day.” The first suggests a change in actual violations; the second states what was counted.</p>
+<p>Good communication also makes uncertainty and limitations visible. Report what the data cover, distinguish observed patterns from explanations, and avoid causal language when the design supports only association. Provide enough information about data sources, software, and analytical choices for others to inspect or reproduce the work. The objective is not to make a result sound certain; it is to make the reasoning transparent and useful. ## Exercises {.unnumbered}</p>
 <p>Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <div id="exr-computer-setup" class="theorem exercise">
 <p><span class="theorem-title"><strong> 1.1</strong></span> Prepare your computer for this course.</p>
