@@ -349,27 +349,116 @@ it estimates performance for additional requests drawn under a similar
 one-week data-generating process.
 
 
-Different metrics answer different questions:
+Prediction metrics depend on the outcome's scale. Numeric outcomes are
+evaluated by comparing predicted values with observed values; classification
+begins with class probabilities and applies a threshold to assign labels.
+The same train-test separation applies to both tasks, but their metrics answer
+different questions.
 
 
-- **Accuracy** is the fraction of correct classifications at a chosen
-  probability threshold.
-- **ROC AUC** measures how well the model ranks positive cases above negative
-  cases across all thresholds. A value of 0.5 indicates chance-level ranking;
-  1 indicates perfect ranking. It neither chooses a threshold nor checks
-  whether probabilities are accurate.
-- **Log loss** evaluates the predicted probabilities and penalizes
-  confident errors [@scikitlearn2026metrics].
+### Numeric outcomes
 
 
-Threshold-based measures describe different parts of the confusion matrix.
-A true positive (TP) is a request that takes at least an hour and is flagged
-as such; a false negative (FN) takes at least an hour but is not flagged. A
-false positive (FP) closes sooner than an hour but is flagged, while a true
-negative (TN) closes sooner and is not flagged. Different fields often use
-different names for the same ratio. The following table gives common names
-and makes each denominator explicit [@wikipediandevaluation;
-@scikitlearn2026metrics].
+For a numeric outcome, a residual is the observed value minus its prediction.
+Three common scores summarize different aspects of these residuals:
+
+
+$$
+\begin{aligned}
+\text{MAE} &= \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|, \\
+\text{RMSE} &= \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}, \\
+R^2 &= 1 - \frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+              {\sum_{i=1}^{n}(y_i - \bar{y})^2}.
+\end{aligned}
+$$
+
+
+Mean absolute error (MAE) reports a typical miss in the outcome's units.
+Root mean squared error (RMSE) uses the same units but gives large errors
+more influence because it squares them before averaging. The coefficient of
+determination, $R^2$, compares squared prediction error with variation around
+the observed mean; a test-set value can be negative when predictions are
+worse than that reference [@scikitlearn2026metrics].
+
+
+Recorded closure hours are numeric, so the held-out records also allow us to
+compare simple duration baselines. The training mean is the constant
+prediction that minimizes squared error; the training median minimizes
+absolute error. This comparison shows how numeric prediction metrics work
+without introducing a second fitted model.
+
+
+```{python}
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+duration_train = model_data.loc[X_train.index, "closure_hours"]
+duration_test = model_data.loc[X_test.index, "closure_hours"]
+duration_scores = {}
+for name, value in {
+    "Training mean": duration_train.mean(),
+    "Training median": duration_train.median(),
+}.items():
+    prediction = pd.Series(value, index=duration_test.index)
+    duration_scores[name] = {
+        "MAE (hours)": mean_absolute_error(duration_test, prediction),
+        "RMSE (hours)": mean_squared_error(
+            duration_test, prediction
+        ) ** 0.5,
+        "R-squared": r2_score(duration_test, prediction),
+    }
+display(pd.DataFrame(duration_scores).T)
+```
+
+
+The training-median baseline has lower MAE (2.67 hours) than the training-mean
+baseline (3.16 hours), while the mean baseline has lower RMSE (4.96 hours
+versus 5.25 hours). The right-skewed closure-time distribution lets a few
+long closures have a large effect on RMSE. Both $R^2$ values are near zero or
+negative, so these constant forecasts capture little of the test-set
+variation. They provide reference errors, not an evaluation of a
+feature-based regression model.
+
+
+### Binary outcomes
+
+
+For binary classification, a model often estimates a probability and then
+uses a threshold to assign one of two labels. The positive class is the
+category of interest, and changing the threshold changes the predicted
+labels and the resulting threshold-based scores.
+
+
+### Confusion matrix
+
+
+A confusion matrix compares observed classes with the classes predicted at a
+chosen threshold. Its four cells count correct and incorrect classifications.
+A true positive (TP) is an actual positive predicted as positive; a false
+negative (FN) is an actual positive predicted as negative. A false positive
+(FP) is an actual negative predicted as positive; a true negative (TN) is an
+actual negative predicted as negative. Rows below are actual classes and
+columns are predicted classes, matching the convention used by scikit-learn
+[@scikitlearn2026metrics].
+
+
+| Actual class | Predicted positive | Predicted negative | Total |
+|:--|--:|--:|--:|
+| Positive | TP | FN | TP + FN |
+| Negative | FP | TN | FP + TN |
+| Total | TP + FP | FN + TN | $n$ |
+
+: General layout of a binary confusion matrix. {#tbl-model-confusion-matrix}
+
+
+In this chapter's parking analysis, a positive is a request that remains
+open for at least one hour, and a negative closes sooner. The illustrative
+threshold is 0.5, so predicted probabilities at or above 0.5 are classified
+as positive. The displayed test-set counts use this rule and the layout in
+@tbl-model-confusion-matrix.
+
+
+Each metric uses a different margin or combination of cells. The numerator
+and denominator make clear which errors a score counts:
 
 
 | Quantity | Common names | Definition |
@@ -386,35 +475,61 @@ and makes each denominator explicit [@wikipediandevaluation;
 | F1 score | F1 measure, F-score with $\beta=1$ | $2\,\mathrm{Precision}\,\mathrm{Recall}/(\mathrm{Precision}+\mathrm{Recall})$ |
 
 
-Some names come from different fields, but refer to the same calculation
-when the same class is designated positive:
+Different fields use different names for several of the same ratios:
 
 
-- **TPR, sensitivity, and recall** all divide true positives by all actual
-  positives. They ask: of the requests that remained open at least an hour,
-  what fraction did the model flag?
-- **PPV and precision** divide true positives by all predicted positives.
-  They ask: of the requests flagged by the model, what fraction remained
-  open at least an hour?
+- **TPR, sensitivity, and recall** all divide true positives by actual
+  positives. They ask what fraction of requests that remained open at least
+  an hour the model flagged.
+- **PPV and precision** divide true positives by predicted positives. They
+  ask what fraction of flagged requests remained open at least an hour.
 - **Specificity and TNR** measure the fraction of actual negatives not
   flagged; **FPR** is the fraction of actual negatives that were flagged.
 - **F1** is the harmonic mean of precision and recall. It does not account
   for true negatives.
 
 
-The other complementary pairs in the table share denominators: TPR/FNR,
-TNR/FPR, PPV/FDR, and NPV/FOR each sum to one. The Wikipedia overview and
-scikit-learn guide document these names and definitions
-[@wikipediandevaluation; @scikitlearn2026metrics]. Other F-scores give
-precision and recall different weights.
+The complementary pairs TPR/FNR, TNR/FPR, PPV/FDR, and NPV/FOR each sum to
+one. The $F_\beta$ score makes the precision-recall balance explicit:
 
 
-These measures depend on the classification threshold and the relative
-costs of missed long closures and unnecessary alerts. The data do not
-specify those costs, so a threshold of 0.5 is used below only as an
-illustration. If a decision threshold were selected for use, that choice
-would be made with training or validation data and then evaluated once on
-the held-out test set.
+$$
+F_\beta = (1 + \beta^2)
+\frac{\mathrm{Precision}\,\mathrm{Recall}}
+     {\beta^2\,\mathrm{Precision} + \mathrm{Recall}}.
+$$
+
+
+The familiar F1 score sets $\beta=1$. Values above one give more weight to
+recall, while values below one give more weight to precision; the choice
+should reflect the decision context rather than a universal preference
+[@wikipediandevaluation; @scikitlearn2026metrics].
+
+
+Accuracy is the fraction of correct labels and can hide poor performance on
+one class when class frequencies differ. ROC AUC measures how well the model
+ranks positive cases above negative cases across thresholds; 0.5 indicates
+chance-level ranking and 1 indicates perfect ranking. AUC neither chooses a
+threshold nor checks whether probabilities are accurate. Log loss evaluates
+the probabilities themselves and penalizes confident errors. For observed
+binary outcomes $y_i$ and predicted probabilities $p_i$, it is
+
+
+$$
+-\frac{1}{n}\sum_{i=1}^{n}
+\left[y_i\log(p_i) + (1-y_i)\log(1-p_i)\right].
+$$
+
+
+These measures answer different questions and none is universally best
+[@scikitlearn2026metrics].
+
+
+The threshold determines how missed long closures trade off against
+unnecessary alerts. The data do not specify the costs of these errors, so
+the example uses 0.5 only for illustration. A threshold selected for use
+would be chosen with training or validation data, then evaluated once on the
+held-out test set.
 
 
 The baseline assigns every request the training-set target prevalence as
@@ -478,14 +593,13 @@ scores = pd.DataFrame({
     "Prevalence baseline": score_predictions(baseline_probability),
     "Census-context logistic model": score_predictions(test_probability),
 }).T
-display(scores)
-
 confusion_table = pd.DataFrame(
-    confusion_matrix(y_test, test_probability >= 0.5),
-    index=["Actual under one hour", "Actual at least one hour"],
-    columns=["Predicted under one hour", "Predicted at least one hour"],
+    confusion_matrix(y_test, test_probability >= 0.5, labels=[1, 0]),
+    index=["Actual at least one hour", "Actual under one hour"],
+    columns=["Predicted at least one hour", "Predicted under one hour"],
 )
-confusion_table
+display(confusion_table)
+display(scores)
 ```
 
 
@@ -567,27 +681,59 @@ would use the predictions.
 ## Regularize Logistic Regression
 
 
-Regularization adds a penalty to the fitting objective to limit coefficient
-size and reduce sensitivity to features that fit quirks in the training
-records. Ridge-style $L_2$ regularization shrinks coefficients toward
-zero; lasso-style $L_1$ regularization can set some coefficients exactly
-to zero. Elastic net combines the two penalties
-[@tibshirani1996regression; @zou2005regularization]. The code below uses
-the $L_2$ penalty and compares stronger with weaker shrinkage on the same
-held-out requests.
+The model has many coefficients because problem detail and borough are
+one-hot encoded, and the later ZIP-label model adds a coefficient for each
+observed area. Some categories are sparse, while the Census measures can be
+correlated. An unpenalized fit can assign unstable, large coefficients to
+these patterns and perform worse on new requests. Regularization limits
+coefficient size to trade a small amount of training fit for more stable
+predictions.
+
+
+Logistic regression estimates coefficients by maximizing the Bernoulli
+log-likelihood. A penalty adds a cost for large coefficients:
+
+
+$$
+\widehat{\boldsymbol{\beta}}_\lambda
+= \arg\min_{\boldsymbol{\beta}}
+\left\{
+-\sum_{i=1}^{n}
+\left[y_i\log(p_i) + (1-y_i)\log(1-p_i)\right]
++ \lambda P(\boldsymbol{\beta})
+\right\}.
+$$
+
+
+Here, $p_i$ is the fitted probability for request $i$, and the penalty
+does not include the intercept. The $L_2$ penalty is
+$P(\boldsymbol{\beta}) = \sum_{j=1}^{p}\beta_j^2$; it shrinks coefficients
+without usually setting them exactly to zero. The $L_1$ penalty is
+$P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|$ and can set some
+coefficients to zero, producing a sparse model. Elastic net combines the
+two penalties [@tibshirani1996regression; @zou2005regularization]. Since
+several Census measures may carry overlapping information, this example
+uses $L_2$ regularization to stabilize the estimates without arbitrarily
+selecting one of a group of correlated predictors.
 
 
 Scikit-learn's logistic regression applies $L_2$ regularization by
-default. Its `C` parameter is the inverse penalty strength, so smaller
-values apply stronger shrinkage [@scikitlearn2026logistic]. The analyst should select `C` using only
-the training data. The pipeline places one-hot encoding inside each fold,
-which prevents the validation records in a fold from influencing category
-processing or model fitting. Cross-validation estimates how candidate
-settings perform across several training/validation splits
-[@scikitlearn2026crossvalidation]; using the same
-cross-validation scores both to select and to report a final error can be
-optimistic, which is why the separate test set remains untouched until
-selection is complete [@varma2006bias].
+default. Its `C` parameter is inversely related to the penalty strength, so
+smaller values apply stronger shrinkage [@scikitlearn2026logistic]. Numeric
+predictors must be standardized because the penalty acts on coefficient
+size; otherwise, a change in measurement units changes how strongly a
+predictor is penalized. The analysis standardizes the area measures and
+keeps preprocessing inside the cross-validation pipeline.
+
+
+Cross-validation selects `C` using training data alone. Within each fold,
+the pipeline learns its scaling, category encoding, and model coefficients
+from the fold's training records, then evaluates log loss on its validation
+records. The candidate with the lowest mean validation log loss is refitted
+on the complete training set. The separate test set remains untouched until
+selection is complete because using the same cross-validation scores both
+to select and report final performance can be optimistic
+[@scikitlearn2026crossvalidation; @varma2006bias].
 
 
 The comparison separates measured area context from a postal-code lookup.
@@ -774,6 +920,8 @@ changes unresolved. Area-level predictors also require validation that
 respects their shared geography when the intended use concerns new areas.
 The model's intended use and validation design must therefore be considered
 together.
+
+
 ## Exercises {.unnumbered}
 
 These exercises extend the target definition and EDA in @exr-eda-time into
