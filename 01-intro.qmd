@@ -17,20 +17,32 @@ $$
 \text{Data science} = S D C^3,
 $$
 
-Yu's notation names the capabilities that must work together in data science.
-The $S$ represents statistics, the $D$ represents domain or scientific
-knowledge, and the three $C$s represent computing, collaboration, and
-communication. Statistics provides ways to reason from observations while
-accounting for variation and uncertainty. Domain knowledge connects an analysis
-to a meaningful question and helps us judge whether its assumptions are
-sensible. Computing makes it possible to acquire, organize, explore, and model
-data at useful scales.
+Yu's notation names five capabilities that need to work together:
+
+- **Statistics** helps us reason from observations while accounting for
+  variation and uncertainty.
+- **Domain knowledge** connects an analysis to a question in a particular
+  setting and helps us judge whether its assumptions are sensible.
+- **Computing** lets us acquire, organize, explore, and model data.
+- **Collaboration** brings together people who understand different parts of
+  a problem, its data, or its methods.
+- **Communication** explains the question, evidence, assumptions, and
+  conclusions to people who need to use or evaluate the work.
 
 Collaboration and communication are not additions made after the technical work
 is complete. Data-science problems are commonly defined and solved by people
 with different forms of expertise. Their work becomes useful only when the
 question, evidence, assumptions, limitations, and conclusions can be understood
 by others. Data science is therefore both a technical and a social practice.
+
+Consider a study of 311 reports about blocked bicycle lanes. Statistics can
+help compare report counts across neighborhoods, but domain knowledge is
+needed to decide whether counts should be divided by lane mileage or another
+measure of exposure. Computing is needed to combine request records with a
+map of bicycle lanes. Residents and transportation staff may help explain
+how reports are made and used. The final analysis must then explain what the
+counts measure and what they leave out. Each capability answers a different
+part of the problem.
 
 ## The Data-Science Workflow
 
@@ -64,19 +76,21 @@ manageable and allow other people to inspect the work.
 
 ## This Book's Emphasis
 
-This book is an introductory, implementation-focused companion to broader
-frameworks for responsible data science. A particularly close related text is
+This book develops practical skills for carrying out and explaining a
+data-science project. It draws on the nonlinear life-cycle perspective in
 Yu and Barter's *Veridical Data Science*, which develops the PCS framework
-through real-world case studies across the data-science life cycle
-[@yu2024veridical]. This book draws on its nonlinear view of that life cycle,
-while taking a different route for beginning students: the opening chapters
-build practical foundations in computing, Git, Quarto, and Python before the
-later chapters apply them to a sustained NYC 311 example. The workflow makes
-both problem-to-data and data-to-question reasoning explicit, then carries the
-example through preparation, exploration, visualization, modeling, and ethical
-review. Rather than reproduce VDS's full PCS framework, this text emphasizes
-hands-on implementation, careful checks on what the records measure, and
-claims proportionate to the available evidence.
+through case studies [@yu2024veridical]. The book takes a different route for
+beginning students:
+
+- The opening chapters build foundations in computing, Git, Quarto, and
+  Python.
+- The later chapters use a sustained example based on New York City 311
+  records.
+- The analysis moves from formulating a question through preparation,
+  exploration, visualization, and modeling to ethical review.
+
+The goal is to connect hands-on implementation with careful checks on what
+records measure and with conclusions that fit the available evidence.
 
 ## Goals of This Course
 
@@ -384,12 +398,20 @@ information when combined with other sources. A model may distribute errors
 unevenly, and a technically correct analysis may still be used for a harmful or
 unjustified purpose.
 
-Responsible practice begins by asking who created the data, who is represented,
-who is missing, who benefits from the analysis, and who bears the risks. Collect
-and retain only what is needed; protect sensitive information; document
-provenance and transformations; examine performance across relevant groups;
-and communicate limitations. Legal compliance is necessary in regulated
-settings, but it is not a substitute for ethical judgment.
+Responsible practice starts with questions about the data and the decisions
+they may inform:
+
+- Who created the data, and who is represented or missing?
+- Who may benefit from the analysis, and who may bear its risks?
+- What information is necessary to collect and retain?
+- How will sensitive information be protected, and how will the data source
+  and transformations be documented?
+- Could results or model errors differ across relevant groups?
+- What limitations should readers know before acting on a result?
+
+Legal compliance is necessary in regulated settings, but it does not replace
+ethical judgment. A dataset can be public and still raise questions about
+privacy, coverage, or how its results will be used.
 
 Accountability remains with the people conducting and deploying an analysis.
 This is especially important when AI generates code, models, or prose. The
@@ -400,11 +422,19 @@ ethical scrutiny regardless of how it was produced.
 
 ## Communicating Data Science
 
-An analysis has little value if its audience cannot understand what was learned
-or decide how to respond. Effective communication begins with the question and
-the main finding, then supplies the evidence needed to support that finding.
+An analysis is useful when its audience can understand what was learned and
+decide how to respond. A clear explanation usually answers four questions:
+
+- What question did the analysis address?
+- What did the data show?
+- What evidence supports that finding?
+- What can and cannot be concluded from it?
+
 Tables and graphics should have a clear purpose, informative labels, honest
-scales, and enough context to be interpreted without guesswork.
+scales, and enough context to be interpreted without guesswork. For example,
+a chart titled “Illegal parking increased” makes a stronger claim than a
+chart titled “311 illegal-parking requests by day.” The first suggests a
+change in actual violations; the second states what was counted.
 
 Good communication also makes uncertainty and limitations visible. Report what
 the data cover, distinguish observed patterns from explanations, and avoid

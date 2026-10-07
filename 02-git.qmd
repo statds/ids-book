@@ -7,16 +7,19 @@ backup, discussion, and review around Git's local history. This chapter
 introduces the ideas and commands needed for the projects in this book. The
 free *Pro Git* book provides a fuller reference [@chacon2014progit].
 
-Several hands-on resources complement this chapter. The [Git and GitHub for
-Beginners crash course](https://www.youtube.com/watch?v=RGOj5yH7evk) provides a
-visual overview, [Git Exercises](https://gitexercises.fracz.com/) offers
-short command-line practice, and [Oh My Git!](https://ohmygit.org/) teaches
-Git through an open-source game. Version control is useful beyond Git because
-it preserves history, supports recovery, and coordinates work across
-collaborators. Hofert's beginner-friendly tutorial compares the fundamentals
-of Git and Subversion and is a useful additional reading
-[@hofert2025version]. Use all of these resources for practice, but check each
-command against `git status` and the repository's documentation.
+Several resources provide additional ways to practice:
+
+- [Git and GitHub for Beginners](https://www.youtube.com/watch?v=RGOj5yH7evk)
+  gives a visual overview.
+- [Git Exercises](https://gitexercises.fracz.com/) offers short command-line
+  practice.
+- [Oh My Git!](https://ohmygit.org/) teaches Git through an open-source game.
+- Hofert's tutorial compares Git with Subversion [@hofert2025version].
+
+These resources also introduce ideas used by other version-control systems:
+keeping a history, recovering earlier work, and coordinating contributions.
+As you practice, check the result of a command with `git status` and read the
+repository's instructions before changing its files.
 
 GitHub is one hosting service for Git repositories; [Bitbucket](https://bitbucket.org/)
 and [GitLab](https://gitlab.com/) offer similar services. Hosting a repository
@@ -32,11 +35,12 @@ snapshot with an author, time, and message. Thinking in these three states
 prevents the common mistake of treating `git add` as a backup or `git commit`
 as an upload.
 
-The staging area makes a commit a deliberate unit of work. You can inspect a
-change, stage only the part that belongs together, and then commit a coherent
-snapshot. A good commit should explain one change in the imperative mood, such
-as `content: clarify relative paths`; generated files, credentials, and large
-local data should not be committed.
+The staging area lets you choose exactly what enters the next commit. Suppose
+you edit a chapter and also download a large dataset for local analysis. You
+can stage the chapter alone, inspect it, and commit that coherent change while
+leaving the dataset out. A commit message should state the change in the
+imperative mood, such as `content: clarify relative paths`. Generated files,
+credentials, and large local data should not be committed.
 
 ## Installing and Configuring Git
 
@@ -91,11 +95,18 @@ git commit -m "content: explain the Git workflow"
 git status
 ```
 
-The `git add` command copies the selected version into the staging area; it
-does not send anything to GitHub. The `git commit` command saves the staged
-snapshot locally; it does not publish it. The `git push` command sends local
-commits to a remote. This distinction is the foundation of a reliable backup
-and collaboration workflow.
+These commands have separate effects:
+
+- `git add` places selected changes in the staging area. It does not upload
+  them.
+- `git commit` saves a snapshot of staged changes in the local repository.
+  It does not publish them.
+- `git push` sends local commits to a remote repository, such as GitHub.
+
+After `git add`, use `git diff --staged` to check what the next commit will
+contain. After `git commit`, use `git status` to check whether anything
+remains uncommitted. This sequence helps distinguish saved local work from
+work that has been shared or backed up remotely.
 
 Beginners should avoid `git add .` because it stages every unignored change
 below the current directory, including files they may not have inspected or
@@ -103,15 +114,20 @@ intended to commit. Stage named files, such as `git add 02-git.qmd`, and review
 `git diff --staged` before committing. Use `git add .` only when you have
 deliberately checked every change in the directory.
 
-The seven commands used most often in this book are `git clone`, `git pull`,
-`git status`, `git add`, `git rm`, `git commit`, and `git push`. The first
-clones a repository using an HTTPS URL or an SSH key; `pull` downloads and
-integrates updates; `status` reports changed, staged, and untracked files and
-whether the local branch is ahead of or behind its remote; `add` stages
-selected changes; `rm` removes a file from the index and working tree; `commit`
-records a snapshot with a message; and `push` sends commits to a remote. The
-commands `git diff`, `git branch`, and `git reset` are useful for more advanced
-work; use `git reset` only after learning how it changes history.
+The commands used most often in this book are:
+
+- `git clone` copies a remote repository to your computer.
+- `git pull` downloads and integrates updates from a remote.
+- `git status` shows changed, staged, and untracked files and whether the
+  local branch is ahead of or behind its remote.
+- `git add` stages selected changes; `git rm` removes a file from the index
+  and working tree.
+- `git commit` records a local snapshot with a message.
+- `git push` sends local commits to a remote repository.
+
+The commands `git diff` and `git branch` help review changes and manage lines
+of work. Use `git reset` only after learning how it changes the branch and
+staging area.
 
 ## Inspecting and Recovering History
 

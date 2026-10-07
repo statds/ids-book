@@ -1,28 +1,24 @@
 # Python Practice {#sec-python}
 
-This chapter strengthens the Python skills that make data-science analyses
-reproducible, inspectable, and efficient. It assumes familiarity with basic
-Python syntax, including variables, functions, conditionals, and loops. Python
-becomes more useful when you can tell which interpreter runs your code, find the
-package that supplies a function, design functions with clear inputs and
-outputs, predict when a change affects an existing object, and recognize the
-limits of computer number representations. This refresher develops those
-habits and introduces data-science-oriented practices so that short scripts
-become analyses that another person can inspect and rerun.
+This chapter develops Python habits that help you inspect and reproduce an
+analysis. It assumes that you have seen variables, functions, conditionals,
+and loops. In particular, you will learn to:
+
+- check which interpreter runs your code and which packages it can import;
+- find where an imported function comes from;
+- write functions with clear inputs and outputs;
+- predict when an operation changes an existing object; and
+- recognize limits in how computers represent numbers.
+
+These habits help turn a short script into an analysis that another person
+can inspect and rerun. Each section connects a Python concept to a practical
+question you may encounter while working with data.
 
 ## Python Ecosystem
 
 A Python process runs code in one interpreter, which supplies the language and
 standard library. An environment adds third-party packages such as NumPy and
 pandas. These related terms describe different layers of the Python ecosystem:
-
-Distinguishing these layers helps diagnose installation problems and reproduce
-analyses. When `import pandas` fails, you need to determine whether the active
-interpreter has access to the installed distribution and its importable
-package. When someone else reruns your work, they need to know which
-interpreter and installed distributions it uses. The distinctions also help
-you read documentation, find the source of a function, and avoid installing a
-package into the wrong environment.
 
 - **Interpreter:** The program that runs Python code and supplies the standard
   library.
@@ -40,6 +36,13 @@ package into the wrong environment.
 The standard library includes modules such as `math`, `pathlib`, and
 `statistics`; NumPy and pandas are third-party libraries rather than parts of
 Python itself [@python2026imports; @mckinney2022python].
+
+These distinctions help diagnose a common problem: `pip` reports that a
+library is installed, but `import pandas` still fails. The package may have
+been installed for a different interpreter than the one running the code.
+The word used to install a distribution can also differ from the import name:
+the `scikit-learn` distribution, for example, is imported as `sklearn`. Check
+the active interpreter and the exact import name before reinstalling packages.
 
 When code fails with `ModuleNotFoundError`, first determine which interpreter
 is active. This chunk reports the interpreter path and version used by the

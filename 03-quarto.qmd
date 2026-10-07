@@ -95,11 +95,19 @@ ax.set(xlabel="Subject", ylabel="Mean score", title="Simulated class scores")
 plt.show()
 ```
 
-The call to `default_rng(2026)` creates a seeded random-number generator, so
-the simulated 30-student, three-subject score table and @fig-scores are
-reproducible on another computer. The three `loc` values create subjects with
-different underlying mean scores. The bar heights are subject means; the error
-bars show standard errors across students.
+The call to `default_rng(2026)` creates a seeded random-number generator. The
+same seed reproduces the same simulated scores when the document is rendered
+again. The `loc` values set the three subjects' generating means, while the
+`scale` values set their standard deviations. In the figure:
+
+- each bar is the sample mean for one subject;
+- each error bar is one standard error of that mean; and
+- the bars summarize the same 30 simulated students shown in the table.
+
+The error bars do not show the range of student scores. For that question,
+we would also display the individual scores or a distribution plot. This
+distinction helps readers avoid treating a summary figure as if it showed
+every observation.
 Quarto itself is documented in the Quarto Guide [@quarto2025guide].
 
 The opening and closing lines between `---` define YAML metadata. Headings use
@@ -149,10 +157,11 @@ $$ {#eq-subject-mean}
 
 ![Mean score by subject, with standard-error bars.](figures/scores.png){#fig-subject-means}
 
-@fig-subject-means makes the difference among subjects easier to see.
-The interpretation should also consider the variation, as explained in
-@sec-assessment-results. The analysis follows reproducible-authoring
-practices [@quarto2025guide].
+@fig-subject-means makes the difference among simulated subject means easier
+to compare. The bars do not show how individual students performed. The
+standard-error bars describe uncertainty in the estimated means, while a
+spread plot would be needed to compare variation among students. This is why
+the figure caption names the quantity represented by the bars and intervals.
 
 ````
 
@@ -165,9 +174,11 @@ or figure is added, references update automatically instead of leaving a stale
 number in the prose.
 
 Use a heading hierarchy rather than bold text to organize a document. Put blank
-lines around paragraphs, tables, and lists; write descriptive link text; keep
-code that should execute in a Quarto code chunk; and use meaningful captions
-for figures and tables. Cite sources near the claim they support. The [Markdown
+lines around paragraphs, tables, and lists; write descriptive link text; and
+keep executable code in a Quarto code chunk. For each figure or table, a
+caption should identify its subject and any key qualifications. For example,
+“Mean score by subject, with standard-error bars” tells readers more than
+“Results.” Cite sources near the claims they support. The [Markdown
 basics reference](https://quarto.org/docs/authoring/markdown-basics.html)
 covers tables, images, citations, cross-references, callouts, and other
 features.
@@ -306,44 +317,25 @@ local file paths. Generated `_book/`, `.quarto/`, and cache files belong in
 
 ## Presentations with Quarto
 
-Quarto presentations should replace the default habit of preparing course
-work in a proprietary PowerPoint file. A presentation remains plain text,
-versionable, reproducible, and reviewable while still producing a polished
-slide deck. Quarto supports reveal.js slides in HTML and can also produce other
-formats; the [presentation guide](https://quarto.org/docs/presentations/)
-explains the available options.
+Quarto can turn a `.qmd` file into a presentation as well as a report. The
+same source can be adapted for different audiences while keeping the analysis
+available for review. For example, a homework report might include code and
+diagnostics, while a presentation might show only the question, main result,
+and limitations. The [presentation guide](https://quarto.org/docs/presentations/)
+describes the available formats [@quarto2025guide].
 
-A well-made Quarto homework is a reusable professional artifact, not a
-disposable submission. The same source can become a polished report, research
-memo, lab note, portfolio piece, or presentation for a different audience by
-changing its format and explanation while retaining the executable analysis.
-Students should therefore treat each assignment as an opportunity to practice
-communicating evidence to people outside this course: clear prose, labeled
-figures, citations, and a reproducible source record are more valuable than a
-decorative layout alone [@quarto2025guide].
+For a data-science assignment, keep the source record in text files:
 
-Excel, Word, and PowerPoint are useful office tools for administrative staff,
-but they are not data-science authoring tools. Students should not author
-data-science assignments in these MS Office formats: their binary contents
-produce opaque diffs, make line-by-line review difficult, and can preserve
-hidden formatting or manually edited results without recording how those
-results were computed. Use a `.qmd` file, code, data description, and
-environment as the authoritative record; an HTML rendering is the normal
-output, and a PDF may be exported only when an audience or assignment
-specifically requires it. The reason is methodological: a data-science
-submission must expose executable transformations, preserve data and software
-provenance, support line-by-line review, and reproduce the same outputs after
-the source changes. Office files primarily preserve a presentation or a
-spreadsheet state; they do not reliably preserve that computational record
-[@wilson2017good].
+- the `.qmd` file contains the explanation, code, citations, and references;
+- separate scripts hold reusable computations;
+- data documentation records sources, dates, and transformations; and
+- an environment specification records software dependencies.
 
-Plain-text source and Git also provide benefits that office workflows lack.
-Version history records who changed which lines and makes earlier versions
-recoverable, rather than hiding revisions in a track-changes pane or a file
-named `final-v2-revised`. Code automates repeated calculations, keeps tables
-and figures synchronized with the data, and can be tested after each change.
-Several people can review, merge, and reuse the same source without passing
-around conflicting binary attachments.
+The rendered HTML or PDF is an output for readers. Word-processing and slide
+files can be useful for delivery, but they do not show the line-by-line source
+history or reliably record how a manually edited result was computed. Git
+preserves revisions, and executable code keeps tables and figures linked to
+their data [@wilson2017good].
 
 Create a presentation by choosing a presentation format in the YAML header:
 
