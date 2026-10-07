@@ -1,75 +1,67 @@
 # Visualization {#sec-visualization}
 
-Visualization serves three related analytical purposes: to discover patterns
-in data, to diagnose the adequacy of a proposed explanation, and to
-communicate a result to a specified audience. The analysis in @sec-eda
-used graphics for exploration; the present chapter examines how choices
-about aggregation, visual encoding, and annotation determine which comparisons a
-reader can make. A figure is therefore a sequence of analytical decisions
-rather than a decorative rendering of a completed calculation. The analyst
-selects eligible records, defines the quantity of interest, maps that
-quantity to visible marks, and supplies enough context to evaluate the
-result. Each decision can change the apparent pattern even when the source
-data remain fixed. The same principles will apply to prediction and
-diagnostic figures in @sec-modeling. The worked examples use NYPD-directed 311
-illegal-parking requests created during September 6–12, 2026; maps and a
-small simulated dataset expose design problems that the request records
-alone cannot isolate [@munzner2014visualization; @wilke2019fundamentals].
+Figures can help answer three different questions:
 
-The goal of this chapter is to provide a procedure that can be applied when
-the appropriate figure is not specified in advance. The procedure begins
-with a substantive question and a definition of the observational unit,
-eligible records, measurement, and comparison. It then requires a visual
-form that preserves the information needed for that comparison, followed by
-a review of the inference a reader is likely to draw. The code examples
-make these decisions visible, while the exercises progressively transfer
-responsibility for the question, chart form, and data source to students
-preparing a midterm project. A successful project figure must therefore be
-accompanied by a defensible interpretation and a statement of its limits;
-executable code alone does not establish that the graphic answers its
-question. Earlier course demonstrations by Sonia Lucey (Plotnine),
-Alejandro Haerter (GeoPandas), and Jack Perkins (Google Maps) informed the
-selection of tools. The figures here use the current book data and can be
-reproduced from the files distributed with this repository.
+- **What patterns should we investigate?** Use plots to explore distributions
+  and relationships, as in @sec-eda.
+- **Does an explanation fit the data?** Use diagnostic displays to find
+  patterns that a summary statistic can hide.
+- **What should an audience understand?** Choose a display that makes the
+  main comparison clear and gives readers enough context to evaluate it.
+
+The same dataset can produce different impressions when the selected
+records, denominator, scale, or visual form changes. A figure is therefore
+part of the analysis, not decoration added after the calculation. The
+principles here also apply to prediction and model diagnostics in
+@sec-modeling. Examples use NYPD-directed 311 illegal-parking requests from
+September 6–12, 2026, with maps and a small simulated dataset to illustrate
+design problems that the request data alone cannot isolate
+[@munzner2014visualization; @wilke2019fundamentals].
+
+When no chart is obvious, work through four questions:
+
+1. What is the observational unit and which records are eligible?
+2. What quantity and comparison answer the substantive question?
+3. Which visual form preserves the information needed for that comparison?
+4. What conclusion might a reader draw, and does the evidence support it?
+
+The code examples demonstrate these decisions. The exercises ask students to
+apply them to new questions and data sources while preparing for the midterm
+project. Examples build on course demonstrations by Sonia Lucey (Plotnine),
+Alejandro Haerter (GeoPandas), and Jack Perkins (Google Maps), and use files
+distributed with the book.
 
 ## Purpose
 
-The purpose of a figure determines the data transformation and visual
-encoding that are appropriate. A comparison of two numerical levels benefits
-from positions on a common scale, because readers can judge aligned
-positions more accurately than similar areas or color intensities
-[@cleveland1984graphical; @mackinlay1986automating]. A question about a
-distribution instead requires information about spread, shape, or tails;
-two groups with equal means can have different distributions. A geographic
-question may require points when individual recorded locations matter, or
-polygons when the quantity has been aggregated to areas. These requirements
-do not define a single universal chart type. Exploration may require
-several displays that reveal different aspects of a dataset, whereas a
-communication figure should make its principal comparison immediately
-identifiable and still disclose the context that qualifies it. In either
-case, the analyst must first specify the observational unit, measured
-variable, eligible population, and observation period introduced in
-@sec-problem-formulation and @sec-wrangling [@tussey2025principles]. A
-change in any of these four elements changes the quantity the figure
-represents.
+The question determines which information a figure needs to show. For
+example:
 
-The worked figures use the same screened request table as @sec-eda, but
-they serve different reader tasks. The problem formulation in
-@sec-problem-formulation established the request as the observational unit
-and limited the interpretation of closure time; @sec-wrangling documented
-the transformations; and @sec-eda examined
-the resulting distributions. This chapter asks how a visual specification
-can preserve those distinctions while making an intended comparison clear.
-An hourly line plot summarizes all eligible requests, a closure-time
-interval plot shows selected distributional features, and a point map
-requires usable coordinates. The corresponding displays therefore do not
-all contain the same records or support the same claim. The following code
-loads the common screened table through its
-[shared preparation function](scripts/parking_requests.py), derives only
-the time fields needed for the examples, and reports counts that will
-matter when the eligible set changes. This compact audit links each later
-figure to a reproducible input without repeating the source import and
-filtering procedure [@nycopendatand311].
+- **Compare numerical levels:** positions on a shared scale help readers
+  judge values more accurately than areas or color intensities
+  [@cleveland1984graphical; @mackinlay1986automating].
+- **Compare distributions:** show spread, shape, and tails. Two groups can
+  have the same mean but very different distributions.
+- **Compare locations:** plot points when individual recorded locations
+  matter; use polygons when comparing area summaries.
+
+There is no one chart type for every purpose. During exploration, several
+views may reveal different aspects of the data. A figure for communication
+should make its main comparison easy to identify and retain the context that
+qualifies it. First specify the observational unit, measured variable,
+eligible records, and period from @sec-problem-formulation and
+@sec-wrangling [@tussey2025principles]. Changing any of these changes the
+quantity being displayed.
+
+The examples use the screened request table from @sec-eda, but each display
+has its own eligible set. The hourly and closure-time plots use all screened
+requests; the point map requires usable coordinates. That difference matters:
+missing coordinates could be concentrated in a particular borough or
+problem detail, so the map may not represent every request. The code below
+loads the shared table with the
+[preparation function](scripts/parking_requests.py), creates time fields
+needed later, and reports the starting counts. It gives readers a concrete
+denominator to compare with later maps without repeating the import and
+filtering code [@nycopendatand311].
 
 ```{python}
 from pathlib import Path
@@ -141,20 +133,22 @@ Wilkinson developed the general framework, Wickham formalized a layered
 implementation in ggplot2, and Plotnine implements that approach in Python
 [@wilkinson2005grammar; @wickham2010layered; @plotnine2026facets].
 
-The first grammar example compares the hours at which requests were
-created on weekdays and weekend days. This observation week contains five
-weekdays and two weekend days, so raw totals would give the weekday group
-more exposure time. For borough $b$, day type $d$, and hour $h$, let
-$n_{bdh}$ denote the number of requests and let $D_d$ denote the number of
-observed days of type $d$. The plotted value is $n_{bdh}/D_d$, measured in
-requests per observed day during hour $h$. The code first counts requests
-for each combination, then inserts zeroes for combinations with no request,
-and finally divides by $D_d$. Explicit zeroes are necessary because an
-absent combination should appear at zero rather than disappear from a line.
-This normalization addresses unequal numbers of observed weekdays and
-weekend days. It does not adjust for borough population, the number of
-vehicles, reporting propensity, or the possibility that a particular day
-was unusual.
+The first example compares the hours when requests were created on weekdays
+and weekend days. The study week has five weekdays but only two weekend days,
+so raw totals would give the weekday group more time to accumulate requests.
+For borough $b$, day type $d$, and hour $h$, let $n_{bdh}$ be the request
+count and $D_d$ the number of observed days of that type. The plotted value
+$n_{bdh}/D_d$ is the average number of requests per observed day in that hour.
+The code constructs it in three steps:
+
+1. Count requests for each borough, day type, and hour.
+2. Add any missing combinations with a count of zero. Without these zeroes,
+   a line would skip hours with no requests.
+3. Divide each count by five for weekdays or two for weekend days.
+
+This puts the two day types on a comparable time basis. It does not account
+for borough population, vehicles, reporting behavior, or an unusual day in
+this one-week period.
 
 ```{python}
 borough_order = ["BRONX", "BROOKLYN", "MANHATTAN", "QUEENS", "STATEN ISLAND"]
@@ -216,21 +210,21 @@ hour_plot = (
 hour_plot
 ```
 
-Faceting extends the same grammar by repeating a common display for defined
-subsets. In `facet_wrap()`, borough determines the panel, while color still
-distinguishes day type within each panel. This arrangement helps a reader
-compare the two temporal profiles in each borough and then scan for
-differences across the city. In `facet_grid()`, day type determines rows
-and borough determines columns. The resulting layout makes the two
-grouping variables explicit in position, so color is no longer required
-to identify day type. Both examples retain fixed vertical scales. Under
-a fixed scale, a height in the Bronx has the same numerical meaning as
-the same height in Brooklyn; the cost is that variation in a low-count
-panel may be visually compressed. Free vertical scales emphasize shape
-within panels but remove direct height comparability. The analyst should
-choose between these alternatives according to whether the question
-concerns absolute level or within-group temporal structure, and should
-make that choice visible in the caption [@plotnine2026facets].
+Faceting repeats one plot specification across subsets of the data. These
+two layouts answer related questions:
+
+- **`facet_wrap("borough")`:** each borough gets a panel, and color
+  distinguishes weekdays from weekends. Compare the two time profiles
+  within each borough, then scan across boroughs.
+- **`facet_grid("day_type ~ borough")`:** day type defines rows and borough
+  defines columns. The panel position identifies both groups, so color is
+  not needed to distinguish weekdays and weekends.
+
+Both plots use a fixed vertical scale. A height of 20 requests per observed
+day means the same thing in every panel, though low-count panels can look
+flatter. Free scales make within-panel shapes easier to see but remove direct
+comparisons of levels. Choose the scale according to the question and state
+the choice in the caption [@plotnine2026facets].
 
 ```{python}
 #| label: fig-viz-facet-wrap
@@ -266,54 +260,47 @@ make that choice visible in the caption [@plotnine2026facets].
 )
 ```
 
-The two facet arrangements answer related but distinct questions. The wrap
-retains the colored weekday and weekend profiles in each borough, which
-supports a within-borough comparison of their timing. The grid places
-weekday and weekend profiles in separate rows, which reduces overlap but
-requires readers to compare positions across panels. Neither layout
-resolves a limitation in the underlying classification: Labor Day fell on
-the Monday labeled as a weekday in this extract. The weekday average is
-therefore an average over five calendar weekdays, one of which was a
-holiday, rather than an estimate of a typical workday profile. If the
-project question concerns ordinary commuting days, the analyst should
-define a holiday indicator, obtain more weeks, or narrow the interpretation.
-This example shows why visual grammar and study design must be considered
-together. A technically correct facet specification can still organize
-observations into groups that do not correspond to the intended substantive
-comparison.
+Use the wrap when readers should compare weekday and weekend patterns inside
+each borough. Use the grid when separating the day types makes the panels
+easier to scan. Neither layout solves a limitation in the data: Labor Day
+falls on the Monday labeled as a weekday. The weekday line averages five
+calendar days, including a holiday, so it may not represent an ordinary
+workday. For a commuting question, the analysis would need a holiday flag,
+more weeks of data, or a narrower interpretation. A valid facet design can
+still compare groups that do not match the intended question.
 
 ## Comparisons
 
-A statistical figure should retain the aspect of the observations that is
-needed to answer its question. Counts have a defined zero and can be
-shown by lengths that begin at that reference; estimates or group summaries
-often benefit from dots on a common axis, especially when several values
-are close. Questions about spread, skewness, or unusual observations
-require a distribution display or a summary that explicitly represents
-variation. A mean bar cannot distinguish a tightly concentrated group
-from a group with long tails [@cleveland1984graphical;
-@weissgerber2015beyond]. The analyst must also distinguish comparisons of
-levels from comparisons of change: a line is useful for an ordered sequence
-such as time, but connecting unordered categories can imply an artificial
-continuity. Color hue can identify categories, while ordered lightness can
-represent magnitude. When color carries an essential distinction, position,
-labels, or another redundant cue can help readers who cannot distinguish
-the chosen hues [@crameri2020misuse; @harrower2003colorbrewer].
+Choose a visual form that preserves the part of the data needed for the
+question:
 
-The closure-time example compares the three problem details with the most
-requests in the selected week, so the selection rule precedes the display.
-For each group, the code calculates the first quartile, median, and third
-quartile of recorded closure hours. A dot locates the median on a shared
-horizontal scale, and a line extends from the first to the third quartile.
-That line describes the middle half of the observed closure times; it is
-**not a confidence interval** for a population median or for the difference
-between groups. A confidence interval would require an inferential target
-and a procedure for quantifying sampling uncertainty, whereas these
-quartiles summarize variation among records in the extract
-[@correll2014error]. The figure complements the empirical cumulative
-distribution in @sec-eda by making a small number of center-and-spread
-comparisons easy to read. It does not replace the distribution display
-when the shape or extreme tail of closure time is the main concern.
+- **Counts:** bars should begin at zero because their lengths encode size.
+- **Close estimates:** aligned dots on a shared scale make small differences
+  easier to compare.
+- **Spread or skewness:** show a distribution or an explicit measure of
+  variation; a mean bar can hide a long tail [@cleveland1984graphical;
+  @weissgerber2015beyond].
+- **Change over an ordered variable:** lines can show a sequence such as
+  time. Connecting unordered categories can imply a relationship that is
+  not present.
+- **Groups and magnitude:** hue can distinguish categories, while ordered
+  lightness can show magnitude. Add position or labels when color alone may
+  be difficult to distinguish [@crameri2020misuse;
+  @harrower2003colorbrewer].
+
+The closure-time plot compares the three details with the most requests in
+the selected week. Each mark has a specific meaning:
+
+- The **dot** is the median recorded closure time.
+- The **line** extends from the first quartile to the third quartile, covering
+  the middle half of observed closure times.
+- The line is **not a confidence interval**. It describes variation among
+  records in this extract, not uncertainty about a population median or a
+  difference between groups [@correll2014error].
+
+This display makes group centers and middle spreads easy to compare. Use
+the empirical cumulative distribution in @sec-eda when distribution shape
+or the extreme tail is the main question.
 
 ```{python}
 #| label: fig-viz-detail-intervals
@@ -346,42 +333,42 @@ fig.tight_layout()
 plt.show()
 ```
 
-The visual design changes the question a reader can answer from the same
-closure-time records summarized in @sec-eda. Sorting the three details by
-their medians and placing the dots on one horizontal scale makes their
-central ordering easy to inspect. The quartile intervals show substantial
-within-group variation and overlap, so the distance between median dots
-cannot be read as separation between individual requests. The marks do
-not encode group counts or the longest closure intervals; those quantities
-remain in the exploratory tables and cumulative distributions. This is a
-deliberate reduction of information for a focused comparison, and its
-caption names the statistic represented by each mark. If delayed closures
-were the communication goal, an upper-tail quantile or cumulative display
-would be more appropriate. The figure also remains descriptive: a visual
-gap between groups does not identify the effect of a problem-detail label
-when reporting time, location, and administrative practices may differ.
+Read the figure in this order:
+
+1. Follow the common horizontal scale to compare the median dots.
+2. Compare each line's length to see how widely the middle half of closure
+   times varies within that group.
+3. Notice that the intervals overlap. The median ordering does not mean
+   that individual requests in one group always closed sooner or later than
+   those in another.
+
+The plot leaves out group counts and extreme closure times; the table and
+cumulative distributions in @sec-eda retain those details. If the audience
+needs to see delayed closures, use an upper-tail summary or cumulative plot.
+This is a descriptive comparison. Location, reporting time, and agency
+practices may differ among groups, so the visual gaps do not show an effect
+of the problem-detail label.
 
 ## Common Mistakes {#sec-viz-common-mistakes}
 
-Misleading figures can arise at several points between the source data and
-the reader's conclusion. Selection can change which observations are
-eligible; aggregation can suppress variation; visual encoding can make
-small differences appear large; and a title can convert a descriptive
-association into an unsupported causal claim. These are distinct failure
-mechanisms, so a review confined to axis labels or color choice is
-insufficient. Wainer cataloged recurring ways to obscure data, while later
-work experimentally studied visual distortion and classified misleading
-figures in published material [@tufte2001visual; @wainer1984how;
-@pandey2015deceptive; @lo2022misinformed]. The operational review question
-is what inference a reasonable viewer is likely to draw and whether the
-selected records and displayed quantity justify it. This standard does not
-depend on the maker's intent. A polished plot can still communicate the
-wrong denominator, conceal a distribution, or suggest a relationship that
-the study design cannot identify. @tbl-viz-mistakes summarizes recurring
-choices, a deliberately poor example for each one, and a corresponding
-diagnostic check. The examples use the illegal-parking extract or small
-simulated data and are intentionally misleading; their captions identify
-the defect rather than endorse the claim.
+Misleading figures can enter at several stages:
+
+- **Selection:** omitted records change the population shown.
+- **Aggregation:** a summary can conceal variation within groups.
+- **Encoding:** a scale or mark can exaggerate small differences.
+- **Interpretation:** a title can turn a description into an unsupported
+  causal or citywide claim.
+
+Wainer cataloged recurring ways to obscure data. Later studies examined how
+visual distortions affect readers and classified misleading figures in
+published work [@tufte2001visual; @wainer1984how; @pandey2015deceptive;
+@lo2022misinformed]. Reviewing only labels or colors will miss problems in
+record selection, denominators, or claims. Ask what conclusion a reader is
+likely to draw, then check whether the selected records and displayed
+quantity support it. @tbl-viz-mistakes summarizes common mistakes, shows a
+deliberately poor example of each, and offers a repair check. The plots use
+the illegal-parking data or small simulated examples; their captions name
+the defect so the misleading design is not mistaken for a recommended one.
 
 | Mistake and likely false inference | Bad-plot example | Check or repair | References |
 |---|---|---|---|
@@ -582,37 +569,35 @@ plt.show()
 
 ## Maps
 
-Spatial graphics add a choice of geographic unit to the visual design.
-The 311 extract supplies recorded coordinates for most requests, while
-NYC Open Data supplies polygons for 221 ZIP Code Tabulation Areas (ZCTAs)
-[@nycopendata2026zip]. A point map retains the approximate location of an
-individual request and can expose concentration or gaps at a fine scale,
-subject to overlapping marks and geocoding quality. A choropleth instead
-assigns one aggregate value to an entire polygon, which supports area
-comparison but removes within-area variation. The maps answer different
-questions even when they use the same request archive. The choice between
-them should follow the intended comparison: where reports were recorded,
-how many matched an area, or how an area summary varies across the city.
-Population estimates from @sec-zcta-context-merge can provide one possible
-denominator, but the resulting rate still measures requests per resident
-over the stated period. The map's color and legend must identify that
-quantity rather than imply verified illegal-parking prevalence.
+Maps require a choice of geographic unit as well as a visual form. This
+chapter uses request coordinates and polygons for the city's 221 ZIP Code
+Tabulation Areas (ZCTAs) [@nycopendata2026zip]:
 
-The geometry construction makes the coordinate reference system explicit.
-The request coordinates are recorded as longitude and latitude, so the
-point table is created with the geographic system EPSG:4326. The ZCTA
-boundaries are read from a compact local file derived from the official NYC
-source; its [provenance note](data/nyc_zcta_boundaries.md) records the
-derivation and boundary simplification. GeoPandas uses coordinate reference
-system metadata to transform geometries, but a declared system does not
-verify that every source coordinate is accurate. The static figures use
-New York State Plane coordinates (EPSG:2263) so that the city is displayed
-in a suitable projected system. Projection is especially important for
-distance or area calculations because longitude and latitude are angular
-coordinates, and a degree of longitude does not represent a constant
-ground distance. A projection changes the representation of a recorded
-location; it cannot repair a wrong address, an approximate geocode, or a
-missing coordinate [@geopandas2026projections].
+- A **point map** shows where requests were recorded. Points are approximate,
+  may overlap, and may be missing for some requests.
+- A **choropleth** colors each area according to an aggregate value. It makes
+  area summaries comparable but hides variation within each polygon.
+
+Choose the map according to the question: where were reports recorded, how
+many matched an area, or how did an area summary vary? Population estimates
+from @sec-zcta-context-merge can provide a denominator, but the resulting
+rate is requests per resident during the stated period. The map's title,
+legend, and caption should name that quantity; request rates are not verified
+illegal-parking prevalence.
+
+The map code must also identify how coordinates are represented. The request
+table stores longitude and latitude, so its points begin in EPSG:4326. The
+local ZCTA boundary file is derived from the official NYC source; its
+[provenance note](data/nyc_zcta_boundaries.md) records the download and
+simplification. GeoPandas can transform between coordinate systems, but
+metadata alone does not prove that a point is located correctly.
+
+The static city maps use New York State Plane coordinates (EPSG:2263). This
+projected system is useful for displaying the city and for calculations in
+linear units. Longitude and latitude are angular coordinates: a degree of
+longitude does not represent the same ground distance everywhere. A
+projection changes how coordinates are represented; it cannot fix a wrong
+address, approximate geocode, or missing location [@geopandas2026projections].
 
 ```{python}
 zcta_polygons = gpd.read_file(Path("data") / "nyc_zcta_boundaries.geojson")
@@ -829,29 +814,26 @@ plot could not answer as clearly.
 
 ## Interactive Maps
 
-An interactive figure is useful when a reader has a specific task that a
-static display cannot perform as conveniently. A reader may need to find a
-ZCTA, inspect its exact value, or move between a citywide view and a local
-street context. Interaction does not correct a weak denominator, uncertain
-geocode, or unsupported interpretation; those analytical decisions are
-fixed before a tooltip or zoom control is added. GeoPandas `.explore()`
-uses Folium and Leaflet to generate the interactive map below from the
-same ZCTA summaries as the static choropleths. Its polygon color represents
-the per-resident request rate, while its tooltip reports the ZCTA code,
-request count, population estimate, and calculated rate. Showing the
-numerator and denominator next to the rate helps readers diagnose an
-unusually high value. The static companion remains necessary for readers
-who cannot interact with the page and for a stable comparison of the full
-city at one scale. The example uses CARTO's Positron basemap when a
-basemap key is available and falls back to OpenStreetMap otherwise. The
-CARTO key is supplied through the `CARTO_BASEMAP_API_KEY` environment
-variable or a local `cartoBaseAPIKey.txt` file in the project root. CARTO
-requires a key for these tile services and requires visible attribution
-[@geopandas2026interactive; @carto2026basemaps].
-The key appears in browser tile requests and can be inspected in the
-generated page. Restrict it to the intended site or local preview, keep
-the key file out of version control, and do not publish a generated page
-that contains an unrestricted key [@carto2026basemaps].
+An interactive map helps when a reader needs to find an area, inspect an
+exact value, or move between a city view and a street view. It does not fix
+a poor denominator, uncertain geocode, or unsupported conclusion. The
+GeoPandas `.explore()` method uses Folium and Leaflet to map the same ZCTA
+summaries as the static figures:
+
+- Polygon color gives requests per 10,000 estimated residents.
+- The tooltip gives the ZCTA, request count, population estimate, and rate.
+- CARTO's Positron tiles provide a basemap when a key is available; otherwise
+  the example uses OpenStreetMap [@geopandas2026interactive;
+  @carto2026basemaps].
+
+Showing the count and population beside the rate helps a reader understand
+an unusually high value. Keep the static map as a stable comparison and for
+readers who cannot use the interactive version. CARTO keys are supplied via
+the `CARTO_BASEMAP_API_KEY` environment variable or a local
+`cartoBaseAPIKey.txt` file. Because the key appears in browser tile requests,
+restrict it to the intended site or local preview, keep the file out of Git,
+and do not publish an HTML page containing an unrestricted key
+[@carto2026basemaps].
 
 ```{python}
 #| label: fig-viz-interactive-map
@@ -885,21 +867,20 @@ interactive_map = area_map.loc[area_map["population"].gt(0)].explore(
 interactive_map
 ```
 
-Interactive design requires a hierarchy between what is visible at first
-glance and what is available on request. In this example, color provides
-an overview of the rate, and the tooltip reveals exact values needed to
-understand its construction. Adding every source field to the tooltip
-would shift work to the reader without improving the comparison. The map
-also omits the 27 areas with zero estimated population because their
-per-resident rates are undefined; the static map marks them in gray. This
-difference in eligibility should be stated when the two displays are
-presented together. Online tile layers can fail to load, and hover
-interaction can be difficult to use with a keyboard or on a touch device.
-A static counterpart, concise text description, and accessible table of
-key values preserve the principal result when interaction is unavailable.
-The evaluation questions remain the same as for static figures: which
-records are represented, which quantity is encoded, and which comparison
-does the display allow a reader to make?
+The map uses two levels of information:
+
+- **Overview:** color lets the reader compare rates across areas.
+- **On demand:** a tooltip gives the exact numerator and denominator behind
+  a selected rate.
+
+Adding every source field to the tooltip would make inspection harder rather
+than clearer. The interactive map omits 27 areas with zero estimated
+population because their rates are undefined; the static map marks them in
+gray. State this difference when showing the maps together. Online tiles can
+fail, and hover controls can be difficult with a keyboard or touch device.
+Keep a static figure, concise text description, and accessible table of key
+values available as alternatives. Ask the same questions as for any plot:
+which records appear, what is encoded, and what comparison does it support?
 
 Google Maps can provide an alternative basemap for the same ZCTA choropleth.
 The Maps JavaScript API data layer accepts GeoJSON polygons and supports

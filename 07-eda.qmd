@@ -12,70 +12,58 @@ records.
 
 ## EDA Principles
 
-Exploratory data analysis begins with questions about the variation in a
-prepared table rather than with a search for every possible plot. Preparation
-checks in @sec-wrangling establish whether an identifier is unique or a join
-preserves rows; exploration uses the validated records to ask how an outcome
-is distributed, how groups differ, and which observations merit closer
-inspection. The same summary can serve both stages with a different purpose.
-For example, a count of missing coordinates diagnoses geographic coverage
-before mapping, while its variation by borough may become an exploratory
-question about which requests a map omits. Yu and Barter distinguish such
-question-guided exploration from diagnostic work during cleaning and from
-figures prepared to communicate selected findings [@yu2024veridical]. The
-distinction is analytical rather than technical: a histogram or table can
-appear in each stage, but its interpretation depends on the question,
-eligible records, and measurement established in the earlier chapters
-[@tussey2025principles].
+EDA asks what patterns and irregularities are present in a prepared dataset,
+and which questions deserve more investigation. Three principles guide the
+work:
 
-Exploration requires comparable quantities before differences are
-interpreted. Center, spread, tails, missingness, and group size describe
-different features of a distribution, so a single mean cannot characterize
-a long right tail or a heterogeneous group. Comparisons across places or
-times also require compatible units and observation periods. A request
-count from two weekend days cannot be compared directly with a count from
-five weekdays as if the exposure time were equal, and an area income value
-copied onto many requests does not create independent area observations.
-Numerical summaries and plots should be selected for a stated question and
-checked against each other. A surprising observation can prompt source
-inspection, whereas a subgroup difference can motivate a revised question
-or a more suitable denominator. This cycle of question, calculation,
-inspection, and revision defines EDA more clearly than a preferred chart
-type [@nistndexploratory; @yu2024veridical].
+1. **Explore a question, not a plot collection.** Preparation checks in
+   @sec-wrangling establish whether identifiers are unique and joins preserve
+   rows. EDA then asks how an outcome is distributed, how groups differ, and
+   which observations merit inspection. The same count can serve different
+   purposes: missing coordinates may be a preparation diagnostic, while
+   differences in missingness by borough may be an EDA question about which
+   requests a map leaves out [@yu2024veridical; @tussey2025principles].
+2. **Make comparisons fair.** Center, spread, tails, missingness, and group
+   size describe different features. A mean alone cannot describe a long
+   right tail. Counts from two weekend days and five weekdays have different
+   exposure, and copying one area income value onto many requests does not
+   create many independent area observations. Choose summaries and plots for
+   the comparison, then check that they tell a consistent story
+   [@nistndexploratory].
+3. **Separate description from inference.** A table can summarize every
+   record in the defined scope. A test or interval asks what might happen
+   beyond those records and therefore adds assumptions. Those assumptions
+   need special care when the groups or thresholds were selected after
+   examining the data. A result may also change under a plausible alternative
+   time window, treatment of long durations, or geographic grouping. Such
+   sensitivity checks show whether a conclusion depends on one analysis
+   choice, but cannot repair undercoverage or confounding
+   [@yu2024veridical; @wasserstein2016asa].
 
-Exploration must separate a description of the observed requests from a
-claim about a broader process. A table can summarize every record in its
-declared scope without a sampling model; a hypothesis test or interval adds
-assumptions about how other observations might arise. Those assumptions
-deserve particular scrutiny when groups, thresholds, or comparisons were
-chosen after inspecting the same records. A second source of uncertainty is
-the analyst's judgment: a result may change under a plausible alternative
-time window, treatment of long closure intervals, or geographic grouping.
-Yu and Barter propose examining such stability as part of the evaluation of
-data-derived findings [@yu2024veridical]. Stability under selected changes
-does not repair undercoverage, uncertain measurement, or confounding, but it
-shows whether a reported pattern depends heavily on one decision. An
-exploratory report should therefore state both the assumptions of any
-inferential calculation and the reasonable analytical alternatives it has
-examined [@wasserstein2016asa].
+In practice, EDA cycles through a question, a calculation, an inspection,
+and a possible revision. A surprising value may send us back to the source;
+a group difference may suggest a better denominator or a more focused
+question. The calculation itself does not determine whether a pattern is
+important. Interpretation still depends on the eligible records, how the
+measurements were made, and what the analysis can support.
 
 ## Study Setup
 
-The case study answers the working question in @sec-problem-formulation
-using the screened requests prepared in @sec-wrangling. Its primary target
-is the distribution of recorded closure hours within each of the three
-most frequently reported problem-detail groups during September 6–12,
-2026. The frequency rule determines group membership before closure-time
-summaries are examined; it does not make the groups random or comparable in
-all other respects. The analysis first describes the full closure-time
-distribution and then examines variation by detail, creation date, borough,
-and matched area. These views can reveal composition that a single citywide
-median would conceal. A permutation calculation and bootstrap interval
-later illustrate how an inferential model changes the question, while
-sensitivity checks test whether the descriptive contrast survives selected
-analytical alternatives. Throughout, the four formulation checks in
-@sec-formulation-checks constrain the interpretation of the observed
-differences.
+The case study uses the screened requests from @sec-wrangling to revisit the
+question in @sec-problem-formulation. The analysis proceeds in this order:
+
+1. Describe the full distribution of recorded closure hours.
+2. Compare the three most frequently reported problem-detail groups. The
+   frequency rule is set before examining their closure summaries, but it
+   does not make the groups random or comparable in other respects.
+3. Examine variation by detail, creation date, borough, and matched area to
+   see what a citywide median might hide.
+4. Use a permutation calculation and bootstrap interval to illustrate how
+   inference adds assumptions, then check sensitivity to selected analysis
+   choices.
+
+At each step, the four formulation checks in @sec-formulation-checks limit
+what the observed differences can establish.
 
 The initial scope report provides an audit of the table that enters this
 analysis rather than a second lesson in import and cleaning. The shared
@@ -179,28 +167,34 @@ plt.show()
 
 The median closure interval is about 1.67 hours, while the mean is about 3.51
 hours. The 90th percentile is about 8.73 hours, the 99th percentile is about
-23.58 hours, and the maximum is nearly 200 hours. This right tail makes the
-mean substantially larger than the median. It also makes a statement such as
-“requests close in about two hours” incomplete: it describes a typical
-request but omits the upper tail. A large interval may be valid, a correction
-to a timestamp, or an operational exception; its presence alone does not
-establish an error. The next comparison therefore reports medians and
-quartiles alongside means.
+23.58 hours, and the maximum is nearly 200 hours. Read these summaries
+together:
 
-The group rule implements the formulation without searching closure times
-for a favorable contrast. The code selects the three most frequent
-problem-detail labels among eligible requests and then calculates each
-group's count, center, spread, and upper quantile. It retains the provider's
-category values rather than combining labels that appear similar but may
-have different operational meanings. The rule is transparent and can be
-reapplied to a new extract, although a different week could have a
-different set of leading categories. The accompanying empirical cumulative
-distribution gives, at each closure time $t$, the fraction of requests in
-a group with recorded closure time at most $t$. This makes comparisons at
-specific time thresholds possible without assuming that the distributions
-share a common shape. Because the group rule and the analysis were
-developed using the observed week, later inferential calculations remain
-exploratory.
+- The **median** describes the middle request: half of recorded intervals
+  are shorter and half longer.
+- The **mean** is larger because it is pulled upward by the long right tail.
+- The **upper percentiles and maximum** show that a small share of requests
+  took much longer than the typical request.
+
+Thus, “requests close in about two hours” is incomplete. A large interval
+could be valid, a timestamp correction, or an operational exception; its
+size alone does not show which. The group comparison therefore reports
+medians and quartiles alongside means.
+
+The group rule uses request frequency, not closure time, to choose categories.
+The code calculates each selected group's count, center, spread, and upper
+quantile while retaining the provider's original category labels. Similar
+labels are not combined without evidence that they share an operational
+meaning. A different week could produce a different list of frequent
+categories.
+
+The empirical cumulative distribution provides a second way to compare the
+groups. At a closure time $t$, its vertical value is the fraction of requests
+closed by time $t$. For example, a value of 0.70 at $t=2$ hours means that
+70% of the group's recorded requests closed within two hours. The curves
+allow comparisons at any threshold without assuming that the distributions
+have the same shape. Since both the group rule and analysis were developed
+using this week, later inferential calculations remain exploratory.
 
 ```{python}
 top_details = parking["problem_detail"].value_counts().head(3).index.tolist()
