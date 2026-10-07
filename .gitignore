@@ -167,6 +167,9 @@ activemq-data/
 .env
 .envrc
 .venv
+cartoBaseAPIKey.txt
+censusAPIkey.txt
+googlemapAPIkey.txt
 .ids/
 env/
 venv/

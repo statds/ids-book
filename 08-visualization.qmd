@@ -113,23 +113,32 @@ produce different plotted populations. The locally held archive and its
 provenance are documented in @sec-problem-formulation; the remaining
 sections concentrate on how analysis choices become visible in a figure.
 
-## Grammar
+## Grammar of Graphics
 
 The grammar of graphics provides a language for specifying how data become
-a figure. Its components are **data**, **aesthetic mappings**, **geometric
-marks**, **statistical transformations**, **scales**, **coordinates**, and
-**facets**. The data component identifies the table used by a layer. A
-mapping assigns columns to properties such as horizontal position, vertical
-position, or color; a fixed property, such as the color of every point, is
-instead set independently of a column. A geom draws the resulting marks.
-A statistical transformation can summarize rows before drawing them, while
-scales define how data values become positions or colors. Coordinates
-specify the space in which the marks appear, and facets repeat a common
-specification for subsets of the data. This decomposition makes a figure
-revisable: the analyst can change a mapping or facet layout without
-reconstructing the entire graphic. Wilkinson developed the general
-framework, Wickham formalized a layered implementation in ggplot2, and
-Plotnine implements that layered approach in Python
+a figure. Its components describe the choices that connect observations to
+visible marks:
+
+- **Data.** The data component identifies the observations and variables
+  used by a layer.
+- **Aesthetic mappings.** A mapping assigns variables to visual properties
+  such as horizontal position, vertical position, color, or size; a fixed
+  property is set independently of a variable.
+- **Geometric marks.** A geom determines the marks used to display the data,
+  such as points, lines, or bars.
+- **Statistical transformations.** A statistical transformation summarizes
+  or otherwise transforms observations before the geom draws them.
+- **Scales.** A scale translates data values into visual values, such as
+  positions on an axis or colors in a legend.
+- **Coordinates.** A coordinate system specifies how mapped positions are
+  arranged in the display, including the spatial frame used by a map.
+- **Facets.** Facets repeat a common specification across subsets of the
+  data so that panels can be compared.
+
+This decomposition makes a figure revisable: an analyst can change a
+mapping, geom, or facet layout without reconstructing the entire graphic.
+Wilkinson developed the general framework, Wickham formalized a layered
+implementation in ggplot2, and Plotnine implements that approach in Python
 [@wilkinson2005grammar; @wickham2010layered; @plotnine2026facets].
 
 The first grammar example compares the hours at which requests were
@@ -352,7 +361,7 @@ would be more appropriate. The figure also remains descriptive: a visual
 gap between groups does not identify the effect of a problem-detail label
 when reporting time, location, and administrative practices may differ.
 
-## Mistakes
+## Common Mistakes {#sec-viz-common-mistakes}
 
 Misleading figures can arise at several points between the source data and
 the reader's conclusion. Selection can change which observations are
@@ -368,18 +377,76 @@ is what inference a reasonable viewer is likely to draw and whether the
 selected records and displayed quantity justify it. This standard does not
 depend on the maker's intent. A polished plot can still communicate the
 wrong denominator, conceal a distribution, or suggest a relationship that
-the study design cannot identify. The table identifies common choices and
-the corresponding diagnostic checks.
+the study design cannot identify. @tbl-viz-mistakes summarizes recurring
+choices, a deliberately poor example for each one, and a corresponding
+diagnostic check. The examples use the illegal-parking extract or small
+simulated data and are intentionally misleading; their captions identify
+the defect rather than endorse the claim.
 
-| Choice to inspect | Possible false inference | Check or repair |
-|---|---|---|
-| A bar axis starts above zero | Small differences appear large in length | Compare with a zero baseline; use dots if exact levels matter |
-| Panels use different scales without a clear cue | Heights are comparable across panels | Use fixed scales for level comparisons or label free scales prominently |
-| A mean or median appears alone | Groups have little internal variation | Add a distribution, observations, or defined interval |
-| A 3D shape or bubble encodes magnitude by area | Apparent size is proportional to the value | Use aligned points or lengths for precise comparisons |
-| A rainbow palette encodes an ordered variable | Color boundaries mark real changes in the data | Use an ordered, perceptually consistent palette |
-| An area map shows request counts | Dark areas have more illegal parking risk | Examine a suitable denominator and retain the count map for context |
-| The title claims a cause or citywide trend | A one-week association establishes the claim | State the scope and separate description from explanation |
+| Mistake and likely false inference | Bad-plot example | Check or repair | References |
+|---|---|---|---|
+| Records without usable coordinates are dropped; the plot appears to include all requests. | @fig-viz-mistake-selection | Report the excluded count and label the figure as geocoded records, or use a field that supports the full eligible set. | [@lo2022misinformed; @tufte2001visual] |
+| A bar axis starts above zero; small differences appear large in length. | @fig-viz-baseline | Restore zero for a length encoding, or use aligned points when a restricted range is justified. | [@correll2020truncating] |
+| Panels use different scales without a clear cue; similar heights appear comparable. | @fig-viz-mistake-facets | Use fixed scales for comparisons of level, or state prominently that each panel has its own scale. | [@tufte2001visual; @wainer1984how] |
+| A mean or median appears alone; groups appear to have little internal variation. | @fig-viz-summary-loss | Add a distribution, observations, or a defined interval suited to the sample size. | [@weissgerber2015beyond; @correll2014error] |
+| Bubble area exaggerates a value; larger circles look disproportionately larger. | @fig-viz-mistake-bubbles | Encode magnitude with aligned positions or lengths, or scale circle area rather than radius. | [@cleveland1984graphical] |
+| A rainbow palette is used for an ordered measure; color bands suggest unsupported thresholds. | @fig-viz-mistake-rainbow | Choose an ordered, perceptually consistent palette. | [@crameri2020misuse; @harrower2003colorbrewer] |
+| An area map shows request counts; darker areas appear to have greater illegal-parking risk. | @fig-viz-mistake-count-map | Examine a suitable denominator and retain the count map for context. | [@openshaw1984modifiable; @robinson1950ecological] |
+| A title claims a cause or citywide trend; a one-week association appears to establish that claim. | @fig-viz-mistake-title | State the observation period and measured quantity; separate description from explanation. | [@heer2010crowdsourcing; @tufte2001visual] |
+
+: Common visualization mistakes, their misleading examples, and checks for revision. {#tbl-viz-mistakes}
+
+The first example drops requests without usable coordinates but gives the
+remaining counts a title that implies full coverage. This selection can
+change borough comparisons if missing locations are not distributed evenly.
+The repair should either use all eligible borough records or state that the
+figure summarizes geocoded requests and report how many records were
+excluded.
+
+```{python}
+#| label: fig-viz-mistake-selection
+#| fig-cap: "A misleading title implies that all requests are counted, although the plot excludes records without usable coordinates."
+#| fig-alt: "Bar chart of borough request counts based only on geocoded records, titled as if it includes every request."
+#| fig-format: svg
+geocoded_by_borough = (
+    parking.dropna(subset=["latitude", "longitude"])
+    .groupby("borough")
+    .size()
+    .reindex(borough_order, fill_value=0)
+)
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.bar(geocoded_by_borough.index, geocoded_by_borough.values,
+       color="#4477AA")
+ax.set(title="All illegal-parking requests by borough",
+       ylabel="Recorded requests")
+ax.tick_params(axis="x", rotation=25)
+fig.tight_layout()
+plt.show()
+```
+
+The faceted example uses borough-specific vertical scales without
+explaining that they differ. This makes the local peaks appear similar even
+though the request levels are not. Fixed scales allow level comparisons; free
+scales can help readers compare within-borough shape, but the caption and
+axes must make that purpose clear.
+
+```{python}
+#| label: fig-viz-mistake-facets
+#| fig-cap: "A misleading faceted plot: each borough has its own vertical range, so similar panel heights do not indicate similar request levels."
+#| fig-alt: "Five borough panels show weekday and weekend request rates with free vertical scales, making the peaks appear similar despite different levels."
+#| fig-format: svg
+(
+    ggplot(hourly, aes("hour", "requests_per_day", color="day_type"))
+    + geom_line(size=.8)
+    + facet_wrap("borough", ncol=3, scales="free_y")
+    + scale_color_manual(values={"Weekday": "#3366AA", "Weekend": "#CC6677"})
+    + scale_x_continuous(breaks=[0, 12, 23])
+    + labs(x="Hour request was created", y="Requests per observed day",
+           color="Day type", title="Similar hourly request levels by borough")
+    + theme_minimal()
+    + theme(figure_size=(10, 6))
+)
+```
 
 Baseline decisions should follow the visual quantity the reader is asked
 to compare. A bar represents a numerical value through its length from a
@@ -450,6 +517,30 @@ fig.tight_layout()
 plt.show()
 ```
 
+The next plot uses circle radius, rather than circle area, to encode median
+closure time. Because the area of a circle grows with the square of its
+radius, this choice exaggerates differences between the three problem
+details. A position or length encoding supports more reliable comparisons.
+
+```{python}
+#| label: fig-viz-mistake-bubbles
+#| fig-cap: "A misleading bubble plot: circle radius is proportional to median closure time, so circle area exaggerates the differences."
+#| fig-alt: "Three circles represent median closure times, with radii proportional to the values and areas therefore growing quadratically."
+#| fig-format: svg
+bubble_values = detail_summary["median"]
+fig, ax = plt.subplots(figsize=(8, 3.5))
+x_positions = np.arange(len(bubble_values))
+ax.scatter(x_positions, np.zeros(len(bubble_values)),
+           s=(bubble_values.to_numpy() * 30) ** 2,
+           color="#4477AA", alpha=.65)
+ax.set(xticks=x_positions, xticklabels=bubble_values.index,
+       yticks=[], title="Median closure time shown by bubble radius")
+for spine in ["left", "right", "top"]:
+    ax.spines[spine].set_visible(False)
+fig.tight_layout()
+plt.show()
+```
+
 Color and annotation should be evaluated by the comparisons they enable.
 Distinct hues can identify unordered categories; progressively ordered
 lightness can represent increasing magnitude; and a diverging scale is
@@ -467,6 +558,27 @@ should identify the source, observation period, aggregation, and exclusions.
 When a figure is revised, the analyst should inspect the source records
 again to confirm that the repaired display still represents the intended
 population and denominator.
+
+The final example gives one week of request counts a title that claims a
+citywide trend. The bars describe recorded requests in this extract; they
+do not establish a long-term increase in illegal parking across New York
+City. The repaired title and caption should name the observation period
+and avoid extending the conclusion beyond the available records.
+
+```{python}
+#| label: fig-viz-mistake-title
+#| fig-cap: "A misleading title turns one week of recorded request counts into an unsupported citywide trend claim."
+#| fig-alt: "Daily illegal-parking request counts from September 6 through September 12, 2026, shown under a title claiming a citywide increase."
+#| fig-format: svg
+daily_counts = parking.groupby(parking["created_at"].dt.normalize()).size()
+fig, ax = plt.subplots(figsize=(8, 3.8))
+ax.bar(daily_counts.index, daily_counts.values, color="#4477AA")
+ax.set(title="Illegal parking is increasing across New York City",
+       xlabel="Date in the one-week extract", ylabel="Recorded requests")
+fig.autofmt_xdate()
+fig.tight_layout()
+plt.show()
+```
 
 ## Maps
 
@@ -641,6 +753,41 @@ area_map["requests_per_10k"] = np.where(
 )
 ```
 
+The next two plots illustrate the map-specific mistakes in
+@tbl-viz-mistakes. The first pairs a continuous rate with a rainbow palette,
+which can suggest abrupt boundaries that are not present in the data. The
+second presents counts as risk even though ZCTAs differ in population and
+other exposure. The count map can describe service workload, but it does
+not by itself identify where illegal parking is more likely.
+
+```{python}
+#| label: fig-viz-mistake-rainbow
+#| fig-cap: "A misleading choropleth: the rainbow palette introduces strong hue boundaries into a continuous request rate."
+#| fig-alt: "New York City ZCTA polygons colored by requests per 10,000 residents with a rainbow gradient."
+#| fig-format: svg
+projected_map = area_map.to_crs("EPSG:2263")
+fig, ax = plt.subplots(figsize=(7, 7))
+projected_map.plot(column="requests_per_10k", cmap="rainbow", legend=True,
+                   ax=ax, missing_kwds={"color": "#bdbdbd"})
+ax.set_title("Requests per 10,000 residents (rainbow scale)")
+ax.set_axis_off()
+fig.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: fig-viz-mistake-count-map
+#| fig-cap: "A misleading choropleth: raw request counts are titled as illegal-parking risk, although areas differ in population and exposure."
+#| fig-alt: "New York City ZCTA polygons show raw illegal-parking request counts under a title claiming to show risk."
+#| fig-format: svg
+fig, ax = plt.subplots(figsize=(7, 7))
+projected_map.plot(column="requests", cmap="OrRd", legend=True, ax=ax)
+ax.set_title("Illegal-parking risk by ZCTA")
+ax.set_axis_off()
+fig.tight_layout()
+plt.show()
+```
+
 ```{python}
 #| label: fig-viz-zcta-maps
 #| fig-cap: "Illegal-parking request counts (left) and requests per 10,000 estimated residents (right) by matched NYC ZCTA label, September 6–12, 2026. Gray areas have undefined rates because their population estimate is zero."
@@ -695,18 +842,45 @@ request count, population estimate, and calculated rate. Showing the
 numerator and denominator next to the rate helps readers diagnose an
 unusually high value. The static companion remains necessary for readers
 who cannot interact with the page and for a stable comparison of the full
-city at one scale [@geopandas2026interactive].
+city at one scale. The example uses CARTO's Positron basemap when a
+basemap key is available and falls back to OpenStreetMap otherwise. The
+CARTO key is supplied through the `CARTO_BASEMAP_API_KEY` environment
+variable or a local `cartoBaseAPIKey.txt` file in the project root. CARTO
+requires a key for these tile services and requires visible attribution
+[@geopandas2026interactive; @carto2026basemaps].
+The key appears in browser tile requests and can be inspected in the
+generated page. Restrict it to the intended site or local preview, keep
+the key file out of version control, and do not publish a generated page
+that contains an unrestricted key [@carto2026basemaps].
 
 ```{python}
 #| label: fig-viz-interactive-map
 #| fig-cap: "Interactive ZCTA map of recorded requests per 10,000 estimated residents. Hover to inspect the count and denominator."
 #| fig-alt: "Interactive New York City ZCTA map with a legend and tooltips for area code, request count, population estimate, and request rate."
+import os
+from pathlib import Path
+from urllib.parse import quote
+
+carto_key = os.environ.get("CARTO_BASEMAP_API_KEY")
+if carto_key is None and Path("cartoBaseAPIKey.txt").exists():
+    carto_key = Path("cartoBaseAPIKey.txt").read_text().strip()
+
+tile_options = {"tiles": "OpenStreetMap"}
+if carto_key:
+    tile_options = {
+        "tiles": (
+            "https://basemaps.cartocdn.com/rastertiles/light_all/"
+            f"{{z}}/{{x}}/{{y}}.png?key={quote(carto_key, safe='')}"
+        ),
+        "attr": "© OpenStreetMap contributors, © CARTO",
+    }
+
 interactive_map = area_map.loc[area_map["population"].gt(0)].explore(
     column="requests_per_10k",
     cmap="viridis",
     tooltip=["zcta", "requests", "population", "requests_per_10k"],
     legend=True,
-    tiles="CartoDB positron",
+    **tile_options,
 )
 interactive_map
 ```
@@ -727,37 +901,136 @@ The evaluation questions remain the same as for static figures: which
 records are represented, which quantity is encoded, and which comparison
 does the display allow a reader to make?
 
-Google Maps provides a different route to an interactive street map and
-offers associated services such as geocoding. The Fall 2025 course material
-used `gmplot` to draw points, polygons, and routes on a Google basemap. The
-optional code below places the reproducible request sample on that map,
-using the same latitude and longitude fields as the GeoPandas example. It
-is not executed during the book build because the Maps JavaScript API
-requires a key. The key authorizes access to a service; it is not itself
-a substitute for a reproducible data source or a documented geographic
-calculation. Google documents setup and key restrictions, and a generated
-HTML page can contain a browser key, so the key should be restricted and
-generated pages or credentials should not be committed to the repository
-[@google2026maps]. If a project geocodes new addresses, it should also
-record the service used and inspect unsuccessful or ambiguous matches
-before calculating distances or drawing routes.
+Google Maps can provide an alternative basemap for the same ZCTA choropleth.
+The Maps JavaScript API data layer accepts GeoJSON polygons and supports
+feature-based styling and click events. The example below transfers the
+already prepared `area_map` to GeoJSON, styles ZCTAs by the same
+requests-per-resident measure, and opens a detail window when a reader
+selects a polygon [@google2026datalayer]. It uses quantile breaks calculated
+from the displayed areas, so the legend reports the class boundaries used
+by this dataset; its colors therefore do not match the continuous Folium
+scale one for one. The Folium version remains the default and uses
+OpenStreetMap if a CARTO key is unavailable.
+
+The Google version runs only when an API key is supplied through the
+`GOOGLE_MAPS_API_KEY` environment variable. The key must be enabled for the
+Maps JavaScript API, restricted to that API and to the site or local server
+that will display the map, and associated with billing. The generated HTML
+contains the browser key and should stay local; do not commit it or publish
+it with the book [@google2026maps; @google2026billing].
 
 ```{python}
 #| eval: false
+import json
 import os
+from html import escape
+from pathlib import Path
 
-import gmplot
+google_geojson = json.loads(
+    area_map.to_crs("EPSG:4326").to_json(drop_id=True)
+)
+google_geojson_json = json.dumps(
+    google_geojson, separators=(",", ":"), allow_nan=False
+).replace("</", "<\\/")
+rate_breaks = np.unique(
+    area_map["requests_per_10k"].dropna().quantile([0.2, 0.4, 0.6, 0.8])
+).tolist()
+colors = ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
+colors = colors[:len(rate_breaks) + 1]
+rate_labels = [
+    f"≤ {rate_breaks[0]:.2f}",
+    *[
+        f"{lower:.2f}–{upper:.2f}"
+        for lower, upper in zip(rate_breaks[:-1], rate_breaks[1:])
+    ],
+    f"> {rate_breaks[-1]:.2f}",
+]
+api_key = escape(os.environ["GOOGLE_MAPS_API_KEY"], quote=True)
+google_map_html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Illegal-parking requests by ZCTA</title>
+  <style>
+    #map {{ height: 90vh; width: 100%; }}
+    #legend {{ background: white; padding: 10px; margin: 10px;
+              font: 14px sans-serif; }}
+    .swatch {{ display: inline-block; width: 12px; height: 12px;
+               margin-right: 6px; }}
+  </style>
+</head>
+<body>
+  <div id="map" role="application"
+       aria-label="Interactive map of NYC ZCTA request rates"></div>
+  <script>
+    const zctaData = {google_geojson_json};
+    const rateBreaks = {json.dumps(rate_breaks)};
+    const colors = {json.dumps(colors)};
+    const rateLabels = {json.dumps(rate_labels)};
 
-google_map = gmplot.GoogleMapPlotter(
-    40.7128, -74.0060, 11,
-    apikey=os.environ["GOOGLE_MAPS_API_KEY"],
+    async function initMap() {{
+      const {{ Map, InfoWindow }} = await google.maps.importLibrary("maps");
+      const map = new Map(document.getElementById("map"), {{
+        center: {{ lat: 40.7128, lng: -74.0060 }},
+        zoom: 10,
+        mapTypeId: "roadmap",
+      }});
+      const infoWindow = new InfoWindow();
+      map.data.addGeoJson(zctaData);
+      map.data.setStyle((feature) => {{
+        const rate = feature.getProperty("requests_per_10k");
+        const classIndex = rate == null
+          ? -1
+          : rateBreaks.findIndex((upper) => Number(rate) <= upper);
+        const fillColor = classIndex < 0
+          ? (rate == null ? "#bdbdbd" : colors[colors.length - 1])
+          : colors[classIndex];
+        return {{
+          fillColor: fillColor,
+          fillOpacity: 0.7,
+          strokeColor: "#ffffff",
+          strokeWeight: 1,
+        }};
+      }});
+      map.data.addListener("click", (event) => {{
+        const feature = event.feature;
+        const rate = feature.getProperty("requests_per_10k");
+        const rateText = rate == null
+          ? "Undefined: zero estimated population"
+          : `${{Number(rate).toFixed(2)}} requests per 10,000 residents`;
+        const content = document.createElement("div");
+        content.textContent =
+          `ZCTA ${{feature.getProperty("zcta")}} | ` +
+          `${{feature.getProperty("requests")}} requests | ` +
+          `${{feature.getProperty("population")}} residents | ${{rateText}}`;
+        infoWindow.setContent(content);
+        infoWindow.setPosition(event.latLng);
+        infoWindow.open({{ map }});
+      }});
+
+      const legend = document.createElement("div");
+      legend.id = "legend";
+      legend.innerHTML = rateLabels.map((label, index) =>
+        `<div><span class="swatch" style="background:${{colors[index]}}"></span>${{label}}</div>`
+      ).join("") +
+        '<div><span class="swatch" style="background:#bdbdbd"></span>Rate undefined</div>';
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+    }}
+
+    window.initMap = initMap;
+  </script>
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key={api_key}&callback=initMap&v=weekly">
+  </script>
+</body>
+</html>
+"""
+Path("parking_requests_google_zcta.html").write_text(
+    google_map_html, encoding="utf-8"
 )
-google_map.scatter(
-    sample_points["latitude"].tolist(),
-    sample_points["longitude"].tolist(),
-    color="#225588", size=25, marker=False,
-)
-google_map.draw("parking_requests_google.html")
+print("Wrote parking_requests_google_zcta.html")
+
 ```
 
 The choice between interactive tools should follow the geographic question
@@ -775,6 +1048,164 @@ A project should therefore define the reader's task, geographic operation,
 and units before selecting the interface. It should also account for
 accessibility, reproducibility, and any information sent to an external
 map service.
+
+## Animate Change
+
+Animation extends a static display by changing one part of the figure across
+frames. Matplotlib's `FuncAnimation` repeatedly calls an update function,
+which changes the marks or data shown for the current frame. A useful
+animation keeps scales and spatial extents fixed, labels the frame in plain
+language, and changes only what the question requires. Animation can expose
+timing or accumulation that is difficult to see in a static figure, but
+rapid movement can also make comparisons harder. A static summary should
+remain available for readers who need to compare values across the full
+period. The examples use the week of illegal-parking requests to animate a
+borough count and the spatial distribution of recorded locations
+[@matplotlib2026funcanimation].
+
+The first animation shows cumulative request counts by borough at the end
+of each day. Each frame adds a day of observations, so the bar lengths show
+how the total grows over the week. A fixed horizontal scale keeps lengths
+comparable from frame to frame. The animation describes request volume in
+this extract; it does not measure illegal-parking prevalence or borough
+performance.
+
+```{python}
+import base64
+import tempfile
+
+from IPython.display import HTML
+from matplotlib.animation import FuncAnimation
+
+def display_gif(animation, *, alt_text, caption):
+    with tempfile.NamedTemporaryFile(suffix=".gif") as gif_file:
+        animation.save(gif_file.name, writer="pillow", fps=1, dpi=90)
+        encoded_gif = base64.b64encode(
+            Path(gif_file.name).read_bytes()
+        ).decode("ascii")
+        return HTML(
+            f'<figure><img src="data:image/gif;base64,{encoded_gif}" '
+            f'alt="{alt_text}"><figcaption>{caption}</figcaption></figure>'
+        )
+
+daily_borough_counts = (
+    parking.assign(date=parking["created_at"].dt.normalize())
+    .groupby(["date", "borough"])
+    .size()
+    .unstack(fill_value=0)
+    .reindex(
+        index=pd.date_range(
+            parking["created_at"].min().normalize(),
+            parking["created_at"].max().normalize(),
+            freq="D",
+        ),
+        columns=borough_order,
+        fill_value=0,
+    )
+    .sort_index()
+    .cumsum()
+)
+```
+
+The update function redraws the horizontal bars for the date associated with
+each frame. The animation is saved as a GIF with Matplotlib's Pillow writer;
+the file is created temporarily during rendering, so the figure does not
+add a generated binary to the repository. The `FuncAnimation` object remains
+assigned to `count_animation` while the GIF is written, which prevents it
+from being discarded before all frames are rendered.
+
+```{python}
+fig, ax = plt.subplots(figsize=(7, 4))
+count_limit = daily_borough_counts.to_numpy().max() * 1.1
+
+def update_count(frame):
+    ax.clear()
+    counts = daily_borough_counts.iloc[frame]
+    ax.barh(counts.index, counts.values, color="#3366AA")
+    ax.set_xlim(0, count_limit)
+    ax.set_xlabel("Cumulative requests")
+    ax.set_title(
+        f"Requests through {daily_borough_counts.index[frame]:%b %d, %Y}"
+    )
+    ax.invert_yaxis()
+
+count_animation = FuncAnimation(
+    fig, update_count, frames=range(len(daily_borough_counts)),
+    interval=700, repeat=False,
+)
+count_gif = display_gif(
+    count_animation,
+    alt_text="An animated horizontal bar chart shows cumulative request counts increasing across five New York City boroughs over seven days.",
+    caption="Cumulative number of illegal-parking requests recorded in each borough by date, September 6–12, 2026.",
+)
+plt.close(fig)
+count_gif
+```
+
+The map animation changes the points while retaining the same ZCTA outlines
+and projected view in every frame. Each frame displays requests created on
+one calendar day, using the coordinates supplied with the request data.
+The same geocoding limitations described for the static point map apply:
+overlapping locations can obscure one another, and an approximate point
+does not establish the exact location of an event. The display shows where
+requests were recorded, not how vehicles moved. It uses locally stored
+boundaries and does not depend on a live basemap, which makes the animation
+reproducible when the book is built.
+
+```{python}
+map_points = request_points.to_crs("EPSG:2263")
+map_boundaries = zcta_polygons.to_crs("EPSG:2263")
+frame_dates = pd.date_range(
+    parking["created_at"].min().normalize(),
+    parking["created_at"].max().normalize(),
+    freq="D",
+)
+min_x, min_y, max_x, max_y = map_boundaries.total_bounds
+x_margin = (max_x - min_x) * 0.03
+y_margin = (max_y - min_y) * 0.03
+
+fig, ax = plt.subplots(figsize=(7, 7))
+map_boundaries.boundary.plot(ax=ax, color="#999999", linewidth=0.3)
+points = ax.scatter([], [], color="#225588", s=5, alpha=0.45)
+frame_title = ax.set_title("")
+ax.set_xlim(min_x - x_margin, max_x + x_margin)
+ax.set_ylim(min_y - y_margin, max_y + y_margin)
+ax.set_aspect("equal")
+ax.set_axis_off()
+
+def update_map(frame):
+    date = frame_dates[frame]
+    current = map_points.loc[
+        map_points["created_at"].dt.normalize().eq(date)
+    ]
+    coordinates = np.column_stack((current.geometry.x, current.geometry.y))
+    points.set_offsets(coordinates)
+    frame_title.set_text(
+        f"Recorded requests on {date:%b %d, %Y} (n = {len(current):,})"
+    )
+    return points, frame_title
+
+map_animation = FuncAnimation(
+    fig, update_map, frames=range(len(frame_dates)),
+    interval=700, repeat=False,
+)
+map_gif = display_gif(
+    map_animation,
+    alt_text="An animated map shows daily points for geocoded illegal-parking requests over fixed outlines of New York City ZCTAs.",
+    caption="Geocoded illegal-parking request locations by day against NYC ZCTA boundaries, September 6–12, 2026.",
+)
+plt.close(fig)
+map_gif
+```
+
+The two animations make different comparisons: the bars emphasize
+accumulation, while the map shows the daily distribution of recorded
+locations. Neither should be read as evidence of a stable pattern from one
+week. The animation can direct attention to dates or places for follow-up;
+the static hourly, daily, and area summaries elsewhere in this chapter
+provide more reliable comparisons across groups. Students should state the
+frame unit, whether values accumulate or reset, the fixed scales, and the
+data excluded from each animation.
 
 The same visual discipline applies when the course moves from description
 to modeling. A predicted-versus-observed plot can show where a model
@@ -824,7 +1255,7 @@ c. State the denominator for each plotted proportion and how requests with
 
 ::: {#exr-viz-repair}
 Create and repair two misleading plots from the illegal-parking data. Use
-two *different* mistakes from the table in the Mistakes section; at least
+two *different* mistakes from the table in @sec-viz-common-mistakes; at least
 one must concern data selection, aggregation, or interpretation rather than
 only styling.
 
