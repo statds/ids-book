@@ -400,54 +400,101 @@ separately resamples requests within each group to show variability under
 an independent-request model.
 
 The appropriate test depends on the outcome scale, comparison structure,
-and sampling or assignment process. Several common tests correspond to
-recurring data structures, but this list is a guide rather than an exhaustive
-menu or an automatic decision rule [@nistndexploratory]:
+and sampling or assignment process. The table links common questions to
+Python functions and states the null or design condition each function
+addresses [@scipy2026statistical; @statsmodels2026proportion;
+@statsmodels2026contingency]. This guide is not
+an automatic decision rule: inspect the data and define the target contrast
+before choosing a test [@nistndexploratory].
 
-- **One mean or two independent means:** use a one-sample $t$ test to compare
-  a mean with a reference value, or Welch's two-sample $t$ test to compare
-  independent group means without assuming equal variances.
-- **Paired numerical measurements:** use a paired $t$ test on within-pair
-  differences; the pairs, rather than the individual measurements, must be
-  independent.
-- **Three or more group means:** use ANOVA or Welch ANOVA for an overall
-  comparison. Follow-up comparisons need a plan for multiple testing.
-- **Two categorical variables:** use a chi-square test of independence when
-  its approximation is adequate, or Fisher's exact test for a sparse
-  $2\times2$ table. These tests assess association, not causation.
-- **One or two proportions:** use a binomial or two-proportion procedure;
-  exact methods may be preferable with sparse outcomes. For paired binary
-  outcomes, McNemar's test accounts for the pairing.
-- **Two numeric variables:** use Pearson correlation to test linear
-  association or Spearman rank correlation to test monotone association.
-  Neither test alone addresses confounding.
-- **A chosen statistic under exchangeable labels:** use a permutation test
-  when the labels are exchangeable under the null and the statistic matches
-  the question.
+| Question and design | Test and Python function | Null or key condition |
+|---|---|---|
+| Is one numerical mean equal to a reference value? | One-sample $t$ test, `scipy.stats.ttest_1samp` | Population mean equals the reference value. |
+| Do two independent groups have different means? | Welch $t$ test, `scipy.stats.ttest_ind(..., equal_var=False)` | Population means are equal; equal variances are not assumed. |
+| Do paired measurements have different means? | Paired $t$ test, `scipy.stats.ttest_rel` | Mean within-pair difference is zero; pairs are independent. |
+| Do three or more independent groups have equal means? | One-way ANOVA, `scipy.stats.f_oneway`; use `equal_var=False` for Welch ANOVA | All group means are equal; classical ANOVA assumes equal variances, and follow-up comparisons need multiplicity control. |
+| Are two categorical variables associated? | Chi-square test, `scipy.stats.chi2_contingency` | Variables are independent; the large-sample approximation must be adequate. |
+| Is a sparse $2\times2$ table associated? | Fisher exact test, `scipy.stats.fisher_exact` | Tests association conditional on fixed table margins. |
+| Does one proportion equal a benchmark, or do two proportions differ? | Binomial test, `scipy.stats.binomtest`; two-proportion test, `statsmodels.stats.proportion.proportions_ztest` | Proportions equal the stated benchmark or each other; samples must follow the test's independent-sampling design. |
+| Do paired binary outcomes change? | McNemar's test, `statsmodels.stats.contingency_tables.mcnemar` | The two paired marginal proportions are equal; pairs are independent. |
+| Are two numerical variables associated? | Pearson, `scipy.stats.pearsonr`; Spearman, `scipy.stats.spearmanr` | Tests zero linear correlation or zero rank correlation, respectively. |
+| Do independent groups differ in rank distributions? | Mann--Whitney, `scipy.stats.mannwhitneyu`; Kruskal--Wallis, `scipy.stats.kruskal` | Tests equal distributions or rank locations under their assumptions; neither automatically tests equal medians. |
+| Is a chosen statistic unusual under exchangeable labels? | Permutation test, `scipy.stats.permutation_test` | Labels can be reassigned under the null; the statistic must match the question. |
 
-For example, the contingency table in @exr-eda-time could be followed by a
-chi-square test of independence. Requests from one week may share time,
-location, or agency conditions, however, which weakens a simple independence
-model. A statistical test does not correct those design limitations, and
-selecting a test after searching many groupings can make its nominal
-$p$-value misleading [@wasserstein2016asa].
+The first code example uses the contingency table from the three most
+frequent details to ask whether the observed detail mix varies by borough.
+The chi-square test evaluates independence, while Cramér's $V$ summarizes
+the strength of the association. The expected cell counts help assess
+whether the chi-square approximation is adequate. Because the details were
+selected by frequency in this same week, this is an exploratory calculation,
+not a confirmatory test of a prespecified hypothesis.
 
-Rank-based alternatives such as Mann--Whitney and Kruskal--Wallis tests are
-also common for independent groups, but they do not automatically test a
-difference in medians: their nulls concern rank distributions and require
-careful interpretation. Likewise, a bootstrap interval estimates
-uncertainty under a resampling scheme; it is not itself a hypothesis test.
-When many outcomes, subgroups, or alternatives are examined, the analysis
-should report that search and avoid treating a threshold such as 0.05 as a
-mechanical decision rule [@wasserstein2016asa].
+```{python}
+from scipy.stats import chi2_contingency
+
+detail_by_borough = pd.crosstab(top["problem_detail"], top["borough"])
+chi_square = chi2_contingency(detail_by_borough)
+sample_size = detail_by_borough.to_numpy().sum()
+cramers_v = np.sqrt(
+    chi_square.statistic
+    / (sample_size * min(detail_by_borough.shape[0] - 1,
+                         detail_by_borough.shape[1] - 1))
+)
+display(detail_by_borough)
+pd.Series({
+    "chi-square statistic": chi_square.statistic,
+    "degrees of freedom": chi_square.dof,
+    "p-value": chi_square.pvalue,
+    "smallest expected cell count": chi_square.expected_freq.min(),
+    "Cramer's V": cramers_v,
+}).to_frame("value")
+```
+
+The next example uses Welch's test to compare arithmetic mean closure hours
+for hydrant and sidewalk requests. It answers a different question from the
+median comparison below, and the long right tail can make the mean sensitive
+to a small number of long intervals. The request-level calculation also
+assumes independent observations, although requests may share locations,
+times, or administrative conditions.
+
+```{python}
+from scipy.stats import ttest_ind
+
+hydrant = top.loc[
+    top["problem_detail"].eq("Blocked Hydrant"), "closure_hours"
+].dropna().to_numpy()
+sidewalk = top.loc[
+    top["problem_detail"].eq("Blocked Sidewalk"), "closure_hours"
+].dropna().to_numpy()
+welch_test = ttest_ind(hydrant, sidewalk, equal_var=False)
+pd.Series({
+    "hydrant mean (hours)": hydrant.mean(),
+    "sidewalk mean (hours)": sidewalk.mean(),
+    "mean difference (hours)": hydrant.mean() - sidewalk.mean(),
+    "Welch t statistic": welch_test.statistic,
+    "Welch degrees of freedom": welch_test.df,
+    "two-sided p-value": welch_test.pvalue,
+}).to_frame("value")
+```
+
+Requests from one week may share time, location, or agency conditions,
+which weakens a simple independence model. A statistical test does not
+correct those design limitations, and selecting a test after searching
+many groupings can make its nominal $p$-value misleading
+[@wasserstein2016asa]. Rank-based tests such as Mann--Whitney and
+Kruskal--Wallis do not automatically test a difference in medians. Likewise,
+a bootstrap interval estimates uncertainty under a resampling scheme; it
+is not itself a hypothesis test. When many outcomes, subgroups, or
+alternatives are examined, report that search and do not treat a threshold
+such as 0.05 as a mechanical decision rule [@wasserstein2016asa].
 
 ```{python}
 hydrant = top.loc[
     top["problem_detail"].eq("Blocked Hydrant"), "closure_hours"
-].to_numpy()
+].dropna().to_numpy()
 sidewalk = top.loc[
     top["problem_detail"].eq("Blocked Sidewalk"), "closure_hours"
-].to_numpy()
+].dropna().to_numpy()
 observed_gap = np.median(hydrant) - np.median(sidewalk)
 
 rng = np.random.default_rng(2026)
