@@ -1,5 +1,6 @@
 # Problem Formulation {#sec-problem-formulation}
 
+
 Problem formulation connects a domain purpose, available evidence, and a
 question the evidence can address. This chapter develops that connection
 through New York City's 311 service requests directed to the New York City
@@ -8,10 +9,12 @@ available extract is the starting point: its categories and quality checks
 guide the choice and refinement of an illegal-parking question. Domain context
 and documentation determine what the resulting analysis can establish.
 
+
 Before running this chapter's code, update the local book source and its Python
 environment so that both match the current version. From the repository
 directory, pull the latest changes, activate the book's `.ids` environment,
 and install the pinned requirements:
+
 
 ```bash
 git pull
@@ -19,10 +22,13 @@ source .ids/bin/activate
 make install
 ```
 
+
 On Windows, activate `.ids/Scripts/activate` from Git Bash. Keep the environment
 active while running the chapter's code.
 
+
 ## Introduction {#sec-formulation-checks}
+
 
 Problem formulation can begin with a domain problem or an available dataset,
 but either route must connect a substantive purpose to evidence capable of
@@ -34,12 +40,15 @@ the NYPD extract's distribution of reported problems motivates illegal parking
 as a working topic; a domain purpose and account of what these service
 requests measure determine whether a resulting question is worth pursuing.
 
+
 There are two common starting points:
+
 
 - **Problem to data:** A transportation planner asks where blocked bicycle
   lanes are reported, then looks for records with location and problem fields.
 - **Data to question:** An analyst inspects service records and asks which
   observed pattern might matter to residents or agency staff.
+
 
 The two routes often meet. A question directs us to inspect particular fields;
 that inspection may reveal that a field is incomplete or does not measure the
@@ -50,7 +59,9 @@ and analysis as a nonlinear data-science life cycle [@yu2024veridical]. The
 comparison. A pattern in its records is therefore a starting point for
 inquiry, not by itself an explanation of parking conditions.
 
+
 The first activity in the data-science workflow aligns three components:
+
 
 1. **Domain purpose:** Why would an answer matter, and who might use it?
 2. **Question:** What description, comparison, prediction, or decision is
@@ -58,26 +69,32 @@ The first activity in the data-science workflow aligns three components:
 3. **Data:** What was observed, how was it measured, and what setting does it
    represent?
 
+
 This alignment gives the $D$ in the $SDC^3$ framework a practical role. For
 the bicycle-lane example, it asks us to check:
+
 
 - whether the question concerns reports, verified obstructions, or safety;
 - whether the records identify a location and a report category;
 - whether the comparison should account for lane length or another exposure;
 - whether the observations support a description or a stronger claim.
 
+
 Domain knowledge helps answer the first and third questions. Data inspection
 addresses the second, while statistical reasoning helps with the fourth.
 Collaboration can reveal assumptions that one analyst might overlook.
 
+
 A candidate question becomes researchable when its main parts are explicit.
 For the worked example, they are:
+
 
 - **Unit:** one NYPD-directed 311 request.
 - **Outcome:** the recorded time between request creation and closure.
 - **Place and period:** New York City, September 6–12, 2026.
 - **Comparison:** closure-time distributions across reported problem details.
 - **Claim:** a description of these requests, not all parking conditions.
+
 
 The provisional question is: among NYPD-directed illegal-parking requests
 from this week, how did recorded closure-time distributions vary across
@@ -87,8 +104,10 @@ chosen from the observed records, the comparison is exploratory. Each
 restriction limits which requests the answer describes and should serve a
 clear purpose.
 
+
 Four complementary checks assess whether a candidate question is worth
 pursuing and whether the available evidence can answer it.
+
 
 - **Domain fit** asks whether an answer would inform a substantive concern or
   decision, and who could use it. A data-first question needs a domain purpose
@@ -105,9 +124,11 @@ pursuing and whether the available evidence can answer it.
   recorded closure times can describe these requests, but it does not by
   itself show that problem type caused a difference.
 
+
 The same checks apply to a study of community risk, but the analysis needs a
 different unit and evidence. For example, a school-district study should
 specify:
+
 
 - **Unit:** a district or district-year;
 - **Outcome:** a defined event, such as hospitalization or death, with a
@@ -116,10 +137,12 @@ specify:
   denominator; and
 - **Scope:** the districts and years the result describes.
 
+
 When counts are small, one additional event can change a rate substantially.
 An area-level pattern describes areas, not individuals, and does not identify
 a cause [@robinson1950ecological; @openshaw1984modifiable]. Define the event,
 geographic unit, period, and denominator before assembling the data.
+
 
 These checks are iterative rather than a one-time screen. A domain concern
 may lead to a data search, while an observed pattern may suggest a new
@@ -128,7 +151,9 @@ require revising the question. The sections that follow evaluate the
 provisional comparison against the downloaded records and refine it in light
 of what those records can establish.
 
+
 ## Interpreting the NYPD 311 Records
+
 
 The observational unit in this chapter is one New York City 311 service
 request directed to NYPD. The public
@@ -144,6 +169,7 @@ each row is to represent one request in subsequent counts. The downloaded
 records must also be checked against the stated agency and time restrictions
 before the illegal-parking problem filter defines the working subset.
 
+
 The timestamp fields define an administrative interval rather than a
 direct measure of field response. `Created Date` records the creation of a
 request, and `Closed Date` records its closure by the responding agency;
@@ -158,7 +184,9 @@ in subtracting its recorded times but does not validate each timestamp.
 An analysis of individual reporting behavior would additionally require
 information about reporters that the public table does not provide.
 
+
 Each field has a role in a particular question. For example:
+
 
 - `Borough` can define broad comparison groups.
 - `Problem Detail (formerly Descriptor)` records a reported category.
@@ -167,13 +195,16 @@ Each field has a role in a particular question. For example:
 - Latitude and longitude locate a recorded point; a police precinct code
   identifies an administrative area.
 
+
 These geographic fields can be missing or disagree because they describe
 different objects. A ZIP label can support an area lookup, but distance to a
 precinct requires a usable point, a precinct location, and a defined distance
 measure. Treating these fields as interchangeable would hide which requests
 can enter the calculation and what each result represents.
 
+
 ## Acquiring Data
+
 
 Data acquisition obtains evidence while preserving enough information to
 interpret and reproduce it. Common sources include local files, public
@@ -182,6 +213,7 @@ databases, surveys, experiments, sensors, and administrative systems. The
 method should match the source and intended use. A stable file is convenient
 for a fixed classroom or research example, while an API or database query is
 more appropriate when an analysis must refresh regularly.
+
 
 A reproducible acquisition records the source and the intended selection
 rules. The example file came from the NYC Open Data portal, where we attempted
@@ -192,11 +224,13 @@ identifier, not a request-level key. The archive contains the returned records
 but not a saved copy of the portal query settings, so the intended filters and
 the delivered values must be checked separately.
 
+
 The delivered file does not match the intended time window: it contains 1,902
 records created during the first eight hours of September 13. This discrepancy
 shows why a successful download is not evidence that the portal returned
 exactly the requested data. The intended agency restriction also requires an
 independent check against the `Agency` values in the file.
+
 
 Raw and derived data serve different purposes. The downloaded source extract
 preserves what the provider returned. The smaller illegal-parking data frame
@@ -205,11 +239,14 @@ problem-category filter while retaining all 44 source columns. Preserving the
 source makes it possible to audit or revise both filters. The source file
 should not be edited manually to remove the extra records.
 
+
 The book distributes the downloaded CSV in a ZIP archive:
+
 
 ```text
 data/311_nypd_lbdwk_2026.csv.zip
 ```
+
 
 The archive contains one CSV file and reduces its size by about 90% without
 changing the tabular source representation. Pandas can decompress a
@@ -219,13 +256,16 @@ require shell quoting. A companion provenance record should carry details that
 cannot fit sensibly in a filename, including the direct source, access date,
 requested selection rules, and observed departure from those rules.
 
+
 ### Importing the Archive
+
 
 Reproducible import begins with a project-relative path. A relative path works
 after another reader clones or moves the project because it describes the
 file's location inside the project rather than its location on one person's
 computer. The `Path` class also provides portable operations for checking and
 measuring the file.
+
 
 ```{python}
 from pathlib import Path
@@ -256,10 +296,12 @@ file_summary = pd.DataFrame({
 file_summary.round({"size_mib": 2})
 ```
 
+
 The import specification should express meaning that cannot be inferred safely
 from the characters in the file. The two identifiers are read as strings, and
 the large mixed table is read in one pass before the date fields are converted
 with an explicit format.
+
 
 ```{python}
 identifier_types = {
@@ -283,6 +325,7 @@ for column in ["Created Date", "Closed Date"]:
     )
 ```
 
+
 The explicit datetime format documents the month-day-year order, 12-hour
 clock, seconds, and morning or afternoon marker. The `errors="coerce"`
 argument converts an invalid timestamp to a missing datetime rather than
@@ -290,10 +333,12 @@ silently leaving a mixture of strings and dates. That choice makes conversion
 failures countable, but it does not make them harmless; every failure should be
 investigated.
 
+
 Compact inspection reveals the structure without flooding the document with
 44 columns or thousands of rows. The next chunks report the dimensions and
 display a small selection of fields that describe time, category, and
 geography.
+
 
 ```{python}
 pd.DataFrame({
@@ -302,6 +347,7 @@ pd.DataFrame({
     "memory_mib": [requests.memory_usage(deep=True).sum() / 2**20],
 }).round({"memory_mib": 2})
 ```
+
 
 ```{python}
 display_columns = [
@@ -316,11 +362,13 @@ display_columns = [
 requests.loc[:, display_columns].head()
 ```
 
+
 The in-memory size differs from the file size because a CSV stores characters,
 whereas pandas allocates objects and typed arrays needed for computation. File
 size and memory use answer different questions: the former affects storage and
 transfer, while the latter affects whether an analysis fits comfortably in a
 running process.
+
 
 The preceding Python chapter introduced data frames as tables with named
 columns. Here, `requests` is a data frame, while an expression such as
@@ -331,13 +379,16 @@ Series produces a Boolean mask; `.loc[mask]` selects the matching rows, and
 categories. These operations connect the import to a documented row
 selection without changing the downloaded data.
 
+
 ## Checking Data {#sec-initial-checks}
+
 
 Basic checks test whether the imported object matches its stated scope before
 any values are cleaned or transformed. They do not prove that every record is
 correct. Instead, they turn assumptions about the extract into results that
 can be reviewed. The governing principle is to trust the provider while
 verifying every condition on which the analysis depends.
+
 
 The first checks address identity, agency, and both temporal boundaries. A
 portal selection is an instruction about what to return; these checks test
@@ -346,6 +397,7 @@ week, the intended creation-time window begins at midnight on September 6 and
 ends immediately before midnight on September 13. The inclusive lower bound
 and exclusive upper bound include every timestamp on the seven intended days
 without ambiguity at the next week's boundary.
+
 
 ```{python}
 start = pd.Timestamp("2026-09-06")
@@ -373,16 +425,19 @@ scope_checks = pd.Series({
 scope_checks.to_frame()
 ```
 
+
 The returned agency values and date-boundary counts show whether the file
 matches the intended selection on both dimensions. The frequency table
 provides the actual agency labels, while the separate lower- and upper-bound
 counts identify which side of the time window failed.
+
 
 ```{python}
 pd.DataFrame({
     "agency": requests["Agency"].value_counts(dropna=False),
 })
 ```
+
 
 ```{python}
 pd.DataFrame({
@@ -391,9 +446,11 @@ pd.DataFrame({
 })
 ```
 
+
 The analysis subset should be created only after the discrepancy has been
 measured and reported. The half-open interval removes 1,902 records returned
 outside the requested week without changing the downloaded object.
+
 
 ```{python}
 week_requests = requests.loc[in_intended_week].copy()
@@ -405,9 +462,11 @@ pd.Series({
 }, name="requests").to_frame()
 ```
 
+
 The problem frequency table reveals what the screened week contains and makes
 the next analytical choice visible. Illegal parking is the largest category,
 but it accounts for only about one-third of the NYPD requests.
+
 
 ```{python}
 problem_column = "Problem (formerly Complaint Type)"
@@ -421,9 +480,11 @@ problem_counts = (
 problem_counts
 ```
 
+
 The working subset retains only the illegal-parking requests from the intended
 week. Its 13,040 rows and 44 columns are consequences of two documented filters,
 not properties assumed from the filename.
+
 
 ```{python}
 parking = week_requests.loc[
@@ -433,11 +494,13 @@ parking = week_requests.loc[
 parking.shape
 ```
 
+
 Missingness should be summarized before it is treated. A column can be absent
 because the field does not apply to this kind of request, because the value was
 unknown, or because it was lost. Those mechanisms have different meanings, so
 a missing-value count is the beginning of an investigation rather than a
 cleaning instruction.
+
 
 ```{python}
 missingness = (
@@ -451,9 +514,11 @@ missingness = (
 missingness.round({"percent": 2})
 ```
 
+
 The missingness table shows that several fields do not apply to these requests,
 while 99 rows lack each coordinate field and council district. A pairwise check
 is needed before concluding that latitude and longitude are missing together.
+
 
 ```{python}
 coordinate_missingness = pd.crosstab(
@@ -466,19 +531,23 @@ coordinate_missingness = pd.crosstab(
 coordinate_missingness
 ```
 
+
 Nonmissing coordinate ranges can reveal misplaced decimal points, swapped
 coordinates, or locations far from the city. Plausible ranges do not establish
 that every point lies inside New York City because an exact test would require
 authoritative boundary geometry.
 
+
 ```{python}
 parking[["Latitude", "Longitude"]].agg(["min", "max"]).round(6)
 ```
+
 
 Related fields provide opportunities to test internal consistency. Nearly all
 rows have status `Closed`, while one row has status `Unspecified`. Every row,
 including that exception, has a closing timestamp. The discrepancy is evidence
 to report, not permission to replace the status automatically.
+
 
 ```{python}
 pd.crosstab(
@@ -490,10 +559,12 @@ pd.crosstab(
 )
 ```
 
+
 Chronological checks can identify impossible or ambiguous records. The next
 calculation verifies that no closing time precedes its creation time and
 summarizes the derived closure time without adding it permanently to the
 source-derived data frame.
+
 
 ```{python}
 closure_hours = (
@@ -509,16 +580,19 @@ pd.DataFrame({
 }).round(2)
 ```
 
+
 The long upper tail makes the mean much larger than the median. That pattern is
 worth exploring later, but basic checking already prevents a misleading label:
 the computation measures time to recorded closure, not necessarily time to an
 officer's arrival or resolution of the reported condition.
+
 
 Unusual concentrations at exact times can expose rounding, default values, or
 batch processing. Tussey and Yan use temporal and logical checks of this kind
 in their case study of NYC 311 data curation [@tussey2025principles]. The
 diagnostic should be repeated on each extract rather than assumed to produce
 the same result everywhere.
+
 
 ```{python}
 created = parking["Created Date"].dropna()
@@ -548,6 +622,7 @@ time_heaping = pd.Series({
 time_heaping.to_frame()
 ```
 
+
 This one-week illegal-parking subset contains no creation or closing timestamps
 exactly at midnight. Only four creation times and ten closing times fall exactly
 on an hour, and four closure durations equal a whole number of hours. The large
@@ -556,13 +631,16 @@ present here. Its absence does not invalidate a problem found in a larger or
 different extract; it shows why a quality report must identify the agency,
 variables, and time period checked.
 
+
 ## Efficient Representation
+
 
 Data representation affects storage, import time, type preservation, and
 interoperability. The CSV format is widely supported text that is easy to
 inspect with ordinary tools. Its simplicity is valuable for acquisition and
 archival exchange, but each reader must parse the text and reconstruct such
 types as datetimes and identifiers.
+
 
 Apache Arrow defines a column-oriented representation designed for efficient
 analytical data interchange across systems. Feather Version 2 stores Arrow's
@@ -571,9 +649,11 @@ columns and compression [@apache2026feather]. Bates and Yan describe how an
 Arrow representation can create a unified dataset for efficient analysis
 across software platforms [@bates2024from].
 
+
 A derived Feather file can preserve the imported table's typed representation
 for repeated analysis. The example writes to a temporary directory so that
 rendering the chapter does not add a generated file to the project.
+
 
 ```{python}
 from tempfile import TemporaryDirectory
@@ -595,6 +675,7 @@ with TemporaryDirectory() as temporary_directory:
 representation.round({"size_mib": 2})
 ```
 
+
 The ZIP archive is smaller than the Feather file in this example. Efficient
 representation does not mean smallest file under every criterion: ZIP applies
 strong general-purpose compression to text, while Feather preserves a typed,
@@ -602,9 +683,11 @@ column-oriented representation designed for analytical access. Storage size,
 read time, type preservation, and cross-platform use should therefore be
 compared separately.
 
+
 The round trip should preserve the shape, values, and important types. Separate
 checks make failures easier to diagnose than one large comparison whose false
 result gives no explanation.
+
 
 ```{python}
 pd.Series({
@@ -614,11 +697,13 @@ pd.Series({
 }, name="check").to_frame()
 ```
 
+
 The screened illegal-parking data can also be stored as a typed analysis
 dataset. Filtering retains row-index labels from the downloaded table, but
 `Unique Key` is the request identifier; the inherited index labels have no
 analytical meaning. Resetting them before writing Feather gives the derived
 table a regular row index without changing its 44 source columns.
+
 
 ```{python}
 parking_for_feather = parking.reset_index(drop=True)
@@ -640,9 +725,11 @@ with TemporaryDirectory() as temporary_directory:
 parking_file_checks.round({"size_mib": 2})
 ```
 
+
 The temporary file demonstrates the conversion without creating an output
 during book rendering. A persistent copy for later analysis should record both
 filters, the source archive, and the conversion choices in its provenance.
+
 
 Performance comparisons require more care than a single stopwatch reading.
 Operating-system caching, storage hardware, background activity, parsing
@@ -651,6 +738,7 @@ operation, reports a robust summary such as the median, and includes the CSV
 type conversions needed by the actual analysis. The exercises ask readers to
 design and document that comparison.
 
+
 Efficient formats complement rather than automatically replace source formats.
 The CSV member of the ZIP archive remains a broadly readable text artifact. A
 Feather file is useful as a typed derivative or interchange artifact when the
@@ -658,13 +746,16 @@ same table is loaded repeatedly or used by multiple analytical systems. Both
 need provenance because a compact or compressed file does not explain where
 its values came from or why its rows were selected.
 
+
 ## Data Stewardship
+
 
 Data provenance records the history needed to interpret and reproduce a
 dataset. A useful record names the provider, source, access date, selection
 rules, observational unit, temporal scope, transformations, and known
 limitations. It also distinguishes statements made by the provider from
 decisions made by the analyst.
+
 
 | Item | Record for the chapter data |
 |---|---|
@@ -682,9 +773,11 @@ decisions made by the analyst.
 | Columns retained | All 44 source columns |
 | Known limitations | Requests are not verified incidents; reporting and closure processes are not fully observed |
 
+
 File integrity can be recorded with a cryptographic hash. A matching hash shows
 that two copies contain the same bytes; it does not show that the data are
 accurate or appropriate for a question.
+
 
 ```{python}
 import hashlib
@@ -695,12 +788,14 @@ with data_path.open("rb") as input_file:
 sha256
 ```
 
+
 Responsible acquisition also limits unnecessary exposure. This public dataset
 does not identify the person who submitted a request, but it contains precise
 incident addresses and coordinates. An analysis that needs only ZIP Code or
 precinct summaries should avoid displaying individual addresses. Public
 availability does not eliminate the responsibility to minimize unnecessary
 detail and to follow the source's terms of use.
+
 
 Open-data curation requires more than distributing a readable file.
 Tussey and Yan propose six principles from their study of NYC 311:
@@ -712,6 +807,7 @@ Codes, implausible date relationships, unusual concentrations at particular
 times, redundant fields, and categories whose meaning varies by agency or
 period.
 
+
 These findings are prompts for investigation rather than universal cleaning
 rules. A negative duration may reveal a timestamp error, a misunderstood field,
 or a clock convention. A concentration at midnight may be a default, a batch
@@ -721,7 +817,9 @@ data curator when the intended meaning remains uncertain. Deleting or replacing
 an unusual value without that inquiry can hide the very process that needs to
 be understood.
 
+
 ## Revising Questions from the Checked Data {#sec-problem-detail-counts}
+
 
 The checked extract supports a more specific question than the download alone
 suggested. The intended week contains several NYPD problem categories, with
@@ -730,8 +828,10 @@ the time scope, while missing coordinates and the distinction between closure
 and response constrain the outcomes that can be interpreted. These findings
 direct the next inspection toward variation within illegal-parking requests.
 
+
 The problem-detail field provides an inventory of that variation. A complete
 frequency table is short enough to inspect directly.
+
 
 ```{python}
 detail_counts = (
@@ -742,6 +842,7 @@ detail_counts = (
 )
 detail_counts
 ```
+
 
 The problem-detail table can motivate several kinds of questions, but each
 requires a different target and standard of evidence. A descriptive question
@@ -758,6 +859,7 @@ separates quantities that the extract can describe from the evidence required
 for broader operational, safety, equity, or reporting claims. It also makes
 the exclusion of requests handled by other agencies explicit.
 
+
 | Domain concern | Possible question | Evidence in this extract | Evidence still needed |
 |---|---|---|---|
 | Demand for NYPD-handled 311 services | When and where were illegal-parking requests concentrated during the holiday week? | Creation time, incident location, ZIP Code, precinct, and borough | Other weeks to determine whether the pattern is unusual |
@@ -767,6 +869,7 @@ the exclusion of requests handled by other agencies explicit.
 | Reporting behavior | Did reporting patterns differ between daytime and nighttime? | Request creation time, channel, problem detail, and location | Information about who could report, unreported conditions, and alternative reporting channels |
 | Data-system quality | Did the delivered records satisfy the requested filters and expected logical relationships? | Identifiers, categories, timestamps, status, and related geographic fields | Portal query metadata, data-entry rules, and explanations from the data curator |
 
+
 The first and last questions can be investigated directly as descriptions of
 this NYPD extract. The operational questions require care because closure is an
 administrative event, not necessarily a field response. The safety and equity
@@ -775,6 +878,7 @@ how often a condition occurred, how many people were exposed, or how likely
 different communities were to use 311. The extract cannot support comparisons
 with agencies absent from the file.
 
+
 Domain knowledge also helps choose a useful level of detail. “Where is illegal
 parking a problem?” is too broad because neither *where*, *problem*, nor the
 relevant measure has been defined. A narrower question might ask, “During the
@@ -782,6 +886,7 @@ Labor Day week, which precincts recorded the most requests about blocked fire
 hydrants, and did their median closure times differ?” The revision identifies
 the unit, category, place, period, and comparison, while still acknowledging
 that the result describes recorded requests rather than all blocked hydrants.
+
 
 A final evaluation applies the domain, measurement, scope, and evidence
 checks to the proposed claim rather than merely to its computational form.
@@ -797,6 +902,7 @@ therefore name its measured quantity, eligible requests, comparison basis,
 and intended inference. A causal claim would additionally require a design
 and assumptions that address competing explanations.
 
+
 Additional area-level data could supply denominators and context for ZIP-level
 request counts. Census characteristics are often tabulated for ZIP Code
 Tabulation Areas (ZCTAs), which are related to postal ZIP Codes but do not
@@ -806,10 +912,13 @@ enrichment and evaluates its key, reference period, join cardinality, and
 unmatched records. Even a validated match describes places rather than the
 individuals who submitted requests.
 
+
 ## A Working Formulation
+
 
 A working formulation puts the current choices in one place so they can be
 checked and revised. In this example:
+
 
 - **Population:** NYPD-directed illegal-parking requests created during
   September 6–12, 2026.
@@ -819,13 +928,16 @@ checked and revised. In this example:
 - **Target:** the closure-time distribution within each group, not a causal
   effect of the label or a citywide incident rate.
 
+
 The group rule uses request counts from the same week but does not select
 groups because their closure summaries appear different. These choices give
 us the following working question:
 
+
 > Among NYPD illegal-parking requests created from September 6 through
 > September 12, 2026, how did recorded closure-time distributions differ
 > among the three most frequently reported problem details?
+
 
 The working comparison has a defined unit, period, outcome, and group rule,
 but its interpretation remains descriptive. Groups were selected after
@@ -841,10 +953,12 @@ data to investigate the operational reasons for a difference. The present
 formulation makes those later requirements visible before a summary statistic
 or plot is chosen.
 
+
 Other features of the checked extract support different formulations. The
 problem-detail table records 3,711 requests about blocked hydrants and 379
 about blocked bike lanes, while 99 illegal-parking requests lack coordinates.
 These observations suggest several questions with distinct uses:
+
 
 1. Which precincts recorded the most blocked-hydrant requests during the week,
    and how did their closure-time distributions differ?
@@ -855,11 +969,13 @@ These observations suggest several questions with distinct uses:
 4. How would the geographic pattern of blocked-bike-lane requests change if
    counts were compared with bicycle-lane mileage or another exposure measure?
 
+
 The first three questions can be investigated within this NYPD extract, though
 the data cannot explain the cause of a difference without further evidence.
 The fourth requires an additional geographic dataset and a defensible match
 between its areas and the request locations. Each question concerns recorded
 requests rather than all conditions on the street.
+
 
 The data-to-question route remains open after these examples. What other
 questions do the screened records suggest? Which would inform a specific
@@ -867,7 +983,6 @@ decision or deepen understanding of NYPD-directed 311 requests? For each
 candidate, identify the observational unit, measurements, comparison, and
 claim that the available evidence could support. State what additional data
 or domain knowledge would strengthen the answer.
-
 ## Exercises {.unnumbered}
 
 Problems 5.1 and 5.2 establish the core analysis. Problem 5.3 is an optional

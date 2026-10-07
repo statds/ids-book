@@ -1,5 +1,6 @@
 # Exploratory Data Analysis {#sec-eda}
 
+
 Exploratory data analysis (EDA) examines distributions, relationships, and
 irregularities before a final account of findings is written. Its purpose is
 to learn what the observed data can show, what they cannot show, and which
@@ -10,11 +11,14 @@ evaluating visual displays across the data-science workflow; here, plots
 support investigation alongside numerical summaries and checks of the
 records.
 
+
 ## EDA Principles
+
 
 EDA asks what patterns and irregularities are present in a prepared dataset,
 and which questions deserve more investigation. Three principles guide the
 work:
+
 
 1. **Explore a question, not a plot collection.** Preparation checks in
    @sec-wrangling establish whether identifiers are unique and joins preserve
@@ -40,6 +44,7 @@ work:
    choice, but cannot repair undercoverage or confounding
    [@yu2024veridical; @wasserstein2016asa].
 
+
 In practice, EDA cycles through a question, a calculation, an inspection,
 and a possible revision. A surprising value may send us back to the source;
 a group difference may suggest a better denominator or a more focused
@@ -47,10 +52,13 @@ question. The calculation itself does not determine whether a pattern is
 important. Interpretation still depends on the eligible records, how the
 measurements were made, and what the analysis can support.
 
+
 ## Study Setup
+
 
 The case study uses the screened requests from @sec-wrangling to revisit the
 question in @sec-problem-formulation. The analysis proceeds in this order:
+
 
 1. Describe the full distribution of recorded closure hours.
 2. Compare the three most frequently reported problem-detail groups. The
@@ -62,8 +70,10 @@ question in @sec-problem-formulation. The analysis proceeds in this order:
    inference adds assumptions, then check sensitivity to selected analysis
    choices.
 
+
 At each step, the four formulation checks in @sec-formulation-checks limit
 what the observed differences can establish.
+
 
 The initial scope report provides an audit of the table that enters this
 analysis rather than a second lesson in import and cleaning. The shared
@@ -80,11 +90,15 @@ sensitivity calculations. This order makes it possible to distinguish a
 comparison specified by the working formulation from an additional pattern
 noticed during exploration.
 
+
 ```{python}
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib_inline.backend_inline import set_matplotlib_formats
 from scripts.parking_requests import attach_zcta_context, load_parking_requests
+
+set_matplotlib_formats("svg")
 
 parking = load_parking_requests()
 
@@ -98,6 +112,7 @@ scope_check = pd.Series({
 }, name="count")
 scope_check.to_frame()
 ```
+
 
 The scope report supports the use of every screened request in the main
 closure-time comparison because identifiers are unique and the derived
@@ -113,7 +128,9 @@ will keep the eligible set attached to each result and will interpret
 variation in closure time as a mixture of reporting and administrative
 processes unless stronger evidence separates them.
 
+
 ## Closure Time by Detail
+
 
 The overall closure-time distribution establishes which summaries can
 represent a typical request and which features require separate attention.
@@ -129,6 +146,7 @@ distribution legible. That visual limit is not a row exclusion from the
 table or subsequent comparisons; the caption and text must make the
 difference clear. A later sensitivity calculation explicitly applies a
 24-hour row restriction and reports its effect.
+
 
 ```{python}
 closure_summary = parking["closure_hours"].agg(
@@ -153,11 +171,12 @@ closure_summary = closure_summary.rename(index={
 closure_summary.round(2)
 ```
 
+
 ```{python}
 #| label: fig-eda-closure
 #| fig-cap: "Recorded closure times for eligible illegal-parking requests. The display stops at 24 hours; the numerical summary includes longer intervals."
 #| fig-format: svg
-fig, ax = plt.subplots(figsize=(7, 4))
+fig, ax = plt.subplots(figsize=(6.4, 3.8))
 ax.hist(parking["closure_hours"], bins=np.arange(0, 24.5, .5),
         color="#4477aa", edgecolor="white")
 ax.set(xlabel="Recorded closure time (hours)", ylabel="Requests",
@@ -165,10 +184,12 @@ ax.set(xlabel="Recorded closure time (hours)", ylabel="Requests",
 plt.show()
 ```
 
+
 The median closure interval is about 1.67 hours, while the mean is about 3.51
 hours. The 90th percentile is about 8.73 hours, the 99th percentile is about
 23.58 hours, and the maximum is nearly 200 hours. Read these summaries
 together:
+
 
 - The **median** describes the middle request: half of recorded intervals
   are shorter and half longer.
@@ -176,10 +197,12 @@ together:
 - The **upper percentiles and maximum** show that a small share of requests
   took much longer than the typical request.
 
+
 Thus, “requests close in about two hours” is incomplete. A large interval
 could be valid, a timestamp correction, or an operational exception; its
 size alone does not show which. The group comparison therefore reports
 medians and quartiles alongside means.
+
 
 The group rule uses request frequency, not closure time, to choose categories.
 The code calculates each selected group's count, center, spread, and upper
@@ -188,6 +211,7 @@ labels are not combined without evidence that they share an operational
 meaning. A different week could produce a different list of frequent
 categories.
 
+
 The empirical cumulative distribution provides a second way to compare the
 groups. At a closure time $t$, its vertical value is the fraction of requests
 closed by time $t$. For example, a value of 0.70 at $t=2$ hours means that
@@ -195,6 +219,7 @@ closed by time $t$. For example, a value of 0.70 at $t=2$ hours means that
 allow comparisons at any threshold without assuming that the distributions
 have the same shape. Since both the group rule and analysis were developed
 using this week, later inferential calculations remain exploratory.
+
 
 ```{python}
 top_details = parking["problem_detail"].value_counts().head(3).index.tolist()
@@ -210,11 +235,12 @@ detail_summary = top.groupby("problem_detail")["closure_hours"].agg(
 detail_summary.round(2)
 ```
 
+
 ```{python}
 #| label: fig-eda-detail-ecdf
 #| fig-cap: "Empirical cumulative distributions of closure time for the three most reported details. The horizontal axis stops at 24 hours."
 #| fig-format: svg
-fig, ax = plt.subplots(figsize=(7, 4))
+fig, ax = plt.subplots(figsize=(6.4, 3.8))
 for detail in top_details:
     durations = np.sort(top.loc[
         top["problem_detail"].eq(detail), "closure_hours"
@@ -227,6 +253,7 @@ ax.legend()
 plt.show()
 ```
 
+
 Blocked Hydrant has the largest median of the three groups, about 2.05 hours,
 followed by Posted Parking Sign Violation at 1.62 hours and Blocked Sidewalk
 at 1.18 hours. The hydrant group's median exceeds the sidewalk group's by
@@ -237,7 +264,9 @@ proportion closed by any time on the horizontal axis; they retain more
 distributional information than a comparison of three means. Neither the
 table nor the plot identifies why the groups differ.
 
+
 ## Variation Across Groups
+
 
 Temporal and geographic stratification examines whether a pooled group
 contrast combines different request mixes. Creation date identifies when
@@ -253,15 +282,18 @@ help explain why a citywide closure-time summary differs from a
 within-borough summary, but the tables alone do not establish the agency
 process that generated either pattern.
 
+
 ```{python}
 daily_counts = parking.groupby(parking["created_at"].dt.date).size()
 daily_counts.to_frame("requests")
 ```
 
+
 ```{python}
 borough_counts = pd.crosstab(top["borough"], top["problem_detail"])
 borough_counts.loc[:, top_details]
 ```
+
 
 Recorded daily volume ranges from 1,563 on September 6 to 2,080 on September
 10. The counts alone do not establish a weekday effect because they cover
@@ -271,6 +303,7 @@ Parking Sign Violation requests than Blocked Hydrant requests, whereas
 Brooklyn has the opposite ordering. Geographic composition can therefore
 affect the citywide comparison. A borough label still represents a broad
 area and cannot identify the practices of an individual precinct.
+
 
 Area context raises a different exploratory question and changes the unit
 at which a comparison is valid. The area-context workflow in
@@ -288,10 +321,12 @@ groups areas by estimated income. Its target is variation among area
 summaries, not the relationship between a reporter's income and that
 reporter's closure time.
 
+
 ```{python}
 with_context = attach_zcta_context(parking)
 with_context["_merge"].value_counts()
 ```
+
 
 ```{python}
 areas = with_context.loc[with_context["_merge"].eq("both")].groupby(
@@ -318,6 +353,7 @@ area_summary = eligible_areas.groupby(
 area_summary.round(2)
 ```
 
+
 The join matches 13,033 of 13,040 requests. Among areas with at least 20
 requests and a reported median household income, 149 ZCTAs enter the grouped
 comparison. Their median closure times differ across income quartiles, but
@@ -330,6 +366,7 @@ sampling uncertainty; the request-to-ZCTA match also has geographic limits
 association, not a conclusion about residents' incomes or an income effect
 on individual requests.
 
+
 Subgroup composition can also change the direction of an overall
 comparison. Simpson's paradox describes cases where an association in
 aggregated data weakens or reverses after data are divided into subgroups
@@ -339,6 +376,7 @@ illustrates the arithmetic with treatment success rates. Treatment A has a
 higher success rate than treatment B in both risk groups, but A is used much
 more often for high-risk cases. The pooled rates therefore favor B. The
 values are constructed for instruction and do not describe a medical study.
+
 
 ```{python}
 simpson = pd.DataFrame({
@@ -365,10 +403,12 @@ result.loc["Pooled", ["A case share", "B case share"]] = 1
 result.round(3)
 ```
 
+
 The table makes the changing weights visible: treatment A has a larger share
 of its cases in the higher-risk group, where success is less common for both
 treatments. The pooled row summarizes success rates, while the case-share
 columns show each treatment's composition.
+
 
 This reversal does not show which treatment is more effective. Risk group
 may be related to treatment assignment, and other differences may remain
@@ -379,7 +419,9 @@ displays that make subgroup comparisons easier to inspect
 [@armstrong2014visualizing]. It applies this approach with `facet_grid()`
 (see @sec-visualization).
 
+
 ## Uncertainty Assessment
+
 
 A hypothesis test can be part of EDA when its assumptions and limited
 purpose are explicit. Consider the median closure-time difference between
@@ -393,6 +435,7 @@ statistic is the absolute difference between medians. A bootstrap interval
 separately resamples requests within each group to show variability under
 an independent-request model.
 
+
 The appropriate test depends on the outcome scale, comparison structure,
 and sampling or assignment process. The table links common questions to
 Python functions and states the null or design condition each function
@@ -400,6 +443,7 @@ addresses [@scipy2026statistical; @statsmodels2026proportion;
 @statsmodels2026contingency]. This guide is not
 an automatic decision rule: inspect the data and define the target contrast
 before choosing a test [@nistndexploratory].
+
 
 | Question and design | Test and Python function | Null or key condition |
 |---|---|---|
@@ -415,6 +459,7 @@ before choosing a test [@nistndexploratory].
 | Do independent groups differ in rank distributions? | Mann--Whitney, `scipy.stats.mannwhitneyu`; Kruskal--Wallis, `scipy.stats.kruskal` | Tests equal distributions or rank locations under their assumptions; neither automatically tests equal medians. |
 | Is a chosen statistic unusual under exchangeable labels? | Permutation test, `scipy.stats.permutation_test` | Labels can be reassigned under the null; the statistic must match the question. |
 
+
 The first code example uses the contingency table from the three most
 frequent details to ask whether the observed detail mix varies by borough.
 The chi-square test evaluates independence, while Cramér's $V$ summarizes
@@ -422,6 +467,7 @@ the strength of the association. The expected cell counts help assess
 whether the chi-square approximation is adequate. Because the details were
 selected by frequency in this same week, this is an exploratory calculation,
 not a confirmatory test of a prespecified hypothesis.
+
 
 ```{python}
 from scipy.stats import chi2_contingency
@@ -444,12 +490,14 @@ pd.Series({
 }).to_frame("value")
 ```
 
+
 The next example uses Welch's test to compare arithmetic mean closure hours
 for hydrant and sidewalk requests. It answers a different question from the
 median comparison below, and the long right tail can make the mean sensitive
 to a small number of long intervals. The request-level calculation also
 assumes independent observations, although requests may share locations,
 times, or administrative conditions.
+
 
 ```{python}
 from scipy.stats import ttest_ind
@@ -471,6 +519,7 @@ pd.Series({
 }).to_frame("value")
 ```
 
+
 Requests from one week may share time, location, or agency conditions,
 which weakens a simple independence model. A statistical test does not
 correct those design limitations, and selecting a test after searching
@@ -481,6 +530,7 @@ a bootstrap interval estimates uncertainty under a resampling scheme; it
 is not itself a hypothesis test. When many outcomes, subgroups, or
 alternatives are examined, report that search and do not treat a threshold
 such as 0.05 as a mechanical decision rule [@wasserstein2016asa].
+
 
 ```{python}
 hydrant = top.loc[
@@ -514,6 +564,7 @@ pd.Series({
 }).to_frame("value").round(4)
 ```
 
+
 The observed median gap is about 0.865 hours, and the bootstrap interval is
 approximately 0.712 to 1.016 hours. The estimated permutation $p$-value is
 about 0.0005, with the added one in the numerator and denominator preventing
@@ -526,6 +577,7 @@ week. The bootstrap interval does not include uncertainty from coverage,
 measurement, or group selection. A $p$-value should not be read as the
 probability that the null hypothesis is true or as a measure of practical
 importance [@wasserstein2016asa].
+
 
 Sensitivity analysis quantifies how much a descriptive result changes
 under defensible alternatives to the primary calculation. Yu and Barter
@@ -541,6 +593,7 @@ The table reports group sizes alongside gaps because a large contrast
 based on few requests deserves a different interpretation from a similar
 contrast based on many. Neither sensitivity check removes confounding or
 extends the conclusion beyond the observed week.
+
 
 ```{python}
 def median_gap(frame):
@@ -572,6 +625,7 @@ sensitivity[["hydrant_requests", "sidewalk_requests"]] = sensitivity[[
 sensitivity.round(3)
 ```
 
+
 The all-request median gap is about 0.865 hours and changes little, to about
 0.848 hours, after intervals above 24 hours are excluded. The geographic
 comparisons are less uniform: the gap is about 1.07 hours in Brooklyn and
@@ -581,6 +635,7 @@ only 54 hydrant and 34 sidewalk requests. Group sizes and possible
 differences in case mix or processing limit the interpretation of these
 contrasts. The pooled result therefore does not describe every borough
 equally well.
+
 
 Exploration has answered the initial descriptive question for the recorded
 week: closure-time distributions differ among the three most reported
@@ -594,7 +649,6 @@ meaning of the recorded outcome. The ZCTA analysis similarly motivates
 area-level questions but does not turn area income into a request-level
 explanation. EDA makes observed patterns and the limits of their
 interpretation explicit enough to guide that next question.
-
 ## Exercises {.unnumbered}
 
 These exercises use the distributed request archive and, where indicated,

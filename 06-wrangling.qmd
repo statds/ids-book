@@ -1,5 +1,6 @@
 # Data Preparation {#sec-wrangling}
 
+
 Data preparation constructs an analysis table from acquired records while
 preserving the evidence needed to evaluate each transformation. The input in
 this chapter is the distributed NYPD-directed 311 archive and the scope
@@ -15,7 +16,9 @@ representation from new analytical assumptions, checks that request identity
 and scope survive each stage, and records what remains uncertain before the
 prepared table is used for exploration or visualization.
 
+
 ## Start with Source Data
+
 
 Data preparation starts from a question and a retained source, not from an
 assumption that the downloaded table is already analysis-ready. The previous
@@ -29,8 +32,10 @@ geographic enrichment only when units and geographies align. The steps are
 iterative because a transformation can expose a problem or show that a
 question requires different data.
 
+
 A preparation plan separates three classes of decisions because they have
 different implications for the resulting claim:
+
 
 - **Scope decisions** select eligible observations and fields.
 - **Representation decisions** encode a recorded value for reliable
@@ -39,8 +44,10 @@ different implications for the resulting claim:
 - **Analytical decisions** define new measurements or resolve uncertain
   values, as when a particular hour range is designated nighttime.
 
+
 Every class should leave an auditable record. Analytical choices especially
 require a rationale because they can change the outcome or comparison.
+
 
 The original ZIP archive remains unchanged. @sec-problem-formulation
 demonstrated its acquisition and initial profile; the code below repeats
@@ -48,6 +55,7 @@ only the import, timestamp parsing, and row filters needed for this chapter
 to run independently. Temporary Feather examples in that chapter do not
 provide an input here. Each subsequent stage creates a derived data frame
 and verifies the assumptions that its operation introduces.
+
 
 ```{python}
 from pathlib import Path
@@ -76,6 +84,7 @@ parking = requests.loc[
 ].copy()
 ```
 
+
 The import block reconstructs the intended analysis scope without
 overwriting the downloaded archive. The half-open timestamp interval includes
 requests created on every day of the selected week and excludes those
@@ -92,6 +101,7 @@ variable or merge can be trusted. The subset also remains limited to
 NYPD-directed requests from one week, regardless of how consistently its
 columns are represented.
 
+
 The checks in @sec-initial-checks profile the delivered extract before
 filtering, including its agency values, date boundaries, and missingness.
 Here, the scope report instead tests whether the reconstructed subset meets
@@ -103,6 +113,7 @@ derived columns are constructed. A failed check should prompt inspection of
 the source and preparation code, not automatic deletion until the report
 passes. This chapter remains independently executable while the substantive
 source diagnosis stays in the formulation chapter.
+
 
 ```{python}
 scope_checks = pd.Series({
@@ -119,6 +130,7 @@ scope_checks = pd.Series({
 scope_checks.to_frame()
 ```
 
+
 The invariant report confirms that the selected requests and their
 identifiers remain intact before transformations. Coordinate completeness is
 not a condition for the ZIP-label merge below, because that operation uses
@@ -132,11 +144,14 @@ to a precinct requires a location and a specified distance metric. These
 examples illustrate why eligibility should be defined for each analytical
 quantity instead of imposed once as a generic complete-case filter.
 
+
 ## Standardize Data
+
 
 Standardization changes how values are represented so that they are easier
 to work with. It should not quietly change what the values mean. Common
 decisions include:
+
 
 - **Dates:** parse date strings as datetimes so that time comparisons and
   durations can be calculated.
@@ -149,10 +164,12 @@ decisions include:
   to the provider's original labels. Check for collisions because distinct
   source names can normalize to the same name.
 
+
 These choices distinguish a representation change from a data correction.
 For example, renaming `Created Date` to `created_at` makes code easier to
 read; changing an unexpected date to a plausible one would alter the source
 information and needs separate evidence.
+
 
 Category standardization requires evidence about the meanings of values,
 not only a preference for uniform text. The frequency table in
@@ -166,6 +183,7 @@ different names. By contrast, the code below changes column *names* to
 make operations easier while leaving category *values* unchanged. Keeping
 those two decisions separate preserves the provider's distinctions and
 allows later readers to evaluate a proposed recode against the source.
+
 
 ```{python}
 detail_column = "Problem Detail (formerly Descriptor)"
@@ -181,10 +199,12 @@ observed_details = (
 observed_details
 ```
 
+
 The following mapping converts all 44 labels to lowercase snake case and
 gives shorter analytical names to the fields used repeatedly below. The
 imported `parking` table retains the provider's original labels;
 `analysis` is the derived table with renamed columns.
+
 
 ```{python}
 import re
@@ -220,11 +240,13 @@ analysis = parking.rename(columns=name_map).copy()
 name_mapping
 ```
 
+
 ```{python}
 analysis[[
     "request_id", "created_at", "problem_detail", "incident_zip", "status"
 ]].head()
 ```
+
 
 The short display confirms that the derived table exposes analytical names
 while retaining the provider's values. The mapping table above records the
@@ -239,15 +261,19 @@ syntax. Thus, standardization improves the reliability of operations on
 the table without claiming that all similarly named values are measured in
 the same way.
 
+
 ## Derive Variables
+
 
 Derived variables translate recorded fields into measurements needed for a
 question. Let $C_i$ and $L_i$ be the recorded creation and closure times for
 request $i$. We calculate the elapsed interval in hours as follows:
 
+
 $$
 T_i = (L_i - C_i)/3600.
 $$
+
 
 The timestamp difference is in seconds, so division by 3,600 converts it to
 hours. The calculation is defined when both timestamps parse successfully
@@ -257,6 +283,7 @@ timestamps so that a surprising value can be inspected and the derived value
 recalculated if needed. The name `closure_hours` describes the measurement
 more accurately than a name that implies a field response. The check below
 looks for issues before this value is used as an outcome.
+
 
 ```{python}
 analysis["closure_hours"] = (
@@ -272,7 +299,9 @@ duration_check = pd.Series({
 duration_check.to_frame()
 ```
 
+
 The duration check distinguishes three cases that need different responses:
+
 
 - A **missing interval** may result from a missing or unparseable timestamp.
   Do not fill it with an assumed closure time.
@@ -281,13 +310,16 @@ The duration check distinguishes three cases that need different responses:
 - A **large positive interval** may be unusual but valid because an agency
   can close a request long after it is created.
 
+
 The median summarizes the center; the maximum helps flag the upper tail for
 inspection. Chapter @sec-eda examines the full distribution rather than
 removing long intervals with an arbitrary preparation cutoff.
 
+
 The category “night” has no universal boundary. For this example, requests
 created from 8 p.m. through 5:59 a.m. are labeled nighttime; those from 6
 a.m. through 7:59 p.m. are labeled daytime. The choice has consequences:
+
 
 - A missing creation hour remains unclassified rather than being assigned to
   daytime.
@@ -296,10 +328,12 @@ a.m. through 7:59 p.m. are labeled daytime. The choice has consequences:
 - The groups do not account for differences across individual dates, such
   as the holiday in this week.
 
+
 The original timestamp remains available for hourly analysis or a comparison
 using different boundaries. If the question concerns staffing or reporting
 conditions, use domain information to justify the boundary rather than
 choosing it only because the groups are convenient.
+
 
 ```{python}
 hour = analysis["created_at"].dt.hour
@@ -312,7 +346,9 @@ analysis.loc[hour.ge(20) | hour.lt(6), "time_period"] = "night"
 analysis["time_period"].value_counts(dropna=False)
 ```
 
+
 ## Merge Area Context {#sec-zcta-context-merge}
+
 
 An area-level merge attaches contextual measurements to requests, but only
 after we define how the geographic labels match. Here, each request has one
@@ -322,7 +358,9 @@ statistical area derived from address patterns. Equal five-digit strings
 allow a lookup, but do not mean the geographies have identical boundaries,
 and some postal ZIP Codes have no matching ZCTA [@census2023zip].
 
+
 Before interpreting a merge, check these conditions:
+
 
 - **Key:** the context table has one row per ZCTA, so a duplicate lookup key
   cannot multiply request rows.
@@ -331,7 +369,9 @@ Before interpreting a merge, check these conditions:
   precede the request week.
 - **Unit:** an area estimate describes a place, not an individual requester.
 
+
 These checks make clear what the software joined and what the result means.
+
 
 The supplied `data/zcta_context.csv` contains the 221 ZCTAs in NYC Open
 Data's city list and their 2024 American Community Survey (ACS) five-year
@@ -349,12 +389,15 @@ the merge. It then retains unmatched requests and reports them separately.
 The result is a documented link between labels, not an assertion that a
 postal area and its similarly named ZCTA have identical boundaries.
 
+
 The lookup derives two measures from Census estimates:
+
 
 - **Population density** divides the population estimate by ZCTA land area.
 - **Household vehicle availability** is the share of households with at
   least one vehicle, calculated from the total and no-vehicle household
   estimates in table B08201.
+
 
 Neither measure describes parking directly. Population density does not
 measure curb length or parking supply. Household vehicle availability does
@@ -364,11 +407,13 @@ sampling uncertainty is not calculated from the published margins of error.
 Both measures describe areas, not individual requesters, so the merge cannot
 support an individual-level or causal interpretation.
 
+
 The NYC ZCTA selection comes from the `zcta5` column of the city's published
 dataset, as the following acquisition code shows. The chapter uses the saved
 CSV during rendering so that a live web request cannot change its results.
 The complete extraction, including the Gazetteer file and three ACS tables, is in
 `scripts/build_zcta_context.py`.
+
 
 ```{python}
 #| eval: false
@@ -388,6 +433,7 @@ city_zctas = pd.read_csv(
 )["zcta5"].drop_duplicates()
 len(city_zctas)
 ```
+
 
 ```{python}
 zcta_context = pd.read_csv(
@@ -453,23 +499,28 @@ join_report = pd.Series({
 join_report.to_frame()
 ```
 
+
 The `validate` argument checks the assumed many-to-one join. If a lookup key
 is duplicated, the merge could multiply request rows and inflate counts. The
 left join keeps unmatched requests, and its indicator identifies which rows
 matched. For an unmatched request, inspect whether its ZIP is:
+
 
 - missing or not a five-digit label;
 - a postal ZIP Code with no listed ZCTA;
 - formatted differently from the lookup key; or
 - evidence of a mismatch or error in the lookup.
 
+
 Do not silently drop unmatched requests or add leading zeros without
 evidence. In this extract, 13,033 of 13,040 requests match a listed ZCTA;
 the seven unmatched requests remain available for analyses that do not
 require area context.
 
+
 The merge makes some place-level summaries possible, but the unit of each
 question must still be clear:
+
 
 - A **request-rate comparison** can divide reports by estimated residents,
   but it remains a rate of reports, not verified parking conditions. The
@@ -480,10 +531,13 @@ question must still be clear:
   area estimates across requests. The merge supplies neither individual
   measurements nor a design that identifies an effect.
 
+
 The join expands the descriptive questions available while leaving reporting
 coverage, geographic mismatch, and reference-period differences as limits.
 
+
 ## Validate Data
+
 
 Validation compares the prepared table with the input and with the stated
 analytical contract. The following checks require the request count and
@@ -498,6 +552,7 @@ prepared table is saved for later use, its schema, source-to-analysis name
 mapping, join report, and relevant invariants should be stored with it and
 checked again after reading it back. A successful write operation alone
 does not establish semantic or numerical validity.
+
 
 ```{python}
 prepared = contextual_analysis.reset_index(drop=True)
@@ -514,7 +569,9 @@ final_checks = pd.Series({
 final_checks.to_frame()
 ```
 
+
 ## Document Decisions
+
 
 The prepared table is a documented argument about which records and values
 can support the working question. Filters define scope, derived fields
@@ -531,7 +588,6 @@ renaming sequence in each chapter. It also identifies a reproducibility
 obligation: if the screening rule or closure-time definition changes, the
 shared function and the explanations in this chapter must be reviewed
 together.
-
 ## Exercises {.unnumbered}
 
 These exercises extend the import and checking work in the previous chapter.
