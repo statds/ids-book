@@ -1,8 +1,633 @@
 # Modeling {#sec-modeling}
 
-This chapter will introduce predictive modeling as a workflow built around a
-well-defined target and an appropriate evaluation design. Planned topics
-include baselines, training and test data, model assessment, interpretation,
-and limits on claims from predictive performance. Model development will
-revisit all four checks in @sec-formulation-checks, especially whether the
-target, available predictors, and evaluation design support the intended use.
+Predictive modeling uses information available at a defined moment to estimate
+an outcome that is not yet known. The preceding chapters developed a question,
+prepared request-level data, examined the closure-time distribution, and
+visualized variation across time and place. This chapter carries that work
+forward with a domain question: can information available when an illegal-
+parking request is created help identify requests that will remain open for
+at least one hour? It examines whether request detail and borough, together
+with neighborhood population and income from the Census-linked table,
+improve predictions. The analysis uses the same one-week records and the
+same request-level observational unit as the earlier chapters. It does not
+claim that an area characteristic causes a request to take longer, or that
+one week represents future requests under changed conditions.
+
+The one-hour outcome connects the modeling question to the operational
+concern that illegal-parking reports may call for timely handling. It is an
+analytical cutoff, not a documented agency response standard. In the
+available week, 34.6% of requests with usable closure times were closed in
+under an hour, while 65.4% remained open for at least an hour. Recorded
+closure time is only a proxy for handling time: it may include dispatch,
+travel, queueing, reporting, and administrative steps. The analysis can
+predict this recorded outcome from observed fields, but it cannot isolate
+those processes.
+
+## Frame the Prediction
+
+A prediction is useful only when its target, prediction time, available
+features, and intended decision are clear. @exr-eda-time examined a two-hour
+cutoff as an exploratory summary. Here, the analysis uses a one-hour cutoff
+to ask a more time-sensitive question. Reconsidering a threshold for a new
+analytical purpose is reasonable when the change is stated and its effects
+are visible; the new threshold should not be described as a policy rule.
+
+The observational unit is one illegal-parking request in the distributed
+week of data. The target equals one when its recorded closure time is at
+least one hour and zero otherwise. Requests with missing closure time cannot
+be labeled and are excluded from this supervised analysis. The candidate
+features in the main model are problem detail and borough, recorded when
+the request is created, plus population and median household income from
+the Census-linked area table. The incident ZIP label serves as the link to
+area context, as described in @sec-zcta-context-merge; a later benchmark
+also treats it as a categorical identifier. The lookup supplies
+2020–2024 American Community Survey (ACS) estimates for ZIP Code Tabulation
+Areas (ZCTAs). A ZCTA and a postal ZIP Code are related but distinct
+geographies, so the link is an approximation rather than an exact
+address-level match [@census2023zip; @census2026american]. The ZIP digits
+themselves are not used as a quantitative predictor. Closure time and any
+field that records later processing are excluded because they would not be
+available at prediction time.
+
+The prediction question is: among requests from the same observed week and
+with similar recorded fields and area context, how well can a model
+distinguish requests that remain open for at least an hour? This question
+describes prediction within the data's observed setting. It does not ask
+whether borough, problem detail, population, or income causes a longer
+closure, and it does not establish how a model would perform in another
+week. The four formulation checks in
+@sec-formulation-checks remain relevant: a sound model cannot repair an
+unclear target, an invalid measurement, an inadequate scope, or weak evidence.
+
+## Establish a Baseline
+
+A baseline sets a reference that a more complex model must improve. Because
+about two-thirds of eligible requests meet the one-hour target, predicting
+the majority class for every request already gives roughly 65% accuracy.
+That result does not distinguish requests: it labels every case as taking
+at least an hour. Accuracy alone would therefore make a useless classifier
+look respectable.
+
+The analysis starts from the shared preparation function rather than
+repeating the import and filtering workflow from @sec-wrangling. It links
+the requests to the Census context already documented in
+@sec-zcta-context-merge, reports unmatched and incomplete records, and
+defines the binary outcome. It does not alter the source request data or
+rebuild the Census lookup. The train-test split reserves one quarter of
+complete requests for a final evaluation. Stratification keeps the target
+proportion similar in the two sets; it does not make the records independent
+or simulate a future week.
+
+```{python}
+from scripts.parking_requests import attach_zcta_context, load_parking_requests
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+parking = load_parking_requests()
+with_context = attach_zcta_context(parking)
+matched = with_context["_merge"].eq("both")
+has_income = with_context["median_household_income"].notna()
+eligible = matched & has_income
+required = [
+    "closure_hours", "problem_detail", "borough",
+    "incident_zip", "population", "median_household_income",
+]
+model_data = with_context.loc[eligible, required + ["zcta"]].copy()
+assert model_data[required].notna().all().all()
+model_data["long_closure"] = model_data["closure_hours"].ge(1).astype("int8")
+categorical_features = ["problem_detail", "borough"]
+numeric_features = ["population", "median_household_income"]
+feature_columns = categorical_features + numeric_features + ["incident_zip"]
+X = model_data[feature_columns].copy()
+X[categorical_features] = X[categorical_features].astype("string")
+X["incident_zip"] = X["incident_zip"].astype("string")
+y = model_data["long_closure"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=2026, stratify=y
+)
+
+pd.Series({
+    "requests in one-week extract": len(parking),
+    "unmatched ZIP labels": int((~matched).sum()),
+    "matched requests without income estimate": int((matched & ~has_income).sum()),
+    "eligible requests": len(model_data),
+    "matched ZCTAs represented": model_data["zcta"].nunique(),
+    "at least one hour": int(y.sum()),
+    "under one hour": int(y.eq(0).sum()),
+    "training requests": len(X_train),
+    "test requests": len(X_test),
+    "training target proportion": y_train.mean(),
+    "test target proportion": y_test.mean(),
+})
+```
+
+The checks make the analysis population and target visible before any model
+is fitted. The lookup matches 13,033 of 13,040 requests; 58 matched requests
+lack a numeric income estimate. The complete-case analysis therefore uses
+12,975 requests from 176 ZCTAs. The split contains 9,731 training requests
+and 3,244 test requests, with nearly identical target proportions. Fixing
+the random seed makes this example reproducible, while stratification
+controls only the class proportions. Requests from the same ZCTA can appear
+in both sets, so the test set evaluates new requests in areas represented
+during training rather than transfer to unfamiliar areas.
+
+## Use a GLM
+
+A generalized linear model (GLM) relates a response distribution to a
+predictor through a link function. For a binary outcome, the response is
+modeled with a Bernoulli distribution and a logit link; this special case
+is logistic regression. GLMs also include familiar linear regression with
+a Gaussian response and identity link, as well as count models with a
+Poisson response and log link. The response distribution and link should
+follow the outcome's scale and support, rather than being selected only
+because a software function is familiar [@nelder1972generalized;
+@mccullagh1989generalized].
+
+For request \(i\), let \(Y_i=1\) indicate that closure takes at least one
+hour, and let \(p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)\). Logistic regression
+models the log odds as a linear combination of predictors:
+
+\[
+\log\!\left(\frac{p_i}{1-p_i}\right)
+  = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik}.
+\]
+
+The inverse-logit transformation maps any real-valued linear predictor to
+a probability between zero and one. A coefficient describes a change in
+log odds, holding the other included predictors fixed. Exponentiating a
+coefficient gives an odds ratio, but an odds ratio is not a probability
+difference and does not by itself describe a causal effect.
+
+The first GLM includes problem detail, borough, population, and median
+household income. The two area measures are standardized across training
+requests, so their odds ratios describe a one-standard-deviation difference
+in the request-weighted feature values.
+The formula interface compares each categorical level with a reference
+category and holds the other predictors fixed. These coefficients describe
+conditional associations in the fitted model, not changes caused by the
+area characteristics [@statsmodels2026generalized].
+
+```{python}
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+glm_data = X_train.copy()
+glm_data["long_closure"] = y_train
+glm_formula = (
+    "long_closure ~ C(problem_detail) + C(borough) + "
+    "standardize(population) + standardize(median_household_income)"
+)
+glm_fit = smf.glm(
+    glm_formula,
+    data=glm_data,
+    family=sm.families.Binomial(),
+).fit()
+
+population_log_odds = glm_fit.params["standardize(population)"]
+income_log_odds = glm_fit.params["standardize(median_household_income)"]
+pd.Series({
+    "Population odds ratio per standard deviation": np.exp(population_log_odds),
+    "Income odds ratio per standard deviation": np.exp(income_log_odds),
+})
+```
+
+In this training split, the adjusted odds ratio is about 1.19 for population
+and 0.84 for median household income, each per standard deviation. The model
+therefore estimates higher odds of a one-hour closure in more populous
+ZCTAs and lower odds in ZCTAs with higher median income, holding the other
+included variables fixed. The context values repeat across requests in the
+same ZCTA, so the area-level association is supported by 176 distinct
+ZCTAs, not 9,731 independent training areas. These are not descriptions of
+individual residents or causal effects. The estimates also depend on the
+model's assumption that each standardized measure has a linear relationship
+with log odds.
+
+## Check the Model
+
+Model checks ask whether the chosen specification represents the observed
+relationships adequately. They differ from test-set evaluation: a model can
+fit the training records poorly, or fit them closely while predicting new
+records poorly. Logistic regression does not assume normally distributed
+errors or constant error variance as ordinary least squares does. Its
+assumptions instead concern the conditional Bernoulli response and the
+specified relationship between predictors and log odds. Residual and
+influence diagnostics can reveal unusual records or lack of fit, but no
+single diagnostic proves that a model is correct [@hosmer2013applied;
+@pregibon1981logistic].
+
+The current model assumes a linear relationship between each standardized
+area measure and log odds. It also imposes an additive structure: the detail
+contrast is the same across boroughs unless an interaction is included.
+Sparse categories can make estimates unstable. Checks should compare
+observed outcome rates with fitted probabilities across boroughs and across
+ordered groups of each continuous measure, while retaining each group's
+count. Because the Census values repeat within ZCTAs, the 176 distinct areas
+also limit how much independent evidence supports an area-level pattern.
+Calibration matters because a probability estimate of 0.7 should correspond
+to an outcome rate near 0.7 among comparable predictions
+[@vancalster2019calibration].
+
+The training-set summary below compares observed target rates with average
+fitted probabilities by borough. A large discrepancy can flag a lack of fit
+for a group, while close averages do not rule out errors for individual
+requests or interactions hidden within a borough. This is an in-sample check
+for the simple GLM, not an estimate of future prediction accuracy.
+
+```{python}
+from IPython.display import display
+
+glm_diagnostics = glm_data[["borough"]].copy()
+glm_diagnostics["observed"] = y_train
+glm_diagnostics["fitted"] = glm_fit.fittedvalues
+display(glm_diagnostics.groupby("borough").agg(
+    requests=("observed", "size"),
+    observed_rate=("observed", "mean"),
+    mean_fitted_probability=("fitted", "mean"),
+))
+
+for variable in numeric_features:
+    check = glm_data[[variable]].copy()
+    check["observed"] = y_train
+    check["fitted"] = glm_fit.fittedvalues
+    check["quintile"] = pd.qcut(check[variable], 5, duplicates="drop")
+    display(check.groupby("quintile", observed=True).agg(
+        requests=("observed", "size"),
+        observed_rate=("observed", "mean"),
+        mean_fitted_probability=("fitted", "mean"),
+    ))
+```
+
+The evaluation section checks calibration for a fitted model. A calibration
+plot groups predictions into bins and compares each bin's mean predicted
+probability with its observed fraction. The diagonal marks perfect
+calibration; binning is a summary, so it can conceal variation within a bin.
+
+## Evaluate Predictions
+
+Evaluation asks how well the fitted model predicts requests it did not use
+for estimation or tuning. A training score is optimistic because the model
+has already adapted to those records. The reserved test set is used only
+after model choice; repeatedly adjusting a model after inspecting its test
+performance turns that set into another training resource and weakens the
+evaluation. Here, even a clean random holdout supports only a limited claim:
+it estimates performance for additional requests drawn under a similar
+one-week data-generating process.
+
+Different metrics answer different questions. Accuracy counts correct
+classifications at a chosen probability threshold. The area under the
+receiver operating characteristic curve (ROC AUC) evaluates ranking across
+all possible thresholds: 0.5 indicates no ability to rank positive cases
+better than chance, and 1 indicates perfect ranking. ROC AUC does not
+select a threshold or show whether predicted probabilities are accurate.
+Log loss evaluates the probabilities themselves and penalizes confident
+errors [@scikitlearn2026metrics].
+
+Threshold-based measures describe different parts of the confusion matrix.
+A true positive (TP) is a request that takes at least an hour and is flagged
+as such; a false negative (FN) takes at least an hour but is not flagged. A
+false positive (FP) closes sooner than an hour but is flagged, while a true
+negative (TN) closes sooner and is not flagged. Different fields often use
+different names for the same ratio. The following table gives common names
+and makes each denominator explicit [@wikipediandevaluation;
+@scikitlearn2026metrics].
+
+| Quantity | Common names | Definition |
+|:--|:--|:--|
+| True positive rate | TPR, sensitivity, recall, hit rate, probability of detection | $TP/(TP+FN)$: fraction of actual positives flagged |
+| False negative rate | FNR, miss rate | $FN/(TP+FN)$: fraction of actual positives missed |
+| True negative rate | TNR, specificity, selectivity | $TN/(TN+FP)$: fraction of actual negatives not flagged |
+| False positive rate | FPR, fall-out, false alarm rate | $FP/(TN+FP)$: fraction of actual negatives flagged |
+| Positive predictive value | PPV, precision | $TP/(TP+FP)$: fraction of flagged requests that are positive |
+| False discovery rate | FDR | $FP/(TP+FP)$: fraction of flagged requests that are negative |
+| Negative predictive value | NPV | $TN/(TN+FN)$: fraction of unflagged requests that are negative |
+| False omission rate | FOR | $FN/(TN+FN)$: fraction of unflagged requests that are positive |
+| Accuracy | Overall accuracy, correct classification rate | $(TP+TN)/(TP+TN+FP+FN)$ |
+| F1 score | F1 measure, F-score with $\beta=1$ | $2\,\mathrm{Precision}\,\mathrm{Recall}/(\mathrm{Precision}+\mathrm{Recall})$ |
+
+Sensitivity and specificity are common in diagnostic testing, while
+precision and recall are common in information retrieval and machine
+learning. The names reflect different traditions, but the calculations
+match when the same class is designated positive. Recall conditions on the
+actual positives; precision conditions on the predicted positives. F1 is
+the equal-weight harmonic mean of precision and recall, so it does not
+account for true negatives. TPR and FNR sum to one because they share the
+actual-positive denominator; TNR and FPR, PPV and FDR, and NPV and FOR also
+form complementary pairs. These names and denominators are summarized in
+the Wikipedia overview of binary-classifier evaluation, while the
+scikit-learn guide documents the corresponding software metrics
+[@wikipediandevaluation; @scikitlearn2026metrics]. Other F-scores change the
+relative weight of precision and recall.
+
+These measures depend on the classification threshold and the relative
+costs of missed long closures and unnecessary alerts. The data do not
+specify those costs, so a threshold of 0.5 is used below only as an
+illustration. If a decision threshold were selected for use, that choice
+would be made with training or validation data and then evaluated once on
+the held-out test set.
+
+The baseline assigns every request the training-set target prevalence as
+its probability and predicts the majority class. The Census-context model
+one-hot encodes problem detail and borough, standardizes population and
+income, then fits logistic regression.
+The test metrics compare the probability model with that baseline and
+report classification at a 0.5 threshold. Because the positive class is
+more common, accuracy should be read alongside ROC AUC, log loss, and the
+confusion matrix rather than on its own.
+
+```{python}
+from sklearn.dummy import DummyClassifier
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    log_loss,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+candidate_features = categorical_features + numeric_features
+preprocessor = ColumnTransformer([
+    ("categorical", OneHotEncoder(handle_unknown="ignore"), categorical_features),
+    ("numeric", StandardScaler(), numeric_features),
+])
+baseline = DummyClassifier(strategy="prior").fit(
+    X_train[candidate_features], y_train
+)
+baseline_probability = baseline.predict_proba(X_test[candidate_features])[:, 1]
+
+model = make_pipeline(
+    preprocessor,
+    LogisticRegression(max_iter=3000),
+)
+model.fit(X_train[candidate_features], y_train)
+test_probability = model.predict_proba(X_test[candidate_features])[:, 1]
+
+def score_predictions(probability):
+    predicted_class = probability >= 0.5
+    return {
+        "accuracy": accuracy_score(y_test, predicted_class),
+        "ROC AUC": roc_auc_score(y_test, probability),
+        "log loss": log_loss(y_test, probability),
+        "TPR / recall": recall_score(y_test, predicted_class),
+        "specificity": recall_score(y_test, predicted_class, pos_label=0),
+        "precision": precision_score(y_test, predicted_class),
+        "F1": f1_score(y_test, predicted_class),
+    }
+
+from IPython.display import display
+
+scores = pd.DataFrame({
+    "Prevalence baseline": score_predictions(baseline_probability),
+    "Census-context logistic model": score_predictions(test_probability),
+}).T
+display(scores)
+
+confusion_table = pd.DataFrame(
+    confusion_matrix(y_test, test_probability >= 0.5),
+    index=["Actual under one hour", "Actual at least one hour"],
+    columns=["Predicted under one hour", "Predicted at least one hour"],
+)
+confusion_table
+```
+
+At the 0.5 threshold, the Census-context model has TPR 0.952, specificity
+0.127, precision 0.674, and F1 0.789 on this test set. The prevalence
+baseline flags every request as positive, so it has TPR 1, specificity 0,
+precision 0.655, and F1 0.791. The context model identifies more negatives
+while missing slightly more positives; its F1 is close to the baseline.
+This comparison shows why no single score identifies a best model for every
+use.
+
+The calibration plot compares predicted probabilities with the observed
+fraction for the preliminary model. A probability estimate of 0.7 should
+correspond to an outcome rate near 0.7 among comparable predictions
+[@vancalster2019calibration]. The points group held-out requests into
+quantile bins, so the display can hide variation within each group.
+
+```{python}
+#| label: fig-model-calibration
+#| fig-cap: "Calibration of held-out probabilities for requests taking at least one hour to close."
+import matplotlib.pyplot as plt
+from sklearn.calibration import calibration_curve
+
+observed_rate, mean_probability = calibration_curve(
+    y_test, test_probability, n_bins=10, strategy="quantile"
+)
+fig, ax = plt.subplots(figsize=(6, 5))
+ax.plot([0, 1], [0, 1], color="0.5", linestyle="--", label="Perfect calibration")
+ax.plot(mean_probability, observed_rate, marker="o", label="Census-context model")
+ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="Mean predicted probability",
+       ylabel="Observed fraction meeting one-hour target")
+ax.legend()
+fig.tight_layout()
+```
+
+The ROC curve traces the true positive rate against the false positive rate
+as the probability threshold changes. In the table above, TPR is also called
+recall or sensitivity; FPR is one minus specificity. Each point represents
+a different threshold, so the curve displays the trade-off between finding
+more one-hour closures and incorrectly flagging requests that close sooner.
+The area under this curve is the ROC AUC reported in the score table.
+
+```{python}
+#| label: fig-model-roc
+#| fig-cap: "ROC curve for the preliminary Census-context model on held-out requests."
+from sklearn.metrics import roc_curve
+
+false_positive_rate, true_positive_rate, _ = roc_curve(y_test, test_probability)
+roc_auc = roc_auc_score(y_test, test_probability)
+fig, ax = plt.subplots(figsize=(6, 5))
+ax.plot(
+    false_positive_rate,
+    true_positive_rate,
+    label=f"Census context (AUC = {roc_auc:.3f})",
+)
+ax.plot([0, 1], [0, 1], color="0.5", linestyle="--", label="Chance ranking")
+ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="False positive rate (1 - specificity)",
+       ylabel="True positive rate (sensitivity / recall)")
+ax.legend()
+fig.tight_layout()
+```
+
+This first comparison gives the model a common reference and an initial
+held-out score. Its results are not the final model-selection result
+because the regularization strength still needs to be chosen using training
+data alone. A 0.5 classification threshold is convenient for illustration,
+not a universal decision rule. A real alerting system would set a threshold
+by considering the consequences of each kind of error with the people who
+would use the predictions.
+
+## Regularize Logistic Regression
+
+Regularization adds a penalty to the fitting objective to limit coefficient
+size and reduce sensitivity to features that fit quirks in the training
+records. Ridge-style \(L_2\) regularization shrinks coefficients toward
+zero; lasso-style \(L_1\) regularization can set some coefficients exactly
+to zero. Elastic net combines the two penalties
+[@tibshirani1996regression; @zou2005regularization]. The code below uses
+the \(L_2\) penalty and compares stronger with weaker shrinkage on the same
+held-out requests.
+
+Scikit-learn's logistic regression applies \(L_2\) regularization by
+default. Its `C` parameter is the inverse penalty strength, so smaller
+values apply stronger shrinkage [@scikitlearn2026logistic]. The analyst should select `C` using only
+the training data. The pipeline places one-hot encoding inside each fold,
+which prevents the validation records in a fold from influencing category
+processing or model fitting. Cross-validation estimates how candidate
+settings perform across several training/validation splits
+[@scikitlearn2026crossvalidation]; using the same
+cross-validation scores both to select and to report a final error can be
+optimistic, which is why the separate test set remains untouched until
+selection is complete [@varma2006bias].
+
+The comparison separates measured area context from a postal-code lookup.
+All three models use the same training and test requests. One model uses
+problem detail and borough; a second adds ACS population and median
+household income; a third adds the incident ZIP label as a categorical
+identifier. Five-fold stratified cross-validation selects `C` by log loss,
+a probability-focused criterion. Standardization and one-hot encoding are
+inside the pipeline so each fold learns its preprocessing from its own
+training portion. The ZIP-label model is a predictive benchmark for areas
+already represented in the data; its coefficient for a ZIP label does not
+explain what neighborhood feature may relate to closure time.
+
+```{python}
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=2026)
+candidate_C = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10]}
+
+def tune_logistic(categorical, numeric):
+    transformers = []
+    if categorical:
+        transformers.append((
+            "categorical",
+            OneHotEncoder(handle_unknown="ignore"),
+            categorical,
+        ))
+    if numeric:
+        transformers.append(("numeric", StandardScaler(), numeric))
+    encoder = ColumnTransformer(transformers)
+    pipeline = make_pipeline(
+        encoder,
+        LogisticRegression(max_iter=3000),
+    )
+    search = GridSearchCV(
+        pipeline,
+        candidate_C,
+        scoring="neg_log_loss",
+        cv=cv,
+        refit=True,
+    )
+    features = categorical + numeric
+    search.fit(X_train[features], y_train)
+    probability = search.predict_proba(X_test[features])[:, 1]
+    return search, probability
+
+zip_identifier_features = categorical_features + ["incident_zip"]
+detail_borough_search, detail_borough_probability = tune_logistic(
+    categorical_features, []
+)
+census_search, census_probability = tune_logistic(
+    categorical_features, numeric_features
+)
+zip_id_search, zip_id_probability = tune_logistic(
+    zip_identifier_features, []
+)
+
+comparison = pd.DataFrame({
+    "Detail and borough": score_predictions(detail_borough_probability),
+    "Census area context": score_predictions(census_probability),
+    "ZIP label identifier": score_predictions(zip_id_probability),
+}).T
+comparison["selected C"] = [
+    detail_borough_search.best_params_["logisticregression__C"],
+    census_search.best_params_["logisticregression__C"],
+    zip_id_search.best_params_["logisticregression__C"],
+]
+comparison["mean CV log loss"] = [
+    -detail_borough_search.best_score_,
+    -census_search.best_score_,
+    -zip_id_search.best_score_,
+]
+comparison
+```
+
+For this split, adding the Census measures changes test ROC AUC from about
+0.577 to 0.597 and log loss from 0.636 to 0.630. The improvement is modest,
+but it indicates that the supplied area attributes add some predictive
+information beyond problem detail and borough in this test design. The
+ZIP-label model scores higher, with ROC AUC about 0.690 and log loss 0.593.
+Because the same ZCTAs occur in training and test sets, this score reflects
+area-specific prediction for locations represented in training. It neither
+identifies a cause nor demonstrates transfer to a new ZCTA or a later week.
+
+The Census estimates offer a more interpretable area-level question than
+the ZIP label, but their interpretation remains limited. Population is a
+count, not population density; median household income describes an area,
+not an individual requester. Both variables repeat across requests in the
+same ZCTA, and ACS estimates have sampling uncertainty. Any use in a
+resource-allocation decision would require a separate review of measurement,
+fairness, and the consequences for affected neighborhoods.
+
+Regularization controls model complexity but does not replace diagnosis.
+The selected penalty can stabilize estimates while leaving omitted
+variables, measurement error, unfair performance differences, and domain
+changes unresolved. Area-level predictors also require validation that
+respects their shared geography when the intended use concerns new areas.
+The model's intended use and validation design must therefore be considered
+together.
+
+## Exercises {.unnumbered}
+
+These exercises extend the target definition and EDA in @exr-eda-time into
+prediction. Use the same one-week extract and report eligible counts,
+excluded records, the prediction time, and the features available then.
+Treat closure time as a recorded duration, not a direct measure of officer
+response.
+
+::: {#exr-model-target}
+Use closure of at least one hour as the binary target.
+
+a. Report the counts and proportions below one hour and at least one hour.
+   Compare them with the two-hour classification in @exr-eda-time and
+   explain how changing the cutoff changes the prediction question.
+b. Identify which fields are available when a request is created. Use the
+   documented Census lookup to attach population and median household income
+   through the incident ZIP label. Report unmatched requests and missing
+   income values. Explain why the ZIP label is a join key rather than a
+   numeric predictor, and state one limitation of the ZIP-to-ZCTA match.
+c. Write one operational use for a prediction and identify who would act
+   on it. State the cost of a missed request and a false alert that would
+   need to be known before setting a decision threshold.
+:::
+
+::: {#exr-model-check}
+Fit and assess a logistic model for the one-hour target.
+
+a. Establish a majority-class or prevalence baseline. Split the records
+   into training and test sets before fitting; state the split method and
+   random seed.
+b. Fit a model with problem detail and borough, then add the two Census
+   area measures. Use cross-validation within the training data to select
+   regularization strength. Report test ROC AUC, log loss, TPR, precision,
+   F1, and a confusion matrix at a stated threshold. As a separate benchmark,
+   fit a model that treats ZIP as a categorical identifier and explain what
+   its score can and cannot tell you.
+c. Make a calibration plot and inspect predicted performance by borough.
+   Report group counts and describe one limitation of those comparisons.
+   Compare request-random validation with a validation split grouped by
+   ZCTA. Explain how the target use determines which split is more
+   appropriate and what evidence from another week would be needed before
+   claiming transfer to future requests.
+:::
+
+## References {.unnumbered}
