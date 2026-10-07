@@ -1,14 +1,12 @@
 # Ethics {#sec-ethics}
 
-Ethical reasoning is part of every data-science decision because choices about
-questions, data, methods, and communication affect people and institutions.
-This chapter develops a practical framework for identifying those effects,
-evaluating competing responsibilities, and documenting a defensible course of
-action. It draws on principles in research ethics, professional statistical
-practice, and risk management, while treating none of these frameworks as a
-substitute for contextual judgment. The NYPD 311 requests used throughout the
-book provide a recurring case: the data are public, but their interpretation
-and reuse can still create privacy, equity, and accountability concerns.
+Choices about questions, data, methods, and communication can affect people
+and institutions. This chapter offers a way to identify those effects,
+consider responsibilities, and document a decision. It draws on research
+ethics, professional statistical practice, and risk management, while
+recognizing that no framework replaces judgment about the setting. We use
+the NYPD 311 requests from earlier chapters as a case: public data can still
+raise privacy, equity, and accountability concerns.
 
 ## Ethical Reasoning
 
@@ -23,43 +21,50 @@ show that a project must stop. The analyst should specify the purpose, who is
 affected, what evidence is available, which alternatives exist, and who has the
 authority to decide.
 
-Ethical review revisits the four formulation checks in
-@sec-formulation-checks, because purpose, measurement, scope, and evidence
-shape who may be affected and what consequences the analysis can have.
-Several established frameworks help organize this reasoning. The Belmont
-Report identifies respect for persons, beneficence, and justice as principles
-for research involving human subjects; its original scope should be kept clear
-when applying its ideas to administrative data or nonresearch settings
-[@belmont1979report]. The American Statistical Association's Ethical
-Guidelines address statistical practice across data collection, processing,
-analysis, interpretation, communication, and model development
-[@asastatistical2022guidelines]. The January 2026 Journal of Data Science
-editorial on trustworthy machine learning connects concerns such as fairness,
-privacy, transparency, robustness, and uncertainty to statistical reasoning
-and human judgment [@hicks2026statistical]. For systems involving artificial
-intelligence, the NIST AI Risk Management Framework organizes risk work around
-governance, context mapping, measurement, and management
-[@nist2023ai]. These frameworks differ in scope, but all reject the idea that
-technical correctness alone establishes responsible practice.
+Ethical review returns to the purpose, measurement, scope, and evidence checks
+in @sec-formulation-checks. These choices shape who may be affected and what
+consequences an analysis could have. Several frameworks offer useful, but
+different, starting points:
 
-The chapter uses six questions as a working review: What purpose does the
-analysis serve? Whose data or experiences are represented? Who could benefit
-or be harmed? What assumptions or uncertainties could change the result? What
-safeguards or alternatives are available? Who is responsible for the decision
-and its consequences? These questions should be revisited as the project
-changes. They do not produce an automatic ethical score; they make judgments
-and unresolved issues visible to collaborators, reviewers, and decision
-makers.
+- The Belmont Report sets out respect for persons, beneficence, and justice
+  for research involving human subjects. Keep its original scope in mind when
+  applying its ideas to administrative data or nonresearch settings
+  [@belmont1979report].
+- The American Statistical Association's Ethical Guidelines address practice
+  across data collection, processing, analysis, interpretation,
+  communication, and model development
+  [@asastatistical2022guidelines].
+- A 2026 Journal of Data Science editorial connects trustworthy machine
+  learning with fairness, privacy, transparency, robustness, uncertainty,
+  statistical reasoning, and human judgment [@hicks2026statistical].
+- The NIST AI Risk Management Framework organizes risk work around
+  governance, context mapping, measurement, and management [@nist2023ai].
+
+Use these six questions as a working review:
+
+1. What purpose does the analysis serve?
+2. Whose data or experiences are represented or missing?
+3. Who could benefit, and who could be harmed?
+4. Which assumptions or uncertainties could change the result?
+5. What safeguards or alternatives are available?
+6. Who is responsible for the decision and its consequences?
+
+Return to these questions as the project changes. They do not produce an
+automatic ethical score; they make judgments and unresolved issues visible
+to collaborators, reviewers, and decision makers.
 
 ## Purpose
 
-A defensible project begins with a purpose that is sufficiently specific to
-evaluate. The analyst should identify the intended audience, the decision or
-understanding the analysis may support, and the limits on its use. Broad goals
-such as “improve safety” do not explain which intervention is contemplated,
-who will receive it, or what costs it may impose. Purpose also constrains data
-use: information collected to administer a service may not be appropriate for
-every secondary use simply because it is accessible.
+A defensible project begins with a purpose specific enough to evaluate. State:
+
+- who needs the analysis;
+- what decision or understanding it may support; and
+- what uses are outside its scope.
+
+“Improve safety” is too broad by itself. It does not identify an intervention,
+who would receive it, or what costs it could impose. Purpose also constrains
+data use: information collected to administer a service is not automatically
+appropriate for every secondary use just because it is accessible.
 
 The NYPD 311 extract records requests directed to NYPD, not a census of
 illegal-parking events. A project might describe how these requests vary by
@@ -70,14 +75,19 @@ differently. Before proceeding, the project team should state which claim it
 intends to support and whether that claim is compatible with the collection
 process and available evidence.
 
-Affected parties include more than the people represented by rows. In this
-case they may include people who submitted requests, people whose vehicles or
-locations were reported, residents and businesses in mapped areas, NYPD staff,
-311 administrators, and decision makers who may rely on the analysis. These
-groups can have different interests and different opportunities to challenge
-an interpretation. Stakeholder consultation is most useful when it can alter
-the question, the safeguards, or the decision, rather than serving only as
-approval after the analysis is complete.
+Affected parties include more than the people represented by rows. For this
+case, they may include:
+
+- people who submitted requests;
+- people whose vehicles or locations were reported;
+- residents and businesses in mapped areas;
+- NYPD staff and 311 administrators; and
+- decision makers who may rely on the analysis.
+
+These groups can have different interests and different opportunities to
+challenge an interpretation. Consultation is most useful when it can change
+the question, safeguards, or decision, rather than serving only as approval
+after analysis is complete.
 
 ## Privacy
 
@@ -164,14 +174,19 @@ The analyst should assess the release as a whole, state the purpose and
 threshold, and avoid publishing complementary summaries that undo the
 suppression.
 
-Privacy safeguards include limiting access, reducing precision, aggregating
-results, suppressing small cells where disclosure risk warrants it, and
-setting retention and deletion rules. Each safeguard has analytical costs:
-aggregation can conceal local variation, while suppression can make groups
-unequally visible. The analyst should state the risk being reduced and check
-whether the safeguard distorts the intended comparison. Data security and
-privacy protection are related but distinct; secure storage does not resolve
-whether a collection or analysis is appropriate.
+Possible privacy safeguards include:
+
+- limiting access to request-level records;
+- reducing location or time precision;
+- aggregating results;
+- suppressing small cells when disclosure risk warrants it; and
+- setting retention and deletion rules.
+
+Each safeguard has analytical costs. Aggregation can conceal local patterns,
+and suppression can make some groups less visible than others. State which
+risk a safeguard addresses and check whether it distorts the comparison.
+Data security and privacy protection are related but distinct: secure
+storage does not decide whether a collection or analysis is appropriate.
 
 ## Bias
 
@@ -201,13 +216,17 @@ for NYC 311, including inconsistent representations and temporal anomalies,
 show why analysts should investigate how fields were produced before treating
 them as neutral measurements [@tussey2025principles].
 
-An ethical bias assessment therefore begins with a map of the data-generating
-process. Analysts should ask who is included, who may be missing, what the
-labels mean, how measurement varies across groups, and whether a proposed
-comparison has adequate support. When relevant group information is absent,
-the responsible conclusion may be that fairness cannot be evaluated from the
-available extract. Inferring sensitive attributes from location as a shortcut
-can add privacy risks and introduce new classification errors.
+An ethical bias assessment begins by examining how the records were created.
+Ask:
+
+- Who is included, and who may be missing?
+- What do the categories and outcome labels mean?
+- Could reporting, measurement, or missingness differ across groups?
+- Does each comparison have enough data to support it?
+
+If the extract lacks relevant group information, fairness may not be
+evaluated from the available records. Inferring sensitive attributes from
+location can add privacy risks and classification errors.
 
 ## Fairness
 
@@ -230,14 +249,18 @@ fairly. The team would need validated outcome measures, a specified decision
 process, subgroup error analysis where suitable data and sample sizes permit,
 and a justification for the costs of false positives and false negatives.
 
+Fairness review should make several decisions explicit:
+
+- Which groups and outcomes are relevant to the proposed decision?
+- Which errors matter, to whom, and with what consequences?
+- Why is the selected comparison appropriate for that use?
+- Could a transparent aggregate description or nonalgorithmic process meet
+  the purpose with fewer risks?
+
 Group metrics can conflict, and apparent parity can conceal unequal harms or
-poor measurement. Analysts should explain which errors matter, to whom, and
-why a chosen comparison is appropriate. They should also consider whether a
-model is needed at all: a transparent aggregate description or a nonalgorithmic
-process may achieve the stated purpose with fewer risks. If a proposed use
-cannot be evaluated with the available data, that limitation is a reason to
-collect better evidence, narrow the use, or decline deployment, not a reason
-to claim that the system is fair by default.
+poor measurement. If the available data cannot evaluate the proposed use,
+the project may need better evidence, a narrower use, or no deployment. That
+limitation is not evidence that the system is fair by default.
 
 ## Uncertainty
 

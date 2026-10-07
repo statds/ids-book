@@ -1,18 +1,19 @@
 # Modeling {#sec-modeling}
 
-Predictive modeling uses information available at a defined moment to estimate
-an outcome that is not yet known. The preceding chapters developed a question,
-prepared request-level data, examined the closure-time distribution, and
-visualized variation across time and place. This chapter carries that work
-forward with a domain question: can information available when an illegal-
-parking request is created help identify requests that will remain open for
-at least one hour? It examines whether request detail and borough, together
-with neighborhood population density, household vehicle availability, and
-income from the Census-linked table, improve predictions. The analysis uses
-the same one-week records and request-level observational unit as the earlier
-chapters. It does not
-claim that an area characteristic causes a request to take longer, or that
-one week represents future requests under changed conditions.
+Predictive modeling uses information available at a defined time to estimate
+an outcome that is not yet known. This chapter asks whether fields available
+when an illegal-parking request is created can help identify requests that
+will remain open for at least one hour. We compare request detail and borough
+with area context from the Census-linked table:
+
+- population density;
+- household vehicle availability; and
+- median household income.
+
+The analysis uses the same one-week, request-level data as earlier chapters.
+It predicts recorded closure time; it does not show that area characteristics
+cause a request to take longer or establish how predictions would perform in
+a different week.
 
 The one-hour outcome connects the modeling question to the operational
 concern that illegal-parking reports may call for timely handling. It is an
@@ -26,48 +27,42 @@ those processes.
 
 ## Frame the Prediction
 
-A prediction is useful only when its target, prediction time, available
-features, and intended decision are clear. @exr-eda-time examined a two-hour
-cutoff as an exploratory summary. Here, the analysis uses a one-hour cutoff
-to ask a more time-sensitive question. Reconsidering a threshold for a new
-analytical purpose is reasonable when the change is stated and its effects
-are visible; the new threshold should not be described as a policy rule.
+Before fitting a model, specify what it will predict and what information it
+can use:
 
-The observational unit is one illegal-parking request in the distributed
-week of data. The target equals one when its recorded closure time is at
-least one hour and zero otherwise. Requests with missing closure time cannot
-be labeled and are excluded from this supervised analysis. The candidate
-features in the main model are problem detail and borough, recorded when
-the request is created, plus population density, median household income,
-and the share of households with a vehicle available from the Census-linked
-area table [@census2024gazetteer; @census2024vehicles]. Population density
-divides the ACS population estimate by 2024 Gazetteer ZCTA land area. The vehicle
-share is one minus the estimated fraction of households with no vehicle
-available. These measures describe area context rather than curb capacity
-or individual behavior. The ACS estimates cover 2020–2024, precede the
-request week, and have sampling uncertainty; the derived vehicle share's
-uncertainty is not calculated from the published margins of error. The
-incident ZIP label serves as the link to
-area context, as described in @sec-zcta-context-merge; a later benchmark
-also treats it as a categorical identifier. The lookup supplies
-2020–2024 American Community Survey (ACS) estimates for ZIP Code Tabulation
-Areas (ZCTAs). A ZCTA and a postal ZIP Code are related but distinct
-geographies, so the link is an approximation rather than an exact
-address-level match [@census2023zip; @census2026american]. The ZIP digits
-themselves are not used as a quantitative predictor. Closure time and any
-field that records later processing are excluded because they would not be
-available at prediction time.
+- **Unit:** one illegal-parking request from the distributed week.
+- **Target:** one if recorded closure time is at least one hour, and zero
+  otherwise. Requests without a closure time cannot be labeled and are
+  excluded.
+- **Prediction time:** request creation. Closure time and later processing
+  fields are unavailable then and must not be predictors.
+- **Request features:** problem detail and borough, recorded when the request
+  is created.
+- **Area features:** population density, median household income, and the
+  estimated share of households with a vehicle, linked through the ZIP label
+  [@census2024gazetteer; @census2024vehicles].
 
-The prediction question is: among requests from the same observed week and
-with similar recorded fields and area context, how well can a model
-distinguish requests that remain open for at least an hour? This question
-describes prediction within the data's observed setting. It does not ask
-whether borough, problem detail, population density, household vehicle
-availability, or income causes a longer closure, and it does not establish
-how a model would perform in another
-week. The four formulation checks in
-@sec-formulation-checks remain relevant: a sound model cannot repair an
-unclear target, an invalid measurement, an inadequate scope, or weak evidence.
+The one-hour cutoff is a modeling choice, not a documented agency standard.
+The density measure divides ACS population by 2024 Gazetteer ZCTA land area;
+the vehicle share is one minus the estimated fraction of households with no
+vehicle. These describe area context, not curb capacity or individual
+behavior. The ACS estimates cover 2020–2024, precede the request week, and
+have sampling uncertainty. We do not calculate the vehicle share's
+uncertainty from the published margins of error.
+
+The ZIP label links a request to a ZIP Code Tabulation Area (ZCTA), but the
+two geographies are related rather than identical, so this is an approximate
+match [@census2023zip; @census2026american]. ZIP digits are labels, not
+quantitative predictors. A later benchmark uses the ZIP as a category to
+ask a different predictive question.
+
+The prediction question is: among requests from this week, how well can the
+recorded fields distinguish requests that remain open for at least an hour?
+This is prediction within the observed setting. It is not a question about
+whether a predictor causes a longer closure, nor does it show performance in
+a future week. The four checks in @sec-formulation-checks still apply: a
+model cannot repair an unclear target, an invalid measurement, an inadequate
+scope, or weak evidence.
 
 ## Establish a Baseline
 
@@ -176,10 +171,13 @@ models the log odds as a linear combination of predictors:
 \]
 
 The inverse-logit transformation maps any real-valued linear predictor to
-a probability between zero and one. A coefficient describes a change in
-log odds, holding the other included predictors fixed. Exponentiating a
-coefficient gives an odds ratio, but an odds ratio is not a probability
-difference and does not by itself describe a causal effect.
+a probability between zero and one. Odds compare the probability of an event
+with the probability it does not occur. For example, a probability of 0.75
+corresponds to odds of $0.75/0.25=3$ to 1, while a probability of 0.5
+corresponds to odds of 1 to 1. A coefficient describes a change in log odds,
+holding the other included predictors fixed; exponentiating it gives an odds
+ratio. An odds ratio is not a probability difference and does not by itself
+describe a causal effect.
 
 The first GLM includes problem detail, borough, population density, median
 household income, and household vehicle availability. The three area
@@ -228,14 +226,16 @@ pd.Series({
 })
 ```
 
-The odds ratios summarize adjusted associations in this training split,
-with each area measure compared across a one-standard-deviation difference.
-The context values repeat across requests in the same ZCTA, so area-level
-patterns are supported by the number of distinct ZCTAs, not by treating
-every request as an independent area. These estimates do not describe
-individual residents or causal effects. They also depend on the model's
-assumption that each standardized measure has a linear relationship with
-log odds.
+Each displayed odds ratio compares requests that differ by one training-set
+standard deviation in the corresponding area measure, while the other model
+features are held fixed. For example, an odds ratio above one indicates
+higher fitted odds of a one-hour closure for a one-standard-deviation
+increase; it does not say how many percentage points the probability rises.
+The context values repeat across requests in the same ZCTA, so area patterns
+are supported by 176 distinct ZCTAs, not by treating each request as an
+independent area. These are conditional associations, not individual-level
+effects or causal estimates. They also rely on a linear relationship between
+each standardized area measure and log odds.
 
 ## Check the Model
 
@@ -250,17 +250,21 @@ influence diagnostics can reveal unusual records or lack of fit, but no
 single diagnostic proves that a model is correct [@hosmer2013applied;
 @pregibon1981logistic].
 
-The current model assumes a linear relationship between each standardized
-area measure and log odds. It also imposes an additive structure: the detail
-contrast is the same across boroughs unless an interaction is included.
-Sparse categories can make estimates unstable. Checks should compare
-observed outcome rates with fitted probabilities across boroughs and across
-ordered groups of each continuous measure, while retaining each group's
-count. Because the Census values repeat within ZCTAs, the 176 distinct areas
-also limit how much independent evidence supports an area-level pattern.
-Calibration matters because a probability estimate of 0.7 should correspond
-to an outcome rate near 0.7 among comparable predictions
-[@vancalster2019calibration].
+The current model makes several assumptions that can be checked only in
+part:
+
+- Each standardized area measure has a linear relationship with log odds.
+- The model is additive, so the detail contrast is the same across boroughs
+  unless an interaction is included.
+- Sparse categories may produce unstable estimates.
+- Repeated Census values mean that area-level patterns are supported by 176
+  distinct ZCTAs rather than by the full request count.
+
+Compare observed outcome rates with mean fitted probabilities across
+boroughs and across ordered groups of each continuous predictor, retaining
+the count in each group. Calibration is one check: predictions near 0.7
+should correspond to an observed outcome rate near 0.7 among comparable
+requests [@vancalster2019calibration].
 
 The training-set summary below compares observed target rates with average
 fitted probabilities by borough. A large discrepancy can flag a lack of fit
@@ -308,14 +312,16 @@ evaluation. Here, even a clean random holdout supports only a limited claim:
 it estimates performance for additional requests drawn under a similar
 one-week data-generating process.
 
-Different metrics answer different questions. Accuracy counts correct
-classifications at a chosen probability threshold. The area under the
-receiver operating characteristic curve (ROC AUC) evaluates ranking across
-all possible thresholds: 0.5 indicates no ability to rank positive cases
-better than chance, and 1 indicates perfect ranking. ROC AUC does not
-select a threshold or show whether predicted probabilities are accurate.
-Log loss evaluates the probabilities themselves and penalizes confident
-errors [@scikitlearn2026metrics].
+Different metrics answer different questions:
+
+- **Accuracy** is the fraction of correct classifications at a chosen
+  probability threshold.
+- **ROC AUC** measures how well the model ranks positive cases above negative
+  cases across all thresholds. A value of 0.5 indicates chance-level ranking;
+  1 indicates perfect ranking. It neither chooses a threshold nor checks
+  whether probabilities are accurate.
+- **Log loss** evaluates the predicted probabilities and penalizes
+  confident errors [@scikitlearn2026metrics].
 
 Threshold-based measures describe different parts of the confusion matrix.
 A true positive (TP) is a request that takes at least an hour and is flagged
@@ -339,19 +345,25 @@ and makes each denominator explicit [@wikipediandevaluation;
 | Accuracy | Overall accuracy, correct classification rate | $(TP+TN)/(TP+TN+FP+FN)$ |
 | F1 score | F1 measure, F-score with $\beta=1$ | $2\,\mathrm{Precision}\,\mathrm{Recall}/(\mathrm{Precision}+\mathrm{Recall})$ |
 
-Sensitivity and specificity are common in diagnostic testing, while
-precision and recall are common in information retrieval and machine
-learning. The names reflect different traditions, but the calculations
-match when the same class is designated positive. Recall conditions on the
-actual positives; precision conditions on the predicted positives. F1 is
-the equal-weight harmonic mean of precision and recall, so it does not
-account for true negatives. TPR and FNR sum to one because they share the
-actual-positive denominator; TNR and FPR, PPV and FDR, and NPV and FOR also
-form complementary pairs. These names and denominators are summarized in
-the Wikipedia overview of binary-classifier evaluation, while the
-scikit-learn guide documents the corresponding software metrics
-[@wikipediandevaluation; @scikitlearn2026metrics]. Other F-scores change the
-relative weight of precision and recall.
+Some names come from different fields, but refer to the same calculation
+when the same class is designated positive:
+
+- **TPR, sensitivity, and recall** all divide true positives by all actual
+  positives. They ask: of the requests that remained open at least an hour,
+  what fraction did the model flag?
+- **PPV and precision** divide true positives by all predicted positives.
+  They ask: of the requests flagged by the model, what fraction remained
+  open at least an hour?
+- **Specificity and TNR** measure the fraction of actual negatives not
+  flagged; **FPR** is the fraction of actual negatives that were flagged.
+- **F1** is the harmonic mean of precision and recall. It does not account
+  for true negatives.
+
+The other complementary pairs in the table share denominators: TPR/FNR,
+TNR/FPR, PPV/FDR, and NPV/FOR each sum to one. The Wikipedia overview and
+scikit-learn guide document these names and definitions
+[@wikipediandevaluation; @scikitlearn2026metrics]. Other F-scores give
+precision and recall different weights.
 
 These measures depend on the classification threshold and the relative
 costs of missed long closures and unnecessary alerts. The data do not
@@ -363,11 +375,11 @@ the held-out test set.
 The baseline assigns every request the training-set target prevalence as
 its probability and predicts the majority class. The Census-context model
 one-hot encodes problem detail and borough, standardizes the three area
-measures, then fits logistic regression.
-The test metrics compare the probability model with that baseline and
-report classification at a 0.5 threshold. Because the positive class is
-more common, accuracy should be read alongside ROC AUC, log loss, and the
-confusion matrix rather than on its own.
+measures, and fits logistic regression. The table compares their test
+metrics; classification measures use a 0.5 threshold. Since the positive
+class is more common, do not read accuracy alone. Compare it with ROC AUC,
+log loss, and the confusion matrix to see whether the model finds requests
+that close sooner or merely repeats the majority-class prediction.
 
 ```{python}
 from sklearn.dummy import DummyClassifier
