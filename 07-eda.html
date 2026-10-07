@@ -279,11 +279,11 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#principles-of-exploratory-data-analysis" id="toc-principles-of-exploratory-data-analysis" class="nav-link active" data-scroll-target="#principles-of-exploratory-data-analysis"><span class="header-section-number">7.1</span> Principles of Exploratory Data Analysis</a></li>
-  <li><a href="#case-study-question-and-eligible-records" id="toc-case-study-question-and-eligible-records" class="nav-link" data-scroll-target="#case-study-question-and-eligible-records"><span class="header-section-number">7.2</span> Case Study: Question and Eligible Records</a></li>
-  <li><a href="#closure-time-distributions-and-problem-details" id="toc-closure-time-distributions-and-problem-details" class="nav-link" data-scroll-target="#closure-time-distributions-and-problem-details"><span class="header-section-number">7.3</span> Closure-Time Distributions and Problem Details</a></li>
-  <li><a href="#variation-across-time-and-place" id="toc-variation-across-time-and-place" class="nav-link" data-scroll-target="#variation-across-time-and-place"><span class="header-section-number">7.4</span> Variation Across Time and Place</a></li>
-  <li><a href="#assessing-uncertainty-and-robustness" id="toc-assessing-uncertainty-and-robustness" class="nav-link" data-scroll-target="#assessing-uncertainty-and-robustness"><span class="header-section-number">7.5</span> Assessing Uncertainty and Robustness</a></li>
+  <li><a href="#eda-principles" id="toc-eda-principles" class="nav-link active" data-scroll-target="#eda-principles"><span class="header-section-number">7.1</span> EDA Principles</a></li>
+  <li><a href="#study-setup" id="toc-study-setup" class="nav-link" data-scroll-target="#study-setup"><span class="header-section-number">7.2</span> Study Setup</a></li>
+  <li><a href="#closure-time-by-detail" id="toc-closure-time-by-detail" class="nav-link" data-scroll-target="#closure-time-by-detail"><span class="header-section-number">7.3</span> Closure Time by Detail</a></li>
+  <li><a href="#variation-across-groups" id="toc-variation-across-groups" class="nav-link" data-scroll-target="#variation-across-groups"><span class="header-section-number">7.4</span> Variation Across Groups</a></li>
+  <li><a href="#uncertainty-assessment" id="toc-uncertainty-assessment" class="nav-link" data-scroll-target="#uncertainty-assessment"><span class="header-section-number">7.5</span> Uncertainty Assessment</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -312,17 +312,17 @@ window.Quarto = {
 
 
 <p>Exploratory data analysis (EDA) examines distributions, relationships, and irregularities before a final account of findings is written. Its purpose is to learn what the observed data can show, what they cannot show, and which questions deserve closer investigation <span class="citation" data-cites="nistndexploratory">(<a href="#ref-nistndexploratory" role="doc-biblioref">National Institute of Standards and Technology, n.d.</a>)</span>. This chapter first states principles that apply across datasets and then develops them through a case study. The next chapter develops principles for choosing and evaluating visual displays across the data-science workflow; here, plots support investigation alongside numerical summaries and checks of the records.</p>
-<section id="principles-of-exploratory-data-analysis" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="principles-of-exploratory-data-analysis"><span class="header-section-number">7.1</span> Principles of Exploratory Data Analysis</h2>
+<section id="eda-principles" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="eda-principles"><span class="header-section-number">7.1</span> EDA Principles</h2>
 <p>Exploratory data analysis begins with questions about the variation in a prepared table rather than with a search for every possible plot. Preparation checks in <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a> establish whether an identifier is unique or a join preserves rows; exploration uses the validated records to ask how an outcome is distributed, how groups differ, and which observations merit closer inspection. The same summary can serve both stages with a different purpose. For example, a count of missing coordinates diagnoses geographic coverage before mapping, while its variation by borough may become an exploratory question about which requests a map omits. Yu and Barter distinguish such question-guided exploration from diagnostic work during cleaning and from figures prepared to communicate selected findings <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. The distinction is analytical rather than technical: a histogram or table can appear in each stage, but its interpretation depends on the question, eligible records, and measurement established in the earlier chapters <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>.</p>
 <p>Exploration requires comparable quantities before differences are interpreted. Center, spread, tails, missingness, and group size describe different features of a distribution, so a single mean cannot characterize a long right tail or a heterogeneous group. Comparisons across places or times also require compatible units and observation periods. A request count from two weekend days cannot be compared directly with a count from five weekdays as if the exposure time were equal, and an area income value copied onto many requests does not create independent area observations. Numerical summaries and plots should be selected for a stated question and checked against each other. A surprising observation can prompt source inspection, whereas a subgroup difference can motivate a revised question or a more suitable denominator. This cycle of question, calculation, inspection, and revision defines EDA more clearly than a preferred chart type <span class="citation" data-cites="nistndexploratory yu2024veridical">(<a href="#ref-nistndexploratory" role="doc-biblioref">National Institute of Standards and Technology, n.d.</a>; <a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>.</p>
 <p>Exploration must separate a description of the observed requests from a claim about a broader process. A table can summarize every record in its declared scope without a sampling model; a hypothesis test or interval adds assumptions about how other observations might arise. Those assumptions deserve particular scrutiny when groups, thresholds, or comparisons were chosen after inspecting the same records. A second source of uncertainty is the analyst’s judgment: a result may change under a plausible alternative time window, treatment of long closure intervals, or geographic grouping. Yu and Barter propose examining such stability as part of the evaluation of data-derived findings <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. Stability under selected changes does not repair undercoverage, uncertain measurement, or confounding, but it shows whether a reported pattern depends heavily on one decision. An exploratory report should therefore state both the assumptions of any inferential calculation and the reasonable analytical alternatives it has examined <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
 </section>
-<section id="case-study-question-and-eligible-records" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="case-study-question-and-eligible-records"><span class="header-section-number">7.2</span> Case Study: Question and Eligible Records</h2>
+<section id="study-setup" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="study-setup"><span class="header-section-number">7.2</span> Study Setup</h2>
 <p>The case study answers the working question in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> using the screened requests prepared in <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. Its primary target is the distribution of recorded closure hours within each of the three most frequently reported problem-detail groups during September 6–12, 2026. The frequency rule determines group membership before closure-time summaries are examined; it does not make the groups random or comparable in all other respects. The analysis first describes the full closure-time distribution and then examines variation by detail, creation date, borough, and matched area. These views can reveal composition that a single citywide median would conceal. A permutation calculation and bootstrap interval later illustrate how an inferential model changes the question, while sensitivity checks test whether the descriptive contrast survives selected analytical alternatives. Throughout, the four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> constrain the interpretation of the observed differences.</p>
 <p>The initial scope report provides an audit of the table that enters this analysis rather than a second lesson in import and cleaning. The shared <a href="scripts/parking_requests.py">preparation function</a> applies the documented time and problem filters, timestamp parsing, field names, and closure-time definition from <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. The report then verifies the number of request identifiers, missing or negative outcomes, and missing coordinates that affect later spatial comparisons. These checks establish the eligible set for the present figures; they do not resolve whether reporting behavior or agency practice differs across groups. The order of analysis is deliberate: inspect the overall distribution, apply the frequency-based group rule, examine time and place, and only then consider inferential and sensitivity calculations. This order makes it possible to distinguish a comparison specified by the working formulation from an additional pattern noticed during exploration.</p>
-<div id="5066a183" class="cell" data-execution_count="1">
+<div id="1d827177" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -379,10 +379,10 @@ window.Quarto = {
 </div>
 <p>The scope report supports the use of every screened request in the main closure-time comparison because identifiers are unique and the derived outcome is present and nonnegative. Missing coordinates do not justify excluding those requests from a nonspatial distribution, but they do limit the population represented by a later point map. Treating all missing fields as a reason for complete-case deletion would conflate these two eligibility rules. The table also describes a defined week of service requests rather than a random sample of all parking conditions. A precise summary of these records can therefore coexist with substantial uncertainty about unreported incidents or how another week would look. The analysis will keep the eligible set attached to each result and will interpret variation in closure time as a mixture of reporting and administrative processes unless stronger evidence separates them.</p>
 </section>
-<section id="closure-time-distributions-and-problem-details" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="closure-time-distributions-and-problem-details"><span class="header-section-number">7.3</span> Closure-Time Distributions and Problem Details</h2>
+<section id="closure-time-by-detail" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="closure-time-by-detail"><span class="header-section-number">7.3</span> Closure Time by Detail</h2>
 <p>The overall closure-time distribution establishes which summaries can represent a typical request and which features require separate attention. The median divides observed intervals into lower and upper halves, while a quantile identifies a specified fraction of intervals at or below its value. The mean reflects every recorded duration and is more sensitive to the long upper tail. Reporting these quantities together allows readers to distinguish a typical interval from delayed closures rather than reducing both to one number. The table below calculates summaries from every eligible closure interval. The accompanying histogram displays only the first 24 hours on its horizontal axis to make the dense part of the distribution legible. That visual limit is not a row exclusion from the table or subsequent comparisons; the caption and text must make the difference clear. A later sensitivity calculation explicitly applies a 24-hour row restriction and reports its effect.</p>
-<div id="a9dbaf33" class="cell" data-execution_count="2">
+<div id="ebed08a6" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>closure_summary <span class="op">=</span> parking[<span class="st">"closure_hours"</span>].agg(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"min"</span>, <span class="st">"max"</span>]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).to_frame(<span class="st">"value"</span>)</span>
@@ -479,7 +479,7 @@ Figure&nbsp;7.1: Recorded closure times for eligible illegal-parking requests. T
 </div>
 <p>The median closure interval is about 1.67 hours, while the mean is about 3.51 hours. The 90th percentile is about 8.73 hours, the 99th percentile is about 23.58 hours, and the maximum is nearly 200 hours. This right tail makes the mean substantially larger than the median. It also makes a statement such as “requests close in about two hours” incomplete: it describes a typical request but omits the upper tail. A large interval may be valid, a correction to a timestamp, or an operational exception; its presence alone does not establish an error. The next comparison therefore reports medians and quartiles alongside means.</p>
 <p>The group rule implements the formulation without searching closure times for a favorable contrast. The code selects the three most frequent problem-detail labels among eligible requests and then calculates each group’s count, center, spread, and upper quantile. It retains the provider’s category values rather than combining labels that appear similar but may have different operational meanings. The rule is transparent and can be reapplied to a new extract, although a different week could have a different set of leading categories. The accompanying empirical cumulative distribution gives, at each closure time <span class="math inline">\(t\)</span>, the fraction of requests in a group with recorded closure time at most <span class="math inline">\(t\)</span>. This makes comparisons at specific time thresholds possible without assuming that the distributions share a common shape. Because the group rule and the analysis were developed using the observed week, later inferential calculations remain exploratory.</p>
-<div id="1ff1a5ed" class="cell" data-execution_count="4">
+<div id="aa9dc6aa" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>top_details <span class="op">=</span> parking[<span class="st">"problem_detail"</span>].value_counts().head(<span class="dv">3</span>).index.tolist()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>top <span class="op">=</span> parking.loc[parking[<span class="st">"problem_detail"</span>].isin(top_details)].copy()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>detail_summary <span class="op">=</span> top.groupby(<span class="st">"problem_detail"</span>)[<span class="st">"closure_hours"</span>].agg(</span>
@@ -577,10 +577,10 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 <p>Blocked Hydrant has the largest median of the three groups, about 2.05 hours, followed by Posted Parking Sign Violation at 1.62 hours and Blocked Sidewalk at 1.18 hours. The hydrant group’s median exceeds the sidewalk group’s by about 0.86 hours, or 52 minutes. Their distributions overlap substantially, so the difference in medians does not mean that every hydrant request took longer than every sidewalk request. The cumulative curves show the proportion closed by any time on the horizontal axis; they retain more distributional information than a comparison of three means. Neither the table nor the plot identifies why the groups differ.</p>
 </section>
-<section id="variation-across-time-and-place" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="variation-across-time-and-place"><span class="header-section-number">7.4</span> Variation Across Time and Place</h2>
+<section id="variation-across-groups" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="variation-across-groups"><span class="header-section-number">7.4</span> Variation Across Groups</h2>
 <p>Temporal and geographic stratification examines whether a pooled group contrast combines different request mixes. Creation date identifies when a report entered the service system, whereas closure time is the subsequent elapsed interval; grouping by creation date does not assign a request to the date on which it closed. The first table reports the daily volume of eligible requests, so each row has a one-day observation period. The second table counts the three selected problem details by borough and shows whether their relative frequencies differ across places. These tables are descriptive checks on composition, not estimates of the frequency of illegal parking on the street. A difference in group mix can help explain why a citywide closure-time summary differs from a within-borough summary, but the tables alone do not establish the agency process that generated either pattern.</p>
-<div id="dfb44f49" class="cell" data-execution_count="6">
+<div id="fdfbc764" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>daily_counts <span class="op">=</span> parking.groupby(parking[<span class="st">"created_at"</span>].dt.date).size()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>daily_counts.to_frame(<span class="st">"requests"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
@@ -633,7 +633,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 </div>
 </div>
-<div id="599e74d1" class="cell" data-execution_count="7">
+<div id="59da9403" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>borough_counts <span class="op">=</span> pd.crosstab(top[<span class="st">"borough"</span>], top[<span class="st">"problem_detail"</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>borough_counts.loc[:, top_details]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -693,8 +693,8 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 </div>
 <p>Recorded daily volume ranges from 1,563 on September 6 to 2,080 on September 10. The counts alone do not establish a weekday effect because they cover only one occurrence of each day of the week. The borough table shows that the mix of problem details also varies by place: Manhattan has more Posted Parking Sign Violation requests than Blocked Hydrant requests, whereas Brooklyn has the opposite ordering. Geographic composition can therefore affect the citywide comparison. A borough label still represents a broad area and cannot identify the practices of an individual precinct.</p>
-<p>Area context raises a different exploratory question and changes the unit at which a comparison is valid. <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.5</span></a> explains the five-digit ZIP-label match to 2024 American Community Survey (ACS) estimates for ZIP Code Tabulation Areas (ZCTAs), including its geographic limitations <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. This chapter reuses the checked lookup through <code>attach_zcta_context()</code> instead of repeating the preparation code. The resulting table still has one row per request, so an income estimate appears on every request whose ZIP label matches the same ZCTA. Those copies do not constitute independent observations of area income. The comparison below first aggregates closure time to one row per matched ZCTA, records the number of requests supporting each area median, and then groups areas by estimated income. Its target is variation among area summaries, not the relationship between a reporter’s income and that reporter’s closure time.</p>
-<div id="932fa7bb" class="cell" data-execution_count="8">
+<p>Area context raises a different exploratory question and changes the unit at which a comparison is valid. The area-context workflow in <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.4</span></a> explains the five-digit ZIP-label match to 2024 American Community Survey (ACS) estimates for ZIP Code Tabulation Areas (ZCTAs), including its geographic limitations <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. This chapter reuses the checked lookup through <code>attach_zcta_context()</code> instead of repeating the preparation code. The resulting table still has one row per request, so an income estimate appears on every request whose ZIP label matches the same ZCTA. Those copies do not constitute independent observations of area income. The comparison below first aggregates closure time to one row per matched ZCTA, records the number of requests supporting each area median, and then groups areas by estimated income. Its target is variation among area summaries, not the relationship between a reporter’s income and that reporter’s closure time.</p>
+<div id="857fbff8" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>with_context <span class="op">=</span> attach_zcta_context(parking)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>with_context[<span class="st">"_merge"</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -705,7 +705,7 @@ right_only        0
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="d6b4e77e" class="cell" data-execution_count="9">
+<div id="ec98319d" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>areas <span class="op">=</span> with_context.loc[with_context[<span class="st">"_merge"</span>].eq(<span class="st">"both"</span>)].groupby(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcta"</span>, as_index<span class="op">=</span><span class="va">False</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>).agg(</span>
@@ -779,41 +779,354 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>The join matches 13,033 of 13,040 requests. Among areas with at least 20 requests and a reported median household income, 149 ZCTAs enter the grouped comparison. Their median closure times differ across income quartiles, but the ordering is not monotone: the lower-middle quartile has a higher median of area medians than the lowest or upper-middle quartile. The minimum count of 20 is a transparent stability rule, not a guarantee of accurate area estimates. The ACS income values describe an earlier period and have sampling uncertainty; the request-to-ZCTA match also has geographic limits <span class="citation" data-cites="census2026american">(<a href="#ref-census2026american" role="doc-biblioref">U.S. Census Bureau, 2026</a>)</span>. This table supports a question about area-level association, not a conclusion about residents’ incomes or an income effect on individual requests.</p>
-</section>
-<section id="assessing-uncertainty-and-robustness" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="assessing-uncertainty-and-robustness"><span class="header-section-number">7.5</span> Assessing Uncertainty and Robustness</h2>
-<p>A hypothesis test can be part of EDA when its assumptions and limited purpose are explicit. Consider the median closure-time difference between Blocked Hydrant and Blocked Sidewalk requests. For the observed week, that difference is descriptive and needs no test. A test addresses a different question: under a model in which requests from the two detail groups have exchangeable closure-time distributions, how unusual would the observed difference be? The permutation calculation below pools the two groups and reallocates their labels while preserving their sizes. Its two-sided statistic is the absolute difference between medians. A bootstrap interval separately resamples requests within each group to show variability under an independent-request model.</p>
-<div id="68b3d95f" class="cell" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>].to_numpy()</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sidewalk <span class="op">=</span> top.loc[</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Sidewalk"</span>), <span class="st">"closure_hours"</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>].to_numpy()</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>observed_gap <span class="op">=</span> np.median(hydrant) <span class="op">-</span> np.median(sidewalk)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2026</span>)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>bootstrap_gaps <span class="op">=</span> np.array([</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    np.median(rng.choice(hydrant, size<span class="op">=</span><span class="bu">len</span>(hydrant), replace<span class="op">=</span><span class="va">True</span>))</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> np.median(rng.choice(sidewalk, size<span class="op">=</span><span class="bu">len</span>(sidewalk), replace<span class="op">=</span><span class="va">True</span>))</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2000</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>interval <span class="op">=</span> np.quantile(bootstrap_gaps, [<span class="fl">.025</span>, <span class="fl">.975</span>])</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>combined <span class="op">=</span> np.concatenate([hydrant, sidewalk])</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>permuted_gaps <span class="op">=</span> np.array([</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    np.median(shuffled[:<span class="bu">len</span>(hydrant)])</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> np.median(shuffled[<span class="bu">len</span>(hydrant):])</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> shuffled <span class="kw">in</span> (rng.permutation(combined) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2000</span>))</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>])</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>extreme <span class="op">=</span> np.count_nonzero(np.<span class="bu">abs</span>(permuted_gaps) <span class="op">&gt;=</span> <span class="bu">abs</span>(observed_gap))</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="op">=</span> (extreme <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> (<span class="bu">len</span>(permuted_gaps) <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"observed median gap (hours)"</span>: observed_gap,</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bootstrap lower endpoint (hours)"</span>: interval[<span class="dv">0</span>],</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bootstrap upper endpoint (hours)"</span>: interval[<span class="dv">1</span>],</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"permutation p-value"</span>: p_value,</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>}).to_frame(<span class="st">"value"</span>).<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Subgroup composition can also change the direction of an overall comparison. Simpson’s paradox describes cases where an association in aggregated data weakens or reverses after data are divided into subgroups defined by a third variable <span class="citation" data-cites="simpson1951interpretation">(<a href="#ref-simpson1951interpretation" role="doc-biblioref">Simpson, 1951</a>)</span>. The following hypothetical example illustrates the arithmetic with treatment success rates. Treatment A has a higher success rate than treatment B in both risk groups, but A is used much more often for high-risk cases. The pooled rates therefore favor B. The values are constructed for instruction and do not describe a medical study.</p>
+<div id="eab165d2" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>simpson <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"risk"</span>: [<span class="st">"Lower"</span>, <span class="st">"Lower"</span>, <span class="st">"Higher"</span>, <span class="st">"Higher"</span>],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"treatment"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>],</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"successes"</span>: [<span class="dv">81</span>, <span class="dv">234</span>, <span class="dv">192</span>, <span class="dv">55</span>],</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"cases"</span>: [<span class="dv">87</span>, <span class="dv">270</span>, <span class="dv">263</span>, <span class="dv">80</span>],</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>simpson[<span class="st">"success_rate"</span>] <span class="op">=</span> simpson[<span class="st">"successes"</span>] <span class="op">/</span> simpson[<span class="st">"cases"</span>]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>within_risk <span class="op">=</span> simpson.pivot(</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"risk"</span>, columns<span class="op">=</span><span class="st">"treatment"</span>, values<span class="op">=</span><span class="st">"success_rate"</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>case_shares <span class="op">=</span> simpson.pivot(</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"risk"</span>, columns<span class="op">=</span><span class="st">"treatment"</span>, values<span class="op">=</span><span class="st">"cases"</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>case_shares <span class="op">=</span> case_shares.div(case_shares.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>), axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>pooled <span class="op">=</span> simpson.groupby(<span class="st">"treatment"</span>)[<span class="st">"successes"</span>].<span class="bu">sum</span>() <span class="op">/</span> simpson.groupby(</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"treatment"</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>)[<span class="st">"cases"</span>].<span class="bu">sum</span>()</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> pd.concat([within_risk, pooled.rename(<span class="st">"Pooled"</span>).to_frame().T])</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>result[<span class="st">"A case share"</span>] <span class="op">=</span> case_shares[<span class="st">"A"</span>]</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>result[<span class="st">"B case share"</span>] <span class="op">=</span> case_shares[<span class="st">"B"</span>]</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>result.loc[<span class="st">"Pooled"</span>, [<span class="st">"A case share"</span>, <span class="st">"B case share"</span>]] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>result.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">treatment</th>
+<th data-quarto-table-cell-role="th">A</th>
+<th data-quarto-table-cell-role="th">B</th>
+<th data-quarto-table-cell-role="th">A case share</th>
+<th data-quarto-table-cell-role="th">B case share</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Higher</th>
+<td>0.730</td>
+<td>0.688</td>
+<td>0.751</td>
+<td>0.229</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Lower</th>
+<td>0.931</td>
+<td>0.867</td>
+<td>0.249</td>
+<td>0.771</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Pooled</th>
+<td>0.780</td>
+<td>0.826</td>
+<td>1.000</td>
+<td>1.000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The table makes the changing weights visible: treatment A has a larger share of its cases in the higher-risk group, where success is less common for both treatments. The pooled row summarizes success rates, while the case-share columns show each treatment’s composition.</p>
+<p>This reversal does not show which treatment is more effective. Risk group may be related to treatment assignment, and other differences may remain within each stratum. Analysts should report the overall and within-group summaries and explain why the stratifying variable matters before drawing a causal conclusion. The later visualization chapter develops small-multiple displays that make subgroup comparisons easier to inspect <span class="citation" data-cites="armstrong2014visualizing">(<a href="#ref-armstrong2014visualizing" role="doc-biblioref">Armstrong &amp; Wattenberg, 2014</a>)</span>. It applies this approach with <code>facet_grid()</code> (see <a href="08-visualization.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+</section>
+<section id="uncertainty-assessment" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="uncertainty-assessment"><span class="header-section-number">7.5</span> Uncertainty Assessment</h2>
+<p>A hypothesis test can be part of EDA when its assumptions and limited purpose are explicit. Consider the median closure-time difference between Blocked Hydrant and Blocked Sidewalk requests. For the observed week, that difference is descriptive and needs no test. A test addresses a different question: under a model in which requests from the two detail groups have exchangeable closure-time distributions, how unusual would the observed difference be? The permutation calculation below pools the two groups and reallocates their labels while preserving their sizes. Its two-sided statistic is the absolute difference between medians. A bootstrap interval separately resamples requests within each group to show variability under an independent-request model.</p>
+<p>The appropriate test depends on the outcome scale, comparison structure, and sampling or assignment process. The table links common questions to Python functions and states the null or design condition each function addresses <span class="citation" data-cites="scipy2026statistical statsmodels2026proportion statsmodels2026contingency">(<a href="#ref-scipy2026statistical" role="doc-biblioref">SciPy Developers, 2026</a>; <a href="#ref-statsmodels2026proportion" role="doc-biblioref"><span class="nocase">statsmodels Developers</span>, 2026b</a>, <a href="#ref-statsmodels2026contingency" role="doc-biblioref">2026a</a>)</span>. This guide is not an automatic decision rule: inspect the data and define the target contrast before choosing a test <span class="citation" data-cites="nistndexploratory">(<a href="#ref-nistndexploratory" role="doc-biblioref">National Institute of Standards and Technology, n.d.</a>)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question and design</th>
+<th>Test and Python function</th>
+<th>Null or key condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Is one numerical mean equal to a reference value?</td>
+<td>One-sample <span class="math inline">\(t\)</span> test, <code>scipy.stats.ttest_1samp</code></td>
+<td>Population mean equals the reference value.</td>
+</tr>
+<tr class="even">
+<td>Do two independent groups have different means?</td>
+<td>Welch <span class="math inline">\(t\)</span> test, <code>scipy.stats.ttest_ind(..., equal_var=False)</code></td>
+<td>Population means are equal; equal variances are not assumed.</td>
+</tr>
+<tr class="odd">
+<td>Do paired measurements have different means?</td>
+<td>Paired <span class="math inline">\(t\)</span> test, <code>scipy.stats.ttest_rel</code></td>
+<td>Mean within-pair difference is zero; pairs are independent.</td>
+</tr>
+<tr class="even">
+<td>Do three or more independent groups have equal means?</td>
+<td>One-way ANOVA, <code>scipy.stats.f_oneway</code>; use <code>equal_var=False</code> for Welch ANOVA</td>
+<td>All group means are equal; classical ANOVA assumes equal variances, and follow-up comparisons need multiplicity control.</td>
+</tr>
+<tr class="odd">
+<td>Are two categorical variables associated?</td>
+<td>Chi-square test, <code>scipy.stats.chi2_contingency</code></td>
+<td>Variables are independent; the large-sample approximation must be adequate.</td>
+</tr>
+<tr class="even">
+<td>Is a sparse <span class="math inline">\(2\times2\)</span> table associated?</td>
+<td>Fisher exact test, <code>scipy.stats.fisher_exact</code></td>
+<td>Tests association conditional on fixed table margins.</td>
+</tr>
+<tr class="odd">
+<td>Does one proportion equal a benchmark, or do two proportions differ?</td>
+<td>Binomial test, <code>scipy.stats.binomtest</code>; two-proportion test, <code>statsmodels.stats.proportion.proportions_ztest</code></td>
+<td>Proportions equal the stated benchmark or each other; samples must follow the test’s independent-sampling design.</td>
+</tr>
+<tr class="even">
+<td>Do paired binary outcomes change?</td>
+<td>McNemar’s test, <code>statsmodels.stats.contingency_tables.mcnemar</code></td>
+<td>The two paired marginal proportions are equal; pairs are independent.</td>
+</tr>
+<tr class="odd">
+<td>Are two numerical variables associated?</td>
+<td>Pearson, <code>scipy.stats.pearsonr</code>; Spearman, <code>scipy.stats.spearmanr</code></td>
+<td>Tests zero linear correlation or zero rank correlation, respectively.</td>
+</tr>
+<tr class="even">
+<td>Do independent groups differ in rank distributions?</td>
+<td>Mann–Whitney, <code>scipy.stats.mannwhitneyu</code>; Kruskal–Wallis, <code>scipy.stats.kruskal</code></td>
+<td>Tests equal distributions or rank locations under their assumptions; neither automatically tests equal medians.</td>
+</tr>
+<tr class="odd">
+<td>Is a chosen statistic unusual under exchangeable labels?</td>
+<td>Permutation test, <code>scipy.stats.permutation_test</code></td>
+<td>Labels can be reassigned under the null; the statistic must match the question.</td>
+</tr>
+</tbody>
+</table>
+<p>The first code example uses the contingency table from the three most frequent details to ask whether the observed detail mix varies by borough. The chi-square test evaluates independence, while Cramér’s <span class="math inline">\(V\)</span> summarizes the strength of the association. The expected cell counts help assess whether the chi-square approximation is adequate. Because the details were selected by frequency in this same week, this is an exploratory calculation, not a confirmatory test of a prespecified hypothesis.</p>
+<div id="58561d0b" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chi2_contingency</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>detail_by_borough <span class="op">=</span> pd.crosstab(top[<span class="st">"problem_detail"</span>], top[<span class="st">"borough"</span>])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>chi_square <span class="op">=</span> chi2_contingency(detail_by_borough)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>sample_size <span class="op">=</span> detail_by_borough.to_numpy().<span class="bu">sum</span>()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>cramers_v <span class="op">=</span> np.sqrt(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    chi_square.statistic</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">/</span> (sample_size <span class="op">*</span> <span class="bu">min</span>(detail_by_borough.shape[<span class="dv">0</span>] <span class="op">-</span> <span class="dv">1</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                         detail_by_borough.shape[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">1</span>))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>display(detail_by_borough)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"chi-square statistic"</span>: chi_square.statistic,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"degrees of freedom"</span>: chi_square.dof,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"p-value"</span>: chi_square.pvalue,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"smallest expected cell count"</span>: chi_square.expected_freq.<span class="bu">min</span>(),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Cramer's V"</span>: cramers_v,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>}).to_frame(<span class="st">"value"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">borough</th>
+<th data-quarto-table-cell-role="th">BRONX</th>
+<th data-quarto-table-cell-role="th">BROOKLYN</th>
+<th data-quarto-table-cell-role="th">MANHATTAN</th>
+<th data-quarto-table-cell-role="th">QUEENS</th>
+<th data-quarto-table-cell-role="th">STATEN ISLAND</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">problem_detail</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Blocked Hydrant</th>
+<td>507</td>
+<td>1595</td>
+<td>281</td>
+<td>1274</td>
+<td>54</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Blocked Sidewalk</th>
+<td>188</td>
+<td>824</td>
+<td>179</td>
+<td>649</td>
+<td>34</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Posted Parking Sign Violation</th>
+<td>466</td>
+<td>1288</td>
+<td>558</td>
+<td>865</td>
+<td>89</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">chi-square statistic</th>
+<td>2.257312e+02</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">degrees of freedom</th>
+<td>8.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">p-value</th>
+<td>2.367142e-44</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">smallest expected cell count</th>
+<td>3.747577e+01</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Cramer's V</th>
+<td>1.129236e-01</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The next example uses Welch’s test to compare arithmetic mean closure hours for hydrant and sidewalk requests. It answers a different question from the median comparison below, and the long right tail can make the mean sensitive to a small number of long intervals. The request-level calculation also assumes independent observations, although requests may share locations, times, or administrative conditions.</p>
+<div id="3d80e949" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> ttest_ind</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>].dropna().to_numpy()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>sidewalk <span class="op">=</span> top.loc[</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Sidewalk"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>].dropna().to_numpy()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>welch_test <span class="op">=</span> ttest_ind(hydrant, sidewalk, equal_var<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hydrant mean (hours)"</span>: hydrant.mean(),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sidewalk mean (hours)"</span>: sidewalk.mean(),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mean difference (hours)"</span>: hydrant.mean() <span class="op">-</span> sidewalk.mean(),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Welch t statistic"</span>: welch_test.statistic,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Welch degrees of freedom"</span>: welch_test.df,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"two-sided p-value"</span>: welch_test.pvalue,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>}).to_frame(<span class="st">"value"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hydrant mean (hours)</th>
+<td>4.128717e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">sidewalk mean (hours)</th>
+<td>2.758008e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">mean difference (hours)</th>
+<td>1.370709e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Welch t statistic</th>
+<td>9.390420e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Welch degrees of freedom</th>
+<td>4.976796e+03</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">two-sided p-value</th>
+<td>8.868919e-21</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Requests from one week may share time, location, or agency conditions, which weakens a simple independence model. A statistical test does not correct those design limitations, and selecting a test after searching many groupings can make its nominal <span class="math inline">\(p\)</span>-value misleading <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>. Rank-based tests such as Mann–Whitney and Kruskal–Wallis do not automatically test a difference in medians. Likewise, a bootstrap interval estimates uncertainty under a resampling scheme; it is not itself a hypothesis test. When many outcomes, subgroups, or alternatives are examined, report that search and do not treat a threshold such as 0.05 as a mechanical decision rule <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
+<div id="6ce3ca5d" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>].dropna().to_numpy()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>sidewalk <span class="op">=</span> top.loc[</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Sidewalk"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>].dropna().to_numpy()</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>observed_gap <span class="op">=</span> np.median(hydrant) <span class="op">-</span> np.median(sidewalk)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2026</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>bootstrap_gaps <span class="op">=</span> np.array([</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    np.median(rng.choice(hydrant, size<span class="op">=</span><span class="bu">len</span>(hydrant), replace<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> np.median(rng.choice(sidewalk, size<span class="op">=</span><span class="bu">len</span>(sidewalk), replace<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2000</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>interval <span class="op">=</span> np.quantile(bootstrap_gaps, [<span class="fl">.025</span>, <span class="fl">.975</span>])</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>combined <span class="op">=</span> np.concatenate([hydrant, sidewalk])</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>permuted_gaps <span class="op">=</span> np.array([</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    np.median(shuffled[:<span class="bu">len</span>(hydrant)])</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> np.median(shuffled[<span class="bu">len</span>(hydrant):])</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> shuffled <span class="kw">in</span> (rng.permutation(combined) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2000</span>))</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>extreme <span class="op">=</span> np.count_nonzero(np.<span class="bu">abs</span>(permuted_gaps) <span class="op">&gt;=</span> <span class="bu">abs</span>(observed_gap))</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="op">=</span> (extreme <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> (<span class="bu">len</span>(permuted_gaps) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"observed median gap (hours)"</span>: observed_gap,</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bootstrap lower endpoint (hours)"</span>: interval[<span class="dv">0</span>],</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bootstrap upper endpoint (hours)"</span>: interval[<span class="dv">1</span>],</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"permutation p-value"</span>: p_value,</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>}).to_frame(<span class="st">"value"</span>).<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -849,35 +1162,35 @@ Name: count, dtype: int64</code></pre>
 </div>
 <p>The observed median gap is about 0.865 hours, and the bootstrap interval is approximately 0.712 to 1.016 hours. The estimated permutation <span class="math inline">\(p\)</span>-value is about 0.0005, with the added one in the numerator and denominator preventing a reported zero from a finite set of permutations. These results show that the observed separation is large relative to these relabelings and resamples. They do not establish that the detail label causes a closure-time difference. Requests may be related through place, time, repeat reporting, or agency practice, and the analysis was chosen after inspection of this week. The bootstrap interval does not include uncertainty from coverage, measurement, or group selection. A <span class="math inline">\(p\)</span>-value should not be read as the probability that the null hypothesis is true or as a measure of practical importance <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
 <p>Sensitivity analysis quantifies how much a descriptive result changes under defensible alternatives to the primary calculation. Yu and Barter emphasize that choices made during cleaning, preprocessing, and analysis can affect a reported finding <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. The first check below restricts closure intervals to at most 24 hours to assess the influence of the long upper tail; it does not classify longer intervals as invalid. The remaining checks calculate the same hydrant-minus-sidewalk median gap within each borough, holding the outcome definition and group labels fixed while changing geographic composition. These are targeted perturbations of the eligible set rather than an exhaustive search for a desired result. The table reports group sizes alongside gaps because a large contrast based on few requests deserves a different interpretation from a similar contrast based on many. Neither sensitivity check removes confounding or extends the conclusion beyond the observed week.</p>
-<div id="1fb7410b" class="cell" data-execution_count="11">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> median_gap(frame):</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    left <span class="op">=</span> frame.loc[</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    right <span class="op">=</span> frame.loc[</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Sidewalk"</span>), <span class="st">"closure_hours"</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series({</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"hydrant_requests"</span>: <span class="bu">len</span>(left),</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sidewalk_requests"</span>: <span class="bu">len</span>(right),</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"median_gap_hours"</span>: left.median() <span class="op">-</span> right.median(),</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all requests"</span>: median_gap(top),</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure at most 24 hours"</span>: median_gap(</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        top.loc[top[<span class="st">"closure_hours"</span>].le(<span class="dv">24</span>)]</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>}).T</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> borough <span class="kw">in</span> <span class="bu">sorted</span>(top[<span class="st">"borough"</span>].dropna().unique()):</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    sensitivity.loc[borough.title()] <span class="op">=</span> median_gap(</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        top.loc[top[<span class="st">"borough"</span>].eq(borough)]</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>sensitivity[[<span class="st">"hydrant_requests"</span>, <span class="st">"sidewalk_requests"</span>]] <span class="op">=</span> sensitivity[[</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hydrant_requests"</span>, <span class="st">"sidewalk_requests"</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>]].astype(<span class="bu">int</span>)</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>sensitivity.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div id="3c56511d" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> median_gap(frame):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    left <span class="op">=</span> frame.loc[</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    right <span class="op">=</span> frame.loc[</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Sidewalk"</span>), <span class="st">"closure_hours"</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.Series({</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"hydrant_requests"</span>: <span class="bu">len</span>(left),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sidewalk_requests"</span>: <span class="bu">len</span>(right),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"median_gap_hours"</span>: left.median() <span class="op">-</span> right.median(),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all requests"</span>: median_gap(top),</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure at most 24 hours"</span>: median_gap(</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        top.loc[top[<span class="st">"closure_hours"</span>].le(<span class="dv">24</span>)]</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>}).T</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> borough <span class="kw">in</span> <span class="bu">sorted</span>(top[<span class="st">"borough"</span>].dropna().unique()):</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    sensitivity.loc[borough.title()] <span class="op">=</span> median_gap(</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        top.loc[top[<span class="st">"borough"</span>].eq(borough)]</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>sensitivity[[<span class="st">"hydrant_requests"</span>, <span class="st">"sidewalk_requests"</span>]] <span class="op">=</span> sensitivity[[</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hydrant_requests"</span>, <span class="st">"sidewalk_requests"</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>]].astype(<span class="bu">int</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>sensitivity.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -975,8 +1288,23 @@ Name: count, dtype: int64</code></pre>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-armstrong2014visualizing" class="csl-entry" role="listitem">
+Armstrong, Z., &amp; Wattenberg, M. (2014). Visualizing statistical mix effects and <span class="nocase">Simpson’s</span> paradox. <em>IEEE Transactions on Visualization and Computer Graphics</em>, <em>20</em>(12), 2132–2141. <a href="https://doi.org/10.1109/TVCG.2014.2346297">https://doi.org/10.1109/TVCG.2014.2346297</a>
+</div>
 <div id="ref-nistndexploratory" class="csl-entry" role="listitem">
 National Institute of Standards and Technology. (n.d.). <em>Exploratory data analysis</em>. Retrieved September 30, 2026, from <a href="https://itl.nist.gov/div898/handbook/eda/section1/eda11.htm">https://itl.nist.gov/div898/handbook/eda/section1/eda11.htm</a>
+</div>
+<div id="ref-scipy2026statistical" class="csl-entry" role="listitem">
+SciPy Developers. (2026). <em>Statistical functions</em>. <a href="https://docs.scipy.org/doc/scipy/reference/stats.html">https://docs.scipy.org/doc/scipy/reference/stats.html</a>
+</div>
+<div id="ref-simpson1951interpretation" class="csl-entry" role="listitem">
+Simpson, E. H. (1951). The interpretation of interaction in contingency tables. <em>Journal of the Royal Statistical Society: Series B</em>, <em>13</em>(2), 238–241. <a href="https://doi.org/10.1111/j.2517-6161.1951.tb00088.x">https://doi.org/10.1111/j.2517-6161.1951.tb00088.x</a>
+</div>
+<div id="ref-statsmodels2026contingency" class="csl-entry" role="listitem">
+<span class="nocase">statsmodels Developers</span>. (2026a). <em>Contingency tables</em>. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html">https://www.statsmodels.org/stable/generated/statsmodels.stats.contingency_tables.mcnemar.html</a>
+</div>
+<div id="ref-statsmodels2026proportion" class="csl-entry" role="listitem">
+<span class="nocase">statsmodels Developers</span>. (2026b). <em>Proportion tests and confidence intervals</em>. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html">https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html</a>
 </div>
 <div id="ref-tussey2025principles" class="csl-entry" role="listitem">
 Tussey, D., &amp; Yan, J. (2025). <em>Principles for open data curation: A case study with the new york city 311 service request data</em>. <a href="https://doi.org/10.48550/arXiv.2502.08649">https://doi.org/10.48550/arXiv.2502.08649</a>

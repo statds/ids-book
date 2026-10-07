@@ -26,10 +26,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -75,7 +130,39 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -187,8 +274,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#frame-the-prediction" id="toc-frame-the-prediction" class="nav-link active" data-scroll-target="#frame-the-prediction"><span class="header-section-number">9.1</span> Frame the Prediction</a></li>
+  <li><a href="#establish-a-baseline" id="toc-establish-a-baseline" class="nav-link" data-scroll-target="#establish-a-baseline"><span class="header-section-number">9.2</span> Establish a Baseline</a></li>
+  <li><a href="#use-a-glm" id="toc-use-a-glm" class="nav-link" data-scroll-target="#use-a-glm"><span class="header-section-number">9.3</span> Use a GLM</a></li>
+  <li><a href="#check-the-model" id="toc-check-the-model" class="nav-link" data-scroll-target="#check-the-model"><span class="header-section-number">9.4</span> Check the Model</a></li>
+  <li><a href="#evaluate-predictions" id="toc-evaluate-predictions" class="nav-link" data-scroll-target="#evaluate-predictions"><span class="header-section-number">9.5</span> Evaluate Predictions</a></li>
+  <li><a href="#regularize-logistic-regression" id="toc-regularize-logistic-regression" class="nav-link" data-scroll-target="#regularize-logistic-regression"><span class="header-section-number">9.6</span> Regularize Logistic Regression</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/09-modeling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -212,9 +312,934 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This chapter will introduce predictive modeling as a workflow built around a well-defined target and an appropriate evaluation design. Planned topics include baselines, training and test data, model assessment, interpretation, and limits on claims from predictive performance. Model development will revisit all four checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>, especially whether the target, available predictors, and evaluation design support the intended use.</p>
+<p>Predictive modeling uses information available at a defined moment to estimate an outcome that is not yet known. The preceding chapters developed a question, prepared request-level data, examined the closure-time distribution, and visualized variation across time and place. This chapter carries that work forward with a domain question: can information available when an illegal- parking request is created help identify requests that will remain open for at least one hour? It examines whether request detail and borough, together with neighborhood population density, household vehicle availability, and income from the Census-linked table, improve predictions. The analysis uses the same one-week records and request-level observational unit as the earlier chapters. It does not claim that an area characteristic causes a request to take longer, or that one week represents future requests under changed conditions.</p>
+<p>The one-hour outcome connects the modeling question to the operational concern that illegal-parking reports may call for timely handling. It is an analytical cutoff, not a documented agency response standard. In the available week, 34.6% of requests with usable closure times were closed in under an hour, while 65.4% remained open for at least an hour. Recorded closure time is only a proxy for handling time: it may include dispatch, travel, queueing, reporting, and administrative steps. The analysis can predict this recorded outcome from observed fields, but it cannot isolate those processes.</p>
+<section id="frame-the-prediction" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="frame-the-prediction"><span class="header-section-number">9.1</span> Frame the Prediction</h2>
+<p>A prediction is useful only when its target, prediction time, available features, and intended decision are clear. <a href="07-eda.html#exr-eda-time" class="quarto-xref">Exercise&nbsp;<span>7.1</span></a> examined a two-hour cutoff as an exploratory summary. Here, the analysis uses a one-hour cutoff to ask a more time-sensitive question. Reconsidering a threshold for a new analytical purpose is reasonable when the change is stated and its effects are visible; the new threshold should not be described as a policy rule.</p>
+<p>The observational unit is one illegal-parking request in the distributed week of data. The target equals one when its recorded closure time is at least one hour and zero otherwise. Requests with missing closure time cannot be labeled and are excluded from this supervised analysis. The candidate features in the main model are problem detail and borough, recorded when the request is created, plus population density, median household income, and the share of households with a vehicle available from the Census-linked area table <span class="citation" data-cites="census2024gazetteer census2024vehicles">(<a href="#ref-census2024gazetteer" role="doc-biblioref">U.S. Census Bureau, 2024a</a>, <a href="#ref-census2024vehicles" role="doc-biblioref">2024b</a>)</span>. Population density divides the ACS population estimate by 2024 Gazetteer ZCTA land area. The vehicle share is one minus the estimated fraction of households with no vehicle available. These measures describe area context rather than curb capacity or individual behavior. The ACS estimates cover 2020–2024, precede the request week, and have sampling uncertainty; the derived vehicle share’s uncertainty is not calculated from the published margins of error. The incident ZIP label serves as the link to area context, as described in <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.4</span></a>; a later benchmark also treats it as a categorical identifier. The lookup supplies 2020–2024 American Community Survey (ACS) estimates for ZIP Code Tabulation Areas (ZCTAs). A ZCTA and a postal ZIP Code are related but distinct geographies, so the link is an approximation rather than an exact address-level match <span class="citation" data-cites="census2023zip census2026american">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>, <a href="#ref-census2026american" role="doc-biblioref">2026</a>)</span>. The ZIP digits themselves are not used as a quantitative predictor. Closure time and any field that records later processing are excluded because they would not be available at prediction time.</p>
+<p>The prediction question is: among requests from the same observed week and with similar recorded fields and area context, how well can a model distinguish requests that remain open for at least an hour? This question describes prediction within the data’s observed setting. It does not ask whether borough, problem detail, population density, household vehicle availability, or income causes a longer closure, and it does not establish how a model would perform in another week. The four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> remain relevant: a sound model cannot repair an unclear target, an invalid measurement, an inadequate scope, or weak evidence.</p>
+</section>
+<section id="establish-a-baseline" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="establish-a-baseline"><span class="header-section-number">9.2</span> Establish a Baseline</h2>
+<p>A baseline sets a reference that a more complex model must improve. Because about two-thirds of eligible requests meet the one-hour target, predicting the majority class for every request already gives roughly 65% accuracy. That result does not distinguish requests: it labels every case as taking at least an hour. Accuracy alone would therefore make a useless classifier look respectable.</p>
+<p>The analysis starts from the shared preparation function rather than repeating the import and filtering workflow from <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. It links the requests to the Census context already documented in <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.4</span></a>, reports unmatched and incomplete records, and defines the binary outcome. It does not alter the source request data or rebuild the Census lookup. The train-test split reserves one quarter of complete requests for a final evaluation. Stratification keeps the target proportion similar in the two sets; it does not make the records independent or simulate a future week.</p>
+<div id="408eb41d" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scripts.parking_requests <span class="im">import</span> attach_zcta_context, load_parking_requests</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> load_parking_requests()</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>with_context <span class="op">=</span> attach_zcta_context(parking)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>matched <span class="op">=</span> with_context[<span class="st">"_merge"</span>].eq(<span class="st">"both"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>has_income <span class="op">=</span> with_context[<span class="st">"median_household_income"</span>].notna()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>area_features <span class="op">=</span> [</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_density_per_sqmi"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"median_household_income"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"share_households_with_vehicle"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>has_area_context <span class="op">=</span> with_context[area_features].notna().<span class="bu">all</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>eligible <span class="op">=</span> matched <span class="op">&amp;</span> has_area_context</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>required <span class="op">=</span> [</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure_hours"</span>, <span class="st">"problem_detail"</span>, <span class="st">"borough"</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"incident_zip"</span>, <span class="op">*</span>area_features,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>model_data <span class="op">=</span> with_context.loc[eligible, required <span class="op">+</span> [<span class="st">"zcta"</span>]].copy()</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model_data[required].notna().<span class="bu">all</span>().<span class="bu">all</span>()</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>model_data[<span class="st">"long_closure"</span>] <span class="op">=</span> model_data[<span class="st">"closure_hours"</span>].ge(<span class="dv">1</span>).astype(<span class="st">"int8"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>categorical_features <span class="op">=</span> [<span class="st">"problem_detail"</span>, <span class="st">"borough"</span>]</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> area_features</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>feature_columns <span class="op">=</span> categorical_features <span class="op">+</span> numeric_features <span class="op">+</span> [<span class="st">"incident_zip"</span>]</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> model_data[feature_columns].copy()</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>X[categorical_features] <span class="op">=</span> X[categorical_features].astype(<span class="st">"string"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>X[<span class="st">"incident_zip"</span>] <span class="op">=</span> X[<span class="st">"incident_zip"</span>].astype(<span class="st">"string"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> model_data[<span class="st">"long_closure"</span>]</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">2026</span>, stratify<span class="op">=</span>y</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"requests in one-week extract"</span>: <span class="bu">len</span>(parking),</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unmatched ZIP labels"</span>: <span class="bu">int</span>((<span class="op">~</span>matched).<span class="bu">sum</span>()),</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests without income estimate"</span>: <span class="bu">int</span>((matched <span class="op">&amp;</span> <span class="op">~</span>has_income).<span class="bu">sum</span>()),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests missing an area measure"</span>: <span class="bu">int</span>(</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        (matched <span class="op">&amp;</span> <span class="op">~</span>has_area_context).<span class="bu">sum</span>()</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"eligible requests"</span>: <span class="bu">len</span>(model_data),</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched ZCTAs represented"</span>: model_data[<span class="st">"zcta"</span>].nunique(),</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"at least one hour"</span>: <span class="bu">int</span>(y.<span class="bu">sum</span>()),</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"under one hour"</span>: <span class="bu">int</span>(y.eq(<span class="dv">0</span>).<span class="bu">sum</span>()),</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"training requests"</span>: <span class="bu">len</span>(X_train),</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"test requests"</span>: <span class="bu">len</span>(X_test),</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"training target proportion"</span>: y_train.mean(),</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">"test target proportion"</span>: y_test.mean(),</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>requests in one-week extract                13040.000000
+unmatched ZIP labels                            7.000000
+matched requests without income estimate       58.000000
+matched requests missing an area measure       58.000000
+eligible requests                           12975.000000
+matched ZCTAs represented                     176.000000
+at least one hour                            8497.000000
+under one hour                               4478.000000
+training requests                            9731.000000
+test requests                                3244.000000
+training target proportion                      0.654917
+test target proportion                          0.654747
+dtype: float64</code></pre>
+</div>
+</div>
+<p>The checks make the analysis population and target visible before any model is fitted. The lookup matches 13,033 of 13,040 requests; 58 matched requests lack at least one area measure, including nine requests with no household vehicle estimate because their ACS household denominator is zero. The complete-case analysis therefore uses 12,975 requests from 176 ZCTAs. The split contains 9,731 training requests and 3,244 test requests, with nearly identical target proportions. Fixing the random seed makes this example reproducible, while stratification controls only the class proportions. Requests from the same ZCTA can appear in both sets, so the test set evaluates new requests in areas represented during training rather than transfer to unfamiliar areas.</p>
+</section>
+<section id="use-a-glm" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="use-a-glm"><span class="header-section-number">9.3</span> Use a GLM</h2>
+<p>A generalized linear model (GLM) relates a response distribution to a predictor through a link function. For a binary outcome, the response is modeled with a Bernoulli distribution and a logit link; this special case is logistic regression. GLMs also include familiar linear regression with a Gaussian response and identity link, as well as count models with a Poisson response and log link. The response distribution and link should follow the outcome’s scale and support, rather than being selected only because a software function is familiar <span class="citation" data-cites="nelder1972generalized mccullagh1989generalized">(<a href="#ref-mccullagh1989generalized" role="doc-biblioref">McCullagh &amp; Nelder, 1989</a>; <a href="#ref-nelder1972generalized" role="doc-biblioref">Nelder &amp; Wedderburn, 1972</a>)</span>.</p>
+<p>For request (i), let (Y_i=1) indicate that closure takes at least one hour, and let (p_i = (Y_i=1 _i)). Logistic regression models the log odds as a linear combination of predictors:</p>
+<p>[ !() = _0 + <em>1 x</em>{i1} + + <em>k x</em>{ik}. ]</p>
+<p>The inverse-logit transformation maps any real-valued linear predictor to a probability between zero and one. A coefficient describes a change in log odds, holding the other included predictors fixed. Exponentiating a coefficient gives an odds ratio, but an odds ratio is not a probability difference and does not by itself describe a causal effect.</p>
+<p>The first GLM includes problem detail, borough, population density, median household income, and household vehicle availability. The three area measures are standardized across training requests, so their odds ratios describe a one-standard-deviation difference in the request-weighted feature values. The formula interface compares each categorical level with a reference category and holds the other predictors fixed. These coefficients describe conditional associations in the fitted model, not changes caused by the area characteristics <span class="citation" data-cites="statsmodels2026generalized">(<a href="#ref-statsmodels2026generalized" role="doc-biblioref"><span class="nocase">statsmodels Developers</span>, 2026</a>)</span>.</p>
+<div id="48f7d83f" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>glm_data <span class="op">=</span> X_train.copy()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>glm_data[<span class="st">"long_closure"</span>] <span class="op">=</span> y_train</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>glm_formula <span class="op">=</span> (</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"long_closure ~ C(problem_detail) + C(borough) + "</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"standardize(population_density_per_sqmi) + "</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"standardize(median_household_income) + "</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"standardize(share_households_with_vehicle)"</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>glm_fit <span class="op">=</span> smf.glm(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    glm_formula,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>glm_data,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    family<span class="op">=</span>sm.families.Binomial(),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>).fit()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>population_density_log_odds <span class="op">=</span> glm_fit.params[</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"standardize(population_density_per_sqmi)"</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>income_log_odds <span class="op">=</span> glm_fit.params[<span class="st">"standardize(median_household_income)"</span>]</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>vehicle_share_log_odds <span class="op">=</span> glm_fit.params[</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"standardize(share_households_with_vehicle)"</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Population-density odds ratio per standard deviation"</span>: np.exp(</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        population_density_log_odds</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Income odds ratio per standard deviation"</span>: np.exp(income_log_odds),</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Household vehicle-share odds ratio per standard deviation"</span>: np.exp(</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        vehicle_share_log_odds</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>Population-density odds ratio per standard deviation         1.129272
+Income odds ratio per standard deviation                     0.802940
+Household vehicle-share odds ratio per standard deviation    1.232858
+dtype: float64</code></pre>
+</div>
+</div>
+<p>The odds ratios summarize adjusted associations in this training split, with each area measure compared across a one-standard-deviation difference. The context values repeat across requests in the same ZCTA, so area-level patterns are supported by the number of distinct ZCTAs, not by treating every request as an independent area. These estimates do not describe individual residents or causal effects. They also depend on the model’s assumption that each standardized measure has a linear relationship with log odds.</p>
+</section>
+<section id="check-the-model" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="check-the-model"><span class="header-section-number">9.4</span> Check the Model</h2>
+<p>Model checks ask whether the chosen specification represents the observed relationships adequately. They differ from test-set evaluation: a model can fit the training records poorly, or fit them closely while predicting new records poorly. Logistic regression does not assume normally distributed errors or constant error variance as ordinary least squares does. Its assumptions instead concern the conditional Bernoulli response and the specified relationship between predictors and log odds. Residual and influence diagnostics can reveal unusual records or lack of fit, but no single diagnostic proves that a model is correct <span class="citation" data-cites="hosmer2013applied pregibon1981logistic">(<a href="#ref-hosmer2013applied" role="doc-biblioref">Hosmer et al., 2013</a>; <a href="#ref-pregibon1981logistic" role="doc-biblioref">Pregibon, 1981</a>)</span>.</p>
+<p>The current model assumes a linear relationship between each standardized area measure and log odds. It also imposes an additive structure: the detail contrast is the same across boroughs unless an interaction is included. Sparse categories can make estimates unstable. Checks should compare observed outcome rates with fitted probabilities across boroughs and across ordered groups of each continuous measure, while retaining each group’s count. Because the Census values repeat within ZCTAs, the 176 distinct areas also limit how much independent evidence supports an area-level pattern. Calibration matters because a probability estimate of 0.7 should correspond to an outcome rate near 0.7 among comparable predictions <span class="citation" data-cites="vancalster2019calibration">(<a href="#ref-vancalster2019calibration" role="doc-biblioref">Calster et al., 2019</a>)</span>.</p>
+<p>The training-set summary below compares observed target rates with average fitted probabilities by borough. A large discrepancy can flag a lack of fit for a group, while close averages do not rule out errors for individual requests or interactions hidden within a borough. This is an in-sample check for the simple GLM, not an estimate of future prediction accuracy.</p>
+<div id="0e9c2c17" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>glm_diagnostics <span class="op">=</span> glm_data[[<span class="st">"borough"</span>]].copy()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>glm_diagnostics[<span class="st">"observed"</span>] <span class="op">=</span> y_train</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>glm_diagnostics[<span class="st">"fitted"</span>] <span class="op">=</span> glm_fit.fittedvalues</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>display(glm_diagnostics.groupby(<span class="st">"borough"</span>).agg(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    requests<span class="op">=</span>(<span class="st">"observed"</span>, <span class="st">"size"</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    observed_rate<span class="op">=</span>(<span class="st">"observed"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    mean_fitted_probability<span class="op">=</span>(<span class="st">"fitted"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> variable <span class="kw">in</span> numeric_features:</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    check <span class="op">=</span> glm_data[[variable]].copy()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    check[<span class="st">"observed"</span>] <span class="op">=</span> y_train</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    check[<span class="st">"fitted"</span>] <span class="op">=</span> glm_fit.fittedvalues</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    check[<span class="st">"quintile"</span>] <span class="op">=</span> pd.qcut(check[variable], <span class="dv">5</span>, duplicates<span class="op">=</span><span class="st">"drop"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    display(check.groupby(<span class="st">"quintile"</span>, observed<span class="op">=</span><span class="va">True</span>).agg(</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        requests<span class="op">=</span>(<span class="st">"observed"</span>, <span class="st">"size"</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        observed_rate<span class="op">=</span>(<span class="st">"observed"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        mean_fitted_probability<span class="op">=</span>(<span class="st">"fitted"</span>, <span class="st">"mean"</span>),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
 
 
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">requests</th>
+<th data-quarto-table-cell-role="th">observed_rate</th>
+<th data-quarto-table-cell-role="th">mean_fitted_probability</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">borough</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">BRONX</th>
+<td>1478</td>
+<td>0.655616</td>
+<td>0.655616</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">BROOKLYN</th>
+<td>3811</td>
+<td>0.658357</td>
+<td>0.658357</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MANHATTAN</th>
+<td>1236</td>
+<td>0.523463</td>
+<td>0.523463</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">QUEENS</th>
+<td>3009</td>
+<td>0.698903</td>
+<td>0.698903</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">STATEN ISLAND</th>
+<td>197</td>
+<td>0.736041</td>
+<td>0.736041</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">requests</th>
+<th data-quarto-table-cell-role="th">observed_rate</th>
+<th data-quarto-table-cell-role="th">mean_fitted_probability</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">quintile</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(1253.4370000000001, 23216.646]</th>
+<td>1992</td>
+<td>0.659639</td>
+<td>0.685838</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(23216.646, 32179.534]</th>
+<td>1960</td>
+<td>0.680612</td>
+<td>0.652551</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(32179.534, 44168.478]</th>
+<td>1888</td>
+<td>0.687500</td>
+<td>0.693165</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(44168.478, 61341.523]</th>
+<td>1954</td>
+<td>0.646366</td>
+<td>0.631547</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(61341.523, 172782.609]</th>
+<td>1937</td>
+<td>0.600929</td>
+<td>0.611809</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">requests</th>
+<th data-quarto-table-cell-role="th">observed_rate</th>
+<th data-quarto-table-cell-role="th">mean_fitted_probability</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">quintile</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(24085.999, 62077.0]</th>
+<td>2009</td>
+<td>0.663514</td>
+<td>0.671726</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(62077.0, 75040.0]</th>
+<td>1913</td>
+<td>0.719289</td>
+<td>0.695869</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(75040.0, 90685.0]</th>
+<td>2070</td>
+<td>0.735749</td>
+<td>0.710371</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(90685.0, 118440.0]</th>
+<td>1805</td>
+<td>0.650970</td>
+<td>0.676383</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(118440.0, 233636.0]</th>
+<td>1934</td>
+<td>0.499483</td>
+<td>0.517562</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">requests</th>
+<th data-quarto-table-cell-role="th">observed_rate</th>
+<th data-quarto-table-cell-role="th">mean_fitted_probability</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">quintile</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(0.09809999999999999, 0.291]</th>
+<td>2044</td>
+<td>0.565068</td>
+<td>0.564986</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(0.291, 0.385]</th>
+<td>1851</td>
+<td>0.596434</td>
+<td>0.621014</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(0.385, 0.525]</th>
+<td>2002</td>
+<td>0.660839</td>
+<td>0.664374</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">(0.525, 0.661]</th>
+<td>1913</td>
+<td>0.733926</td>
+<td>0.702568</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">(0.661, 0.941]</th>
+<td>1921</td>
+<td>0.722020</td>
+<td>0.725967</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The evaluation section checks calibration for a fitted model. A calibration plot groups predictions into bins and compares each bin’s mean predicted probability with its observed fraction. The diagonal marks perfect calibration; binning is a summary, so it can conceal variation within a bin.</p>
+</section>
+<section id="evaluate-predictions" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="evaluate-predictions"><span class="header-section-number">9.5</span> Evaluate Predictions</h2>
+<p>Evaluation asks how well the fitted model predicts requests it did not use for estimation or tuning. A training score is optimistic because the model has already adapted to those records. The reserved test set is used only after model choice; repeatedly adjusting a model after inspecting its test performance turns that set into another training resource and weakens the evaluation. Here, even a clean random holdout supports only a limited claim: it estimates performance for additional requests drawn under a similar one-week data-generating process.</p>
+<p>Different metrics answer different questions. Accuracy counts correct classifications at a chosen probability threshold. The area under the receiver operating characteristic curve (ROC AUC) evaluates ranking across all possible thresholds: 0.5 indicates no ability to rank positive cases better than chance, and 1 indicates perfect ranking. ROC AUC does not select a threshold or show whether predicted probabilities are accurate. Log loss evaluates the probabilities themselves and penalizes confident errors <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>.</p>
+<p>Threshold-based measures describe different parts of the confusion matrix. A true positive (TP) is a request that takes at least an hour and is flagged as such; a false negative (FN) takes at least an hour but is not flagged. A false positive (FP) closes sooner than an hour but is flagged, while a true negative (TN) closes sooner and is not flagged. Different fields often use different names for the same ratio. The following table gives common names and makes each denominator explicit <span class="citation" data-cites="wikipediandevaluation scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>; <a href="#ref-wikipediandevaluation" role="doc-biblioref">Wikipedia contributors, n.d.</a>)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: left;">Common names</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">True positive rate</td>
+<td style="text-align: left;">TPR, sensitivity, recall, hit rate, probability of detection</td>
+<td style="text-align: left;"><span class="math inline">\(TP/(TP+FN)\)</span>: fraction of actual positives flagged</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">False negative rate</td>
+<td style="text-align: left;">FNR, miss rate</td>
+<td style="text-align: left;"><span class="math inline">\(FN/(TP+FN)\)</span>: fraction of actual positives missed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">True negative rate</td>
+<td style="text-align: left;">TNR, specificity, selectivity</td>
+<td style="text-align: left;"><span class="math inline">\(TN/(TN+FP)\)</span>: fraction of actual negatives not flagged</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">False positive rate</td>
+<td style="text-align: left;">FPR, fall-out, false alarm rate</td>
+<td style="text-align: left;"><span class="math inline">\(FP/(TN+FP)\)</span>: fraction of actual negatives flagged</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Positive predictive value</td>
+<td style="text-align: left;">PPV, precision</td>
+<td style="text-align: left;"><span class="math inline">\(TP/(TP+FP)\)</span>: fraction of flagged requests that are positive</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">False discovery rate</td>
+<td style="text-align: left;">FDR</td>
+<td style="text-align: left;"><span class="math inline">\(FP/(TP+FP)\)</span>: fraction of flagged requests that are negative</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Negative predictive value</td>
+<td style="text-align: left;">NPV</td>
+<td style="text-align: left;"><span class="math inline">\(TN/(TN+FN)\)</span>: fraction of unflagged requests that are negative</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">False omission rate</td>
+<td style="text-align: left;">FOR</td>
+<td style="text-align: left;"><span class="math inline">\(FN/(TN+FN)\)</span>: fraction of unflagged requests that are positive</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Accuracy</td>
+<td style="text-align: left;">Overall accuracy, correct classification rate</td>
+<td style="text-align: left;"><span class="math inline">\((TP+TN)/(TP+TN+FP+FN)\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F1 score</td>
+<td style="text-align: left;">F1 measure, F-score with <span class="math inline">\(\beta=1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2\,\mathrm{Precision}\,\mathrm{Recall}/(\mathrm{Precision}+\mathrm{Recall})\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Sensitivity and specificity are common in diagnostic testing, while precision and recall are common in information retrieval and machine learning. The names reflect different traditions, but the calculations match when the same class is designated positive. Recall conditions on the actual positives; precision conditions on the predicted positives. F1 is the equal-weight harmonic mean of precision and recall, so it does not account for true negatives. TPR and FNR sum to one because they share the actual-positive denominator; TNR and FPR, PPV and FDR, and NPV and FOR also form complementary pairs. These names and denominators are summarized in the Wikipedia overview of binary-classifier evaluation, while the scikit-learn guide documents the corresponding software metrics <span class="citation" data-cites="wikipediandevaluation scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>; <a href="#ref-wikipediandevaluation" role="doc-biblioref">Wikipedia contributors, n.d.</a>)</span>. Other F-scores change the relative weight of precision and recall.</p>
+<p>These measures depend on the classification threshold and the relative costs of missed long closures and unnecessary alerts. The data do not specify those costs, so a threshold of 0.5 is used below only as an illustration. If a decision threshold were selected for use, that choice would be made with training or validation data and then evaluated once on the held-out test set.</p>
+<p>The baseline assigns every request the training-set target prevalence as its probability and predicts the majority class. The Census-context model one-hot encodes problem detail and borough, standardizes the three area measures, then fits logistic regression. The test metrics compare the probability model with that baseline and report classification at a 0.5 threshold. Because the positive class is more common, accuracy should be read alongside ROC AUC, log loss, and the confusion matrix rather than on its own.</p>
+<div id="b1b02d49" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    accuracy_score,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    confusion_matrix,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    f1_score,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    log_loss,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    precision_score,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    recall_score,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    roc_auc_score,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>candidate_features <span class="op">=</span> categorical_features <span class="op">+</span> numeric_features</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"categorical"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>), categorical_features),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"numeric"</span>, StandardScaler(), numeric_features),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"prior"</span>).fit(</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    X_train[candidate_features], y_train</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>baseline_probability <span class="op">=</span> baseline.predict_proba(X_test[candidate_features])[:, <span class="dv">1</span>]</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> make_pipeline(</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    preprocessor,</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>),</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>model.fit(X_train[candidate_features], y_train)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>test_probability <span class="op">=</span> model.predict_proba(X_test[candidate_features])[:, <span class="dv">1</span>]</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> score_predictions(probability):</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    predicted_class <span class="op">=</span> probability <span class="op">&gt;=</span> <span class="fl">0.5</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"accuracy"</span>: accuracy_score(y_test, predicted_class),</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"ROC AUC"</span>: roc_auc_score(y_test, probability),</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        <span class="st">"log loss"</span>: log_loss(y_test, probability),</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="st">"TPR / recall"</span>: recall_score(y_test, predicted_class),</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">"specificity"</span>: recall_score(y_test, predicted_class, pos_label<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>        <span class="st">"precision"</span>: precision_score(y_test, predicted_class),</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>        <span class="st">"F1"</span>: f1_score(y_test, predicted_class),</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Prevalence baseline"</span>: score_predictions(baseline_probability),</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Census-context logistic model"</span>: score_predictions(test_probability),</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>}).T</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>display(scores)</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>confusion_table <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>    confusion_matrix(y_test, test_probability <span class="op">&gt;=</span> <span class="fl">0.5</span>),</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"Actual under one hour"</span>, <span class="st">"Actual at least one hour"</span>],</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"Predicted under one hour"</span>, <span class="st">"Predicted at least one hour"</span>],</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>confusion_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">ROC AUC</th>
+<th data-quarto-table-cell-role="th">log loss</th>
+<th data-quarto-table-cell-role="th">TPR / recall</th>
+<th data-quarto-table-cell-role="th">specificity</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">F1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Prevalence baseline</th>
+<td>0.654747</td>
+<td>0.500000</td>
+<td>0.644458</td>
+<td>1.000000</td>
+<td>0.000000</td>
+<td>0.654747</td>
+<td>0.791356</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Census-context logistic model</th>
+<td>0.670777</td>
+<td>0.587976</td>
+<td>0.631682</td>
+<td>0.944915</td>
+<td>0.150893</td>
+<td>0.678499</td>
+<td>0.789847</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Predicted under one hour</th>
+<th data-quarto-table-cell-role="th">Predicted at least one hour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Actual under one hour</th>
+<td>169</td>
+<td>951</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Actual at least one hour</th>
+<td>117</td>
+<td>2007</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>At the 0.5 threshold, the Census-context model has TPR 0.945, specificity 0.151, precision 0.678, and F1 0.790 on this test set. The prevalence baseline flags every request as positive, so it has TPR 1, specificity 0, precision 0.655, and F1 0.791. The context model identifies more negatives while missing slightly more positives; its F1 is close to the baseline. This comparison shows why no single score identifies a best model for every use.</p>
+<p>The calibration plot compares predicted probabilities with the observed fraction for the preliminary model. A probability estimate of 0.7 should correspond to an outcome rate near 0.7 among comparable predictions <span class="citation" data-cites="vancalster2019calibration">(<a href="#ref-vancalster2019calibration" role="doc-biblioref">Calster et al., 2019</a>)</span>. The points group held-out requests into quantile bins, so the display can hide variation within each group.</p>
+<div id="cell-fig-model-calibration" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.calibration <span class="im">import</span> calibration_curve</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>observed_rate, mean_probability <span class="op">=</span> calibration_curve(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    y_test, test_probability, n_bins<span class="op">=</span><span class="dv">10</span>, strategy<span class="op">=</span><span class="st">"quantile"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">"0.5"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="st">"Perfect calibration"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>ax.plot(mean_probability, observed_rate, marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span><span class="st">"Census-context model"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>), ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>), xlabel<span class="op">=</span><span class="st">"Mean predicted probability"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"Observed fraction meeting one-hour target"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-model-calibration" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-model-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09-modeling_files/figure-html/fig-model-calibration-output-1.png" width="568" height="470" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-model-calibration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: Calibration of held-out probabilities for requests taking at least one hour to close.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The ROC curve traces the true positive rate against the false positive rate as the probability threshold changes. In the table above, TPR is also called recall or sensitivity; FPR is one minus specificity. Each point represents a different threshold, so the curve displays the trade-off between finding more one-hour closures and incorrectly flagging requests that close sooner. The area under this curve is the ROC AUC reported in the score table.</p>
+<div id="cell-fig-model-roc" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>false_positive_rate, true_positive_rate, _ <span class="op">=</span> roc_curve(y_test, test_probability)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>roc_auc <span class="op">=</span> roc_auc_score(y_test, test_probability)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">5</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ax.plot(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    false_positive_rate,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    true_positive_rate,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="ss">f"Census context (AUC = </span><span class="sc">{</span>roc_auc<span class="sc">:.3f}</span><span class="ss">)"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">"0.5"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="st">"Chance ranking"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>), ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>), xlabel<span class="op">=</span><span class="st">"False positive rate (1 - specificity)"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"True positive rate (sensitivity / recall)"</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-model-roc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-model-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09-modeling_files/figure-html/fig-model-roc-output-1.png" width="568" height="470" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-model-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: ROC curve for the preliminary Census-context model on held-out requests.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This first comparison gives the model a common reference and an initial held-out score. Its results are not the final model-selection result because the regularization strength still needs to be chosen using training data alone. A 0.5 classification threshold is convenient for illustration, not a universal decision rule. A real alerting system would set a threshold by considering the consequences of each kind of error with the people who would use the predictions.</p>
+</section>
+<section id="regularize-logistic-regression" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="regularize-logistic-regression"><span class="header-section-number">9.6</span> Regularize Logistic Regression</h2>
+<p>Regularization adds a penalty to the fitting objective to limit coefficient size and reduce sensitivity to features that fit quirks in the training records. Ridge-style (L_2) regularization shrinks coefficients toward zero; lasso-style (L_1) regularization can set some coefficients exactly to zero. Elastic net combines the two penalties <span class="citation" data-cites="tibshirani1996regression zou2005regularization">(<a href="#ref-tibshirani1996regression" role="doc-biblioref">Tibshirani, 1996</a>; <a href="#ref-zou2005regularization" role="doc-biblioref">Zou &amp; Hastie, 2005</a>)</span>. The code below uses the (L_2) penalty and compares stronger with weaker shrinkage on the same held-out requests.</p>
+<p>Scikit-learn’s logistic regression applies (L_2) regularization by default. Its <code>C</code> parameter is the inverse penalty strength, so smaller values apply stronger shrinkage <span class="citation" data-cites="scikitlearn2026logistic">(<a href="#ref-scikitlearn2026logistic" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026b</a>)</span>. The analyst should select <code>C</code> using only the training data. The pipeline places one-hot encoding inside each fold, which prevents the validation records in a fold from influencing category processing or model fitting. Cross-validation estimates how candidate settings perform across several training/validation splits <span class="citation" data-cites="scikitlearn2026crossvalidation">(<a href="#ref-scikitlearn2026crossvalidation" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>)</span>; using the same cross-validation scores both to select and to report a final error can be optimistic, which is why the separate test set remains untouched until selection is complete <span class="citation" data-cites="varma2006bias">(<a href="#ref-varma2006bias" role="doc-biblioref">Varma &amp; Simon, 2006</a>)</span>.</p>
+<p>The comparison separates measured area context from a postal-code lookup. All four models use the same training and test requests. One model uses problem detail and borough; a second adds three ACS-derived area measures; a third adds the incident ZIP label as a categorical identifier; and a fourth uses a smoothed target encoding of that label. Five-fold stratified cross-validation selects <code>C</code> by log loss, a probability-focused criterion. Standardization and one-hot encoding are inside the pipeline so each fold learns its preprocessing from its own training portion. The ZIP-label model is a predictive benchmark for areas already represented in the data; its coefficient for a ZIP label does not explain what neighborhood feature may relate to closure time.</p>
+<p>One-hot encoding gives each ZIP label its own coefficient, which can be unstable when some labels have few requests. Smoothed target encoding offers another representation: it replaces a label with an estimate of its one-hour closure rate, then shrinks that estimate toward the overall rate. For ZCTA <span class="math inline">\(j\)</span>, a common estimate is</p>
+<p>[ _j = , ]</p>
+<p>where <span class="math inline">\(s_j\)</span> is the number of one-hour closures in ZCTA <span class="math inline">\(j\)</span>, <span class="math inline">\(n_j\)</span> is its number of requests, <span class="math inline">\(\bar{p}\)</span> is the overall training-set rate, and <span class="math inline">\(\alpha\)</span> controls shrinkage. Larger values of <span class="math inline">\(\alpha\)</span> pull area estimates more strongly toward the overall rate. This empirical Bayes idea is useful for categories with different sample sizes <span class="citation" data-cites="micci-barreca2001preprocessing pargent2022regularized">(<a href="#ref-micci-barreca2001preprocessing" role="doc-biblioref">Micci-Barreca, 2001</a>; <a href="#ref-pargent2022regularized" role="doc-biblioref">Pargent et al., 2022</a>)</span>. Since the encoding uses the outcome, fitting it on each row’s own outcome would leak information into the training data. The encoder below cross-fits the training values within each training fold; for the held-out test set, it uses category rates estimated from the full training set <span class="citation" data-cites="scikitlearn2026targetencoder">(<a href="#ref-scikitlearn2026targetencoder" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026d</a>)</span>.</p>
+<div id="9179e027" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, StratifiedKFold</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> TargetEncoder</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">2026</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>candidate_C <span class="op">=</span> {<span class="st">"logisticregression__C"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>]}</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tune_logistic(categorical, numeric):</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    transformers <span class="op">=</span> []</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> categorical:</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        transformers.append((</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"categorical"</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>),</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>            categorical,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> numeric:</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        transformers.append((<span class="st">"numeric"</span>, StandardScaler(), numeric))</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    encoder <span class="op">=</span> ColumnTransformer(transformers)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    pipeline <span class="op">=</span> make_pipeline(</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        encoder,</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>),</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        pipeline,</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        candidate_C,</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        scoring<span class="op">=</span><span class="st">"neg_log_loss"</span>,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span>cv,</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        refit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    features <span class="op">=</span> categorical <span class="op">+</span> numeric</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    search.fit(X_train[features], y_train)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    probability <span class="op">=</span> search.predict_proba(X_test[features])[:, <span class="dv">1</span>]</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> search, probability</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>zip_identifier_features <span class="op">=</span> categorical_features <span class="op">+</span> [<span class="st">"incident_zip"</span>]</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>detail_borough_search, detail_borough_probability <span class="op">=</span> tune_logistic(</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    categorical_features, []</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>census_search, census_probability <span class="op">=</span> tune_logistic(</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    categorical_features, numeric_features</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>zip_id_search, zip_id_probability <span class="op">=</span> tune_logistic(</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    zip_identifier_features, []</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>zip_target_pipeline <span class="op">=</span> make_pipeline(</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    ColumnTransformer([</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"categorical"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>), categorical_features),</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>            <span class="st">"zip_target"</span>,</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>            TargetEncoder(</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>                target_type<span class="op">=</span><span class="st">"binary"</span>,</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>                cv<span class="op">=</span>StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">2026</span>),</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>            [<span class="st">"incident_zip"</span>],</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    ]),</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>),</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>zip_target_search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    zip_target_pipeline,</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>        <span class="st">"columntransformer__zip_target__smooth"</span>: [<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">"logisticregression__C"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>],</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">"neg_log_loss"</span>,</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv,</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>zip_target_features <span class="op">=</span> categorical_features <span class="op">+</span> [<span class="st">"incident_zip"</span>]</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>zip_target_search.fit(X_train[zip_target_features], y_train)</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>zip_target_probability <span class="op">=</span> zip_target_search.predict_proba(</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>    X_test[zip_target_features]</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>)[:, <span class="dv">1</span>]</span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Detail and borough"</span>: score_predictions(detail_borough_probability),</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Census area context"</span>: score_predictions(census_probability),</span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ZIP label identifier"</span>: score_predictions(zip_id_probability),</span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ZIP target encoding"</span>: score_predictions(zip_target_probability),</span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>}).T</span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a>comparison[<span class="st">"selected C"</span>] <span class="op">=</span> [</span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>    detail_borough_search.best_params_[<span class="st">"logisticregression__C"</span>],</span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>    census_search.best_params_[<span class="st">"logisticregression__C"</span>],</span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a>    zip_id_search.best_params_[<span class="st">"logisticregression__C"</span>],</span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>    zip_target_search.best_params_[<span class="st">"logisticregression__C"</span>],</span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a>comparison[<span class="st">"mean CV log loss"</span>] <span class="op">=</span> [</span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>detail_borough_search.best_score_,</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>census_search.best_score_,</span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>zip_id_search.best_score_,</span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span>zip_target_search.best_score_,</span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a>comparison[<span class="st">"selected ZIP smoothing"</span>] <span class="op">=</span> [</span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>    <span class="va">None</span>,</span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a>    <span class="va">None</span>,</span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>    <span class="va">None</span>,</span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>    zip_target_search.best_params_[<span class="st">"columntransformer__zip_target__smooth"</span>],</span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a>comparison</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">ROC AUC</th>
+<th data-quarto-table-cell-role="th">log loss</th>
+<th data-quarto-table-cell-role="th">TPR / recall</th>
+<th data-quarto-table-cell-role="th">specificity</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">F1</th>
+<th data-quarto-table-cell-role="th">selected C</th>
+<th data-quarto-table-cell-role="th">mean CV log loss</th>
+<th data-quarto-table-cell-role="th">selected ZIP smoothing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Detail and borough</th>
+<td>0.653822</td>
+<td>0.576660</td>
+<td>0.635679</td>
+<td>0.980226</td>
+<td>0.034821</td>
+<td>0.658236</td>
+<td>0.787592</td>
+<td>0.10</td>
+<td>0.633766</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Census area context</th>
+<td>0.660604</td>
+<td>0.588636</td>
+<td>0.631223</td>
+<td>0.958098</td>
+<td>0.096429</td>
+<td>0.667870</td>
+<td>0.787082</td>
+<td>0.01</td>
+<td>0.627404</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ZIP label identifier</th>
+<td>0.684649</td>
+<td>0.690081</td>
+<td>0.593291</td>
+<td>0.890772</td>
+<td>0.293750</td>
+<td>0.705181</td>
+<td>0.787185</td>
+<td>1.00</td>
+<td>0.603484</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ZIP target encoding</th>
+<td>0.680641</td>
+<td>0.688698</td>
+<td>0.594055</td>
+<td>0.906309</td>
+<td>0.252679</td>
+<td>0.696959</td>
+<td>0.787966</td>
+<td>10.00</td>
+<td>0.602482</td>
+<td>10.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For this split, adding the Census measures changes test ROC AUC from about 0.577 to 0.589 and log loss from 0.636 to 0.631. The improvement is modest, but it indicates that the supplied area attributes add some predictive information beyond problem detail and borough in this test design. The ZIP-label model scores higher, with ROC AUC about 0.690 and log loss 0.593. Because the same ZCTAs occur in training and test sets, this score reflects area-specific prediction for locations represented in training. It neither identifies a cause nor demonstrates transfer to a new ZCTA or a later week.</p>
+<p>Smoothed target encoding gives a similar test ROC AUC of about 0.688 and log loss of 0.595, with the cross-validation procedure selecting a smoothing value of 10. Three test requests have ZIP labels absent from the training set; the encoder assigns those labels the overall training rate. This comparison shows that a compact, partially pooled encoding can retain much of the ZIP-specific predictive signal in this split. It does not establish that ZIP-level outcome rates will transfer to future requests, and its learned category values should not be interpreted as neighborhood causes.</p>
+<p>The Census estimates offer a more interpretable area-level question than the ZIP label, but they do not measure the mechanisms that directly govern parking or request processing. Population density is residents per square mile, not curb or parking-space density. Household vehicle availability is not ownership, registration, vehicle activity, or parking location, and median household income does not describe an individual requester. These ACS measures repeat across requests in the same ZCTA and carry sampling uncertainty; the vehicle share’s uncertainty has not been propagated. Only 176 ZCTAs contribute independent area contexts in this analysis. Direct measures of curb regulations, parking supply, vehicle activity, or precinct workload would be more informative for those processes. Any resource- allocation use would also require a separate review of measurement, fairness, and consequences for affected neighborhoods.</p>
+<p>Regularization controls model complexity but does not replace diagnosis. The selected penalty can stabilize estimates while leaving omitted variables, measurement error, unfair performance differences, and domain changes unresolved. Area-level predictors also require validation that respects their shared geography when the intended use concerns new areas. The model’s intended use and validation design must therefore be considered together.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<p>These exercises extend the target definition and EDA in <a href="07-eda.html#exr-eda-time" class="quarto-xref">Exercise&nbsp;<span>7.1</span></a> into prediction. Use the same one-week extract and report eligible counts, excluded records, the prediction time, and the features available then. Treat closure time as a recorded duration, not a direct measure of officer response.</p>
+<div id="exr-model-target" class="theorem exercise">
+<p><span class="theorem-title"><strong> 9.1</strong></span> Use closure of at least one hour as the binary target.</p>
+<ol type="a">
+<li>Report the counts and proportions below one hour and at least one hour. Compare them with the two-hour classification in <a href="07-eda.html#exr-eda-time" class="quarto-xref">Exercise&nbsp;<span>7.1</span></a> and explain how changing the cutoff changes the prediction question.</li>
+<li>Identify which fields are available when a request is created. Use the documented Census lookup to attach population density, median household income, and household vehicle availability through the incident ZIP label. Report unmatched requests and missing area estimates. Explain why the ZIP label is a join key rather than a numeric predictor, and state one limitation of the ZIP-to-ZCTA match or an area-level proxy.</li>
+<li>Write one operational use for a prediction and identify who would act on it. State the cost of a missed request and a false alert that would need to be known before setting a decision threshold.</li>
+</ol>
+</div>
+<div id="exr-model-check" class="theorem exercise">
+<p><span class="theorem-title"><strong> 9.2</strong></span> Fit and assess a logistic model for the one-hour target.</p>
+<ol type="a">
+<li>Establish a majority-class or prevalence baseline. Split the records into training and test sets before fitting; state the split method and random seed.</li>
+<li>Fit a model with problem detail and borough, then add the two Census area measures. Use cross-validation within the training data to select regularization strength. Report test ROC AUC, log loss, TPR, precision, F1, and a confusion matrix at a stated threshold. As a separate benchmark, fit a model that treats ZIP as a categorical identifier and explain what its score can and cannot tell you.</li>
+<li>Make a calibration plot and inspect predicted performance by borough. Report group counts and describe one limitation of those comparisons. Compare request-random validation with a validation split grouped by ZCTA. Explain how the target use determines which split is more appropriate and what evidence from another week would be needed before claiming transfer to future requests.</li>
+</ol>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-vancalster2019calibration" class="csl-entry" role="listitem">
+Calster, B. V., McLernon, D. J., Smeden, M. van, Wynants, L., &amp; Steyerberg, E. W. (2019). Calibration: The achilles heel of predictive analytics. <em>BMC Medicine</em>, <em>17</em>, 230. <a href="https://doi.org/10.1186/s12916-019-1466-7">https://doi.org/10.1186/s12916-019-1466-7</a>
+</div>
+<div id="ref-hosmer2013applied" class="csl-entry" role="listitem">
+Hosmer, D. W., Lemeshow, S., &amp; Sturdivant, R. X. (2013). <em>Applied logistic regression</em> (3rd ed.). John Wiley &amp; Sons. <a href="https://doi.org/10.1002/9781118548387">https://doi.org/10.1002/9781118548387</a>
+</div>
+<div id="ref-mccullagh1989generalized" class="csl-entry" role="listitem">
+McCullagh, P., &amp; Nelder, J. A. (1989). <em>Generalized linear models</em> (2nd ed.). Chapman; Hall.
+</div>
+<div id="ref-micci-barreca2001preprocessing" class="csl-entry" role="listitem">
+Micci-Barreca, D. (2001). A preprocessing scheme for high-cardinality categorical attributes in classification and prediction problems. <em>ACM SIGKDD Explorations Newsletter</em>, <em>3</em>(1), 27–32. <a href="https://doi.org/10.1145/507533.507538">https://doi.org/10.1145/507533.507538</a>
+</div>
+<div id="ref-nelder1972generalized" class="csl-entry" role="listitem">
+Nelder, J. A., &amp; Wedderburn, R. W. M. (1972). Generalized linear models. <em>Journal of the Royal Statistical Society: Series A</em>, <em>135</em>(3), 370–384. <a href="https://doi.org/10.2307/2344614">https://doi.org/10.2307/2344614</a>
+</div>
+<div id="ref-pargent2022regularized" class="csl-entry" role="listitem">
+Pargent, F., Pfisterer, F., Thomas, J., &amp; Bischl, B. (2022). Regularized target encoding outperforms traditional methods in supervised machine learning with high cardinality features. <em>Computational Statistics</em>, <em>37</em>(5), 2671–2692. <a href="https://doi.org/10.1007/s00180-022-01207-6">https://doi.org/10.1007/s00180-022-01207-6</a>
+</div>
+<div id="ref-pregibon1981logistic" class="csl-entry" role="listitem">
+Pregibon, D. (1981). Logistic regression diagnostics. <em>The Annals of Statistics</em>, <em>9</em>(4), 705–724. <a href="https://doi.org/10.1214/aos/1176345513">https://doi.org/10.1214/aos/1176345513</a>
+</div>
+<div id="ref-scikitlearn2026crossvalidation" class="csl-entry" role="listitem">
+<span class="nocase">scikit-learn Developers</span>. (2026a). <em>Cross-validation: Evaluating estimator performance</em>. <a href="https://scikit-learn.org/stable/modules/cross_validation.html">https://scikit-learn.org/stable/modules/cross_validation.html</a>
+</div>
+<div id="ref-scikitlearn2026logistic" class="csl-entry" role="listitem">
+<span class="nocase">scikit-learn Developers</span>. (2026b). <em>LogisticRegression</em>. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html</a>
+</div>
+<div id="ref-scikitlearn2026metrics" class="csl-entry" role="listitem">
+<span class="nocase">scikit-learn Developers</span>. (2026c). <em>Metrics and scoring: Quantifying the quality of predictions</em>. <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">https://scikit-learn.org/stable/modules/model_evaluation.html</a>
+</div>
+<div id="ref-scikitlearn2026targetencoder" class="csl-entry" role="listitem">
+<span class="nocase">scikit-learn Developers</span>. (2026d). <em>TargetEncoder</em>. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.TargetEncoder.html">https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.TargetEncoder.html</a>
+</div>
+<div id="ref-statsmodels2026generalized" class="csl-entry" role="listitem">
+<span class="nocase">statsmodels Developers</span>. (2026). <em>Generalized linear models</em>. <a href="https://www.statsmodels.org/stable/glm.html">https://www.statsmodels.org/stable/glm.html</a>
+</div>
+<div id="ref-tibshirani1996regression" class="csl-entry" role="listitem">
+Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <em>Journal of the Royal Statistical Society: Series B</em>, <em>58</em>(1), 267–288. <a href="https://doi.org/10.1111/j.2517-6161.1996.tb02080.x">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a>
+</div>
+<div id="ref-census2023zip" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2023). <em><span>ZIP</span> code tabulation areas (<span>ZCTAs</span>)</em>. <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html">https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html</a>
+</div>
+<div id="ref-census2024gazetteer" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2024a). <em>2024 <span>ZIP</span> code tabulation area gazetteer file</em>. <a href="https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2024_Gazetteer/2024_Gaz_zcta_national.zip">https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2024_Gazetteer/2024_Gaz_zcta_national.zip</a>
+</div>
+<div id="ref-census2024vehicles" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2024b). <em>Household size by vehicles available (<span>B08201</span>)</em>. <a href="https://api.census.gov/data/2024/acs/acs5/groups/B08201.html">https://api.census.gov/data/2024/acs/acs5/groups/B08201.html</a>
+</div>
+<div id="ref-census2026american" class="csl-entry" role="listitem">
+U.S. Census Bureau. (2026). <em>2024 american community survey 5-year summary file</em>. <a href="https://www.census.gov/programs-surveys/acs/data/summary-file/2024.html">https://www.census.gov/programs-surveys/acs/data/summary-file/2024.html</a>
+</div>
+<div id="ref-varma2006bias" class="csl-entry" role="listitem">
+Varma, S., &amp; Simon, R. (2006). Bias in error estimation when using cross-validation for model selection. <em>BMC Bioinformatics</em>, <em>7</em>, 91. <a href="https://doi.org/10.1186/1471-2105-7-91">https://doi.org/10.1186/1471-2105-7-91</a>
+</div>
+<div id="ref-wikipediandevaluation" class="csl-entry" role="listitem">
+Wikipedia contributors. (n.d.). <em>Evaluation of binary classifiers</em>. Retrieved October 6, 2026, from <a href="https://en.wikipedia.org/wiki/Evaluation_of_binary_classifiers">https://en.wikipedia.org/wiki/Evaluation_of_binary_classifiers</a>
+</div>
+<div id="ref-zou2005regularization" class="csl-entry" role="listitem">
+Zou, H., &amp; Hastie, T. (2005). Regularization and variable selection via the elastic net. <em>Journal of the Royal Statistical Society: Series B</em>, <em>67</em>(2), 301–320. <a href="https://doi.org/10.1111/j.1467-9868.2005.00503.x">https://doi.org/10.1111/j.1467-9868.2005.00503.x</a>
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -634,4 +1659,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/09-modeling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/09-modeling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
