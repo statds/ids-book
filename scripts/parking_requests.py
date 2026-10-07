@@ -62,6 +62,13 @@ def load_zcta_context() -> pd.DataFrame:
         raise ValueError("The ZCTA lookup must contain one row per key.")
     if not context["acs_year"].eq(2024).all():
         raise ValueError("The ZCTA lookup contains an unexpected ACS year.")
+    if not context["land_area_sqmi"].dropna().gt(0).all():
+        raise ValueError("ZCTA land areas must be positive.")
+    missing_area = context["land_area_sqmi"].isna()
+    if context.loc[missing_area, "population_density_per_sqmi"].notna().any():
+        raise ValueError("Population density requires a matched land area.")
+    if not context["share_households_with_vehicle"].dropna().between(0, 1).all():
+        raise ValueError("Household vehicle shares must be between zero and one.")
     return context
 
 

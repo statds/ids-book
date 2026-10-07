@@ -92,22 +92,17 @@ variable or merge can be trusted. The subset also remains limited to
 NYPD-directed requests from one week, regardless of how consistently its
 columns are represented.
 
-## Check Scope
-
-The compact scope report tests the conditions on which this preparation
-workflow depends. @sec-initial-checks documented the delivered extract's
-agency, timestamp, identifier, and missingness patterns; reproducing those
-diagnostic tables would add little to a chapter about transformation. The
-present check instead treats the expected row unit and filters as executable
-invariants: identifiers must be present and unique, creation times must
-fall within the selected half-open week, and every retained row must carry
-the illegal-parking problem label. These tests serve a different purpose
-from the initial profile. They detect a changed input file, an altered
-filter, or a parsing failure before derived columns are constructed. A
-failed invariant should prompt inspection of the source and the preparation
-code; it should not be repaired by automatically dropping records until the
-check passes. This chapter remains independently executable while the
-substantive diagnosis stays in the formulation chapter.
+The checks in @sec-initial-checks profile the delivered extract before
+filtering, including its agency values, date boundaries, and missingness.
+Here, the scope report instead tests whether the reconstructed subset meets
+the preparation workflow's input conditions: identifiers must be present
+and unique, creation times must fall within the selected week, and every
+retained row must carry the illegal-parking label. These executable
+invariants detect a changed input, altered filter, or parsing failure before
+derived columns are constructed. A failed check should prompt inspection of
+the source and preparation code, not automatic deletion until the report
+passes. This chapter remains independently executable while the substantive
+source diagnosis stays in the formulation chapter.
 
 ```{python}
 scope_checks = pd.Series({
@@ -324,9 +319,11 @@ the software merge is interpreted as evidence about place.
 
 The supplied `data/zcta_context.csv` contains the 221 ZCTAs in NYC Open
 Data's city list and their 2024 American Community Survey (ACS) five-year
-population and median household income estimates [@nycopendata2026zip;
-@census2026american]. It also records margins of error, an income
-top-coding indicator, and the estimate year. The provenance and conversion
+population, median household income, and household vehicle-availability
+estimates [@nycopendata2026zip; @census2026american;
+@census2024vehicles]. It also records margins of error, an income
+top-coding indicator, the estimate year, and ZCTA land area from the 2024
+Census Gazetteer [@census2024gazetteer]. The provenance and conversion
 rules in `data/zcta_context.md` distinguish the Census estimates from the
 NYC boundary list used to select areas. These fields allow an analyst to
 check both the statistical meaning of an attached value and the geographic
@@ -336,10 +333,22 @@ the merge. It then retains unmatched requests and reports them separately.
 The result is a documented link between labels, not an assertion that a
 postal area and its similarly named ZCTA have identical boundaries.
 
+The lookup derives population density by dividing the ACS population
+estimate by ZCTA land area. It also derives the share of households with at
+least one vehicle from the B08201 household total and no-vehicle count.
+These measures add context, but neither measures parking directly. Resident
+density does not describe curb length or parking supply, and household
+vehicle availability does not identify vehicle ownership, registration,
+parking location, or illegal-parking behavior. The share is a ratio of
+survey estimates, and its sampling uncertainty is not calculated from the
+published margins of error. The attached estimates describe areas, not
+individual requesters; they cannot support an individual-level or causal
+interpretation.
+
 The NYC ZCTA selection comes from the `zcta5` column of the city's published
 dataset, as the following acquisition code shows. The chapter uses the saved
 CSV during rendering so that a live web request cannot change its results.
-The complete extraction, including both ACS tables, is in
+The complete extraction, including the Gazetteer file and three ACS tables, is in
 `scripts/build_zcta_context.py`.
 
 ```{python}
@@ -376,6 +385,13 @@ if zcta_context["zcta"].duplicated().any():
     raise ValueError("The ZCTA lookup must contain one row per key.")
 if not zcta_context["acs_year"].eq(2024).all():
     raise ValueError("The ZCTA lookup contains an unexpected ACS year.")
+if not zcta_context["land_area_sqmi"].dropna().gt(0).all():
+    raise ValueError("ZCTA land areas must be positive.")
+missing_area = zcta_context["land_area_sqmi"].isna()
+if zcta_context.loc[missing_area, "population_density_per_sqmi"].notna().any():
+    raise ValueError("Population density requires a matched land area.")
+if not zcta_context["share_households_with_vehicle"].dropna().between(0, 1).all():
+    raise ValueError("Household vehicle shares must be between zero and one.")
 
 # Match only syntactically five-digit request ZIP values. Do not silently
 # pad or otherwise repair values that fail this check.
@@ -406,6 +422,10 @@ join_report = pd.Series({
     "unmatched requests": contextual_analysis[
         "zcta_match_status"
     ].eq("left_only").sum(),
+    "matched requests without land area": (
+        contextual_analysis["zcta_match_status"].eq("both")
+        & contextual_analysis["land_area_sqmi"].isna()
+    ).sum(),
     "distinct unmatched ZIP values": contextual_analysis.loc[
         contextual_analysis["zcta_match_status"].eq("left_only"),
         "incident_zip",

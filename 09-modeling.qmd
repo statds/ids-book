@@ -7,9 +7,10 @@ visualized variation across time and place. This chapter carries that work
 forward with a domain question: can information available when an illegal-
 parking request is created help identify requests that will remain open for
 at least one hour? It examines whether request detail and borough, together
-with neighborhood population and income from the Census-linked table,
-improve predictions. The analysis uses the same one-week records and the
-same request-level observational unit as the earlier chapters. It does not
+with neighborhood population density, household vehicle availability, and
+income from the Census-linked table, improve predictions. The analysis uses
+the same one-week records and request-level observational unit as the earlier
+chapters. It does not
 claim that an area characteristic causes a request to take longer, or that
 one week represents future requests under changed conditions.
 
@@ -37,8 +38,16 @@ week of data. The target equals one when its recorded closure time is at
 least one hour and zero otherwise. Requests with missing closure time cannot
 be labeled and are excluded from this supervised analysis. The candidate
 features in the main model are problem detail and borough, recorded when
-the request is created, plus population and median household income from
-the Census-linked area table. The incident ZIP label serves as the link to
+the request is created, plus population density, median household income,
+and the share of households with a vehicle available from the Census-linked
+area table [@census2024gazetteer; @census2024vehicles]. Population density
+divides the ACS population estimate by 2024 Gazetteer ZCTA land area. The vehicle
+share is one minus the estimated fraction of households with no vehicle
+available. These measures describe area context rather than curb capacity
+or individual behavior. The ACS estimates cover 2020–2024, precede the
+request week, and have sampling uncertainty; the derived vehicle share's
+uncertainty is not calculated from the published margins of error. The
+incident ZIP label serves as the link to
 area context, as described in @sec-zcta-context-merge; a later benchmark
 also treats it as a categorical identifier. The lookup supplies
 2020–2024 American Community Survey (ACS) estimates for ZIP Code Tabulation
@@ -53,8 +62,9 @@ The prediction question is: among requests from the same observed week and
 with similar recorded fields and area context, how well can a model
 distinguish requests that remain open for at least an hour? This question
 describes prediction within the data's observed setting. It does not ask
-whether borough, problem detail, population, or income causes a longer
-closure, and it does not establish how a model would perform in another
+whether borough, problem detail, population density, household vehicle
+availability, or income causes a longer closure, and it does not establish
+how a model would perform in another
 week. The four formulation checks in
 @sec-formulation-checks remain relevant: a sound model cannot repair an
 unclear target, an invalid measurement, an inadequate scope, or weak evidence.
@@ -88,16 +98,22 @@ parking = load_parking_requests()
 with_context = attach_zcta_context(parking)
 matched = with_context["_merge"].eq("both")
 has_income = with_context["median_household_income"].notna()
-eligible = matched & has_income
+area_features = [
+    "population_density_per_sqmi",
+    "median_household_income",
+    "share_households_with_vehicle",
+]
+has_area_context = with_context[area_features].notna().all(axis=1)
+eligible = matched & has_area_context
 required = [
     "closure_hours", "problem_detail", "borough",
-    "incident_zip", "population", "median_household_income",
+    "incident_zip", *area_features,
 ]
 model_data = with_context.loc[eligible, required + ["zcta"]].copy()
 assert model_data[required].notna().all().all()
 model_data["long_closure"] = model_data["closure_hours"].ge(1).astype("int8")
 categorical_features = ["problem_detail", "borough"]
-numeric_features = ["population", "median_household_income"]
+numeric_features = area_features
 feature_columns = categorical_features + numeric_features + ["incident_zip"]
 X = model_data[feature_columns].copy()
 X[categorical_features] = X[categorical_features].astype("string")
@@ -112,6 +128,9 @@ pd.Series({
     "requests in one-week extract": len(parking),
     "unmatched ZIP labels": int((~matched).sum()),
     "matched requests without income estimate": int((matched & ~has_income).sum()),
+    "matched requests missing an area measure": int(
+        (matched & ~has_area_context).sum()
+    ),
     "eligible requests": len(model_data),
     "matched ZCTAs represented": model_data["zcta"].nunique(),
     "at least one hour": int(y.sum()),
@@ -125,9 +144,11 @@ pd.Series({
 
 The checks make the analysis population and target visible before any model
 is fitted. The lookup matches 13,033 of 13,040 requests; 58 matched requests
-lack a numeric income estimate. The complete-case analysis therefore uses
-12,975 requests from 176 ZCTAs. The split contains 9,731 training requests
-and 3,244 test requests, with nearly identical target proportions. Fixing
+lack at least one area measure, including nine requests with no household
+vehicle estimate because their ACS household denominator is zero. The
+complete-case analysis therefore uses 12,975 requests from 176 ZCTAs. The
+split contains 9,731 training requests and 3,244 test requests, with nearly
+identical target proportions. Fixing
 the random seed makes this example reproducible, while stratification
 controls only the class proportions. Requests from the same ZCTA can appear
 in both sets, so the test set evaluates new requests in areas represented
@@ -160,10 +181,11 @@ log odds, holding the other included predictors fixed. Exponentiating a
 coefficient gives an odds ratio, but an odds ratio is not a probability
 difference and does not by itself describe a causal effect.
 
-The first GLM includes problem detail, borough, population, and median
-household income. The two area measures are standardized across training
-requests, so their odds ratios describe a one-standard-deviation difference
-in the request-weighted feature values.
+The first GLM includes problem detail, borough, population density, median
+household income, and household vehicle availability. The three area
+measures are standardized across training requests, so their odds ratios
+describe a one-standard-deviation difference in the request-weighted
+feature values.
 The formula interface compares each categorical level with a reference
 category and holds the other predictors fixed. These coefficients describe
 conditional associations in the fitted model, not changes caused by the
@@ -178,7 +200,9 @@ glm_data = X_train.copy()
 glm_data["long_closure"] = y_train
 glm_formula = (
     "long_closure ~ C(problem_detail) + C(borough) + "
-    "standardize(population) + standardize(median_household_income)"
+    "standardize(population_density_per_sqmi) + "
+    "standardize(median_household_income) + "
+    "standardize(share_households_with_vehicle)"
 )
 glm_fit = smf.glm(
     glm_formula,
@@ -186,24 +210,32 @@ glm_fit = smf.glm(
     family=sm.families.Binomial(),
 ).fit()
 
-population_log_odds = glm_fit.params["standardize(population)"]
+population_density_log_odds = glm_fit.params[
+    "standardize(population_density_per_sqmi)"
+]
 income_log_odds = glm_fit.params["standardize(median_household_income)"]
+vehicle_share_log_odds = glm_fit.params[
+    "standardize(share_households_with_vehicle)"
+]
 pd.Series({
-    "Population odds ratio per standard deviation": np.exp(population_log_odds),
+    "Population-density odds ratio per standard deviation": np.exp(
+        population_density_log_odds
+    ),
     "Income odds ratio per standard deviation": np.exp(income_log_odds),
+    "Household vehicle-share odds ratio per standard deviation": np.exp(
+        vehicle_share_log_odds
+    ),
 })
 ```
 
-In this training split, the adjusted odds ratio is about 1.19 for population
-and 0.84 for median household income, each per standard deviation. The model
-therefore estimates higher odds of a one-hour closure in more populous
-ZCTAs and lower odds in ZCTAs with higher median income, holding the other
-included variables fixed. The context values repeat across requests in the
-same ZCTA, so the area-level association is supported by 176 distinct
-ZCTAs, not 9,731 independent training areas. These are not descriptions of
-individual residents or causal effects. The estimates also depend on the
-model's assumption that each standardized measure has a linear relationship
-with log odds.
+The odds ratios summarize adjusted associations in this training split,
+with each area measure compared across a one-standard-deviation difference.
+The context values repeat across requests in the same ZCTA, so area-level
+patterns are supported by the number of distinct ZCTAs, not by treating
+every request as an independent area. These estimates do not describe
+individual residents or causal effects. They also depend on the model's
+assumption that each standardized measure has a linear relationship with
+log odds.
 
 ## Check the Model
 
@@ -330,8 +362,8 @@ the held-out test set.
 
 The baseline assigns every request the training-set target prevalence as
 its probability and predicts the majority class. The Census-context model
-one-hot encodes problem detail and borough, standardizes population and
-income, then fits logistic regression.
+one-hot encodes problem detail and borough, standardizes the three area
+measures, then fits logistic regression.
 The test metrics compare the probability model with that baseline and
 report classification at a 0.5 threshold. Because the positive class is
 more common, accuracy should be read alongside ROC AUC, log loss, and the
@@ -398,8 +430,8 @@ confusion_table = pd.DataFrame(
 confusion_table
 ```
 
-At the 0.5 threshold, the Census-context model has TPR 0.952, specificity
-0.127, precision 0.674, and F1 0.789 on this test set. The prevalence
+At the 0.5 threshold, the Census-context model has TPR 0.945, specificity
+0.151, precision 0.678, and F1 0.790 on this test set. The prevalence
 baseline flags every request as positive, so it has TPR 1, specificity 0,
 precision 0.655, and F1 0.791. The context model identifies more negatives
 while missing slightly more positives; its F1 is close to the baseline.
@@ -489,10 +521,11 @@ optimistic, which is why the separate test set remains untouched until
 selection is complete [@varma2006bias].
 
 The comparison separates measured area context from a postal-code lookup.
-All three models use the same training and test requests. One model uses
-problem detail and borough; a second adds ACS population and median
-household income; a third adds the incident ZIP label as a categorical
-identifier. Five-fold stratified cross-validation selects `C` by log loss,
+All four models use the same training and test requests. One model uses
+problem detail and borough; a second adds three ACS-derived area measures;
+a third adds the incident ZIP label as a categorical identifier; and a
+fourth uses a smoothed target encoding of that label. Five-fold stratified
+cross-validation selects `C` by log loss,
 a probability-focused criterion. Standardization and one-hot encoding are
 inside the pipeline so each fold learns its preprocessing from its own
 training portion. The ZIP-label model is a predictive benchmark for areas
@@ -625,7 +658,7 @@ comparison
 ```
 
 For this split, adding the Census measures changes test ROC AUC from about
-0.577 to 0.597 and log loss from 0.636 to 0.630. The improvement is modest,
+0.577 to 0.589 and log loss from 0.636 to 0.631. The improvement is modest,
 but it indicates that the supplied area attributes add some predictive
 information beyond problem detail and borough in this test design. The
 ZIP-label model scores higher, with ROC AUC about 0.690 and log loss 0.593.
@@ -643,12 +676,18 @@ that ZIP-level outcome rates will transfer to future requests, and its
 learned category values should not be interpreted as neighborhood causes.
 
 The Census estimates offer a more interpretable area-level question than
-the ZIP label, but their interpretation remains limited. Population is a
-count, not population density; median household income describes an area,
-not an individual requester. Both variables repeat across requests in the
-same ZCTA, and ACS estimates have sampling uncertainty. Any use in a
-resource-allocation decision would require a separate review of measurement,
-fairness, and the consequences for affected neighborhoods.
+the ZIP label, but they do not measure the mechanisms that directly govern
+parking or request processing. Population density is residents per square
+mile, not curb or parking-space density. Household vehicle availability is
+not ownership, registration, vehicle activity, or parking location, and
+median household income does not describe an individual requester. These
+ACS measures repeat across requests in the same ZCTA and carry sampling
+uncertainty; the vehicle share's uncertainty has not been propagated. Only
+176 ZCTAs contribute independent area contexts in this analysis. Direct
+measures of curb regulations, parking supply, vehicle activity, or precinct
+workload would be more informative for those processes. Any resource-
+allocation use would also require a separate review of measurement, fairness,
+and consequences for affected neighborhoods.
 
 Regularization controls model complexity but does not replace diagnosis.
 The selected penalty can stabilize estimates while leaving omitted
@@ -673,10 +712,11 @@ a. Report the counts and proportions below one hour and at least one hour.
    Compare them with the two-hour classification in @exr-eda-time and
    explain how changing the cutoff changes the prediction question.
 b. Identify which fields are available when a request is created. Use the
-   documented Census lookup to attach population and median household income
-   through the incident ZIP label. Report unmatched requests and missing
-   income values. Explain why the ZIP label is a join key rather than a
-   numeric predictor, and state one limitation of the ZIP-to-ZCTA match.
+   documented Census lookup to attach population density, median household
+   income, and household vehicle availability through the incident ZIP label.
+   Report unmatched requests and missing area estimates. Explain why the ZIP
+   label is a join key rather than a numeric predictor, and state one
+   limitation of the ZIP-to-ZCTA match or an area-level proxy.
 c. Write one operational use for a prediction and identify who would act
    on it. State the cost of a missed request and a false alert that would
    need to be known before setting a decision threshold.
