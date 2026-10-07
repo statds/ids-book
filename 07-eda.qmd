@@ -10,7 +10,7 @@ evaluating visual displays across the data-science workflow; here, plots
 support investigation alongside numerical summaries and checks of the
 records.
 
-## Principles of Exploratory Data Analysis
+## EDA Principles
 
 Exploratory data analysis begins with questions about the variation in a
 prepared table rather than with a search for every possible plot. Preparation
@@ -59,7 +59,7 @@ exploratory report should therefore state both the assumptions of any
 inferential calculation and the reasonable analytical alternatives it has
 examined [@wasserstein2016asa].
 
-## Case Study: Question and Eligible Records
+## Study Setup
 
 The case study answers the working question in @sec-problem-formulation
 using the screened requests prepared in @sec-wrangling. Its primary target
@@ -125,7 +125,7 @@ will keep the eligible set attached to each result and will interpret
 variation in closure time as a mixture of reporting and administrative
 processes unless stronger evidence separates them.
 
-## Closure-Time Distributions and Problem Details
+## Closure Time by Detail
 
 The overall closure-time distribution establishes which summaries can
 represent a typical request and which features require separate attention.
@@ -243,7 +243,7 @@ proportion closed by any time on the horizontal axis; they retain more
 distributional information than a comparison of three means. Neither the
 table nor the plot identifies why the groups differ.
 
-## Variation Across Time and Place
+## Variation Across Groups
 
 Temporal and geographic stratification examines whether a pooled group
 contrast combines different request mixes. Creation date identifies when
@@ -279,11 +279,12 @@ affect the citywide comparison. A borough label still represents a broad
 area and cannot identify the practices of an individual precinct.
 
 Area context raises a different exploratory question and changes the unit
-at which a comparison is valid. @sec-zcta-context-merge explains the
-five-digit ZIP-label match to 2024 American Community Survey (ACS)
-estimates for ZIP Code Tabulation Areas (ZCTAs), including its geographic
-limitations [@census2023zip]. This chapter reuses the checked lookup
-through `attach_zcta_context()` instead of repeating the preparation code.
+at which a comparison is valid. The area-context workflow in
+@sec-zcta-context-merge explains the five-digit ZIP-label match to 2024
+American Community Survey (ACS) estimates for ZIP Code Tabulation Areas
+(ZCTAs), including its geographic limitations [@census2023zip]. This chapter
+reuses the checked lookup through `attach_zcta_context()` instead of
+repeating the preparation code.
 The resulting table still has one row per request, so an income estimate
 appears on every request whose ZIP label matches the same ZCTA. Those
 copies do not constitute independent observations of area income. The
@@ -335,7 +336,56 @@ sampling uncertainty; the request-to-ZCTA match also has geographic limits
 association, not a conclusion about residents' incomes or an income effect
 on individual requests.
 
-## Assessing Uncertainty and Robustness
+Subgroup composition can also change the direction of an overall
+comparison. Simpson's paradox describes cases where an association in
+aggregated data weakens or reverses after data are divided into subgroups
+defined by a third variable
+[@simpson1951interpretation]. The following hypothetical example
+illustrates the arithmetic with treatment success rates. Treatment A has a
+higher success rate than treatment B in both risk groups, but A is used much
+more often for high-risk cases. The pooled rates therefore favor B. The
+values are constructed for instruction and do not describe a medical study.
+
+```{python}
+simpson = pd.DataFrame({
+    "risk": ["Lower", "Lower", "Higher", "Higher"],
+    "treatment": ["A", "B", "A", "B"],
+    "successes": [81, 234, 192, 55],
+    "cases": [87, 270, 263, 80],
+})
+simpson["success_rate"] = simpson["successes"] / simpson["cases"]
+within_risk = simpson.pivot(
+    index="risk", columns="treatment", values="success_rate"
+)
+case_shares = simpson.pivot(
+    index="risk", columns="treatment", values="cases"
+)
+case_shares = case_shares.div(case_shares.sum(axis=0), axis=1)
+pooled = simpson.groupby("treatment")["successes"].sum() / simpson.groupby(
+    "treatment"
+)["cases"].sum()
+result = pd.concat([within_risk, pooled.rename("Pooled").to_frame().T])
+result["A case share"] = case_shares["A"]
+result["B case share"] = case_shares["B"]
+result.loc["Pooled", ["A case share", "B case share"]] = 1
+result.round(3)
+```
+
+The table makes the changing weights visible: treatment A has a larger share
+of its cases in the higher-risk group, where success is less common for both
+treatments. The pooled row summarizes success rates, while the case-share
+columns show each treatment's composition.
+
+This reversal does not show which treatment is more effective. Risk group
+may be related to treatment assignment, and other differences may remain
+within each stratum. Analysts should report the overall and within-group
+summaries and explain why the stratifying variable matters before drawing a
+causal conclusion. The later visualization chapter develops small-multiple
+displays that make subgroup comparisons easier to inspect
+[@armstrong2014visualizing]. It applies this approach with `facet_grid()`
+(see @sec-visualization).
+
+## Uncertainty Assessment
 
 A hypothesis test can be part of EDA when its assumptions and limited
 purpose are explicit. Consider the median closure-time difference between
@@ -348,6 +398,48 @@ reallocates their labels while preserving their sizes. Its two-sided
 statistic is the absolute difference between medians. A bootstrap interval
 separately resamples requests within each group to show variability under
 an independent-request model.
+
+The appropriate test depends on the outcome scale, comparison structure,
+and sampling or assignment process. Several common tests correspond to
+recurring data structures, but this list is a guide rather than an exhaustive
+menu or an automatic decision rule [@nistndexploratory]:
+
+- **One mean or two independent means:** use a one-sample $t$ test to compare
+  a mean with a reference value, or Welch's two-sample $t$ test to compare
+  independent group means without assuming equal variances.
+- **Paired numerical measurements:** use a paired $t$ test on within-pair
+  differences; the pairs, rather than the individual measurements, must be
+  independent.
+- **Three or more group means:** use ANOVA or Welch ANOVA for an overall
+  comparison. Follow-up comparisons need a plan for multiple testing.
+- **Two categorical variables:** use a chi-square test of independence when
+  its approximation is adequate, or Fisher's exact test for a sparse
+  $2\times2$ table. These tests assess association, not causation.
+- **One or two proportions:** use a binomial or two-proportion procedure;
+  exact methods may be preferable with sparse outcomes. For paired binary
+  outcomes, McNemar's test accounts for the pairing.
+- **Two numeric variables:** use Pearson correlation to test linear
+  association or Spearman rank correlation to test monotone association.
+  Neither test alone addresses confounding.
+- **A chosen statistic under exchangeable labels:** use a permutation test
+  when the labels are exchangeable under the null and the statistic matches
+  the question.
+
+For example, the contingency table in @exr-eda-time could be followed by a
+chi-square test of independence. Requests from one week may share time,
+location, or agency conditions, however, which weakens a simple independence
+model. A statistical test does not correct those design limitations, and
+selecting a test after searching many groupings can make its nominal
+$p$-value misleading [@wasserstein2016asa].
+
+Rank-based alternatives such as Mann--Whitney and Kruskal--Wallis tests are
+also common for independent groups, but they do not automatically test a
+difference in medians: their nulls concern rank distributions and require
+careful interpretation. Likewise, a bootstrap interval estimates
+uncertainty under a resampling scheme; it is not itself a hypothesis test.
+When many outcomes, subgroups, or alternatives are examined, the analysis
+should report that search and avoid treating a threshold such as 0.05 as a
+mechanical decision rule [@wasserstein2016asa].
 
 ```{python}
 hydrant = top.loc[

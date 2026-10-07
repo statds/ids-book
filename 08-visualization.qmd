@@ -54,9 +54,10 @@ change in any of these four elements changes the quantity the figure
 represents.
 
 The worked figures use the same screened request table as @sec-eda, but
-they serve different reader tasks. @sec-problem-formulation established the
-request as the observational unit and limited the interpretation of closure
-time; @sec-wrangling documented the transformations; and @sec-eda examined
+they serve different reader tasks. The problem formulation in
+@sec-problem-formulation established the request as the observational unit
+and limited the interpretation of closure time; @sec-wrangling documented
+the transformations; and @sec-eda examined
 the resulting distributions. This chapter asks how a visual specification
 can preserve those distinctions while making an intended comparison clear.
 An hourly line plot summarizes all eligible requests, a closure-time
