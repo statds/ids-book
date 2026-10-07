@@ -499,8 +499,32 @@ training portion. The ZIP-label model is a predictive benchmark for areas
 already represented in the data; its coefficient for a ZIP label does not
 explain what neighborhood feature may relate to closure time.
 
+One-hot encoding gives each ZIP label its own coefficient, which can be
+unstable when some labels have few requests. Smoothed target encoding offers
+another representation: it replaces a label with an estimate of its
+one-hour closure rate, then shrinks that estimate toward the overall rate.
+For ZCTA $j$, a common estimate is
+
+\[
+  \widetilde{p}_j =
+  \frac{s_j + \alpha \bar{p}}{n_j + \alpha},
+\]
+
+where $s_j$ is the number of one-hour closures in ZCTA $j$, $n_j$ is
+its number of requests, $\bar{p}$ is the overall training-set rate, and
+$\alpha$ controls shrinkage. Larger values of $\alpha$ pull area
+estimates more strongly toward the overall rate. This empirical Bayes idea
+is useful for categories with different sample sizes
+[@micci-barreca2001preprocessing; @pargent2022regularized]. Since the
+encoding uses the outcome, fitting it on each row's own outcome would leak
+information into the training data. The encoder below cross-fits the
+training values within each training fold; for the held-out test set, it
+uses category rates estimated from the full training set
+[@scikitlearn2026targetencoder].
+
 ```{python}
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.preprocessing import TargetEncoder
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=2026)
 candidate_C = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10]}
@@ -543,20 +567,59 @@ zip_id_search, zip_id_probability = tune_logistic(
     zip_identifier_features, []
 )
 
+zip_target_pipeline = make_pipeline(
+    ColumnTransformer([
+        ("categorical", OneHotEncoder(handle_unknown="ignore"), categorical_features),
+        (
+            "zip_target",
+            TargetEncoder(
+                target_type="binary",
+                cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=2026),
+            ),
+            ["incident_zip"],
+        ),
+    ]),
+    LogisticRegression(max_iter=3000),
+)
+zip_target_search = GridSearchCV(
+    zip_target_pipeline,
+    {
+        "columntransformer__zip_target__smooth": [1, 10, 100],
+        "logisticregression__C": [0.001, 0.01, 0.1, 1, 10],
+    },
+    scoring="neg_log_loss",
+    cv=cv,
+    refit=True,
+)
+zip_target_features = categorical_features + ["incident_zip"]
+zip_target_search.fit(X_train[zip_target_features], y_train)
+zip_target_probability = zip_target_search.predict_proba(
+    X_test[zip_target_features]
+)[:, 1]
+
 comparison = pd.DataFrame({
     "Detail and borough": score_predictions(detail_borough_probability),
     "Census area context": score_predictions(census_probability),
     "ZIP label identifier": score_predictions(zip_id_probability),
+    "ZIP target encoding": score_predictions(zip_target_probability),
 }).T
 comparison["selected C"] = [
     detail_borough_search.best_params_["logisticregression__C"],
     census_search.best_params_["logisticregression__C"],
     zip_id_search.best_params_["logisticregression__C"],
+    zip_target_search.best_params_["logisticregression__C"],
 ]
 comparison["mean CV log loss"] = [
     -detail_borough_search.best_score_,
     -census_search.best_score_,
     -zip_id_search.best_score_,
+    -zip_target_search.best_score_,
+]
+comparison["selected ZIP smoothing"] = [
+    None,
+    None,
+    None,
+    zip_target_search.best_params_["columntransformer__zip_target__smooth"],
 ]
 comparison
 ```
@@ -569,6 +632,15 @@ ZIP-label model scores higher, with ROC AUC about 0.690 and log loss 0.593.
 Because the same ZCTAs occur in training and test sets, this score reflects
 area-specific prediction for locations represented in training. It neither
 identifies a cause nor demonstrates transfer to a new ZCTA or a later week.
+
+Smoothed target encoding gives a similar test ROC AUC of about 0.688 and
+log loss of 0.595, with the cross-validation procedure selecting a smoothing
+value of 10. Three test requests have ZIP labels absent from the training
+set; the encoder assigns those labels the overall training rate. This
+comparison shows that a compact, partially pooled encoding can retain much
+of the ZIP-specific predictive signal in this split. It does not establish
+that ZIP-level outcome rates will transfer to future requests, and its
+learned category values should not be interpreted as neighborhood causes.
 
 The Census estimates offer a more interpretable area-level question than
 the ZIP label, but their interpretation remains limited. Population is a
