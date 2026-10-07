@@ -1,8 +1,10 @@
 # Python Practice {#sec-python}
 
+
 This chapter develops Python habits that help you inspect and reproduce an
 analysis. It assumes that you have seen variables, functions, conditionals,
 and loops. In particular, you will learn to:
+
 
 - check which interpreter runs your code and which packages it can import;
 - find where an imported function comes from;
@@ -10,15 +12,19 @@ and loops. In particular, you will learn to:
 - predict when an operation changes an existing object; and
 - recognize limits in how computers represent numbers.
 
+
 These habits help turn a short script into an analysis that another person
 can inspect and rerun. Each section connects a Python concept to a practical
 question you may encounter while working with data.
 
+
 ## Python Ecosystem
+
 
 A Python process runs code in one interpreter, which supplies the language and
 standard library. An environment adds third-party packages such as NumPy and
 pandas. These related terms describe different layers of the Python ecosystem:
+
 
 - **Interpreter:** The program that runs Python code and supplies the standard
   library.
@@ -33,9 +39,11 @@ pandas. These related terms describe different layers of the Python ecosystem:
 - **Distribution:** The installable unit managed by tools such as `pip`. One
   distribution can provide one or more importable packages or modules.
 
+
 The standard library includes modules such as `math`, `pathlib`, and
 `statistics`; NumPy and pandas are third-party libraries rather than parts of
 Python itself [@python2026imports; @mckinney2022python].
+
 
 These distinctions help diagnose a common problem: `pip` reports that a
 library is installed, but `import pandas` still fails. The package may have
@@ -44,9 +52,11 @@ The word used to install a distribution can also differ from the import name:
 the `scikit-learn` distribution, for example, is imported as `sklearn`. Check
 the active interpreter and the exact import name before reinstalling packages.
 
+
 When code fails with `ModuleNotFoundError`, first determine which interpreter
 is active. This chunk reports the interpreter path and version used by the
 current Quarto document:
+
 
 ```{python}
 import sys
@@ -55,15 +65,18 @@ print(sys.executable)
 print(sys.version.split()[0])
 ```
 
+
 In a terminal, `python --version` and `which python` provide similar evidence
 after an environment has been activated. Use `python -m pip`, rather than a
 bare `pip`, to ensure that package management uses that same interpreter:
+
 
 ```bash
 python -m pip show numpy
 python -m pip show pandas
 python -m pip freeze
 ```
+
 
 A virtual environment is a self-contained directory with a chosen Python
 installation and its packages. It prevents one project’s package version from
@@ -74,11 +87,14 @@ can install the same set with `python -m pip install -r requirements.txt`
 book uses the `.ids` environment; the important practice here is to check the interpreter,
 not merely the command prompt.
 
+
 ## Imports
+
 
 An `import` statement binds a name in the current file to a module or an object
 defined elsewhere. Choose imports that make the source easy to read and avoid
 names that obscure where a function comes from:
+
 
 ```{python}
 import math
@@ -89,18 +105,22 @@ print(math.sqrt(81))
 print(project_root.name)
 ```
 
+
 For widely used data-science libraries, conventional aliases make code easier
 to recognize:
+
 
 ```{python}
 import numpy as np
 import pandas as pd
 ```
 
+
 Avoid `from package import *`. It hides the source of each name, can overwrite
 an existing name, and makes a traceback harder to interpret. When you need to
 learn what an imported object does, use `help()`, inspect its documentation, or
 check its type and attributes deliberately:
+
 
 ```{python}
 sample = np.array([2, 4, 8])
@@ -110,12 +130,15 @@ print(sample.dtype)
 print(sample.shape)
 ```
 
+
 The `type`, `dtype`, and `shape` attributes answer different questions. The
 first identifies the Python or library object; `dtype` describes how an array
 stores its values; and `shape` gives its dimensions. Checking all three is
 often more informative than printing a large object.
 
+
 ## Functions
+
 
 A function should name a task, accept the data and choices needed for that
 task, and return a result that another part of the analysis can use. It should
@@ -124,11 +147,13 @@ needs to analyze. A docstring records the function’s contract, while type hint
 communicate the intended inputs and output; Python does not automatically
 enforce those hints.
 
+
 Two functions can return the same answer while requiring very different
 amounts of computation. The Fibonacci sequence provides a small example. We
 use \(F_0 = 0\) and \(F_1 = 1\), so each later value is the sum of the preceding
 two values. A direct recursive definition is easy to read, but it repeatedly
 recomputes the same earlier values:
+
 
 ```{python}
 def fibonacci_recursive(n: int) -> int:
@@ -140,9 +165,11 @@ def fibonacci_recursive(n: int) -> int:
     return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
 ```
 
+
 Memoization stores values that have already been computed. The
 `functools.cache` decorator supplies a general-purpose cache, so the recursive
 definition still mirrors the mathematics without repeating the same work:
+
 
 ```{python}
 from functools import cache
@@ -158,9 +185,11 @@ def fibonacci_memoized(n: int) -> int:
     return fibonacci_memoized(n - 1) + fibonacci_memoized(n - 2)
 ```
 
+
 A bottom-up dynamic-programming function builds the sequence from its base
 cases. It uses linear time and stores all earlier values, which is useful when
 the analysis needs the sequence rather than only its final value:
+
 
 ```{python}
 def fibonacci_bottom_up(n: int) -> int:
@@ -173,9 +202,11 @@ def fibonacci_bottom_up(n: int) -> int:
     return values[n] if n else values[0]
 ```
 
+
 When only one value is needed, an iterative function can keep just the two
 values needed for the next step. It returns the same result with linear time
 and constant extra memory:
+
 
 ```{python}
 def fibonacci_iterative(n: int) -> int:
@@ -197,12 +228,14 @@ assert (
 )
 ```
 
+
 The recursive version makes the mathematical definition visible, but its
 repeated work grows exponentially as `n` increases. Memoization and the two
 iterative approaches reduce the repeated work to linear time. The bottom-up
 version uses linear extra memory, while the constant-memory version is the
 practical choice when only one value is needed. A small timing comparison makes
 the difference observable:
+
 
 ```{python}
 import timeit
@@ -221,6 +254,7 @@ timings = {
 pd.Series(timings, name="seconds")
 ```
 
+
 Data-science analyses often repeat calculations across observations, simulation
 trials, features, or model evaluations. An implementation that is acceptable
 for one small example can become infeasible when the data or number of
@@ -228,10 +262,12 @@ repetitions grows. Choosing an algorithm, checking its runtime and memory use,
 and testing equivalent implementations are therefore data-science practices,
 not merely programming exercises.
 
+
 A summary function can accept ordinary Python data while returning statistics in
 a structured form. The function converts its input to a floating-point NumPy
 array, checks a precondition, and returns a dictionary whose named fields are
 convenient in prose and tables.
+
 
 ```{python}
 def summarize(values: list[float] | np.ndarray) -> dict[str, int | float]:
@@ -249,32 +285,39 @@ summary = summarize([82, 91, 87, 76, 94])
 summary
 ```
 
+
 The conversion inside `summarize` creates an array suited to numerical work.
 The function therefore accepts an ordinary list but does not force every caller
 to learn NumPy’s input rules. Its explicit `ValueError` gives a useful message
 at the boundary of the function, instead of allowing a mysterious result later
 in the analysis.
 
+
 Run a small, direct check whenever you write a function. This is not a complete
 test suite, but it records a known case and catches an accidental change to the
 function’s behavior:
+
 
 ```{python}
 expected_mean = 86.0
 assert summarize([82, 91, 87, 76, 94])["mean"] == expected_mean
 ```
 
+
 Use a function when a task recurs, when its name clarifies a multi-step
 calculation, or when you want to test one part of an analysis independently.
 Do not turn every one-line expression into a function; an unnecessary function
 can hide a simple calculation.
 
+
 ## Names and Objects
+
 
 Python names refer to objects. Assignment usually binds another name to the
 same object; it does not copy that object. Every object has an identity, type,
 and value. Lists and dictionaries are mutable, while numbers, strings, and
 tuples are immutable [@python2026datamodel].
+
 
 ```{python}
 scores = [82, 91, 87]
@@ -289,14 +332,17 @@ print(copy)
 print(copy is scores)
 ```
 
+
 The call to `append` changes the list object that both `scores` and `alias`
 refer to. The `copy` variable refers to a distinct list, so it retains the
 earlier values. Use `is` only to ask whether two names refer to the same
 object; use `==` to ask whether their values are equal.
 
+
 This distinction matters at function boundaries. An in-place function has a
 side effect because it modifies the caller’s list. A function that creates and
 returns a new list is generally safer for a data-analysis transformation.
+
 
 ```{python}
 def add_bonus_in_place(values: list[float], bonus: float) -> None:
@@ -318,19 +364,23 @@ print(adjusted)
 print(original)
 ```
 
+
 Neither style is universally correct. Mutating a large object can be efficient,
 and some library methods intentionally modify objects in place. The important
 rule is that a function’s name, docstring, and use should make mutation clear.
 When in doubt, assign a returned object to a new, descriptive name and retain
 the original until you have checked the result.
 
+
 ## Data Structures
+
 
 Lists are flexible containers that can hold objects of different types. NumPy
 arrays store a regularly shaped collection of values of one `dtype`, which
 makes elementwise numerical operations concise. A pandas data frame organizes
 named columns that can have different types. Select the structure that matches
 the task, rather than treating them as interchangeable.
+
 
 ```{python}
 values = [1, 2, 3]
@@ -341,6 +391,7 @@ print(array * 10)
 table
 ```
 
+
 The expression `array * 10` multiplies every array value. In contrast,
 `values * 10` repeats the list ten times. This is not a minor syntactic detail:
 it changes the object type and the meaning of the operation. Convert to an
@@ -348,14 +399,17 @@ array when you need regular numerical computation; use a data frame when the
 observations have named variables and you need to inspect, join, summarize, or
 plot columns [@vanderplas2016python; @mckinney2022python].
 
+
 NumPy operations are often vectorized: one expression applies the same
 calculation to every array element without an explicit Python loop. Vectorized
 operations are usually faster for large regular arrays, while loops remain
 appropriate for branching logic and one-game simulations [@vanderplas2016python]:
 
+
 ```{python}
 array**2
 ```
+
 
 Python-level loops can be slower for large numerical arrays because Python must
 interpret each iteration and repeatedly manage dynamically typed objects. A
@@ -367,12 +421,15 @@ numerical functions, or use [Cython](https://cython.readthedocs.io/en/latest/)
 and compiled extensions for more control. Switching to Julia is another
 language choice, but it is not required simply because a Python loop is slow.
 
+
 ## Number Representation
+
 
 Python’s built-in integers grow to represent arbitrarily large whole numbers,
 subject to available memory. NumPy integers have a fixed width, such as
 `int8` or `int64`, because fixed-width storage supports compact arrays and fast
 operations. A value outside that type’s range can overflow:
+
 
 ```{python}
 largest_int8 = np.array([127], dtype=np.int8)
@@ -382,9 +439,11 @@ print(largest_int8.dtype, largest_int8)
 print(overflowed)
 ```
 
+
 Inspect `dtype` before converting identifiers, counts, or monetary values to a
 small integer type. An overflow may produce a plausible but wrong value, which
 is more dangerous than a visible error.
+
 
 Most numerical analysis uses binary floating-point values. Many decimal
 fractions, including 0.1, have no exact finite binary representation, so a
@@ -397,6 +456,7 @@ provides an optional visual explanation of these fields. The limited
 significand also means that ordinary floating-point values cannot represent
 every very large integer exactly.
 
+
 ```{python}
 import math
 
@@ -407,6 +467,7 @@ print(total == target)
 print(format(total, ".17f"))
 print(math.isclose(total, target))
 ```
+
 
 Use exact equality for values that are expected to be exactly equal, such as
 category labels, integer counts, or a known string. For computed floating-point
@@ -419,7 +480,9 @@ that require many decimal digits, set the decimal context inside the function
 so its result does not depend on hidden notebook state; construct values from
 exact inputs such as `Decimal(1)`, rather than converting an existing `float`.
 
+
 ## Simulation
+
 
 Random simulation is a compact setting in which all of these ideas matter. The
 Monty Hall game has three doors, one prize, and a host who opens an unchosen
@@ -427,6 +490,7 @@ empty door. A player who switches wins whenever the first choice was wrong,
 which has probability two-thirds. The simulation uses a local NumPy random
 number generator. Supplying the same seed creates the same pseudo-random draws,
 which makes debugging and review possible.
+
 
 ```{python}
 def simulate_monty_hall(
@@ -451,9 +515,11 @@ monty_results = simulate_monty_hall(n_trials=100_000, seed=2026)
 monty_results
 ```
 
+
 The function returns a data frame instead of printing a conclusion. That choice
 lets later code make a table, a figure, or a formal comparison without parsing
 text. Repeating the call with the same arguments should reproduce the result:
+
 
 ```{python}
 repeat_results = simulate_monty_hall(n_trials=100_000, seed=2026)
@@ -462,11 +528,14 @@ assert monty_results.equals(repeat_results)
 np.isclose(monty_results.loc[0, "win_rate"], 1 / 3, atol=0.01)
 ```
 
+
 The tolerance in the last line reflects simulation variability, not
 floating-point error alone. State why a tolerance is appropriate whenever you
 choose one; a tolerance that is too loose can conceal a mistake.
 
+
 ## Debugging
+
 
 Debugging is the process of finding which assumption in a program failed, not
 merely making an exception disappear. When a program raises an error or returns
@@ -475,12 +544,14 @@ with the smallest input that shows the failure, read the final line of the
 traceback first, and inspect the smallest object that could explain the
 behavior.
 
+
 Python provides several complementary debugging tools. Use `type()`, `repr()`,
 `dir()`, and `help()` to inspect ordinary Python objects. Use `assert` to check
 program assumptions that should always hold, such as a positive sample size or
 a matching number of rows. When a program operates on tabular or numerical
 objects, inspect their types, shapes, missing values, and finite values
 deliberately:
+
 
 ```{python}
 print(type(monty_results))
@@ -492,31 +563,37 @@ assert monty_results["wins"].sum() == 100_000
 assert np.isfinite(monty_results["win_rate"]).all()
 ```
 
+
 Pandas supplies additional checks such as `.info()`, `.describe()`, `.isna()`,
 and `.value_counts()`. NumPy supplies checks such as `.shape`, `.dtype`,
 `np.isnan()`, and `np.isfinite()`. These checks can reveal a wrong column type,
 unexpected missing values, an empty subset, or a calculation that silently
 produced infinite values.
 
+
 For an exception, the `traceback` module can display the error explicitly in a
 script. To pause a running program and inspect local variables, insert
 `breakpoint()` temporarily or run a script under Python’s [standard-library
 debugger](https://docs.python.org/3/library/pdb.html):
 
+
 ```bash
 python -m pdb analysis.py
 ```
+
 
 In a Jupyter or Quarto notebook, `%debug` opens the debugger after the most
 recent exception, and `%pdb on` enables automatic entry into the debugger after
 future exceptions. These commands are interactive, so use them while
 developing rather than in a document that must render unattended.
 
+
 Turn a successful diagnostic into a repeatable test. A direct `assert` is often
 enough for a small function; a test framework such as
 [`pytest`](https://docs.pytest.org/en/stable/) is useful when a program has many
 cases. Keep the input small, make the expected result explicit, and test edge
 cases such as an empty input, a missing value, or a sample size of one.
+
 
 AI assistants can also help with debugging. Give an assistant the smallest
 reproducible example, the complete traceback, the relevant function, and the
@@ -527,11 +604,11 @@ as a hypothesis: check it against the official documentation and your source,
 run the proposed test, and verify that the program now behaves as intended—not
 only that the exception has disappeared.
 
+
 Avoid solving an error by repeatedly installing packages, restarting the editor,
 or changing several unrelated lines at once. Make one hypothesis, test it with
 a small example, and record the correction in the source or a concise commit
 message.
-
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems. Use the same

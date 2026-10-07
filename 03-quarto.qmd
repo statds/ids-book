@@ -1,11 +1,13 @@
 # Reproducible Data Science {#sec-quarto}
 
+
 Quarto turns plain-text source into reproducible documents that combine
 explanation, computation, results, figures, and references. A data-science
 analysis should be reproducible because readers need to inspect how evidence
 was produced, not merely see a final picture or a pasted table. Quarto supports
 Python, R, Julia, and Observable and can publish articles, reports, websites,
 books, and presentations in several output formats [@quarto2025guide].
+
 
 This chapter is a jump start, not a replacement for the [complete Quarto
 Guide](https://quarto.org/docs/guide/). Use the guide when you need options not
@@ -15,7 +17,9 @@ and [presentation documentation](https://quarto.org/docs/presentations/)
 for detailed examples [@quarto2025python; @quarto2025markdown;
 @quarto2025presentations].
 
+
 ## A Minimal Quarto Document
+
 
 A Quarto document is a text file whose `.qmd` extension combines YAML
 metadata, Markdown prose, equations, citations, and executable code chunks.
@@ -23,7 +27,9 @@ The following small document is a better starting point than a code-only
 hello-world: it produces a numerical result, a table, and a figure from the
 same code that explains them.
 
+
 Create a file named `hello.qmd` with YAML metadata like this:
+
 
 ```yaml
 ---
@@ -35,11 +41,14 @@ bibliography: references.bib
 ---
 ```
 
+
 The document can then combine prose, equations, and executable code. Equation
 punctuation follows ordinary sentence punctuation. The mean of observations
 $x_1,\ldots,x_n$ is given by @eq-mean.
 
+
 The source syntax for this numbered equation is:
+
 
 ```text
 The mean ... is given by @eq-mean.
@@ -48,6 +57,7 @@ $$
 \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i.
 $$ {#eq-mean}
 ```
+
 
 $$
 \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i.
@@ -63,9 +73,11 @@ g(x) =
 \end{cases}
 $$ {#eq-cases}
 
+
 The comma after the first case and the period after the final case are part of
 one grammatical statement. The code below generates a table and a figure from
 the same observations:
+
 
 ```{python}
 #| label: fig-scores
@@ -95,20 +107,24 @@ ax.set(xlabel="Subject", ylabel="Mean score", title="Simulated class scores")
 plt.show()
 ```
 
+
 The call to `default_rng(2026)` creates a seeded random-number generator. The
 same seed reproduces the same simulated scores when the document is rendered
 again. The `loc` values set the three subjects' generating means, while the
 `scale` values set their standard deviations. In the figure:
 
+
 - each bar is the sample mean for one subject;
 - each error bar is one standard error of that mean; and
 - the bars summarize the same 30 simulated students shown in the table.
+
 
 The error bars do not show the range of student scores. For that question,
 we would also display the individual scores or a distribution plot. This
 distinction helps readers avoid treating a summary figure as if it showed
 every observation.
 Quarto itself is documented in the Quarto Guide [@quarto2025guide].
+
 
 The opening and closing lines between `---` define YAML metadata. Headings use
 one or more `#` characters, ordinary text forms paragraphs, dollar signs mark
@@ -117,22 +133,28 @@ LaTeX equations, and a fenced code chunk begins with ```` ```{python} ````. The
 Python chunks. Expressions whose values are displayed, such as `scores`, and
 figures returned by the chunk become part of the rendered document.
 
+
 Render the document from its directory:
+
 
 ```bash
 quarto render hello.qmd
 ```
+
 
 Quarto writes `hello.html` by default. Open that file in a browser, or use
 `quarto preview hello.qmd` while editing to render again after each save. Keep
 the `.qmd` source under version control; treat the rendered HTML as generated
 output.
 
+
 ## Markdown Essentials
+
 
 Markdown provides the readable structure around an analysis. The following
 mini-report shows how headings, emphasis, a list, a labeled equation, a table,
 a figure, a citation, and cross-references work together:
+
 
 ````markdown
 ## Assessment Results {#sec-assessment-results}
@@ -155,7 +177,7 @@ $$ {#eq-subject-mean}
 
 : Simulated mean scores for a class of 30 students. {#tbl-subject-means}
 
-![Mean score by subject, with standard-error bars.](figures/scores.png){#fig-subject-means}
+![Mean score by subject, with standard-error bars.](figures/scores.svg){#fig-subject-means}
 
 @fig-subject-means makes the difference among simulated subject means easier
 to compare. The bars do not show how individual students performed. The
@@ -165,6 +187,7 @@ the figure caption names the quantity represented by the bars and intervals.
 
 ````
 
+
 A label in braces, such as `{#eq-subject-mean}`, identifies an object that
 Quarto should number. Use the prefixes `eq-`, `tbl-`, `fig-`, and `sec-` for
 equations, tables, figures, and sections. A cross-reference begins with `@` and
@@ -172,6 +195,7 @@ uses the matching label, as in `@tbl-subject-means`. During rendering, Quarto
 replaces that source text with the current object number. If an earlier table
 or figure is added, references update automatically instead of leaving a stale
 number in the prose.
+
 
 Use a heading hierarchy rather than bold text to organize a document. Put blank
 lines around paragraphs, tables, and lists; write descriptive link text; and
@@ -183,7 +207,9 @@ basics reference](https://quarto.org/docs/authoring/markdown-basics.html)
 covers tables, images, citations, cross-references, callouts, and other
 features.
 
+
 ## Why the Software Environment Matters
+
 
 An analysis is a combination of source code and the software environment that
 interprets it. Two computers can run the same source and obtain different
@@ -191,6 +217,7 @@ results when they use different Python versions, package versions, operating-
 system libraries, or default settings. A result that cannot be rerun after an
 environment changes is not fully reproducible, even when the code is available
 [@wilson2017good].
+
 
 An isolated environment makes these dependencies explicit and prevents one
 project from silently changing another. Recording the Python version and the
@@ -200,12 +227,15 @@ This practice also makes failures diagnosable: when an upgrade changes an
 output, we can identify the change instead of guessing which global installation
 caused it.
 
+
 ## Python Environments for Quarto {#sec-python-environment}
+
 
 Quarto executes Python through a Jupyter kernel, so the interpreter and
 packages must be installed in an environment that Quarto can find. A virtual
 environment keeps this project's packages separate from the system Python and
 from unrelated projects.
+
 
 This book uses Python 3.12 in its tested environment. You may choose a virtual
 environment's name and location. A virtual environment is a directory
@@ -214,15 +244,18 @@ contain a project's source files or build instructions. The `uv` command-line
 tool installs Python versions, creates virtual environments, and installs
 packages; it is not a replacement for Python or Quarto.
 
+
 ```bash
 uv venv --python 3.12 /path/to/your/environment
 source /path/to/your/environment/bin/activate
 ```
 
+
 If `uv` is unavailable, replace `uv venv` with `python3.12 -m venv` and use the
 same path. Do not install packages into the system Python, and do not commit a
 virtual-environment directory. Keep the project's environment specification and
 source files under version control instead.
+
 
 Use `python --version`, `which python`, and `jupyter kernelspec list` to verify
 that the active interpreter is Python 3.12 and is the one you intend to use. If
@@ -230,14 +263,18 @@ Quarto reports that it cannot find a kernel, select the environment's Python
 interpreter in your editor or install its kernel with
 `python -m ipykernel install --user`.
 
+
 ## Reproducibility in Practice
+
 
 Reproducibility requires a record of the inputs, environment, instructions, and
 decisions that produced an analysis. A Quarto file brings prose and executable
 code together, but it cannot by itself make an undocumented dataset,
 unrecorded random seed, or unavailable package reproducible.
 
+
 For each analysis, preserve these five components:
+
 
 1. **Source:** the `.qmd` file and any scripts it calls.
 2. **Data:** the source, version, download date, and transformations for each
@@ -249,12 +286,15 @@ For each analysis, preserve these five components:
 5. **Outputs:** tables, figures, and conclusions checked against the source,
    not manually edited after rendering.
 
+
 Use relative project paths, pin important package versions, set random seeds
 when simulation is involved, and render from a clean working tree. These habits
 make it possible for another analyst to inspect and repeat the work
 [@wilson2017good].
 
+
 ## Rendering the Book {#sec-rendering-the-book}
+
 
 Rendering the notes locally lets you see how the published book is produced,
 practice the workflow used in a shared data-science project, and test a
@@ -263,14 +303,17 @@ render shows that the source, computations, citations, and cross-references
 work together on your computer. To obtain a local copy, clone the repository
 and enter it:
 
+
 ```bash
 git clone https://github.com/statds/ids-book.git
 cd ids-book
 ```
 
+
 Assume that you have already activated a Python 3.12 environment as described
 in @sec-python-environment. The cloned repository contains the Makefile. From
 its root, install this book's pinned dependencies and build it:
+
 
 ```bash
 make install
@@ -278,14 +321,17 @@ make check
 make render
 ```
 
+
 If you want an environment dedicated to this book, choose a directory for it,
 create it, and activate it before running those commands. For example, replace
 `/path/to/ids-book-env` below with a directory of your choice:
+
 
 ```bash
 uv venv --python 3.12 /path/to/ids-book-env
 source /path/to/ids-book-env/bin/activate
 ```
+
 
 If `uv` is unavailable, replace `uv venv` with `python3.12 -m venv` and use the
 same path. Activation sets `VIRTUAL_ENV`, which this repository's Makefile uses
@@ -297,6 +343,7 @@ preview` starts a local server and rebuilds the output when source files change.
 Students building the book should not run `make req`, because that maintainer
 target rewrites `requirements.txt` from the local environment.
 
+
 Read the repository's `Makefile` rather than treating its commands as magic.
 It is a short, plain-text description of the build tasks. Use an AI assistant to
 ask what a specific target, variable, or command does, then compare the answer
@@ -305,9 +352,11 @@ prints the commands without running them. This is a useful way to learn an
 unfamiliar project while retaining responsibility for checking the explanation.
 For a quick test of one source file, use:
 
+
 ```bash
 make render-one FILE=hello.qmd
 ```
+
 
 Read the terminal output rather than assuming a successful command produced a
 correct document. Check that code results make sense, links work, figures have
@@ -315,7 +364,9 @@ captions, citations resolve, and the output contains no accidental secrets or
 local file paths. Generated `_book/`, `.quarto/`, and cache files belong in
 `.gitignore`, not in a commit.
 
+
 ## Presentations with Quarto
+
 
 Quarto can turn a `.qmd` file into a presentation as well as a report. The
 same source can be adapted for different audiences while keeping the analysis
@@ -324,12 +375,15 @@ diagnostics, while a presentation might show only the question, main result,
 and limitations. The [presentation guide](https://quarto.org/docs/presentations/)
 describes the available formats [@quarto2025guide].
 
+
 For a data-science assignment, keep the source record in text files:
+
 
 - the `.qmd` file contains the explanation, code, citations, and references;
 - separate scripts hold reusable computations;
 - data documentation records sources, dates, and transformations; and
 - an environment specification records software dependencies.
+
 
 The rendered HTML or PDF is an output for readers. Word-processing and slide
 files can be useful for delivery, but they do not show the line-by-line source
@@ -337,7 +391,9 @@ history or reliably record how a manually edited result was computed. Git
 preserves revisions, and executable code keeps tables and figures linked to
 their data [@wilson2017good].
 
+
 Create a presentation by choosing a presentation format in the YAML header:
+
 
 ```markdown
 ---
@@ -354,13 +410,13 @@ What decision does this analysis support?
 Explain the important figure and its limitations.
 ```
 
+
 Render it with `quarto render presentation.qmd` or preview it with `quarto
 preview presentation.qmd`. Use headings for slides, keep one central idea on
 each slide, and write speaker notes when additional explanation belongs in the
 oral presentation rather than on the slide. Export a PDF only when a course or
 audience requires a static copy; keep the `.qmd` source as the authoritative
 presentation.
-
 ## Exercises {.unnumbered}
 
 Complete the Git setup in @sec-install-git and the Quarto installation in

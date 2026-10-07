@@ -1,6 +1,8 @@
 # Introduction {#sec-intro}
 
+
 ## What Is Data Science?
+
 
 Data science is the practice of learning from data. It combines statistical
 reasoning, computation, and knowledge of the setting in which the data arose.
@@ -9,15 +11,19 @@ model can answer the wrong question; a sound statistical method can fail when
 implemented incorrectly; and efficient code cannot repair measurements that do
 not represent the phenomenon of interest.
 
+
 Bin Yu's $SDC^3$ formulation captures this interdisciplinary breadth. In her
 2014 presidential address to the Institute of Mathematical Statistics, she
 summarized the field as follows [@yu2014let]:
+
 
 $$
 \text{Data science} = S D C^3,
 $$
 
+
 Yu's notation names five capabilities that need to work together:
+
 
 - **Statistics** helps us reason from observations while accounting for
   variation and uncertainty.
@@ -29,11 +35,13 @@ Yu's notation names five capabilities that need to work together:
 - **Communication** explains the question, evidence, assumptions, and
   conclusions to people who need to use or evaluate the work.
 
+
 Collaboration and communication are not additions made after the technical work
 is complete. Data-science problems are commonly defined and solved by people
 with different forms of expertise. Their work becomes useful only when the
 question, evidence, assumptions, limitations, and conclusions can be understood
 by others. Data science is therefore both a technical and a social practice.
+
 
 Consider a study of 311 reports about blocked bicycle lanes. Statistics can
 help compare report counts across neighborhoods, but domain knowledge is
@@ -44,7 +52,9 @@ how reports are made and used. The final analysis must then explain what the
 counts measure and what they leave out. Each capability answers a different
 part of the problem.
 
+
 ## The Data-Science Workflow
+
 
 A data-science project may begin with a problem, an available dataset, or both.
 Yu and Barter likewise describe a nonlinear data-science life cycle spanning
@@ -52,6 +62,7 @@ problem formulation, data collection and preparation, analysis, evaluation,
 and communication [@yu2024veridical]. The workflow below adapts that broad
 life-cycle view for this course and brings questions and evidence into
 alignment through six recurring activities:
+
 
 1. **Connect the domain, questions, and data.** Use domain knowledge to
    understand the problem, how the data arose, what the variables measure, and
@@ -68,19 +79,23 @@ alignment through six recurring activities:
 6. **Communicate and act.** Present the evidence and its limitations in a form
    that supports an informed decision.
 
+
 These activities form a cycle rather than a one-way pipeline. Exploration may
 reveal a measurement problem, model checking may require different data, and
 discussion with a domain expert may change the original question. Reproducible
 records of the data, code, environment, and decisions make such revisions
 manageable and allow other people to inspect the work.
 
+
 ## This Book's Emphasis
+
 
 This book develops practical skills for carrying out and explaining a
 data-science project. It draws on the nonlinear life-cycle perspective in
 Yu and Barter's *Veridical Data Science*, which develops the PCS framework
 through case studies [@yu2024veridical]. The book takes a different route for
 beginning students:
+
 
 - The opening chapters build foundations in computing, Git, Quarto, and
   Python.
@@ -89,13 +104,17 @@ beginning students:
 - The analysis moves from formulating a question through preparation,
   exploration, visualization, and modeling to ethical review.
 
+
 The goal is to connect hands-on implementation with careful checks on what
 records measure and with conclusions that fit the available evidence.
 
+
 ## Goals of This Course
+
 
 This course develops the foundations needed to carry out that workflow. By the
 end of the course, students should be able to:
+
 
 - translate a substantive problem into an answerable data-science question;
 - use Python to import, organize, explore, visualize, and model data;
@@ -113,12 +132,15 @@ end of the course, students should be able to:
 - identify ethical concerns and take responsibility for analytical choices,
   including work performed with the assistance of AI.
 
+
 The aim is not mastery of every available command or algorithm. Tools will
 change, and unfamiliar problems are unavoidable. The more durable goal is to
 learn how to select tools, investigate problems, verify results, and explain the
 reasoning that connects a question to a conclusion.
 
+
 ## Computing Foundations
+
 
 Data science takes place in a computing environment: an operating system, a
 file system, a command-line shell, a Python installation, project-specific
@@ -128,7 +150,9 @@ file is in a different location, a package version has changed, or a command is
 interpreted by a different shell. Understanding the environment is part of
 reproducible analysis.
 
+
 ### Operating Systems and Software
+
 
 Linux, macOS, and Windows all support data-science work but manage software
 differently. Installation instructions must therefore be read with the
@@ -136,6 +160,7 @@ operating system in mind. Linux distributions commonly use system package
 managers such as APT or DNF; Homebrew is a widely used third-party package
 manager on macOS; and Windows provides tools such as Windows Package Manager as
 well as the Windows Subsystem for Linux (WSL).
+
 
 An operating-system package manager and a Python package manager solve
 different problems. The former installs software for the operating system; the
@@ -145,7 +170,9 @@ source of installation errors. For course work, use the documented project
 environment instead of installing packages into an unspecified global Python
 installation.
 
+
 ### Files, Paths, and Directories
+
 
 A file system organizes files into directories, also called folders. File
 Explorer on Windows, Finder on macOS, and a command-line shell are different
@@ -153,12 +180,15 @@ ways of viewing and working with the same file system. A file downloaded in a
 web browser is not stored "in the browser": it is saved somewhere in the file
 system.
 
+
 #### Finding Your Files
+
 
 The **home directory** is the starting point for locating a user's files. It
 contains familiar folders such as `Desktop`, `Documents`, and usually
 `Downloads`. A web browser normally saves a download in `Downloads` unless the
 user or browser chooses another location. To find a recent download:
+
 
 1. Open the browser's downloads list and use **Show in folder**, or open
    `Downloads` in File Explorer or Finder.
@@ -170,8 +200,10 @@ user or browser chooses another location. To find a recent download:
 4. If the download is a `.zip` archive, extract it and identify the new folder
    before trying to run or edit its contents.
 
+
 From a Unix-like shell, `~` denotes the home directory. The following commands
 answer three basic questions:
+
 
 ```bash
 pwd             # Where am I now?
@@ -179,12 +211,15 @@ ls              # What is here?
 cd ~/Downloads  # Move to my Downloads folder.
 ```
 
+
 The graphical and command-line views should lead to the same location. Run
 `pwd` again after `cd` and compare its output with the location shown in File
 Explorer or Finder. Software Carpentry provides a guided introduction to this
 navigation process [@softwarecarpentryndunix].
 
+
 #### Absolute and Relative Paths
+
 
 A **path** identifies a location in the file-system hierarchy. An **absolute
 path** starts at the file-system root and identifies a location without
@@ -193,12 +228,14 @@ reference to the current working directory. Examples include
 `C:\Users\Lee\air-quality\data\raw.csv` on Windows. Such a path is tied to a
 particular machine and user account.
 
+
 A **relative path** is interpreted from the current working directory. If the
 working directory is the project folder `air-quality`, then `data/raw.csv`
 identifies the same file without recording where the project is stored. The
 special path `.` denotes the current directory and `..` denotes its parent.
 Software Carpentry provides diagrams and exercises for learning how absolute
 and relative paths are resolved [@softwarecarpentryndunix].
+
 
 For files within a project, prefer paths relative to the project root. If the
 whole project directory is moved to a different computer, every internal
@@ -208,10 +245,13 @@ for portability and reproducibility. Keep each project in its own directory,
 separate source data from generated results, and run the analysis with a known
 project root [@wilson2017good].
 
+
 #### Naming Files and Folders
+
 
 Good file and folder names are readable by people and predictable for software.
 Follow these conventions:
+
 
 - use short, descriptive names such as `survey-responses.csv` and
   `clean-data.py`;
@@ -223,6 +263,7 @@ Follow these conventions:
 - use stable content-based names instead of names such as `final-v2-revised`;
   let version control record revisions.
 
+
 The Windows directory `C:\Program Files` illustrates an unfortunate naming
 convention for command-line work. The space is legal, but a shell may interpret
 it as the boundary between two arguments unless the entire path is quoted, as
@@ -232,22 +273,27 @@ but should not copy this convention into data-science projects. Prefer
 recommendation because spaces and other shell-sensitive characters complicate
 commands, loops, and scripts [@softwarecarpentryndunix].
 
+
 Portable file handling requires attention to case, extensions, and hidden
 files. Names may be case-sensitive on one operating system but not another, and
 extensions such as `.csv`, `.py`, and `.qmd` signal different kinds of content.
 Hidden files often store configuration.
 
+
 Every file operation should begin with a check of its source and destination.
 Before reading or writing a file, know the current working directory, the
 intended path, and whether the operation will replace an existing file.
 
+
 ### The Command Line
+
 
 This book standardizes on Unix shell conventions for command-line work. Its
 basic commands work in Git Bash, Cygwin, WSL, macOS terminals, and Linux
 terminals. On Windows, use Git Bash, which is distributed with Git for Windows
 and provides a Bash emulation for running Git and Unix-style commands
 [@gitforwindowsndgit].
+
 
 Do not use PowerShell for the command-line examples in this book. PowerShell
 defines familiar names such as `ls`, `cp`, and `rm` as aliases for PowerShell
@@ -256,7 +302,9 @@ work while their options and behavior differ [@microsoftndusing]. In this
 course, use PowerShell only when a Windows-specific software installation step
 explicitly requires it.
 
+
 The following shell commands form a useful starting vocabulary:
+
 
 - `pwd` prints the current working directory;
 - `ls` lists directory contents;
@@ -266,6 +314,7 @@ The following shell commands form a useful starting vocabulary:
 - `mv` moves or renames files or directories; and
 - `rm` removes files.
 
+
 Options modify the behavior of a command. For example, `ls -a` includes hidden
 entries and `ls -l` displays additional details. Consult a command's
 documentation before using unfamiliar options. Use tab completion while typing
@@ -273,15 +322,19 @@ commands and paths: it completes valid names, reveals what is available, speeds
 up repetitive work, and reduces errors caused by misspelling or misquoting a
 file name.
 
+
 Commands that overwrite or remove data require special care. Check every path
 before running them; command-line deletion may not use a desktop trash folder.
+
 
 A short command list is only a starting point for shell fluency. The Software
 Carpentry lesson *The Unix Shell* provides a fuller introduction to navigating
 and modifying files, combining commands with pipes, automating repetition with
 loops, and writing shell scripts [@softwarecarpentryndunix].
 
+
 ### Python and Its Environment
+
 
 Python is the primary programming language used in this book. A working setup
 requires a supported Python 3 interpreter, an isolated environment containing
@@ -290,8 +343,10 @@ interface may be a notebook, an editor, or an integrated development
 environment; the underlying project should remain reproducible regardless of
 which interface is used.
 
+
 Readable code is easier to verify, revise, and share. Python's principal style
 guide is PEP 8 [@van2001pep]. For a start, follow three conventions:
+
 
 - use four spaces for each indentation level and do not mix tabs and spaces;
 - give variables and functions descriptive `lower_case_with_underscores` names;
@@ -299,10 +354,12 @@ guide is PEP 8 [@van2001pep]. For a start, follow three conventions:
 - use whitespace consistently, keep statements on separate lines, and wrap
   long lines inside parentheses when they become difficult to read.
 
+
 Consistent style makes analytical code easier to inspect and trust. Clear code
 exposes assumptions and makes errors easier to find, but consistency within a
 project matters more than mechanically applying a rule that reduces
 readability.
+
 
 Two freely available books provide broader instruction in the Python
 data-science ecosystem. The *Python Data Science Handbook*
@@ -310,7 +367,9 @@ data-science ecosystem. The *Python Data Science Handbook*
 learning, while *Python for Data Analysis* [@mckinney2022python] develops data
 manipulation with pandas in greater depth.
 
+
 ## Tools for Reproducible Data Science
+
 
 Coursework should produce artifacts that remain useful after the semester ends.
 When an assignment is written in Quarto, its clear prose, executable analysis,
@@ -321,25 +380,31 @@ as a disposable file submitted only for a grade; attractive output is valuable
 because it helps readers understand trustworthy work, not because appearance
 can substitute for sound reasoning [@quarto2025guide].
 
+
 ### Installing Quarto {#sec-install-quarto}
+
 
 Quarto is the publishing tool used throughout this book, so install it before
 you try to render a `.qmd` file. Follow the official [Quarto installation
 guide](https://quarto.org/docs/get-started/) for your operating system, then
 verify the installation from Git Bash, WSL, macOS Terminal, or a Linux shell:
 
+
 ```bash
 quarto --version
 quarto check
 ```
+
 
 The `quarto` command must be available on your `PATH`. If the shell reports
 `command not found`, finish the installation or reopen the shell so it reloads
 the updated `PATH`. @sec-quarto combines Quarto with Python and Jupyter to
 produce executable documents [@quarto2025guide].
 
+
 You can test the installation with a minimal document before working on the
 book. Create `hello.qmd` with the following contents:
+
 
 ```markdown
 ---
@@ -360,23 +425,29 @@ I am practicing Markdown before adding executable analysis.
 - links connect the document to [Quarto's guide](https://quarto.org/docs/guide/).
 ```
 
+
 From the directory containing the file, run:
+
 
 ```bash
 quarto render hello.qmd
 ```
 
+
 Quarto should create `hello.html`. Open that file in a browser and check that
 the title and sentence appear. The source file is the record of what you wrote;
 the HTML file is generated output and should not replace the source.
 
+
 ### Installing Git {#sec-install-git}
+
 
 Git is the version-control tool used throughout this book, so install it before
 you begin the collaboration exercises. Follow the [official Git installation
 instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
 or install [Git for Windows](https://gitforwindows.org/) and use Git Bash on
 Windows. Verify the installation and identity from your shell:
+
 
 ```bash
 git --version
@@ -385,11 +456,14 @@ git config --global user.email "you@example.com"
 git config --list --show-origin
 ```
 
+
 @sec-git explains repositories, commits, branches, remotes, and pull
 requests. This chapter only asks you to install and verify Git; do not install
 project packages globally.
 
+
 ## Responsible Practice
+
 
 Ethical questions occur throughout a project, not only when results are
 published. Data may have been collected without meaningful consent, omit groups
@@ -398,8 +472,10 @@ information when combined with other sources. A model may distribute errors
 unevenly, and a technically correct analysis may still be used for a harmful or
 unjustified purpose.
 
+
 Responsible practice starts with questions about the data and the decisions
 they may inform:
+
 
 - Who created the data, and who is represented or missing?
 - Who may benefit from the analysis, and who may bear its risks?
@@ -409,9 +485,11 @@ they may inform:
 - Could results or model errors differ across relevant groups?
 - What limitations should readers know before acting on a result?
 
+
 Legal compliance is necessary in regulated settings, but it does not replace
 ethical judgment. A dataset can be public and still raise questions about
 privacy, coverage, or how its results will be used.
+
 
 Accountability remains with the people conducting and deploying an analysis.
 This is especially important when AI generates code, models, or prose. The
@@ -420,15 +498,19 @@ the computation was correct, or the conclusion was justified. Every result
 must be examined with the same statistical, computational, contextual, and
 ethical scrutiny regardless of how it was produced.
 
+
 ## Communicating Data Science
+
 
 An analysis is useful when its audience can understand what was learned and
 decide how to respond. A clear explanation usually answers four questions:
+
 
 - What question did the analysis address?
 - What did the data show?
 - What evidence supports that finding?
 - What can and cannot be concluded from it?
+
 
 Tables and graphics should have a clear purpose, informative labels, honest
 scales, and enough context to be interpreted without guesswork. For example,
@@ -436,13 +518,13 @@ a chart titled “Illegal parking increased” makes a stronger claim than a
 chart titled “311 illegal-parking requests by day.” The first suggests a
 change in actual violations; the second states what was counted.
 
+
 Good communication also makes uncertainty and limitations visible. Report what
 the data cover, distinguish observed patterns from explanations, and avoid
 causal language when the design supports only association. Provide enough
 information about data sources, software, and analytical choices for others to
 inspect or reproduce the work. The objective is not to make a result sound
 certain; it is to make the reasoning transparent and useful.
-
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems.
