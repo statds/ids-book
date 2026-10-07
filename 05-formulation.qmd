@@ -95,6 +95,18 @@ pursuing and whether the available evidence can answer it.
   recorded closure times can describe these requests, but it does not by
   itself show that problem type caused a difference.
 
+The same checks lead to a different formulation when the target is
+community risk rather than service activity. A study organized by school
+district might use district or district-year as its observational unit.
+Hospitalizations following suicide attempts and deaths would remain
+distinct outcomes with distinct data sources. Counts describe event burden.
+Rates also require a population denominator, and when counts are small, one
+additional event can change the rate substantially. An area-level pattern
+describes areas rather than individuals and does not identify a cause
+[@robinson1950ecological; @openshaw1984modifiable]. The formulation must
+therefore specify the event, geographic unit, period, and denominator
+together before data are assembled.
+
 These checks are iterative rather than a one-time screen. A domain concern
 may lead to a data search, while an observed pattern may suggest a new
 question; in either direction, checking measurement, scope, and evidence can
@@ -147,7 +159,7 @@ distance requires a usable coordinate, a precinct location, and a defined
 distance metric. Treating all geographic fields as interchangeable would
 conceal both coverage limits and the units of the resulting analysis.
 
-## Acquiring and Importing Data
+## Acquiring Data
 
 Data acquisition obtains evidence while preserving enough information to
 interpret and reproduce it. Common sources include local files, public
@@ -632,7 +644,7 @@ same table is loaded repeatedly or used by multiple analytical systems. Both
 need provenance because a compact or compressed file does not explain where
 its values came from or why its rows were selected.
 
-## Provenance and Responsibility
+## Data Stewardship
 
 Data provenance records the history needed to interpret and reproduce a
 dataset. A useful record names the provider, source, access date, selection
@@ -775,10 +787,10 @@ Additional area-level data could supply denominators and context for ZIP-level
 request counts. Census characteristics are often tabulated for ZIP Code
 Tabulation Areas (ZCTAs), which are related to postal ZIP Codes but do not
 represent identical geographies [@census2023zip].
-@sec-zcta-context-merge demonstrates one such enrichment and evaluates its
-key, reference period, join cardinality, and unmatched records. Even a
-validated match describes places rather than the individuals who submitted
-requests.
+The area-context workflow in @sec-zcta-context-merge demonstrates one such
+enrichment and evaluates its key, reference period, join cardinality, and
+unmatched records. Even a validated match describes places rather than the
+individuals who submitted requests.
 
 ## A Working Formulation
 

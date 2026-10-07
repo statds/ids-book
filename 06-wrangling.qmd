@@ -15,7 +15,7 @@ representation from new analytical assumptions, checks that request identity
 and scope survive each stage, and records what remains uncertain before the
 prepared table is used for exploration or visualization.
 
-## From Source Records to an Analysis Table
+## Start with Source Data
 
 Data preparation starts from a question and a retained source, not from an
 assumption that the downloaded table is already analysis-ready. The previous
@@ -30,20 +30,24 @@ iterative because a transformation can expose a problem or show that a
 question requires different data.
 
 A preparation plan separates three classes of decisions because they have
-different implications for the resulting claim. **Scope decisions** select
-eligible observations and fields. **Representation decisions** encode a
-recorded value for reliable computation without changing its documented
-meaning, as when a ZIP Code is stored as text. **Analytical decisions**
-define new measurements or resolve uncertain values, as when a particular
-hour range is designated nighttime. Every class should leave an auditable
-record, but analytical choices especially require a rationale because they
-can change the outcome or comparison. The original ZIP archive remains
-unchanged. @sec-problem-formulation demonstrated its acquisition and initial
-profile; the code below repeats only the import, timestamp parsing, and row
-filters needed for this chapter to run independently. Temporary Feather
-examples in that chapter do not provide an input here. Each subsequent stage
-creates a derived data frame and verifies the assumptions that its operation
-introduces.
+different implications for the resulting claim:
+
+- **Scope decisions** select eligible observations and fields.
+- **Representation decisions** encode a recorded value for reliable
+  computation without changing its documented meaning, as when a ZIP Code
+  is stored as text.
+- **Analytical decisions** define new measurements or resolve uncertain
+  values, as when a particular hour range is designated nighttime.
+
+Every class should leave an auditable record. Analytical choices especially
+require a rationale because they can change the outcome or comparison.
+
+The original ZIP archive remains unchanged. @sec-problem-formulation
+demonstrated its acquisition and initial profile; the code below repeats
+only the import, timestamp parsing, and row filters needed for this chapter
+to run independently. Temporary Feather examples in that chapter do not
+provide an input here. Each subsequent stage creates a derived data frame
+and verifies the assumptions that its operation introduces.
 
 ```{python}
 from pathlib import Path
@@ -88,7 +92,7 @@ variable or merge can be trusted. The subset also remains limited to
 NYPD-directed requests from one week, regardless of how consistently its
 columns are represented.
 
-## Recheck Scope Before Transforming
+## Check Scope
 
 The compact scope report tests the conditions on which this preparation
 workflow depends. @sec-initial-checks documented the delivered extract's
@@ -133,7 +137,7 @@ to a precinct requires a location and a specified distance metric. These
 examples illustrate why eligibility should be defined for each analytical
 quantity instead of imposed once as a generic complete-case filter.
 
-## Standardize Representations Conservatively
+## Standardize Data
 
 Representation changes make fields usable without asserting new facts about
 the observations. Dates should use datetime types, while ZIP Codes and
@@ -235,7 +239,7 @@ syntax. Thus, standardization improves the reliability of operations on
 the table without claiming that all similarly named values are measured in
 the same way.
 
-## Derive Variables from Documented Meanings
+## Derive Variables
 
 Derived variables translate recorded fields into measurements required by
 the question while making new assumptions explicit. Let $C_i$ and $L_i$
@@ -302,7 +306,7 @@ analysis.loc[hour.ge(20) | hour.lt(6), "time_period"] = "night"
 analysis["time_period"].value_counts(dropna=False)
 ```
 
-## Merge Area-Level Context with Checks {#sec-zcta-context-merge}
+## Merge Area Context {#sec-zcta-context-merge}
 
 An area-level merge attaches contextual measurements to request records
 only under an explicit geographic matching rule. The request table has one
@@ -436,7 +440,7 @@ The join therefore expands the set of descriptive questions that can be
 asked while leaving reporting coverage, geographic mismatch, and temporal
 alignment as explicit limitations.
 
-## Validate the Prepared Data
+## Validate Data
 
 Validation compares the prepared table with the input and with the stated
 analytical contract. The following checks require the request count and
@@ -467,7 +471,7 @@ final_checks = pd.Series({
 final_checks.to_frame()
 ```
 
-## Preparation as a Documented Argument
+## Document Decisions
 
 The prepared table is a documented argument about which records and values
 can support the working question. Filters define scope, derived fields
