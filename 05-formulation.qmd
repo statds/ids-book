@@ -34,22 +34,21 @@ the NYPD extract's distribution of reported problems motivates illegal parking
 as a working topic; a domain purpose and account of what these service
 requests measure determine whether a resulting question is worth pursuing.
 
-The question-to-data route begins with a concern and seeks suitable evidence.
-A transportation planner might ask where blocked bicycle lanes are reported
-and then search for records with the necessary location and problem fields.
-The data-to-question route begins by inspecting records and asking which
-observed variation warrants investigation. Both routes require iteration:
-questions direct further inspection, and the meaning and limitations of the
-data can change the questions. A pattern noticed while inspecting data remains
-exploratory until domain knowledge, alternative explanations, and further
-evidence have been considered. @yu2024veridical describe this movement among
-questions, data, and analysis as a nonlinear data science life cycle. The
-present example begins with an administrative extract
-that was collected for service operations rather than for the proposed
-comparison. The analyst must therefore establish a domain purpose for any
-pattern found in the file and revise the question if the recorded fields do
-not represent the desired concept. This sequence keeps the data-to-question
-route connected to the intended use of an answer.
+There are two common starting points:
+
+- **Problem to data:** A transportation planner asks where blocked bicycle
+  lanes are reported, then looks for records with location and problem fields.
+- **Data to question:** An analyst inspects service records and asks which
+  observed pattern might matter to residents or agency staff.
+
+The two routes often meet. A question directs us to inspect particular fields;
+that inspection may reveal that a field is incomplete or does not measure the
+concept we need. We may then revise the question, look for another source, or
+limit the claim. Yu and Barter describe this movement among questions, data,
+and analysis as a nonlinear data-science life cycle [@yu2024veridical]. The
+311 extract here was collected to operate a service, not to answer our
+comparison. A pattern in its records is therefore a starting point for
+inquiry, not by itself an explanation of parking conditions.
 
 The first activity in the data-science workflow aligns three components:
 
@@ -59,23 +58,34 @@ The first activity in the data-science workflow aligns three components:
 3. **Data:** What was observed, how was it measured, and what setting does it
    represent?
 
-This alignment makes the $D$ in the $SDC^3$ formulation operational. Domain
-knowledge gives recorded values their meaning and identifies comparisons of
-interest. Statistics clarifies which claims the observations can support.
-Computing enables acquisition and inspection, while collaboration and
-communication expose assumptions that one investigator might overlook.
+This alignment gives the $D$ in the $SDC^3$ framework a practical role. For
+the bicycle-lane example, it asks us to check:
 
-A candidate question becomes researchable when its unit, outcome, place,
-period, comparison, and intended claim are explicit. For this chapter, the
-broad topic of illegal parking can be narrowed to NYPD-directed 311 service
-requests, their reported problem details and closure times, and the week
-containing Labor Day 2026. The provisional question is: among NYPD-directed
-illegal-parking requests from this week, how did recorded closure-time
-distributions vary across reported problem details? The comparison is
-exploratory because the groups will be selected after inspecting the records,
-and it will require revision if the detail labels or closure timestamps do not
-measure the intended concepts. Each restriction should serve a domain purpose
-because the resulting conclusion applies only to the selected records.
+- whether the question concerns reports, verified obstructions, or safety;
+- whether the records identify a location and a report category;
+- whether the comparison should account for lane length or another exposure;
+- whether the observations support a description or a stronger claim.
+
+Domain knowledge helps answer the first and third questions. Data inspection
+addresses the second, while statistical reasoning helps with the fourth.
+Collaboration can reveal assumptions that one analyst might overlook.
+
+A candidate question becomes researchable when its main parts are explicit.
+For the worked example, they are:
+
+- **Unit:** one NYPD-directed 311 request.
+- **Outcome:** the recorded time between request creation and closure.
+- **Place and period:** New York City, September 6–12, 2026.
+- **Comparison:** closure-time distributions across reported problem details.
+- **Claim:** a description of these requests, not all parking conditions.
+
+The provisional question is: among NYPD-directed illegal-parking requests
+from this week, how did recorded closure-time distributions vary across
+reported problem details? We will revise the question if the detail labels
+or timestamps do not measure the intended concepts. Because the groups are
+chosen from the observed records, the comparison is exploratory. Each
+restriction limits which requests the answer describes and should serve a
+clear purpose.
 
 Four complementary checks assess whether a candidate question is worth
 pursuing and whether the available evidence can answer it.
@@ -95,17 +105,21 @@ pursuing and whether the available evidence can answer it.
   recorded closure times can describe these requests, but it does not by
   itself show that problem type caused a difference.
 
-The same checks lead to a different formulation when the target is
-community risk rather than service activity. A study organized by school
-district might use district or district-year as its observational unit.
-Hospitalizations following suicide attempts and deaths would remain
-distinct outcomes with distinct data sources. Counts describe event burden.
-Rates also require a population denominator, and when counts are small, one
-additional event can change the rate substantially. An area-level pattern
-describes areas rather than individuals and does not identify a cause
-[@robinson1950ecological; @openshaw1984modifiable]. The formulation must
-therefore specify the event, geographic unit, period, and denominator
-together before data are assembled.
+The same checks apply to a study of community risk, but the analysis needs a
+different unit and evidence. For example, a school-district study should
+specify:
+
+- **Unit:** a district or district-year;
+- **Outcome:** a defined event, such as hospitalization or death, with a
+  source suited to that event;
+- **Measure:** a count for event burden, or a rate with a stated population
+  denominator; and
+- **Scope:** the districts and years the result describes.
+
+When counts are small, one additional event can change a rate substantially.
+An area-level pattern describes areas, not individuals, and does not identify
+a cause [@robinson1950ecological; @openshaw1984modifiable]. Define the event,
+geographic unit, period, and denominator before assembling the data.
 
 These checks are iterative rather than a one-time screen. A domain concern
 may lead to a data search, while an observed pattern may suggest a new
@@ -144,20 +158,20 @@ in subtracting its recorded times but does not validate each timestamp.
 An analysis of individual reporting behavior would additionally require
 information about reporters that the public table does not provide.
 
-Variable roles depend on the question and the geographic concept being
-represented. `Borough` can define broad comparison groups, while `Problem
-Detail (formerly Descriptor)` distinguishes reported categories within
-illegal parking. `Unique Key` identifies a request and `Incident Zip`
-identifies a postal area; their digits are labels rather than measured
-magnitudes and should be imported as text. Latitude and longitude locate
-a recorded incident point, whereas a police precinct code refers to an
-administrative unit. A coordinate, precinct, and ZIP label can disagree
-or be missing because they are recorded through different fields and
-describe different spatial objects. These distinctions govern later
-preparation: an area merge can use a ZIP label, but a point-to-precinct
-distance requires a usable coordinate, a precinct location, and a defined
-distance metric. Treating all geographic fields as interchangeable would
-conceal both coverage limits and the units of the resulting analysis.
+Each field has a role in a particular question. For example:
+
+- `Borough` can define broad comparison groups.
+- `Problem Detail (formerly Descriptor)` records a reported category.
+- `Unique Key` identifies a request; `Incident Zip` labels a postal area.
+  Keep both as text because their digits are labels, not measured values.
+- Latitude and longitude locate a recorded point; a police precinct code
+  identifies an administrative area.
+
+These geographic fields can be missing or disagree because they describe
+different objects. A ZIP label can support an area lookup, but distance to a
+precinct requires a usable point, a precinct location, and a defined distance
+measure. Treating these fields as interchangeable would hide which requests
+can enter the calculation and what each result represents.
 
 ## Acquiring Data
 
@@ -794,18 +808,20 @@ individuals who submitted requests.
 
 ## A Working Formulation
 
-A working formulation records the current alignment of purpose, target,
-population, and evidence while allowing later checks to revise it. The
-eligible population consists of NYPD-directed illegal-parking requests
-created during September 6–12, 2026; the outcome is each request's recorded
-creation-to-closure interval in hours. The three most frequently reported
-problem details are `Blocked Hydrant`, `Posted Parking Sign Violation`, and
-`Blocked Sidewalk`. For a detail group $g$, the descriptive target is the
-distribution of those closure intervals among eligible requests labeled
-$g$, rather than a causal effect of the label or a citywide incident rate.
-Selecting groups by their observed frequencies avoids choosing them because
-their closure summaries appear different, but the selection still uses the
-same week under study. These definitions yield the working comparison:
+A working formulation puts the current choices in one place so they can be
+checked and revised. In this example:
+
+- **Population:** NYPD-directed illegal-parking requests created during
+  September 6–12, 2026.
+- **Outcome:** the recorded creation-to-closure interval in hours.
+- **Groups:** `Blocked Hydrant`, `Posted Parking Sign Violation`, and
+  `Blocked Sidewalk`, the three most frequent reported details.
+- **Target:** the closure-time distribution within each group, not a causal
+  effect of the label or a citywide incident rate.
+
+The group rule uses request counts from the same week but does not select
+groups because their closure summaries appear different. These choices give
+us the following working question:
 
 > Among NYPD illegal-parking requests created from September 6 through
 > September 12, 2026, how did recorded closure-time distributions differ

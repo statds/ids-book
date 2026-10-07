@@ -134,20 +134,25 @@ quantity instead of imposed once as a generic complete-case filter.
 
 ## Standardize Data
 
-Representation changes make fields usable without asserting new facts about
-the observations. Dates should use datetime types, while ZIP Codes and
-request keys should remain strings because their digits are labels rather
-than measured magnitudes. Converting a ZIP Code such as `00501` to an integer
-would remove its leading zero; recoding a blank, `N/A`, and `Unspecified` to
-one missing value would be justified only if their documented meanings
-coincide. Column names require the same care. The NYC export uses spaces,
-punctuation, capitalization, and historical parenthetical wording; these
-labels are valid but inconvenient for repeated analysis. A derived table
-can use consistent names while the imported source and a complete
-source-to-analysis mapping retain the provider's terminology. The mapping
-must be checked for collisions because two distinct source fields can
-normalize to the same string. A collision requires explicit disambiguation
-before either field is renamed.
+Standardization changes how values are represented so that they are easier
+to work with. It should not quietly change what the values mean. Common
+decisions include:
+
+- **Dates:** parse date strings as datetimes so that time comparisons and
+  durations can be calculated.
+- **Identifiers:** keep ZIP Codes and request keys as strings. Converting
+  `00501` to an integer would remove its leading zero.
+- **Missing values:** combine blanks, `N/A`, and `Unspecified` only when the
+  source documentation supports treating them as the same kind of missing
+  information.
+- **Column names:** create consistent analysis names while keeping a mapping
+  to the provider's original labels. Check for collisions because distinct
+  source names can normalize to the same name.
+
+These choices distinguish a representation change from a data correction.
+For example, renaming `Created Date` to `created_at` makes code easier to
+read; changing an unexpected date to a plausible one would alter the source
+information and needs separate evidence.
 
 Category standardization requires evidence about the meanings of values,
 not only a preference for uniform text. The frequency table in
@@ -236,19 +241,22 @@ the same way.
 
 ## Derive Variables
 
-Derived variables translate recorded fields into measurements required by
-the question while making new assumptions explicit. Let $C_i$ and $L_i$
-denote the recorded creation and closure timestamps for request $i$. The
-derived value $T_i=(L_i-C_i)/3600$ is the elapsed interval in hours when the
-timestamp difference is measured in seconds and both times are available.
-Its validity requires successful parsing and a nonnegative chronology. The
-definition does not assert that an officer arrived at $L_i$ or that the
-reported condition ended then; those are distinct events that the archive
-does not measure. Keeping the two timestamps alongside $T_i$ permits an
-analyst to inspect a surprising value or revise the definition. A variable
-name such as `closure_hours` communicates the measurement more accurately
-than a label that would imply field response. The following calculation
-checks the resulting field before it is used as an outcome.
+Derived variables translate recorded fields into measurements needed for a
+question. Let $C_i$ and $L_i$ be the recorded creation and closure times for
+request $i$. We calculate the elapsed interval in hours as follows:
+
+$$
+T_i = (L_i - C_i)/3600.
+$$
+
+The timestamp difference is in seconds, so division by 3,600 converts it to
+hours. The calculation is defined when both timestamps parse successfully
+and closure follows creation. It measures administrative closure, not officer
+arrival or the time when the reported condition ended. Keep the original
+timestamps so that a surprising value can be inspected and the derived value
+recalculated if needed. The name `closure_hours` describes the measurement
+more accurately than a name that implies a field response. The check below
+looks for issues before this value is used as an outcome.
 
 ```{python}
 analysis["closure_hours"] = (
@@ -264,31 +272,34 @@ duration_check = pd.Series({
 duration_check.to_frame()
 ```
 
-The duration check distinguishes missing outcomes, impossible chronology,
-and unusually long but nonnegative intervals. A negative value contradicts
-the expected order of creation and closure if both timestamps refer to the
-same request timeline; its source should be inspected before exclusion
-because parsing or a later correction may explain it. A missing closure
-timestamp leaves the interval undefined, and substituting the observation
-date would invent a closure event. A large positive interval is not
-automatically erroneous because administrative closure may occur well
-after a report is made. The median and maximum in the report serve different
-diagnostic purposes: one characterizes the center, while the other prompts
-inspection of the upper tail. @sec-eda examines that distribution rather
-than imposing an arbitrary cutoff during preparation.
+The duration check distinguishes three cases that need different responses:
 
-Time-of-day groups require a boundary that reflects the intended comparison.
-“Night” has no universal definition, so the example assigns requests created
-from 8 p.m. through 5:59 a.m. to nighttime and those from 6 a.m. through
-7:59 p.m. to daytime. The code leaves a missing creation hour unclassified
-instead of treating it as daytime. This categorical field can support a
-simple comparison, but it compresses variation across hours and ignores
-differences among individual dates, including the holiday in the selected
-week. The original timestamp remains in the table so that an analyst can
-examine hourly patterns or repeat the comparison under a different boundary.
-If the substantive question concerns staffing or reporting conditions, the
-boundary should be justified with relevant domain information rather than
-adopted solely because the resulting groups have convenient sizes.
+- A **missing interval** may result from a missing or unparseable timestamp.
+  Do not fill it with an assumed closure time.
+- A **negative interval** conflicts with the expected event order. Inspect
+  the source row and parsing before deciding whether to exclude it.
+- A **large positive interval** may be unusual but valid because an agency
+  can close a request long after it is created.
+
+The median summarizes the center; the maximum helps flag the upper tail for
+inspection. Chapter @sec-eda examines the full distribution rather than
+removing long intervals with an arbitrary preparation cutoff.
+
+The category “night” has no universal boundary. For this example, requests
+created from 8 p.m. through 5:59 a.m. are labeled nighttime; those from 6
+a.m. through 7:59 p.m. are labeled daytime. The choice has consequences:
+
+- A missing creation hour remains unclassified rather than being assigned to
+  daytime.
+- Grouping compresses 24 hourly values into two categories and hides
+  within-group variation.
+- The groups do not account for differences across individual dates, such
+  as the holiday in this week.
+
+The original timestamp remains available for hourly analysis or a comparison
+using different boundaries. If the question concerns staffing or reporting
+conditions, use domain information to justify the boundary rather than
+choosing it only because the groups are convenient.
 
 ```{python}
 hour = analysis["created_at"].dt.hour
@@ -303,19 +314,24 @@ analysis["time_period"].value_counts(dropna=False)
 
 ## Merge Area Context {#sec-zcta-context-merge}
 
-An area-level merge attaches contextual measurements to request records
-only under an explicit geographic matching rule. The request table has one
-row per service request; the Census context table has one row per ZIP Code
-Tabulation Area (ZCTA). The provider's `Incident Zip` is a postal ZIP Code
-label, whereas a ZCTA is a Census statistical area derived from address
-patterns. Equal five-digit strings permit a lookup but do not make the
-geographies identical, and some postal ZIP Codes have no corresponding ZCTA
-[@census2023zip]. The intended join is many requests to one context row,
-so a duplicate key on the right would incorrectly multiply requests. The
-reference period of the attached estimate also matters: a value measured
-before the request week describes earlier area context, not a contemporaneous
-attribute of an individual report. These conditions must be stated before
-the software merge is interpreted as evidence about place.
+An area-level merge attaches contextual measurements to requests, but only
+after we define how the geographic labels match. Here, each request has one
+row and each Census context row describes one ZIP Code Tabulation Area
+(ZCTA). A provider's `Incident Zip` is a postal ZIP label; a ZCTA is a Census
+statistical area derived from address patterns. Equal five-digit strings
+allow a lookup, but do not mean the geographies have identical boundaries,
+and some postal ZIP Codes have no matching ZCTA [@census2023zip].
+
+Before interpreting a merge, check these conditions:
+
+- **Key:** the context table has one row per ZCTA, so a duplicate lookup key
+  cannot multiply request rows.
+- **Match:** the request ZIP label and ZCTA code use compatible formats.
+- **Time:** the Census estimate describes its reference period, which may
+  precede the request week.
+- **Unit:** an area estimate describes a place, not an individual requester.
+
+These checks make clear what the software joined and what the result means.
 
 The supplied `data/zcta_context.csv` contains the 221 ZCTAs in NYC Open
 Data's city list and their 2024 American Community Survey (ACS) five-year
@@ -333,17 +349,20 @@ the merge. It then retains unmatched requests and reports them separately.
 The result is a documented link between labels, not an assertion that a
 postal area and its similarly named ZCTA have identical boundaries.
 
-The lookup derives population density by dividing the ACS population
-estimate by ZCTA land area. It also derives the share of households with at
-least one vehicle from the B08201 household total and no-vehicle count.
-These measures add context, but neither measures parking directly. Resident
-density does not describe curb length or parking supply, and household
-vehicle availability does not identify vehicle ownership, registration,
-parking location, or illegal-parking behavior. The share is a ratio of
-survey estimates, and its sampling uncertainty is not calculated from the
-published margins of error. The attached estimates describe areas, not
-individual requesters; they cannot support an individual-level or causal
-interpretation.
+The lookup derives two measures from Census estimates:
+
+- **Population density** divides the population estimate by ZCTA land area.
+- **Household vehicle availability** is the share of households with at
+  least one vehicle, calculated from the total and no-vehicle household
+  estimates in table B08201.
+
+Neither measure describes parking directly. Population density does not
+measure curb length or parking supply. Household vehicle availability does
+not identify vehicle ownership, registration, parking location, or illegal-
+parking behavior. The vehicle share is a ratio of survey estimates, and its
+sampling uncertainty is not calculated from the published margins of error.
+Both measures describe areas, not individual requesters, so the merge cannot
+support an individual-level or causal interpretation.
 
 The NYC ZCTA selection comes from the `zcta5` column of the city's published
 dataset, as the following acquisition code shows. The chapter uses the saved
@@ -434,31 +453,35 @@ join_report = pd.Series({
 join_report.to_frame()
 ```
 
-The `validate` argument turns the assumed join cardinality into an executable
-check. If a lookup key is duplicated, the join can multiply request rows and
-inflate subsequent counts. The left join preserves requests that lack a match,
-and its indicator distinguishes matched from unmatched rows. Unmatched values
-should be examined for missing identifiers, non-ZCTA ZIP Codes, formatting
-differences, boundary mismatch, or a flawed lookup; they should not be silently
-dropped or repaired by adding leading zeros without evidence. In this extract,
-13,033 of 13,040 illegal-parking requests match a listed ZCTA; the seven
-unmatched requests remain in the table for other analyses.
+The `validate` argument checks the assumed many-to-one join. If a lookup key
+is duplicated, the merge could multiply request rows and inflate counts. The
+left join keeps unmatched requests, and its indicator identifies which rows
+matched. For an unmatched request, inspect whether its ZIP is:
 
-Area context permits new comparisons only after the target quantity has
-been specified at the appropriate unit. A ZCTA population estimate can
-serve as the denominator of requests per resident during the observation
-week, but the numerator counts reports rather than verified conditions and
-the denominator does not measure curb space or vehicle exposure. Income
-and other area characteristics can also be attached to requests, yet the
-repeated area value does not become an independently measured attribute of
-each reporter. If the question concerns differences among places, the
-analysis should first aggregate to one row per area and state how many
-requests support each area summary. If the question concerns individual
-behavior or a causal effect of neighborhood conditions, the available
-merge does not supply the necessary individual measurements or design.
-The join therefore expands the set of descriptive questions that can be
-asked while leaving reporting coverage, geographic mismatch, and temporal
-alignment as explicit limitations.
+- missing or not a five-digit label;
+- a postal ZIP Code with no listed ZCTA;
+- formatted differently from the lookup key; or
+- evidence of a mismatch or error in the lookup.
+
+Do not silently drop unmatched requests or add leading zeros without
+evidence. In this extract, 13,033 of 13,040 requests match a listed ZCTA;
+the seven unmatched requests remain available for analyses that do not
+require area context.
+
+The merge makes some place-level summaries possible, but the unit of each
+question must still be clear:
+
+- A **request-rate comparison** can divide reports by estimated residents,
+  but it remains a rate of reports, not verified parking conditions. The
+  denominator also does not measure curb space or vehicle exposure.
+- A **comparison among areas** should first aggregate to one row per area
+  and report how many requests support each summary.
+- An **individual-level or causal question** cannot be answered by repeating
+  area estimates across requests. The merge supplies neither individual
+  measurements nor a design that identifies an effect.
+
+The join expands the descriptive questions available while leaving reporting
+coverage, geographic mismatch, and reference-period differences as limits.
 
 ## Validate Data
 
