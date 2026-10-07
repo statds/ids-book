@@ -510,3 +510,25 @@ and credential-named files remain untracked and must not be staged as book
 content. This dated snapshot supersedes older book-status statements above;
 inspect live status and log before the next edit. No linked semester
 repository was changed during this work.
+
+## Latest session update (2026-10-05)
+
+The local writing notes have been adapted for book chapters in
+`bookwriting.md`. The guidance replaces fixed paper-style paragraph lengths
+with flexible paragraphing, recommends concise section titles without “and,”
+and explains when lists or tables help readers. Chapters 6 and 7 now have
+shorter section titles. The EDA uncertainty section presents common tests as
+a teaching list and distinguishes their assumptions from the worked
+permutation test and bootstrap interval. These edits rendered successfully;
+they remain uncommitted. The earlier September 30 worktree snapshot above is
+historical; inspect live Git status and log before further changes.
+
+## Latest session update (2026-10-06)
+
+The style review of Chapters 5–8 adapted the community-risk case for
+formulation, presented data-preparation decisions as a list, and added a
+cited Simpson's paradox example to EDA. It also clarified cross-references
+between EDA and visualization; Chapter 8 already contains spatial maps and
+`facet_grid()` examples. The changes are committed as `23ea5d7` and
+`f27eefe`. The book was not rendered after this review. No linked semester
+repository or unrelated untracked files were changed.
