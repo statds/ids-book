@@ -182,15 +182,15 @@ because a software function is familiar [@nelder1972generalized;
 @mccullagh1989generalized].
 
 
-For request \(i\), let \(Y_i=1\) indicate that closure takes at least one
-hour, and let \(p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)\). Logistic regression
+For request $i$, let $Y_i=1$ indicate that closure takes at least one
+hour, and let $p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)$. Logistic regression
 models the log odds as a linear combination of predictors:
 
 
-\[
+$$
 \log\!\left(\frac{p_i}{1-p_i}\right)
   = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik}.
-\]
+$$
 
 
 The inverse-logit transformation maps any real-valued linear predictor to
@@ -569,15 +569,15 @@ would use the predictions.
 
 Regularization adds a penalty to the fitting objective to limit coefficient
 size and reduce sensitivity to features that fit quirks in the training
-records. Ridge-style \(L_2\) regularization shrinks coefficients toward
-zero; lasso-style \(L_1\) regularization can set some coefficients exactly
+records. Ridge-style $L_2$ regularization shrinks coefficients toward
+zero; lasso-style $L_1$ regularization can set some coefficients exactly
 to zero. Elastic net combines the two penalties
 [@tibshirani1996regression; @zou2005regularization]. The code below uses
-the \(L_2\) penalty and compares stronger with weaker shrinkage on the same
+the $L_2$ penalty and compares stronger with weaker shrinkage on the same
 held-out requests.
 
 
-Scikit-learn's logistic regression applies \(L_2\) regularization by
+Scikit-learn's logistic regression applies $L_2$ regularization by
 default. Its `C` parameter is the inverse penalty strength, so smaller
 values apply stronger shrinkage [@scikitlearn2026logistic]. The analyst should select `C` using only
 the training data. The pipeline places one-hot encoding inside each fold,
@@ -610,10 +610,10 @@ one-hour closure rate, then shrinks that estimate toward the overall rate.
 For ZCTA $j$, a common estimate is
 
 
-\[
+$$
   \widetilde{p}_j =
   \frac{s_j + \alpha \bar{p}}{n_j + \alpha},
-\]
+$$
 
 
 where $s_j$ is the number of one-hour closures in ZCTA $j$, $n_j$ is

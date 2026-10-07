@@ -150,7 +150,7 @@ enforce those hints.
 
 Two functions can return the same answer while requiring very different
 amounts of computation. The Fibonacci sequence provides a small example. We
-use \(F_0 = 0\) and \(F_1 = 1\), so each later value is the sum of the preceding
+use $F_0 = 0$ and $F_1 = 1$, so each later value is the sum of the preceding
 two values. A direct recursive definition is easy to read, but it repeatedly
 recomputes the same earlier values:
 
