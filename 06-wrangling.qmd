@@ -69,7 +69,14 @@ requests = pd.read_csv(
     dtype={"Unique Key": "string", "Incident Zip": "string"},
     low_memory=False,
 )
+```
 
+The archive is read without changing the source file. Request identifiers and
+ZIP labels are strings so leading zeros and identifier formatting remain
+intact. The next step parses the timestamps and selects the week and request
+type established in @sec-problem-formulation.
+
+```{python}
 date_format = "%m/%d/%Y %I:%M:%S %p"
 for column in ["Created Date", "Closed Date"]:
     requests[column] = pd.to_datetime(
@@ -215,6 +222,14 @@ name_map = {
     ).strip("_")
     for source_name in parking.columns
 }
+```
+
+This normalization produces a consistent default name for each source
+column. A few frequently used fields receive shorter names that are easier
+to read in later code; the mapping remains explicit so that these names can
+be traced to the provider's labels.
+
+```{python}
 name_map.update({
     "Unique Key": "request_id",
     "Created Date": "created_at",
@@ -235,13 +250,16 @@ name_mapping = pd.DataFrame({
     "source_name": name_map.keys(),
     "analysis_name": name_map.values(),
 })
-analysis = parking.rename(columns=name_map).copy()
-
 name_mapping
 ```
 
+The collision check ensures that two provider fields do not become the same
+analysis name. Review the displayed mapping as part of the data record; the
+next step applies it to a copy, leaving `parking` and its source labels
+unchanged.
 
 ```{python}
+analysis = parking.rename(columns=name_map).copy()
 analysis[[
     "request_id", "created_at", "problem_detail", "incident_zip", "status"
 ]].head()
@@ -434,6 +452,9 @@ city_zctas = pd.read_csv(
 len(city_zctas)
 ```
 
+This optional acquisition example is not evaluated during rendering. The
+chapter uses the reproducible lookup saved at `data/zcta_context.csv`; its
+keys and estimates are checked before the join.
 
 ```{python}
 zcta_context = pd.read_csv(
@@ -450,6 +471,15 @@ if zcta_context["zcta"].duplicated().any():
     raise ValueError("The ZCTA lookup must contain one row per key.")
 if not zcta_context["acs_year"].eq(2024).all():
     raise ValueError("The ZCTA lookup contains an unexpected ACS year.")
+```
+
+These checks establish the lookup key and reference period before the
+context can be attached to requests. The measures also have constraints that
+follow from their definitions: land area must be positive when present,
+population density requires land area, and a household share must lie
+between zero and one.
+
+```{python}
 if not zcta_context["land_area_sqmi"].dropna().gt(0).all():
     raise ValueError("ZCTA land areas must be positive.")
 missing_area = zcta_context["land_area_sqmi"].isna()
@@ -457,7 +487,14 @@ if zcta_context.loc[missing_area, "population_density_per_sqmi"].notna().any():
     raise ValueError("Population density requires a matched land area.")
 if not zcta_context["share_households_with_vehicle"].dropna().between(0, 1).all():
     raise ValueError("Household vehicle shares must be between zero and one.")
+```
 
+Only request ZIP labels that already have five digits are eligible for an
+exact string match. The left join retains every request, including labels
+that are missing, malformed, or absent from the lookup. Its indicator records
+which requests found a matching ZCTA.
+
+```{python}
 # Match only syntactically five-digit request ZIP values. Do not silently
 # pad or otherwise repair values that fail this check.
 incident_zip = analysis["incident_zip"].str.strip()
@@ -473,7 +510,14 @@ contextual_analysis = analysis.merge(
     validate="many_to_one",
     indicator="zcta_match_status",
 )
+```
 
+The many-to-one validation prevents duplicate lookup keys from multiplying
+requests. Check row count and request identity after the join, then summarize
+the matched and unmatched records. This report distinguishes failed matches
+from matched areas whose land-area estimate is unavailable.
+
+```{python}
 if len(contextual_analysis) != len(analysis):
     raise ValueError("The area-level join changed the request count.")
 if not contextual_analysis["request_id"].is_unique:
@@ -570,14 +614,11 @@ final_checks.to_frame()
 ```
 
 
-## Document Decisions
-
-
-The prepared table is a documented argument about which records and values
-can support the working question. Filters define scope, derived fields
+Together, the checks and records document which observations and values can
+support the working question. Filters define scope, derived fields
 operationalize measurements, and the merge asserts a limited relationship
-between two geographic identifiers. The checks make those claims reviewable
-without implying that the source is error free. The exploratory and
+between two geographic identifiers. These decisions make the prepared table
+reviewable without implying that the source is error free. The exploratory and
 visualization chapters call a [shared preparation function](scripts/parking_requests.py)
 for the screened request fields and closure hours; that compact function
 does not reproduce this chapter's full 44-column mapping, time-period
@@ -588,6 +629,7 @@ renaming sequence in each chapter. It also identifies a reproducibility
 obligation: if the screening rule or closure-time definition changes, the
 shared function and the explanations in this chapter must be reviewed
 together.
+
 ## Exercises {.unnumbered}
 
 These exercises extend the import and checking work in the previous chapter.
