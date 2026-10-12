@@ -649,6 +649,7 @@ meaning of the recorded outcome. The ZCTA analysis similarly motivates
 area-level questions but does not turn area income into a request-level
 explanation. EDA makes observed patterns and the limits of their
 interpretation explicit enough to guide that next question.
+
 ## Exercises {.unnumbered}
 
 These exercises use the distributed request archive and, where indicated,

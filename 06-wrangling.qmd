@@ -92,7 +92,7 @@ parking = requests.loc[
 ```
 
 
-The import block reconstructs the intended analysis scope without
+The import and filtering steps reconstruct the intended analysis scope without
 overwriting the downloaded archive. The half-open timestamp interval includes
 requests created on every day of the selected week and excludes those
 returned from the following Sunday; the problem condition restricts the
@@ -709,3 +709,5 @@ c. Identify one issue that should be raised with a data curator rather than
 d. Describe what the prepared table will contain, what it will omit, and how
    its provenance will let another analyst reproduce the result.
 :::
+
+## References {.unnumbered}

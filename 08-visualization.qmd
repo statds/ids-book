@@ -1313,6 +1313,7 @@ requirements make a figure useful across exploration, communication, and
 model diagnosis. They also give students a way to revise a first attempt:
 identify the inference the reader is invited to make, then inspect each
 data and design decision that supports it.
+
 ## Exercises {.unnumbered}
 
 The exercises move from a specified comparison to a self-directed project
