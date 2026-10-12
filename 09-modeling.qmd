@@ -731,7 +731,10 @@ category of interest, and changing the threshold changes the predicted
 labels and the resulting threshold-based scores.
 
 
-### Confusion matrix
+The earlier coefficient tests concern associations in the unpenalized
+training fit. The held-out scores below answer a different question: how
+well do the fitted probabilities and labels predict requests outside that
+fit? A small coefficient p-value alone cannot answer it.
 
 
 A confusion matrix compares observed classes with the classes predicted at a
@@ -839,45 +842,79 @@ held-out test set.
 The baseline assigns every request the training-set target prevalence as
 its probability and predicts the majority class. The model one-hot encodes
 problem detail, borough, hour group, and day type; it standardizes the three
-area measures and fits logistic regression. The table compares their test
-metrics; classification measures use a 0.5 threshold. Since the positive
-class is less common, do not read accuracy alone. Compare it with ROC AUC,
-log loss, and the confusion matrix to see whether the model identifies
-short closures or merely repeats the majority-class prediction.
+area measures and fits logistic regression. A small function creates a fresh
+preprocessor for each model below, including the later cross-validation
+examples. The function is available to the exercises in
+`scripts/modeling_preprocessing.py`. Its encoder can handle a category in
+the test set that was absent from training.
 
 
 ```{python}
+from scripts.modeling_preprocessing import make_preprocessor
 from sklearn.dummy import DummyClassifier
-from sklearn.metrics import (
-    accuracy_score,
-    confusion_matrix,
-    f1_score,
-    log_loss,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
-from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+```
 
+
+Keeping the transformer inside a pipeline makes the training step learn
+categories and scaling only from training requests. Later, each validation
+fold will learn them from its own training portion. The function also
+accepts an additional transformer for the ZIP target-encoding comparison.
+
+
+The baseline uses the training prevalence as the probability for every test
+request. The logistic pipeline fits its preprocessing and coefficients on
+training requests, then estimates a separate probability for each test
+request. Neither model uses test outcomes during fitting.
+
+
+```{python}
 candidate_features = categorical_features + numeric_features
-preprocessor = ColumnTransformer([
-    ("categorical", OneHotEncoder(handle_unknown="ignore"), categorical_features),
-    ("numeric", StandardScaler(), numeric_features),
-])
 baseline = DummyClassifier(strategy="prior").fit(
     X_train[candidate_features], y_train
 )
 baseline_probability = baseline.predict_proba(X_test[candidate_features])[:, 1]
 
 model = make_pipeline(
-    preprocessor,
+    make_preprocessor(categorical_features, numeric_features),
     LogisticRegression(max_iter=3000),
 )
 model.fit(X_train[candidate_features], y_train)
 test_probability = model.predict_proba(X_test[candidate_features])[:, 1]
+```
+
+
+At the illustrative 0.5 threshold, the confusion matrix shows the actual
+outcomes in rows and predicted outcomes in columns. Displaying it before
+the summary scores makes the errors behind those scores visible.
+
+
+```{python}
+from sklearn.metrics import confusion_matrix
+
+confusion_table = pd.DataFrame(
+    confusion_matrix(y_test, test_probability >= 0.5, labels=[1, 0]),
+    index=["Actual under one hour", "Actual at least one hour"],
+    columns=["Predicted under one hour", "Predicted at least one hour"],
+)
+confusion_table
+```
+
+
+Of the 1,120 requests that actually closed in under one hour, the model
+flags 153 and misses 967. Among the 2,124 requests that took at least an
+hour, it flags 112 and correctly leaves 2,012 unflagged. Thus, only 265
+requests receive a positive label, even though 1,120 meet the target. The
+following scores summarize these counts and also assess the probabilities
+before any threshold is applied.
+
+
+```{python}
+from sklearn.metrics import (
+    accuracy_score, f1_score, log_loss, precision_score,
+    recall_score, roc_auc_score,
+)
 
 def score_predictions(probability):
     predicted_class = probability >= 0.5
@@ -892,29 +929,46 @@ def score_predictions(probability):
         ),
         "F1": f1_score(y_test, predicted_class),
     }
+```
 
-from IPython.display import display
 
+Accuracy, recall, specificity, precision, and F1 use the 0.5 labels.
+ROC AUC and log loss use the probabilities directly, so changing only the
+classification threshold would leave those two scores unchanged. The
+same scoring function applies to the baseline and model probabilities.
+
+
+```{python}
 scores = pd.DataFrame({
     "Prevalence baseline": score_predictions(baseline_probability),
     "Request and Census-context logistic model": score_predictions(test_probability),
 }).T
-confusion_table = pd.DataFrame(
-    confusion_matrix(y_test, test_probability >= 0.5, labels=[1, 0]),
-    index=["Actual under one hour", "Actual at least one hour"],
-    columns=["Predicted under one hour", "Predicted at least one hour"],
-)
-display(confusion_table)
-display(scores)
+scores
 ```
 
 
-At the 0.5 threshold, the model identifies about 14% of requests that close
-in under an hour, with 95% specificity and 58% precision. Its accuracy is
-67%, only modestly above the 65.5% prevalence baseline. The model ranks cases
-better than chance (ROC AUC 0.618), but its low recall shows that the default
-threshold misses most short closures. No single score identifies a best
-model for every use.
+The prevalence baseline predicts no short closures at a 0.5 threshold
+because fewer than half of training requests have that outcome. It reaches
+65.5% accuracy by labeling every request as taking at least an hour, but
+its recall and F1 are zero. Its ROC AUC is 0.5 because its probability is
+the same for every request.
+
+
+The logistic model improves test accuracy only slightly, to 66.7%. Its
+recall is 13.7% ($153/1{,}120$), so it misses most short closures at this
+threshold. Its precision is 57.7% ($153/265$): among requests it flags as
+closing under one hour, about 58 in 100 actually do. Its specificity is
+94.7% ($2{,}012/2{,}124$), showing that it rarely flags requests that
+take at least an hour. The F1 score of 0.221 reflects the low recall
+despite moderate precision.
+
+
+The model's ROC AUC of 0.618 exceeds the baseline's 0.5, so its
+probabilities rank short closures above longer ones better than a constant
+score does. Its log loss of 0.623 is also lower than the baseline's 0.644,
+indicating a modest improvement in probability estimates. These results
+show some predictive information, but they do not make 0.5 a suitable
+decision threshold for every use.
 
 
 The calibration plot compares predicted probabilities with the observed
@@ -942,6 +996,13 @@ ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="Mean predicted probability",
 ax.legend()
 fig.tight_layout()
 ```
+
+
+In @fig-model-calibration, most bin averages lie near the diagonal. The
+highest-probability tenth has a mean prediction of about 0.54 but an observed
+short-closure fraction of about 0.59, suggesting some underprediction in
+that group. This binned display checks the reported probabilities; it does
+not determine any single request's true closure probability.
 
 
 The ROC curve traces the true positive rate against the false positive rate
@@ -1104,18 +1165,8 @@ cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=2026)
 candidate_C = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10]}
 
 def tune_logistic(categorical, numeric):
-    transformers = []
-    if categorical:
-        transformers.append((
-            "categorical",
-            OneHotEncoder(handle_unknown="ignore"),
-            categorical,
-        ))
-    if numeric:
-        transformers.append(("numeric", StandardScaler(), numeric))
-    encoder = ColumnTransformer(transformers)
     pipeline = make_pipeline(
-        encoder,
+        make_preprocessor(categorical, numeric),
         LogisticRegression(max_iter=3000),
     )
     search = GridSearchCV(
@@ -1164,17 +1215,17 @@ value and logistic penalty strength are selected together by cross-validation.
 ```{python}
 
 zip_target_pipeline = make_pipeline(
-    ColumnTransformer([
-        ("categorical", OneHotEncoder(handle_unknown="ignore"), categorical_features),
-        (
+    make_preprocessor(
+        categorical_features,
+        extra=[(
             "zip_target",
             TargetEncoder(
                 target_type="binary",
                 cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=2026),
             ),
             ["incident_zip"],
-        ),
-    ]),
+        )],
+    ),
     LogisticRegression(max_iter=3000),
 )
 zip_target_search = GridSearchCV(
@@ -1289,7 +1340,9 @@ Prepare and fit a logistic model for closures lasting at least five hours.
 Use problem detail, borough, creation-time group, business-day status,
 population density, median household income, and household vehicle
 availability as predictors. Derive the two timing features from `created_at`
-using the definitions in this chapter.
+using the definitions in this chapter. Import `make_preprocessor` from
+`scripts.modeling_preprocessing` to encode the four categorical predictors
+and standardize the three area measures inside the fitting pipeline.
 
 a. Construct the complete-case data. Report the eligible count and
    exclusions for missing closure time, unmatched ZCTAs, and missing area
@@ -1343,7 +1396,8 @@ f. Explain why these tests do not establish practical importance, held-out
 Examine what a ZIP-label model adds to prediction.
 
 a. Fit a model that treats ZIP as a categorical identifier, using the same
-   training and test requests and tuning procedure as @exr-model-check.
+   training and test requests and tuning procedure as @exr-model-check. Add
+   `incident_zip` to the categorical inputs of `make_preprocessor`.
    Compare its held-out performance with the Census-context model.
 b. State what this benchmark can and cannot show about unfamiliar ZCTAs.
 c. For the Census-context model, report ROC AUC under request-random and
