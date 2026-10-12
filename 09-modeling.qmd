@@ -1200,84 +1200,113 @@ together.
 
 ## Exercises {.unnumbered}
 
-The exercises use the one-week request data to practice classification and
-count modeling. In the logistic exercise, define a long closure as one that
-takes at least five hours. Report the observational unit, eligible records,
-and exclusions. Treat recorded closure time as a proxy for handling time,
-not as a direct measure of officer response.
+The exercises use the same merged request-ZCTA table as the chapter examples.
+Run `python scripts/build_parking_with_zcta.py` from the repository root to
+write `data/parking_requests_with_zcta.parquet`. The script calls
+`load_parking_requests()` and then `attach_zcta_context()`, just as the
+example above does, and saves the merged table. Read the file with
+`pd.read_parquet()`. It retains continuous `closure_hours` and unmatched
+requests but has no binary outcome. Treat recorded closure time as a proxy
+for handling time, not as a direct measure of officer response.
 
 ::: {#exr-model-check}
-Use the parking-request data to investigate closures lasting at least five
-hours.
+Prepare and fit a logistic model for closures lasting at least five hours.
+Use problem detail, borough, creation-time group, business-day status,
+population density, median household income, and household vehicle
+availability as predictors. Derive the two timing features from `created_at`
+using the definitions in this chapter.
 
-a. Use the documented preparation function and Census lookup to create the
-   complete-case request data. Report unmatched requests and missing area
-   estimates. Define a positive outcome as a closure lasting at least five
-   hours. Report the class counts and proportions, and compare this cutoff
-   with the closure-time distribution. Explain why a five-hour cutoff may
-   be useful for investigating unusually long closures and why it is an
-   analytical choice rather than an agency standard.
-b. Identify the predictors available at request creation. Split the data
-   into training and test sets before fitting, stratifying on the target.
-   Establish a prevalence baseline, then fit logistic regression with
-   problem detail, borough, the four creation-time groups, business-day
-   status, and the three area measures. Tune logistic regression's inverse
-   penalty parameter `C` over a stated candidate grid using stratified
-   cross-validation on the training set. Select the value with the lowest
-   mean validation log loss, report the candidate values and their scores,
-   then refit with the selected `C` on all training data. Keep the test set
-   out of tuning and use it for final evaluation. Report held-out
-   ROC AUC, log loss, TPR, precision, F1, and a confusion matrix at a stated
-   probability threshold. Make a calibration plot and inspect performance
-   by borough, hour group, and day type. Report group counts and a limitation
-   of the day-type comparison.
-c. For one standardized area predictor, report its fitted coefficient and
-   odds ratio. Interpret the odds ratio for a one-standard-deviation
-   increase, holding the other predictors fixed. Use that odds ratio to
-   calculate the resulting probability from reference probabilities of
-   0.20 and 0.50, and explain why the probability changes differ. Choose a
-   problem-detail coefficient, identify its reference category, and state
-   the outcome and predictor contrast in words. Explain why the association
-   is not a causal effect.
-d. As a benchmark, fit a model that treats ZIP as a categorical identifier.
-   Compare its held-out performance with the model using Census measures.
-   Then compare request-random validation with validation grouped by ZCTA.
-   Explain what each comparison can and cannot show about new requests and
-   unfamiliar areas.
+a. Construct the complete-case data. Report the eligible count and
+   exclusions for missing closure time, unmatched ZCTAs, and missing area
+   estimates.
+b. Create a binary outcome from `closure_hours` that equals one for durations
+   of at least five hours and zero otherwise. Report its count and proportion.
+c. Compare the five-hour cutoff with the closure-time distribution. Explain
+   why the cutoff is an analytical choice rather than an agency standard.
+d. Identify which predictors are available at request creation. Make a
+   stratified training and test split before fitting.
+e. Tune logistic regression's `C` on the training set using stratified
+   cross-validation and mean log loss. Report the candidate grid, its scores,
+   and the selected value.
+:::
+
+::: {#exr-model-logistic-evaluate}
+Assess the model selected in @exr-model-check on held-out requests.
+
+a. Refit the selected model on all training requests. Compare its test ROC
+   AUC and log loss with a prevalence baseline.
+b. At a stated probability threshold, report TPR, precision, F1, and the
+   confusion matrix for the test requests.
+c. Make a test-set calibration plot. Describe one pattern it reveals about
+   the predicted probabilities.
+d. Compare test performance by borough, creation-time group, and business-
+   day status, reporting group counts with each score.
+e. State one limitation of the day-type comparison for this week.
+:::
+
+::: {#exr-model-logistic-interpret}
+Interpret coefficients from the selected logistic model.
+
+a. Choose one standardized area predictor. Report its coefficient and odds
+   ratio, and interpret a one-standard-deviation increase with other
+   predictors held fixed.
+b. Apply that odds ratio to reference probabilities of 0.20 and 0.50.
+   Explain why the two probability changes differ.
+c. Choose one problem-detail coefficient. Identify its reference category,
+   and state the outcome and predictor contrast.
+d. Explain why the fitted associations are not causal.
+:::
+
+::: {#exr-model-zip}
+Examine what a ZIP-label model adds to prediction.
+
+a. Fit a model that treats ZIP as a categorical identifier, using the same
+   training and test requests and tuning procedure as @exr-model-check.
+   Compare its held-out performance with the Census-context model.
+b. State what this benchmark can and cannot show about unfamiliar ZCTAs.
+c. For the Census-context model, report ROC AUC under request-random and
+   ZCTA-grouped validation.
+d. State which prediction setting each validation design evaluates.
 :::
 
 ::: {#exr-model-count}
 Fit and assess a Poisson model for request counts by NYC ZCTA.
 
-a. Construct one count per ZCTA from the matched requests. Start from the
-   complete ZCTA lookup so areas with zero requests remain in the analysis.
-   Report areas excluded for missing population or density and explain why
-   the observational unit is the ZCTA, not the request.
-b. Fit the Poisson model with population in thousands as an offset and
+a. Construct one count per ZCTA from matched requests, starting from the
+   complete ZCTA lookup to retain zero counts. Report areas excluded for
+   missing population or density.
+b. Explain why the ZCTA, rather than the request, is the observational unit.
+c. Fit a Poisson model with population in thousands as an offset and
    standardized population density as a predictor. Report the density
-   coefficient and rate ratio, and interpret the rate for a one-standard-
-   deviation increase in density. State why population is an imperfect
-   exposure for illegal-parking reports.
-c. Fit a second model without the offset. Compare the fitted coefficients
-   and predictions, and explain how the offset changes the question from
-   expected counts to rates relative to population exposure.
-d. Calculate the Pearson chi-square statistic divided by residual degrees
-   of freedom. Explain what the result says about the Poisson variance
-   assumption, and describe one alternative model or additional predictor
-   that could be investigated.
-e. Extend the offset model with standardized population density, median
-   household income, and household vehicle availability. Split the ZCTAs
-   into training and test sets before tuning. Standardize predictors using
-   training data only. Fit an $L_2$-regularized Poisson GLM over a stated
-   grid of penalty strengths, using cross-validation within the training set
-   to select the value with the lowest mean Poisson deviance. Report the
-   candidate values and their scores, then refit at the selected value.
-   Refit the unpenalized model with the same predictors and offset on the
-   same training data. Compare both models' test-set Poisson deviance.
-   Explain how shrinkage affects coefficient estimates and why it does not
-   resolve the overdispersion found in part d. State how dependence among
-   nearby ZCTAs limits a random area-level split. Do not interpret either
-   fit causally.
+   coefficient and rate ratio.
+d. Interpret the rate ratio for a one-standard-deviation increase in density.
+e. Explain one limitation of population as an exposure measure.
+f. Fit the same model without the offset. Compare fitted coefficients and
+   predicted counts, and explain how the prediction question changes.
+g. Calculate the Pearson chi-square statistic divided by residual degrees
+   of freedom. Interpret it and name one model or predictor to investigate
+   if the Poisson variance assumption is inadequate.
+:::
+
+::: {#exr-model-poisson-regularized}
+Investigate regularization for the ZCTA count model. Use population in
+thousands as an offset and population density, median household income,
+and household vehicle availability as predictors. Interpret associations
+without causal claims.
+
+a. Report any additional ZCTAs excluded for missing predictors.
+b. Split ZCTAs into training and test sets. Standardize predictors within
+   each training fold so validation ZCTAs do not determine their own scaling.
+c. Tune an $L_2$ penalty over a stated grid using cross-validation within
+   the training set and mean Poisson deviance. Report the candidate scores
+   and selected penalty.
+d. Refit the selected regularized model and the unpenalized model on the
+   training ZCTAs. Compare their test-set Poisson deviances.
+e. Compare the models' coefficients and describe how the penalty changes
+   their estimates.
+f. Explain why regularization does not resolve overdispersion.
+g. Explain how dependence among nearby ZCTAs limits a random area-level
+   split.
 :::
 
 ## References {.unnumbered}
