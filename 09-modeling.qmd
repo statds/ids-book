@@ -4,8 +4,9 @@
 Predictive modeling uses information available at a defined time to estimate
 an outcome that is not yet known. This chapter asks whether fields available
 when an illegal-parking request is created can help identify requests that
-will remain open for at least one hour. We compare request detail and borough
-with area context from the Census-linked table:
+close in under one hour. The model includes request detail, borough, grouped
+creation time, business-day status, and area context from the Census-linked
+table:
 
 
 - population density;
@@ -13,21 +14,22 @@ with area context from the Census-linked table:
 - median household income.
 
 
+Request timing uses four six-hour groups and classifies Labor Day and the
+weekend as non-business days. The remaining four dates are business days.
+
+
 The analysis uses the same one-week, request-level data as earlier chapters.
-It predicts recorded closure time; it does not show that area characteristics
-cause a request to take longer or establish how predictions would perform in
-a different week.
+It predicts recorded closure time; it does not show that request timing or
+area characteristics cause a request to take longer or establish how
+predictions would perform in a different week.
 
 
-The one-hour outcome connects the modeling question to the operational
-concern that illegal-parking reports may call for timely handling. It is an
-analytical cutoff, not a documented agency response standard. In the
-available week, 34.6% of requests with usable closure times were closed in
-under an hour, while 65.4% remained open for at least an hour. Recorded
-closure time is only a proxy for handling time: it may include dispatch,
-travel, queueing, reporting, and administrative steps. The analysis can
-predict this recorded outcome from observed fields, but it cannot isolate
-those processes.
+The under-one-hour target is a modeling choice, not a documented agency
+response standard. In the 12,975 eligible requests, 4,478 (34.5%) closed in
+under an hour and 8,497 (65.5%) took at least an hour. Recorded closure time
+is only a proxy for handling time: it may include dispatch, travel, queueing,
+reporting, and administrative steps. The analysis can predict this recorded
+outcome from observed fields, but it cannot isolate those processes.
 
 
 ## Frame the Prediction
@@ -38,19 +40,19 @@ can use:
 
 
 - **Unit:** one illegal-parking request from the distributed week.
-- **Target:** one if recorded closure time is at least one hour, and zero
+- **Target:** one if recorded closure time is under one hour, and zero
   otherwise. Requests without a closure time cannot be labeled and are
   excluded.
 - **Prediction time:** request creation. Closure time and later processing
   fields are unavailable then and must not be predictors.
 - **Request features:** problem detail and borough, recorded when the request
-  is created.
+  is created, plus its six-hour creation-time group and whether the date is a
+  business or non-business day.
 - **Area features:** population density, median household income, and the
   estimated share of households with a vehicle, linked through the ZIP label
   [@census2024gazetteer; @census2024vehicles].
 
 
-The one-hour cutoff is a modeling choice, not a documented agency standard.
 The density measure divides ACS population by 2024 Gazetteer ZCTA land area;
 the vehicle share is one minus the estimated fraction of households with no
 vehicle. These describe area context, not curb capacity or individual
@@ -67,8 +69,8 @@ ask a different predictive question.
 
 
 The prediction question is: among requests from this week, how well can the
-recorded fields distinguish requests that remain open for at least an hour?
-This is prediction within the observed setting. It is not a question about
+recorded fields distinguish requests that close in under an hour? This is
+prediction within the observed setting. It is not a question about
 whether a predictor causes a longer closure, nor does it show performance in
 a future week. The four checks in @sec-formulation-checks still apply: a
 model cannot repair an unclear target, an invalid measurement, an inadequate
@@ -79,11 +81,11 @@ scope, or weak evidence.
 
 
 A baseline sets a reference that a more complex model must improve. Because
-about two-thirds of eligible requests meet the one-hour target, predicting
-the majority class for every request already gives roughly 65% accuracy.
-That result does not distinguish requests: it labels every case as taking
-at least an hour. Accuracy alone would therefore make a useless classifier
-look respectable.
+34.5% of eligible requests close in under an hour, predicting the majority
+class for every request already gives roughly 65.5% accuracy. That result
+does not distinguish requests: it labels every case as taking at least an
+hour. Accuracy alone would therefore make a useless classifier look
+respectable.
 
 
 The analysis starts from the shared preparation function rather than
@@ -98,7 +100,11 @@ or simulate a future week.
 
 
 ```{python}
-from scripts.parking_requests import attach_zcta_context, load_parking_requests
+from scripts.parking_requests import (
+    attach_zcta_context,
+    load_parking_requests,
+    load_zcta_context,
+)
 
 import pandas as pd
 from matplotlib_inline.backend_inline import set_matplotlib_formats
@@ -118,19 +124,31 @@ area_features = [
 has_area_context = with_context[area_features].notna().all(axis=1)
 eligible = matched & has_area_context
 required = [
-    "closure_hours", "problem_detail", "borough",
+    "closure_hours", "created_at", "problem_detail", "borough",
     "incident_zip", *area_features,
 ]
 model_data = with_context.loc[eligible, required + ["zcta"]].copy()
 assert model_data[required].notna().all().all()
-model_data["long_closure"] = model_data["closure_hours"].ge(1).astype("int8")
-categorical_features = ["problem_detail", "borough"]
+model_data["hour_group"] = pd.cut(
+    model_data["created_at"].dt.hour,
+    bins=[-1, 5, 11, 17, 23],
+    labels=["00:00–05:59", "06:00–11:59", "12:00–17:59", "18:00–23:59"],
+)
+labor_day = pd.Timestamp("2026-09-07").date()
+nonbusiness_day = (
+    model_data["created_at"].dt.dayofweek.ge(5)
+    | model_data["created_at"].dt.date.eq(labor_day)
+)
+model_data["day_type"] = "Business day"
+model_data.loc[nonbusiness_day, "day_type"] = "Non-business day"
+model_data["short_closure"] = model_data["closure_hours"].lt(1).astype("int8")
+categorical_features = ["problem_detail", "borough", "hour_group", "day_type"]
 numeric_features = area_features
 feature_columns = categorical_features + numeric_features + ["incident_zip"]
 X = model_data[feature_columns].copy()
 X[categorical_features] = X[categorical_features].astype("string")
 X["incident_zip"] = X["incident_zip"].astype("string")
-y = model_data["long_closure"]
+y = model_data["short_closure"]
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=2026, stratify=y
@@ -145,8 +163,14 @@ pd.Series({
     ),
     "eligible requests": len(model_data),
     "matched ZCTAs represented": model_data["zcta"].nunique(),
-    "at least one hour": int(y.sum()),
-    "under one hour": int(y.eq(0).sum()),
+    "business days": model_data.loc[
+        model_data["day_type"].eq("Business day"), "created_at"
+    ].dt.date.nunique(),
+    "non-business days": model_data.loc[
+        model_data["day_type"].eq("Non-business day"), "created_at"
+    ].dt.date.nunique(),
+    "under one hour": int(y.sum()),
+    "at least one hour": int(y.eq(0).sum()),
     "training requests": len(X_train),
     "test requests": len(X_test),
     "training target proportion": y_train.mean(),
@@ -155,17 +179,23 @@ pd.Series({
 ```
 
 
-The checks make the analysis population and target visible before any model
-is fitted. The lookup matches 13,033 of 13,040 requests; 58 matched requests
+The checks make the analysis population, target, and timing groups visible
+before any model is fitted. The hour groups use four six-hour intervals.
+Labor Day and the weekend form the three non-business days; the other four
+dates are business days. The lookup matches 13,033 of 13,040 requests; 58 matched requests
 lack at least one area measure, including nine requests with no household
 vehicle estimate because their ACS household denominator is zero. The
-complete-case analysis therefore uses 12,975 requests from 176 ZCTAs. The
+complete-case analysis therefore uses 12,975 requests from 176 ZCTAs. Of
+these, 4,478 close in under an hour and 8,497 take at least an hour. The
 split contains 9,731 training requests and 3,244 test requests, with nearly
 identical target proportions. Fixing
 the random seed makes this example reproducible, while stratification
 controls only the class proportions. Requests from the same ZCTA can appear
 in both sets, so the test set evaluates new requests in areas represented
-during training rather than transfer to unfamiliar areas.
+during training rather than transfer to unfamiliar areas. Requests from
+each of the seven dates also appear in both sets, so the split does not test
+generalization to a new day, holiday, or week. The business-day comparison
+is descriptive for this one week, which contains only one holiday.
 
 
 ## Use a GLM
@@ -182,8 +212,10 @@ because a software function is familiar [@nelder1972generalized;
 @mccullagh1989generalized].
 
 
-For request $i$, let $Y_i=1$ indicate that closure takes at least one
-hour, and let $p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)$. Logistic regression
+### Logistic regression
+
+For request $i$, let $Y_i=1$ indicate that closure takes under one hour,
+and let $p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)$. Logistic regression
 models the log odds as a linear combination of predictors:
 
 
@@ -203,15 +235,17 @@ ratio. An odds ratio is not a probability difference and does not by itself
 describe a causal effect.
 
 
-The first GLM includes problem detail, borough, population density, median
-household income, and household vehicle availability. The three area
-measures are standardized across training requests, so their odds ratios
-describe a one-standard-deviation difference in the request-weighted
-feature values.
-The formula interface compares each categorical level with a reference
-category and holds the other predictors fixed. These coefficients describe
+The first GLM includes problem detail, borough, creation-time group,
+business-day status, population density, median household income, and
+household vehicle availability. The three area measures are standardized
+across training requests, so their odds ratios describe a one-standard-
+deviation difference in the request-weighted feature values. The formula
+interface compares each categorical level with a reference category and
+holds the other predictors fixed. These coefficients describe
 conditional associations in the fitted model, not changes caused by the
-area characteristics [@statsmodels2026generalized].
+area characteristics. In the coefficient table, each categorical label names
+the compared level; the level without a coefficient is the reference
+category [@statsmodels2026generalized].
 
 
 ```{python}
@@ -220,9 +254,10 @@ import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 glm_data = X_train.copy()
-glm_data["long_closure"] = y_train
+glm_data["short_closure"] = y_train
 glm_formula = (
-    "long_closure ~ C(problem_detail) + C(borough) + "
+    "short_closure ~ C(problem_detail) + C(borough) + "
+    "C(hour_group) + C(day_type) + "
     "standardize(population_density_per_sqmi) + "
     "standardize(median_household_income) + "
     "standardize(share_households_with_vehicle)"
@@ -233,35 +268,142 @@ glm_fit = smf.glm(
     family=sm.families.Binomial(),
 ).fit()
 
-population_density_log_odds = glm_fit.params[
-    "standardize(population_density_per_sqmi)"
-]
-income_log_odds = glm_fit.params["standardize(median_household_income)"]
-vehicle_share_log_odds = glm_fit.params[
-    "standardize(share_households_with_vehicle)"
-]
-pd.Series({
-    "Population-density odds ratio per standard deviation": np.exp(
-        population_density_log_odds
-    ),
-    "Income odds ratio per standard deviation": np.exp(income_log_odds),
-    "Household vehicle-share odds ratio per standard deviation": np.exp(
-        vehicle_share_log_odds
-    ),
+glm_coefficients = pd.DataFrame({
+    "log-odds coefficient": glm_fit.params,
+    "odds ratio": np.exp(glm_fit.params),
 })
+glm_coefficients
 ```
 
 
-Each displayed odds ratio compares requests that differ by one training-set
-standard deviation in the corresponding area measure, while the other model
-features are held fixed. For example, an odds ratio above one indicates
-higher fitted odds of a one-hour closure for a one-standard-deviation
-increase; it does not say how many percentage points the probability rises.
+For a continuous area measure, its displayed odds ratio compares requests
+that differ by one training-set standard deviation, while the other model
+features are held fixed. For a categorical term, the odds ratio compares
+that level with the model's reference category. An odds ratio above one
+indicates higher fitted odds of a closure under one hour for the stated
+contrast; it does not say how many percentage points the probability rises.
 The context values repeat across requests in the same ZCTA, so area patterns
 are supported by 176 distinct ZCTAs, not by treating each request as an
 independent area. These are conditional associations, not individual-level
 effects or causal estimates. They also rely on a linear relationship between
 each standardized area measure and log odds.
+
+An odds ratio has a constant multiplicative interpretation on the odds
+scale, but its probability-scale change depends on the starting probability.
+For example, suppose an estimated odds ratio is 1.20 for a one-unit increase
+in a predictor. The fitted odds are 20% higher, holding the other predictors
+fixed. If the reference probability is 0.50, the corresponding probability
+is $1.20/(1+1.20) \approx 0.545$, an increase of about 4.5 percentage
+points. At a different reference probability, the probability change would
+also differ. This example illustrates the conversion; it is not an estimate
+from the request model. For a categorical predictor, the odds ratio compares
+one level with the model's reference level. State that reference and the
+predictor contrast whenever reporting a coefficient.
+
+
+### Poisson regression
+
+To demonstrate a count outcome, this example changes the observational unit
+from requests to NYC ZCTAs. Let $Y_j$ be the number of recorded requests
+matched to NYC ZCTA $j$ during the study week, and let $E_j$ denote its
+population in thousands. A log-link model with an exposure offset is
+
+
+$$
+Y_j \sim \operatorname{Poisson}(\mu_j), \qquad
+\log(\mu_j) = \log(E_j) + \beta_0 + \beta_1 x_{j1} + \cdots + \beta_k x_{jk}.
+$$
+
+
+The offset fixes the coefficient of $\log(E_j)$ at one, so the model
+compares expected counts relative to population exposure. The request ZIP
+labels are matched to ZCTAs by five-digit string, so the analysis uses
+Census areas rather than asserting that ZIP Codes and ZCTAs have identical
+boundaries. The code retains ZCTAs with zero requests by starting from the
+full context lookup and joining the observed counts to it.
+
+
+```{python}
+zcta_request_counts = (
+    with_context.loc[matched]
+    .groupby("zcta", as_index=False)
+    .agg(request_count=("request_id", "size"))
+)
+zcta_context = load_zcta_context()
+poisson_data = zcta_context.merge(
+    zcta_request_counts,
+    on="zcta",
+    how="left",
+    validate="one_to_one",
+)
+poisson_data["request_count"] = (
+    poisson_data["request_count"].fillna(0).astype("int64")
+)
+poisson_data["population_thousands"] = poisson_data["population"] / 1000
+poisson_data = poisson_data.loc[
+    poisson_data["population_thousands"].gt(0)
+    & poisson_data["population_density_per_sqmi"].notna()
+].copy()
+pd.Series({
+    "ZCTAs modeled": len(poisson_data),
+    "ZCTAs with zero requests": poisson_data["request_count"].eq(0).sum(),
+    "ZCTAs excluded for missing exposure or density": (
+        len(zcta_context) - len(poisson_data)
+    ),
+    "matched requests represented": poisson_data["request_count"].sum(),
+})
+```
+
+The left join keeps ZCTAs with no matched requests, which are valid zero
+counts rather than missing outcomes. Areas without positive population or a
+population-density estimate cannot enter this example and are excluded.
+The model uses population in thousands as its exposure and standardizes
+density so that its coefficient describes a one-standard-deviation contrast.
+
+```{python}
+poisson_fit = smf.glm(
+    "request_count ~ standardize(population_density_per_sqmi)",
+    data=poisson_data,
+    family=sm.families.Poisson(),
+    offset=np.log(poisson_data["population_thousands"]),
+).fit()
+pd.DataFrame({
+    "coefficient": poisson_fit.params,
+    "rate ratio": np.exp(poisson_fit.params),
+})
+```
+
+
+The offset makes $\exp(\beta_1)$ a rate ratio: a one-unit increase in
+$x_{j1}$ multiplies the expected number of requests per 1,000 residents by
+that amount, holding the other predictors fixed. For example, if
+$\beta_1=0.20$, the rate ratio is $\exp(0.20) \approx 1.22$, or about a
+22% higher expected rate. A reference rate of 2 requests per 1,000 residents
+would become about 2.44. In the fitted model, the density coefficient is
+about $-0.165$, which corresponds to a rate ratio near 0.85: the fitted
+request rate is about 15% lower for a one-standard-deviation increase in
+density, conditional on this model. Population is an imperfect denominator
+for illegal-parking reports: it does not measure vehicle activity, curb
+supply, or reporting behavior. Neither this fitted association nor the
+hypothetical calculation is a causal effect.
+
+The Poisson model assumes that the conditional variance equals the
+conditional mean. The Pearson chi-square statistic divided by residual
+degrees of freedom gives a rough overdispersion check; values well above one
+can indicate that the Poisson variation is too restrictive. Calculate this
+diagnostic for the fitted model:
+
+
+```{python}
+poisson_fit.pearson_chi2 / poisson_fit.df_resid
+```
+
+
+The ratio is about 40.7, which indicates substantial overdispersion for this
+specification. The Poisson fit therefore illustrates coefficient
+interpretation, but it is not an adequate final model for these counts.
+Residual checks and the spatial structure of the areas also matter; a
+negative binomial or another count model may be more appropriate.
 
 
 ## Check the Model
@@ -450,10 +592,11 @@ columns are predicted classes, matching the convention used by scikit-learn
 : General layout of a binary confusion matrix. {#tbl-model-confusion-matrix}
 
 
-In this chapter's parking analysis, a positive is a request that remains
-open for at least one hour, and a negative closes sooner. The illustrative
-threshold is 0.5, so predicted probabilities at or above 0.5 are classified
-as positive. The displayed test-set counts use this rule and the layout in
+In this chapter's parking analysis, a positive is a request that closes in
+under one hour, and a negative takes at least one hour. The illustrative
+probability threshold is 0.5, so predicted
+probabilities at or above 0.5 are classified as positive. The displayed
+test-set counts use this rule and the layout in
 @tbl-model-confusion-matrix.
 
 
@@ -479,10 +622,10 @@ Different fields use different names for several of the same ratios:
 
 
 - **TPR, sensitivity, and recall** all divide true positives by actual
-  positives. They ask what fraction of requests that remained open at least
-  an hour the model flagged.
+  positives. They ask what fraction of requests that close in under an hour
+  the model flagged.
 - **PPV and precision** divide true positives by predicted positives. They
-  ask what fraction of flagged requests remained open at least an hour.
+  ask what fraction of flagged requests closed in under an hour.
 - **Specificity and TNR** measure the fraction of actual negatives not
   flagged; **FPR** is the fraction of actual negatives that were flagged.
 - **F1** is the harmonic mean of precision and recall. It does not account
@@ -525,21 +668,21 @@ These measures answer different questions and none is universally best
 [@scikitlearn2026metrics].
 
 
-The threshold determines how missed long closures trade off against
-unnecessary alerts. The data do not specify the costs of these errors, so
+The threshold determines how missed short closures trade off
+against unnecessary alerts. The data do not specify the costs of these errors, so
 the example uses 0.5 only for illustration. A threshold selected for use
 would be chosen with training or validation data, then evaluated once on the
 held-out test set.
 
 
 The baseline assigns every request the training-set target prevalence as
-its probability and predicts the majority class. The Census-context model
-one-hot encodes problem detail and borough, standardizes the three area
-measures, and fits logistic regression. The table compares their test
+its probability and predicts the majority class. The model one-hot encodes
+problem detail, borough, hour group, and day type; it standardizes the three
+area measures and fits logistic regression. The table compares their test
 metrics; classification measures use a 0.5 threshold. Since the positive
-class is more common, do not read accuracy alone. Compare it with ROC AUC,
-log loss, and the confusion matrix to see whether the model finds requests
-that close sooner or merely repeats the majority-class prediction.
+class is less common, do not read accuracy alone. Compare it with ROC AUC,
+log loss, and the confusion matrix to see whether the model identifies
+short closures or merely repeats the majority-class prediction.
 
 
 ```{python}
@@ -583,7 +726,9 @@ def score_predictions(probability):
         "log loss": log_loss(y_test, probability),
         "TPR / recall": recall_score(y_test, predicted_class),
         "specificity": recall_score(y_test, predicted_class, pos_label=0),
-        "precision": precision_score(y_test, predicted_class),
+        "precision": precision_score(
+            y_test, predicted_class, zero_division=0
+        ),
         "F1": f1_score(y_test, predicted_class),
     }
 
@@ -591,25 +736,24 @@ from IPython.display import display
 
 scores = pd.DataFrame({
     "Prevalence baseline": score_predictions(baseline_probability),
-    "Census-context logistic model": score_predictions(test_probability),
+    "Request and Census-context logistic model": score_predictions(test_probability),
 }).T
 confusion_table = pd.DataFrame(
     confusion_matrix(y_test, test_probability >= 0.5, labels=[1, 0]),
-    index=["Actual at least one hour", "Actual under one hour"],
-    columns=["Predicted at least one hour", "Predicted under one hour"],
+    index=["Actual under one hour", "Actual at least one hour"],
+    columns=["Predicted under one hour", "Predicted at least one hour"],
 )
 display(confusion_table)
 display(scores)
 ```
 
 
-At the 0.5 threshold, the Census-context model has TPR 0.945, specificity
-0.151, precision 0.678, and F1 0.790 on this test set. The prevalence
-baseline flags every request as positive, so it has TPR 1, specificity 0,
-precision 0.655, and F1 0.791. The context model identifies more negatives
-while missing slightly more positives; its F1 is close to the baseline.
-This comparison shows why no single score identifies a best model for every
-use.
+At the 0.5 threshold, the model identifies about 14% of requests that close
+in under an hour, with 95% specificity and 58% precision. Its accuracy is
+67%, only modestly above the 65.5% prevalence baseline. The model ranks cases
+better than chance (ROC AUC 0.618), but its low recall shows that the default
+threshold misses most short closures. No single score identifies a best
+model for every use.
 
 
 The calibration plot compares predicted probabilities with the observed
@@ -621,7 +765,7 @@ quantile bins, so the display can hide variation within each group.
 
 ```{python}
 #| label: fig-model-calibration
-#| fig-cap: "Calibration of held-out probabilities for requests taking at least one hour to close."
+#| fig-cap: "Calibration of held-out probabilities for closures under one hour."
 #| fig-format: svg
 import matplotlib.pyplot as plt
 from sklearn.calibration import calibration_curve
@@ -631,9 +775,9 @@ observed_rate, mean_probability = calibration_curve(
 )
 fig, ax = plt.subplots(figsize=(6.4, 5.0))
 ax.plot([0, 1], [0, 1], color="0.5", linestyle="--", label="Perfect calibration")
-ax.plot(mean_probability, observed_rate, marker="o", label="Census-context model")
+ax.plot(mean_probability, observed_rate, marker="o", label="Request and Census context")
 ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="Mean predicted probability",
-       ylabel="Observed fraction meeting one-hour target")
+       ylabel="Observed fraction closing under one hour")
 ax.legend()
 fig.tight_layout()
 ```
@@ -643,13 +787,14 @@ The ROC curve traces the true positive rate against the false positive rate
 as the probability threshold changes. In the table above, TPR is also called
 recall or sensitivity; FPR is one minus specificity. Each point represents
 a different threshold, so the curve displays the trade-off between finding
-more one-hour closures and incorrectly flagging requests that close sooner.
+more short closures and incorrectly flagging requests that take at least an
+hour.
 The area under this curve is the ROC AUC reported in the score table.
 
 
 ```{python}
 #| label: fig-model-roc
-#| fig-cap: "ROC curve for the preliminary Census-context model on held-out requests."
+#| fig-cap: "ROC curve for the preliminary request and Census-context model on held-out requests."
 #| fig-format: svg
 from sklearn.metrics import roc_curve
 
@@ -659,7 +804,7 @@ fig, ax = plt.subplots(figsize=(6.4, 5.0))
 ax.plot(
     false_positive_rate,
     true_positive_rate,
-    label=f"Census context (AUC = {roc_auc:.3f})",
+    label=f"Request and Census context (AUC = {roc_auc:.3f})",
 )
 ax.plot([0, 1], [0, 1], color="0.5", linestyle="--", label="Chance ranking")
 ax.set(xlim=(0, 1), ylim=(0, 1), xlabel="False positive rate (1 - specificity)",
@@ -737,10 +882,11 @@ to select and report final performance can be optimistic
 
 
 The comparison separates measured area context from a postal-code lookup.
-All four models use the same training and test requests. One model uses
-problem detail and borough; a second adds three ACS-derived area measures;
-a third adds the incident ZIP label as a categorical identifier; and a
-fourth uses a smoothed target encoding of that label. Five-fold stratified
+All four models use the same training and test requests. Each includes
+problem detail, borough, hour group, and day type. One model uses those
+request features; a second adds three ACS-derived area measures; a third adds
+the incident ZIP label as a categorical identifier; and a fourth uses a
+smoothed target encoding of that label. Five-fold stratified
 cross-validation selects `C` by log loss,
 a probability-focused criterion. Standardization and one-hot encoding are
 inside the pipeline so each fold learns its preprocessing from its own
@@ -752,7 +898,7 @@ explain what neighborhood feature may relate to closure time.
 One-hot encoding gives each ZIP label its own coefficient, which can be
 unstable when some labels have few requests. Smoothed target encoding offers
 another representation: it replaces a label with an estimate of its
-one-hour closure rate, then shrinks that estimate toward the overall rate.
+under-one-hour closure rate, then shrinks that estimate toward the overall rate.
 For ZCTA $j$, a common estimate is
 
 
@@ -762,7 +908,7 @@ $$
 $$
 
 
-where $s_j$ is the number of one-hour closures in ZCTA $j$, $n_j$ is
+where $s_j$ is the number of requests closing in under an hour in ZCTA $j$, $n_j$ is
 its number of requests, $\bar{p}$ is the overall training-set rate, and
 $\alpha$ controls shrinkage. Larger values of $\alpha$ pull area
 estimates more strongly toward the overall rate. This empirical Bayes idea
@@ -810,7 +956,7 @@ def tune_logistic(categorical, numeric):
     return search, probability
 
 zip_identifier_features = categorical_features + ["incident_zip"]
-detail_borough_search, detail_borough_probability = tune_logistic(
+request_features_search, request_features_probability = tune_logistic(
     categorical_features, []
 )
 census_search, census_probability = tune_logistic(
@@ -851,19 +997,19 @@ zip_target_probability = zip_target_search.predict_proba(
 )[:, 1]
 
 comparison = pd.DataFrame({
-    "Detail and borough": score_predictions(detail_borough_probability),
+    "Request details and timing": score_predictions(request_features_probability),
     "Census area context": score_predictions(census_probability),
     "ZIP label identifier": score_predictions(zip_id_probability),
     "ZIP target encoding": score_predictions(zip_target_probability),
 }).T
 comparison["selected C"] = [
-    detail_borough_search.best_params_["logisticregression__C"],
+    request_features_search.best_params_["logisticregression__C"],
     census_search.best_params_["logisticregression__C"],
     zip_id_search.best_params_["logisticregression__C"],
     zip_target_search.best_params_["logisticregression__C"],
 ]
 comparison["mean CV log loss"] = [
-    -detail_borough_search.best_score_,
+    -request_features_search.best_score_,
     -census_search.best_score_,
     -zip_id_search.best_score_,
     -zip_target_search.best_score_,
@@ -879,17 +1025,18 @@ comparison
 
 
 For this split, adding the Census measures changes test ROC AUC from about
-0.577 to 0.589 and log loss from 0.636 to 0.631. The improvement is modest,
+0.602 to 0.620 and log loss from 0.630 to 0.623. The improvement is modest,
 but it indicates that the supplied area attributes add some predictive
-information beyond problem detail and borough in this test design. The
-ZIP-label model scores higher, with ROC AUC about 0.690 and log loss 0.593.
+information beyond problem detail, borough, hour group, and day type in this
+test design. The ZIP-label model scores higher, with ROC AUC about 0.686 and
+log loss 0.595.
 Because the same ZCTAs occur in training and test sets, this score reflects
 area-specific prediction for locations represented in training. It neither
 identifies a cause nor demonstrates transfer to a new ZCTA or a later week.
 
 
-Smoothed target encoding gives a similar test ROC AUC of about 0.688 and
-log loss of 0.595, with the cross-validation procedure selecting a smoothing
+Smoothed target encoding gives a similar test ROC AUC of about 0.687 and
+log loss of 0.594, with the cross-validation procedure selecting a smoothing
 value of 10. Three test requests have ZIP labels absent from the training
 set; the encoder assigns those labels the overall training rate. This
 comparison shows that a compact, partially pooled encoding can retain much
@@ -924,47 +1071,67 @@ together.
 
 ## Exercises {.unnumbered}
 
-These exercises extend the target definition and EDA in @exr-eda-time into
-prediction. Use the same one-week extract and report eligible counts,
-excluded records, the prediction time, and the features available then.
-Treat closure time as a recorded duration, not a direct measure of officer
-response.
-
-::: {#exr-model-target}
-Use closure of at least one hour as the binary target.
-
-a. Report the counts and proportions below one hour and at least one hour.
-   Compare them with the two-hour classification in @exr-eda-time and
-   explain how changing the cutoff changes the prediction question.
-b. Identify which fields are available when a request is created. Use the
-   documented Census lookup to attach population density, median household
-   income, and household vehicle availability through the incident ZIP label.
-   Report unmatched requests and missing area estimates. Explain why the ZIP
-   label is a join key rather than a numeric predictor, and state one
-   limitation of the ZIP-to-ZCTA match or an area-level proxy.
-c. Write one operational use for a prediction and identify who would act
-   on it. State the cost of a missed request and a false alert that would
-   need to be known before setting a decision threshold.
-:::
+The exercises use the one-week request data to practice classification and
+count modeling. In the logistic exercise, define a long closure as one that
+takes at least five hours. Report the observational unit, eligible records,
+and exclusions. Treat recorded closure time as a proxy for handling time,
+not as a direct measure of officer response.
 
 ::: {#exr-model-check}
-Fit and assess a logistic model for the one-hour target.
+Use the parking-request data to investigate closures lasting at least five
+hours.
 
-a. Establish a majority-class or prevalence baseline. Split the records
-   into training and test sets before fitting; state the split method and
-   random seed.
-b. Fit a model with problem detail and borough, then add the two Census
-   area measures. Use cross-validation within the training data to select
-   regularization strength. Report test ROC AUC, log loss, TPR, precision,
-   F1, and a confusion matrix at a stated threshold. As a separate benchmark,
-   fit a model that treats ZIP as a categorical identifier and explain what
-   its score can and cannot tell you.
-c. Make a calibration plot and inspect predicted performance by borough.
-   Report group counts and describe one limitation of those comparisons.
-   Compare request-random validation with a validation split grouped by
-   ZCTA. Explain how the target use determines which split is more
-   appropriate and what evidence from another week would be needed before
-   claiming transfer to future requests.
+a. Use the documented preparation function and Census lookup to create the
+   complete-case request data. Report unmatched requests and missing area
+   estimates. Define a positive outcome as a closure lasting at least five
+   hours. Report the class counts and proportions, and compare this cutoff
+   with the closure-time distribution. Explain why a five-hour cutoff may
+   be useful for investigating unusually long closures and why it is an
+   analytical choice rather than an agency standard.
+b. Identify the predictors available at request creation. Split the data
+   into training and test sets before fitting, stratifying on the target.
+   Establish a prevalence baseline, then fit logistic regression with
+   problem detail, borough, the four creation-time groups, business-day
+   status, and the three area measures. Use cross-validation within the
+   training set to select regularization strength. Report held-out
+   ROC AUC, log loss, TPR, precision, F1, and a confusion matrix at a stated
+   probability threshold. Make a calibration plot and inspect performance
+   by borough, hour group, and day type. Report group counts and a limitation
+   of the day-type comparison.
+c. For one standardized area predictor, report its fitted coefficient and
+   odds ratio. Interpret the odds ratio for a one-standard-deviation
+   increase, holding the other predictors fixed. Use that odds ratio to
+   calculate the resulting probability from reference probabilities of
+   0.20 and 0.50, and explain why the probability changes differ. Choose a
+   problem-detail coefficient, identify its reference category, and state
+   the outcome and predictor contrast in words. Explain why the association
+   is not a causal effect.
+d. As a benchmark, fit a model that treats ZIP as a categorical identifier.
+   Compare its held-out performance with the model using Census measures.
+   Then compare request-random validation with validation grouped by ZCTA.
+   Explain what each comparison can and cannot show about new requests and
+   unfamiliar areas.
+:::
+
+::: {#exr-model-count}
+Fit and assess a Poisson model for request counts by NYC ZCTA.
+
+a. Construct one count per ZCTA from the matched requests. Start from the
+   complete ZCTA lookup so areas with zero requests remain in the analysis.
+   Report areas excluded for missing population or density and explain why
+   the observational unit is the ZCTA, not the request.
+b. Fit the Poisson model with population in thousands as an offset and
+   standardized population density as a predictor. Report the density
+   coefficient and rate ratio, and interpret the rate for a one-standard-
+   deviation increase in density. State why population is an imperfect
+   exposure for illegal-parking reports.
+c. Fit a second model without the offset. Compare the fitted coefficients
+   and predictions, and explain how the offset changes the question from
+   expected counts to rates relative to population exposure.
+d. Calculate the Pearson chi-square statistic divided by residual degrees
+   of freedom. Explain what the result says about the Poisson variance
+   assumption, and describe one alternative model or additional predictor
+   that could be investigated. Do not interpret either fit causally.
 :::
 
 ## References {.unnumbered}
