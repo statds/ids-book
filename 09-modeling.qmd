@@ -88,15 +88,12 @@ hour. Accuracy alone would therefore make a useless classifier look
 respectable.
 
 
-The analysis starts from the shared preparation function rather than
+The analysis starts from `load_parking_requests()` rather than
 repeating the import and filtering workflow from @sec-wrangling. It links
 the requests to the Census context already documented in
-@sec-zcta-context-merge, reports unmatched and incomplete records, and
-defines the binary outcome. It does not alter the source request data or
-rebuild the Census lookup. The train-test split reserves one quarter of
-complete requests for a final evaluation. Stratification keeps the target
-proportion similar in the two sets; it does not make the records independent
-or simulate a future week.
+@sec-zcta-context-merge. The preparation functions leave the source request
+data and the Census lookup unchanged. The merge indicator identifies ZIP
+labels with no matching ZCTA.
 
 
 ```{python}
@@ -115,6 +112,20 @@ set_matplotlib_formats("svg")
 parking = load_parking_requests()
 with_context = attach_zcta_context(parking)
 matched = with_context["_merge"].eq("both")
+pd.Series({
+    "requests in one-week extract": len(parking),
+    "unmatched ZIP labels": int((~matched).sum()),
+})
+```
+
+
+The ZIP-to-ZCTA link matches 13,033 of 13,040 requests. For a complete-case
+model, each matched request also needs all three area measures and the
+request fields used below. The next check reports missing area context
+and selects eligible requests.
+
+
+```{python}
 has_income = with_context["median_household_income"].notna()
 area_features = [
     "population_density_per_sqmi",
@@ -129,6 +140,26 @@ required = [
 ]
 model_data = with_context.loc[eligible, required + ["zcta"]].copy()
 assert model_data[required].notna().all().all()
+pd.Series({
+    "matched requests without income estimate": int((matched & ~has_income).sum()),
+    "matched requests missing an area measure": int(
+        (matched & ~has_area_context).sum()
+    ),
+    "eligible requests": len(model_data),
+    "matched ZCTAs represented": model_data["zcta"].nunique(),
+})
+```
+
+
+Among matched requests, 58 lack at least one area measure, including nine
+with no household vehicle estimate because their ACS household denominator
+is zero. The resulting analysis has 12,975 requests from 176 ZCTAs. The
+next step derives timing features from the creation timestamp. Four six-hour
+intervals describe the hour, while the weekend and Labor Day form the three
+non-business days in this week.
+
+
+```{python}
 model_data["hour_group"] = pd.cut(
     model_data["created_at"].dt.hour,
     bins=[-1, 5, 11, 17, 23],
@@ -141,6 +172,18 @@ nonbusiness_day = (
 )
 model_data["day_type"] = "Business day"
 model_data.loc[nonbusiness_day, "day_type"] = "Non-business day"
+model_data.groupby("day_type")["created_at"].apply(lambda x: x.dt.date.nunique())
+```
+
+
+The four other dates are business days. This distinction is descriptive
+for one week, which contains only one holiday. The outcome marks closures
+under one hour; closure time itself is excluded from the predictors. The
+feature table keeps the ZIP label for a later categorical benchmark, while
+the first model uses the other listed features.
+
+
+```{python}
 model_data["short_closure"] = model_data["closure_hours"].lt(1).astype("int8")
 categorical_features = ["problem_detail", "borough", "hour_group", "day_type"]
 numeric_features = area_features
@@ -149,28 +192,24 @@ X = model_data[feature_columns].copy()
 X[categorical_features] = X[categorical_features].astype("string")
 X["incident_zip"] = X["incident_zip"].astype("string")
 y = model_data["short_closure"]
+pd.Series({
+    "under one hour": int(y.sum()),
+    "at least one hour": int(y.eq(0).sum()),
+})
+```
 
+
+The outcome has 4,478 requests under one hour and 8,497 at least one hour.
+The train-test split reserves one quarter of complete requests for evaluation
+and stratifies on this outcome to keep its proportion similar in both sets.
+
+
+```{python}
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=2026, stratify=y
 )
 
 pd.Series({
-    "requests in one-week extract": len(parking),
-    "unmatched ZIP labels": int((~matched).sum()),
-    "matched requests without income estimate": int((matched & ~has_income).sum()),
-    "matched requests missing an area measure": int(
-        (matched & ~has_area_context).sum()
-    ),
-    "eligible requests": len(model_data),
-    "matched ZCTAs represented": model_data["zcta"].nunique(),
-    "business days": model_data.loc[
-        model_data["day_type"].eq("Business day"), "created_at"
-    ].dt.date.nunique(),
-    "non-business days": model_data.loc[
-        model_data["day_type"].eq("Non-business day"), "created_at"
-    ].dt.date.nunique(),
-    "under one hour": int(y.sum()),
-    "at least one hour": int(y.eq(0).sum()),
     "training requests": len(X_train),
     "test requests": len(X_test),
     "training target proportion": y_train.mean(),
@@ -179,44 +218,72 @@ pd.Series({
 ```
 
 
-The checks make the analysis population, target, and timing groups visible
-before any model is fitted. The hour groups use four six-hour intervals.
-Labor Day and the weekend form the three non-business days; the other four
-dates are business days. The lookup matches 13,033 of 13,040 requests; 58 matched requests
-lack at least one area measure, including nine requests with no household
-vehicle estimate because their ACS household denominator is zero. The
-complete-case analysis therefore uses 12,975 requests from 176 ZCTAs. Of
-these, 4,478 close in under an hour and 8,497 take at least an hour. The
-split contains 9,731 training requests and 3,244 test requests, with nearly
-identical target proportions. Fixing
-the random seed makes this example reproducible, while stratification
-controls only the class proportions. Requests from the same ZCTA can appear
+The split contains 9,731 training requests and 3,244 test
+requests, with nearly identical target proportions. Fixing the random seed
+makes this example reproducible, while stratification controls only the
+class proportions. Requests from the same ZCTA can appear
 in both sets, so the test set evaluates new requests in areas represented
 during training rather than transfer to unfamiliar areas. Requests from
 each of the seven dates also appear in both sets, so the split does not test
-generalization to a new day, holiday, or week. The business-day comparison
-is descriptive for this one week, which contains only one holiday.
+generalization to a new day, holiday, or week.
 
 
 ## Use a GLM
 
 
-A generalized linear model (GLM) relates a response distribution to a
-predictor through a link function. For a binary outcome, the response is
-modeled with a Bernoulli distribution and a logit link; this special case
-is logistic regression. GLMs also include familiar linear regression with
-a Gaussian response and identity link, as well as count models with a
-Poisson response and log link. The response distribution and link should
-follow the outcome's scale and support, rather than being selected only
-because a software function is familiar [@nelder1972generalized;
+Ordinary linear regression allows its fitted mean to take any real value
+and typically models the remaining variation with a constant-variance
+Gaussian distribution. A straight-line fit to a binary outcome can therefore
+predict values outside zero and one, while the outcome's variance changes
+with its probability. A straight-line fit to a count can predict negative
+values, although counts cannot be negative; the spread of counts can also
+change with their mean. These limitations motivate a model that keeps a
+linear combination of predictors but uses a response distribution and link
+suited to the outcome.
+
+
+A generalized linear model (GLM) combines a response distribution from the
+exponential family, a linear predictor, and a link function. The distribution
+describes an outcome's conditional variation, while the link connects its
+conditional mean to the linear predictor [@nelder1972generalized;
 @mccullagh1989generalized].
+
+
+For observation $i$, let $Y_i$ be the outcome, $\mathbf{x}_i$ its recorded
+predictors, and $\mu_i = E(Y_i \mid \mathbf{x}_i)$ its conditional mean. A
+GLM relates that mean to $k$ predictor terms through
+
+
+$$
+g(\mu_i) = \eta_i
+  = \beta_0 + \sum_{r=1}^{k} \beta_r x_{ir} + o_i,
+$$
+
+where $g$ is the link function, $\eta_i$ is the linear predictor,
+$\beta_0$ is the intercept, $\beta_r$ is the coefficient for predictor
+$x_{ir}$, and $o_i$ is an optional known offset whose coefficient is fixed
+at one. Without an offset, $o_i=0$. A coefficient changes the linked mean
+by $\beta_r$ for a one-unit predictor difference, holding the other
+predictors fixed. Its effect on the original outcome scale depends on the
+inverse link and the starting mean.
+
+
+The exponential family includes the Gaussian, Bernoulli, and Poisson
+distributions. For a continuous outcome, a Gaussian distribution with an
+identity link gives ordinary linear regression. For an event indicator, a
+Bernoulli distribution with a logit link gives logistic regression. For a
+nonnegative count, a Poisson distribution with a log link gives Poisson
+regression. These choices also imply different relationships between the
+conditional mean and variance. The next two examples use the same GLM setup
+but change the outcome, observational unit, distribution, and link.
 
 
 ### Logistic regression
 
 For request $i$, let $Y_i=1$ indicate that closure takes under one hour,
-and let $p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)$. Logistic regression
-models the log odds as a linear combination of predictors:
+and let $p_i = \Pr(Y_i=1 \mid \mathbf{x}_i)$. Because a Bernoulli outcome
+has mean $\mu_i=p_i$, the logit link gives the following special case of
+the GLM equation, with no offset:
 
 
 $$
@@ -323,7 +390,9 @@ predictor contrast whenever reporting a coefficient.
 To demonstrate a count outcome, this example changes the observational unit
 from requests to NYC ZCTAs. Let $Y_j$ be the number of recorded requests
 matched to NYC ZCTA $j$ during the study week, and let $E_j$ denote its
-population in thousands. A log-link model with an exposure offset is
+population in thousands. The Poisson distribution sets the conditional mean
+and variance to $\mu_j$. A log link and the known offset $o_j=\log(E_j)$
+give the model
 
 
 $$
