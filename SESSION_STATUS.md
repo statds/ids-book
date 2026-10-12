@@ -532,3 +532,73 @@ between EDA and visualization; Chapter 8 already contains spatial maps and
 `facet_grid()` examples. The changes are committed as `23ea5d7` and
 `f27eefe`. The book was not rendered after this review. No linked semester
 repository or unrelated untracked files were changed.
+
+## Latest session update (2026-10-12)
+
+### Current checkout and setup
+
+The book is on `main` at `ad3dfd2`. At this check, `main` and its local
+`origin/main` tracking ref point to the same commit. The only untracked item
+is the local `ids-f26` link; it is not part of the book. The earlier paths and
+branch-ahead counts in this document describe older checkouts and should not
+be used as current status. Check the remote after cloning on another computer.
+
+The book uses Python 3.12, Quarto, and the ignored `.ids` environment. On a
+new computer, create/install the environment with `make install PYTHON=python3.12`
+after installing Quarto. Activate it with `source .ids/bin/activate` before
+`make render-one FILE=09-modeling.qmd` or `make render`. Read `AGENTS.md` and
+`codex.md` before editing; use the installed `technical-writing` and
+`book-writing` skills for book-content work.
+
+### Chapter 9 modeling
+
+Chapter 9 is `09-modeling.qmd`. It introduces generalized linear models from
+the limits of linear regression, including the exponential family, then covers
+logistic and Poisson regression, coefficient interpretation, variable tests,
+model checks, prediction metrics, and regularization. The parking-request
+example predicts closure under one hour using fields known at request creation
+and area context. It has 12,975 eligible requests: 4,478 close in under one
+hour and 8,497 take at least one hour. Predicting the latter for every request
+gives 65.5% accuracy but zero recall for short closures. Two requests close at
+exactly one hour, so 8,495 take strictly more than one hour; that prediction
+also rounds to 65.5% accuracy. The fitted logistic model has 66.7% test
+accuracy and 13.7% recall at a 0.5 threshold. The prose emphasizes why
+accuracy alone is inadequate.
+
+The exercises address modeling, including five-hour closure outcomes and
+regularization with tuning. Students create the dichotomized outcomes.
+`scripts/build_parking_with_zcta.py` generates the ignored
+`data/parking_requests_with_zcta.parquet` dataset, and
+`scripts/modeling_preprocessing.py` provides reusable encoding and scaling.
+The latest Chapter 9 render completed using `.ids`; the generated `_book`
+output is ignored. Commits `880b7c3`, `aa831bb`, `9406d7b`, and `ad3dfd2`
+contain the main recent revisions.
+
+The instructor is considering moving classification evaluation and tuning
+into a separate chapter later, following the structure of the Fall 2025
+classification chapter. No restructure has been made. A future split should
+account for the stated midterm scope of Chapters 5–9.
+
+### Fall 2026 student notes
+
+The separate `ids-f26` repository is the semester-specific, student-contributed
+Quarto site. Its local checkout is reached through the untracked `ids-f26`
+symlink in this book checkout; that symlink and its machine-specific target
+will not transfer with a clone. Clone `https://github.com/statds/ids-f26`
+separately on another computer. At this check, `ids-f26` is clean on `main`
+at `0be979e`, matching its local `origin/main` tracking ref. The local review
+branches `topic/amanda-noe-census-data` and
+`topic/horan-elizabeth-geopandas` are present; check current pull-request
+states before using or deleting them.
+
+Read `ids-f26/codex.md`, `README.md`, `CONTRIBUTING.md`, and
+`PR_REVIEW_WORKFLOW.md` in that repository. The latter covers listing PRs,
+checking out a contribution, reviewing diffs, rendering, leaving feedback,
+and cleaning up a local review branch. Git alone does not list GitHub PRs;
+use `gh pr list --state open`. The Makefile does not create or select a Python
+environment. Use Python 3.12, activate an environment with the repository's
+requirements installed, then run `make render-one FILE=topic/<name>/index.qmd`
+for a presentation or `make render` for the full site. On this computer the
+book's `.ids` environment has served that purpose. The `ids-f26` repository
+has its own `SESSION_STATUS.md` handoff; this section summarizes its current
+local state. Review student contributions without replacing their authorship.
