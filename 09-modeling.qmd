@@ -255,6 +255,16 @@ import statsmodels.formula.api as smf
 
 glm_data = X_train.copy()
 glm_data["short_closure"] = y_train
+```
+
+
+The training data pair each request's predictors with its binary outcome.
+The formula below names the categorical predictors explicitly and
+standardizes the continuous area measures. This produces a logistic GLM
+with a binomial response and logit link.
+
+
+```{python}
 glm_formula = (
     "short_closure ~ C(problem_detail) + C(borough) + "
     "C(hour_group) + C(day_type) + "
@@ -267,7 +277,14 @@ glm_fit = smf.glm(
     data=glm_data,
     family=sm.families.Binomial(),
 ).fit()
+```
 
+
+The fitted coefficients are on the log-odds scale. Exponentiating them
+gives odds ratios, which make categorical contrasts and standardized
+continuous effects easier to describe.
+
+```{python}
 glm_coefficients = pd.DataFrame({
     "log-odds coefficient": glm_fit.params,
     "odds ratio": np.exp(glm_fit.params),
@@ -823,7 +840,7 @@ by considering the consequences of each kind of error with the people who
 would use the predictions.
 
 
-## Regularize Logistic Regression
+## Regularize a GLM
 
 
 The model has many coefficients because problem detail and borough are
@@ -835,40 +852,54 @@ coefficient size to trade a small amount of training fit for more stable
 predictions.
 
 
-Logistic regression estimates coefficients by maximizing the Bernoulli
-log-likelihood. A penalty adds a cost for large coefficients:
+Generalized linear models estimate coefficients by maximizing a
+distribution-specific likelihood. Regularization adds a penalty for large
+coefficients to the negative log-likelihood:
 
 
 $$
 \widehat{\boldsymbol{\beta}}_\lambda
 = \arg\min_{\boldsymbol{\beta}}
 \left\{
--\sum_{i=1}^{n}
-\left[y_i\log(p_i) + (1-y_i)\log(1-p_i)\right]
+-\ell(\boldsymbol{\beta}; \mathbf{y}, \mathbf{X})
 + \lambda P(\boldsymbol{\beta})
 \right\}.
 $$
 
 
-Here, $p_i$ is the fitted probability for request $i$, and the penalty
-does not include the intercept. The $L_2$ penalty is
+Here, $\ell(\boldsymbol{\beta}; \mathbf{y}, \mathbf{X})$ is the
+log-likelihood for the responses $\mathbf{y}$ and predictor matrix
+$\mathbf{X}$ under the chosen GLM response distribution and link. The
+penalty does not include the intercept. The $L_2$ penalty is
 $P(\boldsymbol{\beta}) = \sum_{j=1}^{p}\beta_j^2$; it shrinks coefficients
 without usually setting them exactly to zero. The $L_1$ penalty is
 $P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|$ and can set some
 coefficients to zero, producing a sparse model. Elastic net combines the
-two penalties [@tibshirani1996regression; @zou2005regularization]. Since
-several Census measures may carry overlapping information, this example
-uses $L_2$ regularization to stabilize the estimates without arbitrarily
-selecting one of a group of correlated predictors.
+two penalties [@tibshirani1996regression; @zou2005regularization]. The
+likelihood changes with the response distribution and link, while the same
+penalty framework can be used across GLMs. The choice of penalty and its
+strength depends on the modeling goal. This chapter demonstrates the
+workflow with logistic regression, using $L_2$ regularization to stabilize
+estimates without arbitrarily selecting one of a group of correlated Census
+predictors.
 
 
-Scikit-learn's logistic regression applies $L_2$ regularization by
-default. Its `C` parameter is inversely related to the penalty strength, so
-smaller values apply stronger shrinkage [@scikitlearn2026logistic]. Numeric
-predictors must be standardized because the penalty acts on coefficient
-size; otherwise, a change in measurement units changes how strongly a
-predictor is penalized. The analysis standardizes the area measures and
-keeps preprocessing inside the cross-validation pipeline.
+The same idea applies to a Poisson GLM: the likelihood describes counts,
+and a penalty can shrink coefficients for correlated predictors. The
+penalty controls coefficient size, while the Poisson distribution still
+assumes that the conditional variance equals the conditional mean.
+Regularization does not correct overdispersion or a poorly specified mean
+structure.
+
+
+In logistic regression, scikit-learn's `C` parameter is inversely related
+to the $L_2$ penalty strength, so smaller values apply stronger shrinkage
+[@scikitlearn2026logistic]. Other GLM implementations expose their
+regularization controls differently. Numeric predictors should be
+standardized because the penalty acts on coefficient size; otherwise, a
+change in measurement units changes how strongly a predictor is penalized.
+The analysis standardizes area measures and keeps preprocessing inside the
+cross-validation pipeline.
 
 
 Cross-validation selects `C` using training data alone. Within each fold,
@@ -954,6 +985,17 @@ def tune_logistic(categorical, numeric):
     search.fit(X_train[features], y_train)
     probability = search.predict_proba(X_test[features])[:, 1]
     return search, probability
+```
+
+
+The helper places standardization and one-hot encoding inside each
+cross-validation fold, so validation records do not determine their own
+preprocessing. It uses log loss to select `C`, then returns probabilities
+for the untouched test set. The first comparisons assess request features,
+area context, and a ZIP-label identifier.
+
+
+```{python}
 
 zip_identifier_features = categorical_features + ["incident_zip"]
 request_features_search, request_features_probability = tune_logistic(
@@ -965,6 +1007,17 @@ census_search, census_probability = tune_logistic(
 zip_id_search, zip_id_probability = tune_logistic(
     zip_identifier_features, []
 )
+```
+
+
+ZIP target encoding uses the outcome to create an area-level feature, so
+training rows must not contribute their own outcomes to their encoded
+values. The encoder cross-fits those values within its training folds and
+uses rates estimated from the training data for the test set. The smoothing
+value and logistic penalty strength are selected together by cross-validation.
+
+
+```{python}
 
 zip_target_pipeline = make_pipeline(
     ColumnTransformer([
@@ -995,7 +1048,14 @@ zip_target_search.fit(X_train[zip_target_features], y_train)
 zip_target_probability = zip_target_search.predict_proba(
     X_test[zip_target_features]
 )[:, 1]
+```
 
+
+The table compares all four held-out models using the same score functions.
+It also records the penalty strength selected within cross-validation and,
+for target encoding, its selected smoothing value.
+
+```{python}
 comparison = pd.DataFrame({
     "Request details and timing": score_predictions(request_features_probability),
     "Census area context": score_predictions(census_probability),
@@ -1092,8 +1152,12 @@ b. Identify the predictors available at request creation. Split the data
    into training and test sets before fitting, stratifying on the target.
    Establish a prevalence baseline, then fit logistic regression with
    problem detail, borough, the four creation-time groups, business-day
-   status, and the three area measures. Use cross-validation within the
-   training set to select regularization strength. Report held-out
+   status, and the three area measures. Tune logistic regression's inverse
+   penalty parameter `C` over a stated candidate grid using stratified
+   cross-validation on the training set. Select the value with the lowest
+   mean validation log loss, report the candidate values and their scores,
+   then refit with the selected `C` on all training data. Keep the test set
+   out of tuning and use it for final evaluation. Report held-out
    ROC AUC, log loss, TPR, precision, F1, and a confusion matrix at a stated
    probability threshold. Make a calibration plot and inspect performance
    by borough, hour group, and day type. Report group counts and a limitation
@@ -1131,7 +1195,20 @@ c. Fit a second model without the offset. Compare the fitted coefficients
 d. Calculate the Pearson chi-square statistic divided by residual degrees
    of freedom. Explain what the result says about the Poisson variance
    assumption, and describe one alternative model or additional predictor
-   that could be investigated. Do not interpret either fit causally.
+   that could be investigated.
+e. Extend the offset model with standardized population density, median
+   household income, and household vehicle availability. Split the ZCTAs
+   into training and test sets before tuning. Standardize predictors using
+   training data only. Fit an $L_2$-regularized Poisson GLM over a stated
+   grid of penalty strengths, using cross-validation within the training set
+   to select the value with the lowest mean Poisson deviance. Report the
+   candidate values and their scores, then refit at the selected value.
+   Refit the unpenalized model with the same predictors and offset on the
+   same training data. Compare both models' test-set Poisson deviance.
+   Explain how shrinkage affects coefficient estimates and why it does not
+   resolve the overdispersion found in part d. State how dependence among
+   nearby ZCTAs limits a random area-level split. Do not interpret either
+   fit causally.
 :::
 
 ## References {.unnumbered}
