@@ -102,7 +102,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -284,7 +284,8 @@ window.Quarto = {
   <li><a href="#derive-variables" id="toc-derive-variables" class="nav-link" data-scroll-target="#derive-variables"><span class="header-section-number">6.3</span> Derive Variables</a></li>
   <li><a href="#sec-zcta-context-merge" id="toc-sec-zcta-context-merge" class="nav-link" data-scroll-target="#sec-zcta-context-merge"><span class="header-section-number">6.4</span> Merge Area Context</a></li>
   <li><a href="#validate-data" id="toc-validate-data" class="nav-link" data-scroll-target="#validate-data"><span class="header-section-number">6.5</span> Validate Data</a></li>
-  <li><a href="#document-decisions" id="toc-document-decisions" class="nav-link" data-scroll-target="#document-decisions"><span class="header-section-number">6.6</span> Document Decisions</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/06-wrangling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -322,7 +323,7 @@ window.Quarto = {
 </ul>
 <p>Every class should leave an auditable record. Analytical choices especially require a rationale because they can change the outcome or comparison.</p>
 <p>The original ZIP archive remains unchanged. <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> demonstrated its acquisition and initial profile; the code below repeats only the import, timestamp parsing, and row filters needed for this chapter to run independently. Temporary Feather examples in that chapter do not provide an input here. Each subsequent stage creates a derived data frame and verifies the assumptions that its operation introduces.</p>
-<div id="50faf3fd" class="cell" data-execution_count="1">
+<div id="2d174b79" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -333,37 +334,39 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    compression<span class="op">=</span><span class="st">"zip"</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"Unique Key"</span>: <span class="st">"string"</span>, <span class="st">"Incident Zip"</span>: <span class="st">"string"</span>},</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    low_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>date_format <span class="op">=</span> <span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>]:</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    requests[column] <span class="op">=</span> pd.to_datetime(</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        requests[column], <span class="bu">format</span><span class="op">=</span>date_format, errors<span class="op">=</span><span class="st">"coerce"</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> requests.loc[</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    requests[<span class="st">"Created Date"</span>].between(start, end, inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> requests[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(<span class="st">"Illegal Parking"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The import block reconstructs the intended analysis scope without overwriting the downloaded archive. The half-open timestamp interval includes requests created on every day of the selected week and excludes those returned from the following Sunday; the problem condition restricts the subset to illegal-parking requests. The observational unit remains one service request, so a row restriction changes the eligible population but does not aggregate or validate individual observations. The explicit datetime format also exposes parsing failures as missing timestamps, which must be checked rather than silently interpreted as absent service activity. The resulting frame can still contain missing fields, unexpected category values, duplicate identifiers, or disagreements among geographic descriptors. Those issues require separate diagnostics before a derived variable or merge can be trusted. The subset also remains limited to NYPD-directed requests from one week, regardless of how consistently its columns are represented.</p>
+<p>The archive is read without changing the source file. Request identifiers and ZIP labels are strings so leading zeros and identifier formatting remain intact. The next step parses the timestamps and selects the week and request type established in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a>.</p>
+<div id="3c9bf98d" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>date_format <span class="op">=</span> <span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>]:</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    requests[column] <span class="op">=</span> pd.to_datetime(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        requests[column], <span class="bu">format</span><span class="op">=</span>date_format, errors<span class="op">=</span><span class="st">"coerce"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> requests.loc[</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    requests[<span class="st">"Created Date"</span>].between(start, end, inclusive<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span> requests[<span class="st">"Problem (formerly Complaint Type)"</span>].eq(<span class="st">"Illegal Parking"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The import and filtering steps reconstruct the intended analysis scope without overwriting the downloaded archive. The half-open timestamp interval includes requests created on every day of the selected week and excludes those returned from the following Sunday; the problem condition restricts the subset to illegal-parking requests. The observational unit remains one service request, so a row restriction changes the eligible population but does not aggregate or validate individual observations. The explicit datetime format also exposes parsing failures as missing timestamps, which must be checked rather than silently interpreted as absent service activity. The resulting frame can still contain missing fields, unexpected category values, duplicate identifiers, or disagreements among geographic descriptors. Those issues require separate diagnostics before a derived variable or merge can be trusted. The subset also remains limited to NYPD-directed requests from one week, regardless of how consistently its columns are represented.</p>
 <p>The checks in <a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a> profile the delivered extract before filtering, including its agency values, date boundaries, and missingness. Here, the scope report instead tests whether the reconstructed subset meets the preparation workflow’s input conditions: identifiers must be present and unique, creation times must fall within the selected week, and every retained row must carry the illegal-parking label. These executable invariants detect a changed input, altered filter, or parsing failure before derived columns are constructed. A failed check should prompt inspection of the source and preparation code, not automatic deletion until the report passes. This chapter remains independently executable while the substantive source diagnosis stays in the formulation chapter.</p>
-<div id="a497079c" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scope_checks <span class="op">=</span> pd.Series({</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no missing request identifiers"</span>: <span class="kw">not</span> parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">any</span>(),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique request identifiers"</span>: parking[<span class="st">"Unique Key"</span>].is_unique,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all in intended week"</span>: parking[<span class="st">"Created Date"</span>].between(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">all</span>(),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all illegal parking"</span>: parking[</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem (formerly Complaint Type)"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"passed"</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>scope_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div id="509cec90" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scope_checks <span class="op">=</span> pd.Series({</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no missing request identifiers"</span>: <span class="kw">not</span> parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">any</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique request identifiers"</span>: parking[<span class="st">"Unique Key"</span>].is_unique,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all in intended week"</span>: parking[<span class="st">"Created Date"</span>].between(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">all</span>(),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all illegal parking"</span>: parking[</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Problem (formerly Complaint Type)"</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"passed"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>scope_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -414,19 +417,19 @@ window.Quarto = {
 </ul>
 <p>These choices distinguish a representation change from a data correction. For example, renaming <code>Created Date</code> to <code>created_at</code> makes code easier to read; changing an unexpected date to a plausible one would alter the source information and needs separate evidence.</p>
 <p>Category standardization requires evidence about the meanings of values, not only a preference for uniform text. The frequency table in <a href="05-formulation.html#sec-problem-detail-counts" class="quarto-xref"><span>Section 5.7</span></a> established which problem details motivate the working comparison. The following code inspects the distinct source strings before any recoding. The observed leading labels are interpretable, and apparent similarity between two labels would not by itself establish that they describe the same reporting condition. A data dictionary or curator explanation would be needed before combining categories with different names. By contrast, the code below changes column <em>names</em> to make operations easier while leaving category <em>values</em> unchanged. Keeping those two decisions separate preserves the provider’s distinctions and allows later readers to evaluate a proposed recode against the source.</p>
-<div id="d26308dd" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>observed_details <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    .drop_duplicates()</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    .sort_values()</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    .rename(<span class="st">"observed detail"</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    .to_frame()</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>observed_details</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div id="2e388d50" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>observed_details <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .drop_duplicates()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    .sort_values()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    .rename(<span class="st">"observed detail"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    .to_frame()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>observed_details</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -501,39 +504,40 @@ window.Quarto = {
 </div>
 </div>
 <p>The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
-<div id="b87a4cb1" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    source_name: re.sub(</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="vs">r"_</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, re.sub(<span class="vs">r"</span><span class="pp">[^a-z0-9]</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, source_name.lower())</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    ).strip(<span class="st">"_"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> source_name <span class="kw">in</span> parking.columns</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>name_map.update({</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem (formerly Complaint Type)"</span>: <span class="st">"problem"</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Status"</span>: <span class="st">"status"</span>,</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>analysis_names <span class="op">=</span> pd.Index(name_map.values())</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> analysis_names.is_unique:</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Column-name normalization produced a collision."</span>)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"source_name"</span>: name_map.keys(),</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"analysis_name"</span>: name_map.values(),</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>name_mapping</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div id="65576395" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    source_name: re.sub(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="vs">r"_</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, re.sub(<span class="vs">r"</span><span class="pp">[^a-z0-9]</span><span class="op">+</span><span class="vs">"</span>, <span class="st">"_"</span>, source_name.lower())</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ).strip(<span class="st">"_"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> source_name <span class="kw">in</span> parking.columns</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This normalization produces a consistent default name for each source column. A few frequently used fields receive shorter names that are easier to read in later code; the mapping remains explicit so that these names can be traced to the provider’s labels.</p>
+<div id="7a268e47" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>name_map.update({</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Closed Date"</span>: <span class="st">"closed_at"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem (formerly Complaint Type)"</span>: <span class="st">"problem"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Problem Detail (formerly Descriptor)"</span>: <span class="st">"problem_detail"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Incident Zip"</span>: <span class="st">"incident_zip"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Latitude"</span>: <span class="st">"latitude"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Longitude"</span>: <span class="st">"longitude"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Status"</span>: <span class="st">"status"</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>analysis_names <span class="op">=</span> pd.Index(name_map.values())</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> analysis_names.is_unique:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Column-name normalization produced a collision."</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"source_name"</span>: name_map.keys(),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"analysis_name"</span>: name_map.values(),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>name_mapping</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -772,11 +776,13 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="d6acead6" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<p>The collision check ensures that two provider fields do not become the same analysis name. Review the displayed mapping as part of the data record; the next step applies it to a copy, leaving <code>parking</code> and its source labels unchanged.</p>
+<div id="3d40ec5e" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -847,19 +853,19 @@ window.Quarto = {
 T_i = (L_i - C_i)/3600.
 \]</span></p>
 <p>The timestamp difference is in seconds, so division by 3,600 converts it to hours. The calculation is defined when both timestamps parse successfully and closure follows creation. It measures administrative closure, not officer arrival or the time when the reported condition ended. Keep the original timestamps so that a surprising value can be inspected and the derived value recalculated if needed. The name <code>closure_hours</code> describes the measurement more accurately than a name that implies a field response. The check below looks for issues before this value is used as an outcome.</p>
-<div id="e81a8782" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>duration_check <span class="op">=</span> pd.Series({</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing"</span>: analysis[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"negative"</span>: analysis[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"median"</span>: analysis[<span class="st">"closure_hours"</span>].median(),</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"maximum"</span>: analysis[<span class="st">"closure_hours"</span>].<span class="bu">max</span>(),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"value"</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>duration_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div id="746382e2" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>duration_check <span class="op">=</span> pd.Series({</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"missing"</span>: analysis[<span class="st">"closure_hours"</span>].isna().<span class="bu">sum</span>(),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"negative"</span>: analysis[<span class="st">"closure_hours"</span>].lt(<span class="dv">0</span>).<span class="bu">sum</span>(),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"median"</span>: analysis[<span class="st">"closure_hours"</span>].median(),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"maximum"</span>: analysis[<span class="st">"closure_hours"</span>].<span class="bu">max</span>(),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"value"</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>duration_check.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -907,16 +913,16 @@ T_i = (L_i - C_i)/3600.
 <li>The groups do not account for differences across individual dates, such as the holiday in this week.</li>
 </ul>
 <p>The original timestamp remains available for hourly analysis or a comparison using different boundaries. If the question concerns staffing or reporting conditions, use domain information to justify the boundary rather than choosing it only because the groups are convenient.</p>
-<div id="3c7ab4a0" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.between(<span class="dv">6</span>, <span class="dv">19</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"day"</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.ge(<span class="dv">20</span>) <span class="op">|</span> hour.lt(<span class="dv">6</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"night"</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div id="262d4808" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.between(<span class="dv">6</span>, <span class="dv">19</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"day"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>analysis.loc[hour.ge(<span class="dv">20</span>) <span class="op">|</span> hour.lt(<span class="dv">6</span>), <span class="st">"time_period"</span>] <span class="op">=</span> <span class="st">"night"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>time_period
 day      8977
 night    4063
@@ -943,86 +949,94 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </ul>
 <p>Neither measure describes parking directly. Population density does not measure curb length or parking supply. Household vehicle availability does not identify vehicle ownership, registration, parking location, or illegal- parking behavior. The vehicle share is a ratio of survey estimates, and its sampling uncertainty is not calculated from the published margins of error. Both measures describe areas, not individual requesters, so the merge cannot support an individual-level or causal interpretation.</p>
 <p>The NYC ZCTA selection comes from the <code>zcta5</code> column of the city’s published dataset, as the following acquisition code shows. The chapter uses the saved CSV during rendering so that a live web request cannot change its results. The complete extraction, including the Gazetteer file and three ACS tables, is in <code>scripts/build_zcta_context.py</code>.</p>
-<div id="ce49b40d" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>zcta_source <span class="op">=</span> <span class="st">"https://data.cityofnewyork.us/resource/35j5-n34v.csv"</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    zcta_source,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>{<span class="st">"$select"</span>: <span class="st">"zcta5"</span>, <span class="st">"$limit"</span>: <span class="dv">5000</span>},</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">60</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>city_zctas <span class="op">=</span> pd.read_csv(</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    StringIO(response.text), dtype<span class="op">=</span>{<span class="st">"zcta5"</span>: <span class="st">"string"</span>}</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)[<span class="st">"zcta5"</span>].drop_duplicates()</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(city_zctas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="c159c216" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>zcta_source <span class="op">=</span> <span class="st">"https://data.cityofnewyork.us/resource/35j5-n34v.csv"</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> requests.get(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    zcta_source,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>{<span class="st">"$select"</span>: <span class="st">"zcta5"</span>, <span class="st">"$limit"</span>: <span class="dv">5000</span>},</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">60</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>response.raise_for_status()</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>city_zctas <span class="op">=</span> pd.read_csv(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    StringIO(response.text), dtype<span class="op">=</span>{<span class="st">"zcta5"</span>: <span class="st">"string"</span>}</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>)[<span class="st">"zcta5"</span>].drop_duplicates()</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(city_zctas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="23b26503" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>zcta_context[<span class="st">"zcta"</span>] <span class="op">=</span> zcta_context[<span class="st">"zcta"</span>].<span class="bu">str</span>.strip()</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context[<span class="st">"zcta"</span>].isna().<span class="bu">any</span>():</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup contains missing keys."</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"zcta"</span>].<span class="bu">str</span>.fullmatch(<span class="vs">r"</span><span class="dv">\d</span><span class="op">{5}</span><span class="vs">"</span>).<span class="bu">all</span>():</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"ZCTA keys must be five-digit strings."</span>)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context[<span class="st">"zcta"</span>].duplicated().<span class="bu">any</span>():</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup must contain one row per key."</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"acs_year"</span>].eq(<span class="dv">2024</span>).<span class="bu">all</span>():</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup contains an unexpected ACS year."</span>)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"land_area_sqmi"</span>].dropna().gt(<span class="dv">0</span>).<span class="bu">all</span>():</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"ZCTA land areas must be positive."</span>)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>missing_area <span class="op">=</span> zcta_context[<span class="st">"land_area_sqmi"</span>].isna()</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context.loc[missing_area, <span class="st">"population_density_per_sqmi"</span>].notna().<span class="bu">any</span>():</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Population density requires a matched land area."</span>)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"share_households_with_vehicle"</span>].dropna().between(<span class="dv">0</span>, <span class="dv">1</span>).<span class="bu">all</span>():</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Household vehicle shares must be between zero and one."</span>)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Match only syntactically five-digit request ZIP values. Do not silently</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="co"># pad or otherwise repair values that fail this check.</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>incident_zip <span class="op">=</span> analysis[<span class="st">"incident_zip"</span>].<span class="bu">str</span>.strip()</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"zcta_match"</span>] <span class="op">=</span> incident_zip.where(</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    incident_zip.<span class="bu">str</span>.fullmatch(<span class="vs">r"</span><span class="dv">\d</span><span class="op">{5}</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>contextual_analysis <span class="op">=</span> analysis.merge(</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    zcta_context,</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span>,</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    left_on<span class="op">=</span><span class="st">"zcta_match"</span>,</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    right_on<span class="op">=</span><span class="st">"zcta"</span>,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"many_to_one"</span>,</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    indicator<span class="op">=</span><span class="st">"zcta_match_status"</span>,</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(contextual_analysis) <span class="op">!=</span> <span class="bu">len</span>(analysis):</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The area-level join changed the request count."</span>)</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> contextual_analysis[<span class="st">"request_id"</span>].is_unique:</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The area-level join duplicated request identifiers."</span>)</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>join_report <span class="op">=</span> pd.Series({</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"requests"</span>: <span class="bu">len</span>(contextual_analysis),</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests"</span>: contextual_analysis[</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        <span class="st">"zcta_match_status"</span></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"both"</span>).<span class="bu">sum</span>(),</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unmatched requests"</span>: contextual_analysis[</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">"zcta_match_status"</span></span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"left_only"</span>).<span class="bu">sum</span>(),</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests without land area"</span>: (</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>        contextual_analysis[<span class="st">"zcta_match_status"</span>].eq(<span class="st">"both"</span>)</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> contextual_analysis[<span class="st">"land_area_sqmi"</span>].isna()</span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">sum</span>(),</span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distinct unmatched ZIP values"</span>: contextual_analysis.loc[</span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>        contextual_analysis[<span class="st">"zcta_match_status"</span>].eq(<span class="st">"left_only"</span>),</span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>        <span class="st">"incident_zip"</span>,</span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>    ].nunique(dropna<span class="op">=</span><span class="va">False</span>),</span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"count"</span>)</span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>join_report.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<p>This optional acquisition example is not evaluated during rendering. The chapter uses the reproducible lookup saved at <code>data/zcta_context.csv</code>; its keys and estimates are checked before the join.</p>
+<div id="247cb6ac" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>zcta_context[<span class="st">"zcta"</span>] <span class="op">=</span> zcta_context[<span class="st">"zcta"</span>].<span class="bu">str</span>.strip()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context[<span class="st">"zcta"</span>].isna().<span class="bu">any</span>():</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup contains missing keys."</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"zcta"</span>].<span class="bu">str</span>.fullmatch(<span class="vs">r"</span><span class="dv">\d</span><span class="op">{5}</span><span class="vs">"</span>).<span class="bu">all</span>():</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"ZCTA keys must be five-digit strings."</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context[<span class="st">"zcta"</span>].duplicated().<span class="bu">any</span>():</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup must contain one row per key."</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"acs_year"</span>].eq(<span class="dv">2024</span>).<span class="bu">all</span>():</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup contains an unexpected ACS year."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These checks establish the lookup key and reference period before the context can be attached to requests. The measures also have constraints that follow from their definitions: land area must be positive when present, population density requires land area, and a household share must lie between zero and one.</p>
+<div id="faf9baab" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"land_area_sqmi"</span>].dropna().gt(<span class="dv">0</span>).<span class="bu">all</span>():</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"ZCTA land areas must be positive."</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>missing_area <span class="op">=</span> zcta_context[<span class="st">"land_area_sqmi"</span>].isna()</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> zcta_context.loc[missing_area, <span class="st">"population_density_per_sqmi"</span>].notna().<span class="bu">any</span>():</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Population density requires a matched land area."</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"share_households_with_vehicle"</span>].dropna().between(<span class="dv">0</span>, <span class="dv">1</span>).<span class="bu">all</span>():</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Household vehicle shares must be between zero and one."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Only request ZIP labels that already have five digits are eligible for an exact string match. The left join retains every request, including labels that are missing, malformed, or absent from the lookup. Its indicator records which requests found a matching ZCTA.</p>
+<div id="a432bbaf" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match only syntactically five-digit request ZIP values. Do not silently</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pad or otherwise repair values that fail this check.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>incident_zip <span class="op">=</span> analysis[<span class="st">"incident_zip"</span>].<span class="bu">str</span>.strip()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"zcta_match"</span>] <span class="op">=</span> incident_zip.where(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    incident_zip.<span class="bu">str</span>.fullmatch(<span class="vs">r"</span><span class="dv">\d</span><span class="op">{5}</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>contextual_analysis <span class="op">=</span> analysis.merge(</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    zcta_context,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    left_on<span class="op">=</span><span class="st">"zcta_match"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    right_on<span class="op">=</span><span class="st">"zcta"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    validate<span class="op">=</span><span class="st">"many_to_one"</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    indicator<span class="op">=</span><span class="st">"zcta_match_status"</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The many-to-one validation prevents duplicate lookup keys from multiplying requests. Check row count and request identity after the join, then summarize the matched and unmatched records. This report distinguishes failed matches from matched areas whose land-area estimate is unavailable.</p>
+<div id="c3317326" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(contextual_analysis) <span class="op">!=</span> <span class="bu">len</span>(analysis):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The area-level join changed the request count."</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> contextual_analysis[<span class="st">"request_id"</span>].is_unique:</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The area-level join duplicated request identifiers."</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>join_report <span class="op">=</span> pd.Series({</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"requests"</span>: <span class="bu">len</span>(contextual_analysis),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests"</span>: contextual_analysis[</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"zcta_match_status"</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"both"</span>).<span class="bu">sum</span>(),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unmatched requests"</span>: contextual_analysis[</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"zcta_match_status"</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    ].eq(<span class="st">"left_only"</span>).<span class="bu">sum</span>(),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matched requests without land area"</span>: (</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        contextual_analysis[<span class="st">"zcta_match_status"</span>].eq(<span class="st">"both"</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> contextual_analysis[<span class="st">"land_area_sqmi"</span>].isna()</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">sum</span>(),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"distinct unmatched ZIP values"</span>: contextual_analysis.loc[</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>        contextual_analysis[<span class="st">"zcta_match_status"</span>].eq(<span class="st">"left_only"</span>),</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"incident_zip"</span>,</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    ].nunique(dropna<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>join_report.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1079,20 +1093,20 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <section id="validate-data" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="validate-data"><span class="header-section-number">6.5</span> Validate Data</h2>
 <p>Validation compares the prepared table with the input and with the stated analytical contract. The following checks require the request count and identifier uniqueness to survive filtering, renaming, derivation, and the area merge. They also require the retained timestamps and problem label to remain within the intended scope and confirm that the closure field exists. The join report above separately records unmatched keys, so a passing row count does not conceal incomplete geographic coverage. These checks detect specific implementation errors, but they cannot prove that a source value is true or that the selected week represents a broader population. If the prepared table is saved for later use, its schema, source-to-analysis name mapping, join report, and relevant invariants should be stored with it and checked again after reading it back. A successful write operation alone does not establish semantic or numerical validity.</p>
-<div id="c81915d3" class="cell" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> contextual_analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"same request count"</span>: <span class="bu">len</span>(prepared) <span class="op">==</span> <span class="bu">len</span>(parking),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique request identifiers"</span>: prepared[<span class="st">"request_id"</span>].is_unique,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all in intended week"</span>: prepared[<span class="st">"created_at"</span>].between(</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">all</span>(),</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all illegal parking"</span>: prepared[<span class="st">"problem"</span>].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure field present"</span>: <span class="st">"closure_hours"</span> <span class="kw">in</span> prepared.columns,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"passed"</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>final_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div id="21ab05a2" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> contextual_analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"same request count"</span>: <span class="bu">len</span>(prepared) <span class="op">==</span> <span class="bu">len</span>(parking),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"unique request identifiers"</span>: prepared[<span class="st">"request_id"</span>].is_unique,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all in intended week"</span>: prepared[<span class="st">"created_at"</span>].between(</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        start, end, inclusive<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    ).<span class="bu">all</span>(),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"all illegal parking"</span>: prepared[<span class="st">"problem"</span>].eq(<span class="st">"Illegal Parking"</span>).<span class="bu">all</span>(),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"closure field present"</span>: <span class="st">"closure_hours"</span> <span class="kw">in</span> prepared.columns,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>}, name<span class="op">=</span><span class="st">"passed"</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>final_checks.to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -1130,10 +1144,10 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </div>
 </div>
 </div>
+<p>Together, the checks and records document which observations and values can support the working question. Filters define scope, derived fields operationalize measurements, and the merge asserts a limited relationship between two geographic identifiers. These decisions make the prepared table reviewable without implying that the source is error free. The exploratory and visualization chapters call a <a href="scripts/parking_requests.py">shared preparation function</a> for the screened request fields and closure hours; that compact function does not reproduce this chapter’s full 44-column mapping, time-period category, or enriched context table. Those later chapters construct only the additional fields their questions require. This division keeps the transformation logic visible here while avoiding a second long import and renaming sequence in each chapter. It also identifies a reproducibility obligation: if the screening rule or closure-time definition changes, the shared function and the explanations in this chapter must be reviewed together.</p>
 </section>
-<section id="document-decisions" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="document-decisions"><span class="header-section-number">6.6</span> Document Decisions</h2>
-<p>The prepared table is a documented argument about which records and values can support the working question. Filters define scope, derived fields operationalize measurements, and the merge asserts a limited relationship between two geographic identifiers. The checks make those claims reviewable without implying that the source is error free. The exploratory and visualization chapters call a <a href="scripts/parking_requests.py">shared preparation function</a> for the screened request fields and closure hours; that compact function does not reproduce this chapter’s full 44-column mapping, time-period category, or enriched context table. Those later chapters construct only the additional fields their questions require. This division keeps the transformation logic visible here while avoiding a second long import and renaming sequence in each chapter. It also identifies a reproducibility obligation: if the screening rule or closure-time definition changes, the shared function and the explanations in this chapter must be reviewed together. ## Exercises {.unnumbered}</p>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <p>These exercises extend the import and checking work in the previous chapter. For the first exercise, begin with the screened table saved as <code>data/illegal_parking.feather</code> in that assignment. Do not repeat its import, scope filters, key checks, missingness report, or closure-time calculation. Keep the distributed ZIP archive unchanged, and include code with a concise explanation of each decision.</p>
 <div id="exr-wrangle-311" class="theorem exercise">
 <p><span class="theorem-title"><strong> 6.1</strong></span> Prepare an analysis table that can support exploratory comparisons and a subsequent logistic-regression analysis.</p>
@@ -1164,6 +1178,9 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <li>Describe what the prepared table will contain, what it will omit, and how its provenance will let another analyst reproduce the result.</li>
 </ol>
 </div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">

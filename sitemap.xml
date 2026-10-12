@@ -2,46 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://statds.github.io/ids-book/index.html</loc>
-    <lastmod>2026-10-05T01:04:41.991Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.919Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/01-intro.html</loc>
-    <lastmod>2026-10-07T16:09:37.252Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.782Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/02-git.html</loc>
-    <lastmod>2026-10-07T16:09:37.258Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.784Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/03-quarto.html</loc>
-    <lastmod>2026-10-07T16:09:37.261Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.786Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/04-python.html</loc>
-    <lastmod>2026-10-07T16:41:52.933Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.788Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/05-formulation.html</loc>
-    <lastmod>2026-10-07T16:09:37.267Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.789Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/06-wrangling.html</loc>
-    <lastmod>2026-10-07T16:09:37.273Z</lastmod>
+    <lastmod>2026-10-11T21:17:43.810Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/07-eda.html</loc>
-    <lastmod>2026-10-07T16:12:13.437Z</lastmod>
+    <lastmod>2026-10-11T21:14:39.710Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/08-visualization.html</loc>
-    <lastmod>2026-10-07T16:28:05.685Z</lastmod>
+    <lastmod>2026-10-11T21:14:39.777Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/09-modeling.html</loc>
-    <lastmod>2026-10-07T17:19:27.369Z</lastmod>
+    <lastmod>2026-10-12T01:14:52.963Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/10-ethics.html</loc>
-    <lastmod>2026-10-07T16:09:37.285Z</lastmod>
+    <lastmod>2026-10-11T13:39:02.800Z</lastmod>
   </url>
 </urlset>

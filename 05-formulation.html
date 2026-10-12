@@ -102,7 +102,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -396,7 +396,7 @@ window.Quarto = {
 <section id="importing-the-archive" class="level3" data-number="5.3.1">
 <h3 data-number="5.3.1" class="anchored" data-anchor-id="importing-the-archive"><span class="header-section-number">5.3.1</span> Importing the Archive</h3>
 <p>Reproducible import begins with a project-relative path. A relative path works after another reader clones or moves the project because it describes the file’s location inside the project rather than its location on one person’s computer. The <code>Path</code> class also provides portable operations for checking and measuring the file.</p>
-<div id="a72f5df0" class="cell" data-execution_count="1">
+<div id="2dd3b163" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> zipfile <span class="im">import</span> ZipFile</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -453,7 +453,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The import specification should express meaning that cannot be inferred safely from the characters in the file. The two identifiers are read as strings, and the large mixed table is read in one pass before the date fields are converted with an explicit format.</p>
-<div id="6a63e309" class="cell" data-execution_count="2">
+<div id="06526e45" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>identifier_types <span class="op">=</span> {</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"string"</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Incident Zip"</span>: <span class="st">"string"</span>,</span>
@@ -476,7 +476,7 @@ window.Quarto = {
 </div>
 <p>The explicit datetime format documents the month-day-year order, 12-hour clock, seconds, and morning or afternoon marker. The <code>errors="coerce"</code> argument converts an invalid timestamp to a missing datetime rather than silently leaving a mixture of strings and dates. That choice makes conversion failures countable, but it does not make them harmless; every failure should be investigated.</p>
 <p>Compact inspection reveals the structure without flooding the document with 44 columns or thousands of rows. The next chunks report the dimensions and display a small selection of fields that describe time, category, and geography.</p>
-<div id="c4cc707e" class="cell" data-execution_count="3">
+<div id="0cc92d4c" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: [requests.shape[<span class="dv">0</span>]],</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"columns"</span>: [requests.shape[<span class="dv">1</span>]],</span>
@@ -508,7 +508,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="f65faa8e" class="cell" data-execution_count="4">
+<div id="2a6e67e1" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>display_columns <span class="op">=</span> [</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>,</span>
@@ -601,7 +601,7 @@ window.Quarto = {
 <h2 data-number="5.4" class="anchored" data-anchor-id="sec-initial-checks"><span class="header-section-number">5.4</span> Checking Data</h2>
 <p>Basic checks test whether the imported object matches its stated scope before any values are cleaned or transformed. They do not prove that every record is correct. Instead, they turn assumptions about the extract into results that can be reviewed. The governing principle is to trust the provider while verifying every condition on which the analysis depends.</p>
 <p>The first checks address identity, agency, and both temporal boundaries. A portal selection is an instruction about what to return; these checks test whether the delivered records satisfy it. For the Sunday-through-Saturday week, the intended creation-time window begins at midnight on September 6 and ends immediately before midnight on September 13. The inclusive lower bound and exclusive upper bound include every timestamp on the seven intended days without ambiguity at the next week’s boundary.</p>
-<div id="b55d36dd" class="cell" data-execution_count="5">
+<div id="dcc5f463" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-06"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>end <span class="op">=</span> pd.Timestamp(<span class="st">"2026-09-13"</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -676,7 +676,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The returned agency values and date-boundary counts show whether the file matches the intended selection on both dimensions. The frequency table provides the actual agency labels, while the separate lower- and upper-bound counts identify which side of the time window failed.</p>
-<div id="f810edbe" class="cell" data-execution_count="6">
+<div id="34672595" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"agency"</span>: requests[<span class="st">"Agency"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>),</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -706,7 +706,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="e270a96a" class="cell" data-execution_count="7">
+<div id="9d7cc3bd" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"earliest"</span>: [requests[<span class="st">"Created Date"</span>].<span class="bu">min</span>()],</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"latest"</span>: [requests[<span class="st">"Created Date"</span>].<span class="bu">max</span>()],</span>
@@ -736,7 +736,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The analysis subset should be created only after the discrepancy has been measured and reported. The half-open interval removes 1,902 records returned outside the requested week without changing the downloaded object.</p>
-<div id="3a3f834a" class="cell" data-execution_count="8">
+<div id="cb7e8914" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>week_requests <span class="op">=</span> requests.loc[in_intended_week].copy()</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
@@ -775,7 +775,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The problem frequency table reveals what the screened week contains and makes the next analytical choice visible. Illegal parking is the largest category, but it accounts for only about one-third of the NYPD requests.</p>
-<div id="99460b91" class="cell" data-execution_count="9">
+<div id="e192e7f6" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>problem_column <span class="op">=</span> <span class="st">"Problem (formerly Complaint Type)"</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>problem_counts <span class="op">=</span> (</span>
@@ -915,7 +915,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The working subset retains only the illegal-parking requests from the intended week. Its 13,040 rows and 44 columns are consequences of two documented filters, not properties assumed from the filename.</p>
-<div id="1cab0fd1" class="cell" data-execution_count="10">
+<div id="a718b0ef" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>parking <span class="op">=</span> week_requests.loc[</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    week_requests[problem_column].eq(<span class="st">"Illegal Parking"</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>].copy()</span>
@@ -926,7 +926,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Missingness should be summarized before it is treated. A column can be absent because the field does not apply to this kind of request, because the value was unknown, or because it was lost. Those mechanisms have different meanings, so a missing-value count is the beginning of an investigation rather than a cleaning instruction.</p>
-<div id="2c51dca2" class="cell" data-execution_count="11">
+<div id="89c3203a" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>missingness <span class="op">=</span> (</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"missing"</span>: parking.isna().<span class="bu">sum</span>(),</span>
@@ -1071,7 +1071,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The missingness table shows that several fields do not apply to these requests, while 99 rows lack each coordinate field and council district. A pairwise check is needed before concluding that latitude and longitude are missing together.</p>
-<div id="e24a75db" class="cell" data-execution_count="12">
+<div id="c2c318fe" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>coordinate_missingness <span class="op">=</span> pd.crosstab(</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Latitude"</span>].isna(),</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Longitude"</span>].isna(),</span>
@@ -1115,7 +1115,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Nonmissing coordinate ranges can reveal misplaced decimal points, swapped coordinates, or locations far from the city. Plausible ranges do not establish that every point lies inside New York City because an exact test would require authoritative boundary geometry.</p>
-<div id="cb926d2b" class="cell" data-execution_count="13">
+<div id="acff1225" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>parking[[<span class="st">"Latitude"</span>, <span class="st">"Longitude"</span>]].agg([<span class="st">"min"</span>, <span class="st">"max"</span>]).<span class="bu">round</span>(<span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <div>
@@ -1147,7 +1147,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Related fields provide opportunities to test internal consistency. Nearly all rows have status <code>Closed</code>, while one row has status <code>Unspecified</code>. Every row, including that exception, has a closing timestamp. The discrepancy is evidence to report, not permission to replace the status automatically.</p>
-<div id="1228353d" class="cell" data-execution_count="14">
+<div id="c6d6da57" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pd.crosstab(</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Status"</span>],</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Closed Date"</span>].isna(),</span>
@@ -1186,7 +1186,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Chronological checks can identify impossible or ambiguous records. The next calculation verifies that no closing time precedes its creation time and summarizes the derived closure time without adding it permanently to the source-derived data frame.</p>
-<div id="8ba1686a" class="cell" data-execution_count="15">
+<div id="833540d6" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>closure_hours <span class="op">=</span> (</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Closed Date"</span>] <span class="op">-</span> parking[<span class="st">"Created Date"</span>]</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
@@ -1230,7 +1230,7 @@ window.Quarto = {
 </div>
 <p>The long upper tail makes the mean much larger than the median. That pattern is worth exploring later, but basic checking already prevents a misleading label: the computation measures time to recorded closure, not necessarily time to an officer’s arrival or resolution of the reported condition.</p>
 <p>Unusual concentrations at exact times can expose rounding, default values, or batch processing. Tussey and Yan use temporal and logical checks of this kind in their case study of NYC 311 data curation <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>. The diagnostic should be repeated on each extract rather than assumed to produce the same result everywhere.</p>
-<div id="10c87c73" class="cell" data-execution_count="16">
+<div id="bab82e5b" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>created <span class="op">=</span> parking[<span class="st">"Created Date"</span>].dropna()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>closed <span class="op">=</span> parking[<span class="st">"Closed Date"</span>].dropna()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1301,7 +1301,7 @@ window.Quarto = {
 <p>Data representation affects storage, import time, type preservation, and interoperability. The CSV format is widely supported text that is easy to inspect with ordinary tools. Its simplicity is valuable for acquisition and archival exchange, but each reader must parse the text and reconstruct such types as datetimes and identifiers.</p>
 <p>Apache Arrow defines a column-oriented representation designed for efficient analytical data interchange across systems. Feather Version 2 stores Arrow’s interprocess communication format in a portable file and supports typed columns and compression <span class="citation" data-cites="apache2026feather">(<a href="#ref-apache2026feather" role="doc-biblioref">Apache Arrow Developers, 2026</a>)</span>. Bates and Yan describe how an Arrow representation can create a unified dataset for efficient analysis across software platforms <span class="citation" data-cites="bates2024from">(<a href="#ref-bates2024from" role="doc-biblioref">Bates &amp; Yan, 2024</a>)</span>.</p>
 <p>A derived Feather file can preserve the imported table’s typed representation for repeated analysis. The example writes to a temporary directory so that rendering the chapter does not add a generated file to the project.</p>
-<div id="3733519c" class="cell" data-execution_count="17">
+<div id="cf2c4754" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tempfile <span class="im">import</span> TemporaryDirectory</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> temporary_directory:</span>
@@ -1355,7 +1355,7 @@ window.Quarto = {
 </div>
 <p>The ZIP archive is smaller than the Feather file in this example. Efficient representation does not mean smallest file under every criterion: ZIP applies strong general-purpose compression to text, while Feather preserves a typed, column-oriented representation designed for analytical access. Storage size, read time, type preservation, and cross-platform use should therefore be compared separately.</p>
 <p>The round trip should preserve the shape, values, and important types. Separate checks make failures easier to diagnose than one large comparison whose false result gives no explanation.</p>
-<div id="96d08754" class="cell" data-execution_count="18">
+<div id="7d9db602" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"same shape"</span>: requests.shape <span class="op">==</span> requests_from_feather.shape,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"same columns"</span>: requests.columns.equals(requests_from_feather.columns),</span>
@@ -1392,7 +1392,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The screened illegal-parking data can also be stored as a typed analysis dataset. Filtering retains row-index labels from the downloaded table, but <code>Unique Key</code> is the request identifier; the inherited index labels have no analytical meaning. Resetting them before writing Feather gives the derived table a regular row index without changing its 44 source columns.</p>
-<div id="fa01acb8" class="cell" data-execution_count="19">
+<div id="4c01fc38" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>parking_for_feather <span class="op">=</span> parking.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> temporary_directory:</span>
@@ -1512,7 +1512,7 @@ window.Quarto = {
 </tbody>
 </table>
 <p>File integrity can be recorded with a cryptographic hash. A matching hash shows that two copies contain the same bytes; it does not show that the data are accurate or appropriate for a question.</p>
-<div id="cdf7caf5" class="cell" data-execution_count="20">
+<div id="82be1c52" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> hashlib</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> data_path.<span class="bu">open</span>(<span class="st">"rb"</span>) <span class="im">as</span> input_file:</span>
@@ -1531,7 +1531,7 @@ window.Quarto = {
 <h2 data-number="5.7" class="anchored" data-anchor-id="sec-problem-detail-counts"><span class="header-section-number">5.7</span> Revising Questions from the Checked Data</h2>
 <p>The checked extract supports a more specific question than the download alone suggested. The intended week contains several NYPD problem categories, with illegal parking the largest. Screening the extra September 13 records fixes the time scope, while missing coordinates and the distinction between closure and response constrain the outcomes that can be interpreted. These findings direct the next inspection toward variation within illegal-parking requests.</p>
 <p>The problem-detail field provides an inventory of that variation. A complete frequency table is short enough to inspect directly.</p>
-<div id="77954ec0" class="cell" data-execution_count="21">
+<div id="b19c727f" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>detail_counts <span class="op">=</span> (</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    parking[<span class="st">"Problem Detail (formerly Descriptor)"</span>]</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    .value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
