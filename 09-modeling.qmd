@@ -328,7 +328,10 @@ glm_data["short_closure"] = y_train
 The training data pair each request's predictors with its binary outcome.
 The formula below names the categorical predictors explicitly and
 standardizes the continuous area measures. This produces a logistic GLM
-with a binomial response and logit link.
+with a binomial response and logit link. Requests in the same ZCTA share
+area context and may have related outcomes, so the fit uses standard errors
+clustered by ZCTA for its coefficient tests. Clustering changes the
+uncertainty estimates, not the fitted coefficients or predictions.
 
 
 ```{python}
@@ -343,7 +346,10 @@ glm_fit = smf.glm(
     glm_formula,
     data=glm_data,
     family=sm.families.Binomial(),
-).fit()
+).fit(
+    cov_type="cluster",
+    cov_kwds={"groups": model_data.loc[glm_data.index, "zcta"]},
+)
 ```
 
 
@@ -371,6 +377,73 @@ are supported by 176 distinct ZCTAs, not by treating each request as an
 independent area. These are conditional associations, not individual-level
 effects or causal estimates. They also rely on a linear relationship between
 each standardized area measure and log odds.
+
+
+The coefficient table describes estimated effects but does not show how
+uncertain they are. For the three standardized area measures, a 95% interval
+for an odds ratio is obtained by exponentiating the corresponding coefficient
+interval. The p-value tests a zero coefficient, or equivalently an odds ratio
+of one, conditional on the other terms in this training-data model.
+
+
+```{python}
+area_terms = [f"standardize({name})" for name in numeric_features]
+coefficient_intervals = glm_fit.conf_int().loc[area_terms]
+area_inference = pd.DataFrame({
+    "odds ratio": np.exp(glm_fit.params.loc[area_terms]),
+    "95% lower": np.exp(coefficient_intervals[0]),
+    "95% upper": np.exp(coefficient_intervals[1]),
+    "p-value": glm_fit.pvalues.loc[area_terms],
+})
+area_inference.round(3)
+```
+
+
+The fitted odds of closing in under one hour are about 1.21 times as high
+for a one-standard-deviation increase in median household income and about
+0.81 times as high for the same increase in household vehicle availability,
+with the other predictors fixed. Their intervals exclude one. The density
+odds ratio is about 0.88, but its interval includes one, so this analysis
+does not provide the same strength of evidence for a density association.
+The interval widths and p-values reflect ZCTA-clustered standard errors;
+they do not account for shared conditions across nearby ZCTAs or for a
+different week.
+
+
+Categorical predictors have several coefficients, one for each displayed
+level relative to its reference. A joint Wald test asks whether all of a
+predictor's coefficients are zero after accounting for the other terms.
+The single-coefficient tests for area measures answer the same null
+hypothesis one predictor at a time.
+
+
+```{python}
+term_tests = glm_fit.wald_test_terms(scalar=True).table.drop(index="Intercept")
+term_tests = term_tests.rename(columns={
+    "statistic": "Wald chi-square",
+    "df_constraint": "degrees of freedom",
+    "pvalue": "p-value",
+})
+term_tests.round(4)
+```
+
+
+At a 0.05 cutoff, problem detail and creation-time group have evidence of
+conditional association with short closure, as do median household income
+and household vehicle availability. Borough, business-day status, and
+population density do not cross that cutoff in this fit. Failing to cross
+it does not establish that their effects are zero. Nor does a small p-value
+measure practical importance, improve held-out prediction by itself, or
+establish causation. These tests describe the unpenalized training fit;
+they are not p-values for the later regularized prediction model.
+
+
+The evening hour group illustrates the distinction between a coefficient
+and a term test. Its fitted odds ratio is about 1.23 relative to 00:00–05:59,
+holding the other predictors fixed. The hour-group p-value of 0.0024 tests
+all three nonreference hour coefficients together; it does not by itself
+establish the significance of the evening contrast alone.
+
 
 An odds ratio has a constant multiplicative interpretation on the odds
 scale, but its probability-scale change depends on the starting probability.
@@ -488,6 +561,8 @@ poisson_fit.pearson_chi2 / poisson_fit.df_resid
 The ratio is about 40.7, which indicates substantial overdispersion for this
 specification. The Poisson fit therefore illustrates coefficient
 interpretation, but it is not an adequate final model for these counts.
+Its usual model-based standard errors and p-values do not support reliable
+variable-significance claims under this variance mismatch.
 Residual checks and the spatial structure of the areas also matter; a
 negative binomial or another count model may be more appropriate.
 
@@ -1245,7 +1320,8 @@ e. State one limitation of the day-type comparison for this week.
 :::
 
 ::: {#exr-model-logistic-interpret}
-Interpret coefficients from the selected logistic model.
+Interpret fitted logistic models for the five-hour outcome. Use the selected
+regularized model for parts a–c and a separate unpenalized GLM for parts d–f.
 
 a. Choose one standardized area predictor. Report its coefficient and odds
    ratio, and interpret a one-standard-deviation increase with other
@@ -1254,7 +1330,13 @@ b. Apply that odds ratio to reference probabilities of 0.20 and 0.50.
    Explain why the two probability changes differ.
 c. Choose one problem-detail coefficient. Identify its reference category,
    and state the outcome and predictor contrast.
-d. Explain why the fitted associations are not causal.
+d. Fit an unpenalized logistic GLM on the training requests with standard
+   errors clustered by ZCTA.
+e. Report a joint test for creation-time group and a 95% odds-ratio interval
+   for one area predictor. Interpret both results.
+f. Explain why these tests do not establish practical importance, held-out
+   predictive value, or a causal effect, and why their p-values do not apply
+   to the selected regularized model.
 :::
 
 ::: {#exr-model-zip}
@@ -1286,6 +1368,8 @@ f. Fit the same model without the offset. Compare fitted coefficients and
 g. Calculate the Pearson chi-square statistic divided by residual degrees
    of freedom. Interpret it and name one model or predictor to investigate
    if the Poisson variance assumption is inadequate.
+h. Explain whether the model's usual p-value for density is reliable in
+   light of this dispersion check.
 :::
 
 ::: {#exr-model-poisson-regularized}
