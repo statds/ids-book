@@ -7,6 +7,37 @@ Copyright © 2026 Jun Yan. Unless otherwise noted, the written and visual
 content is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/);
 see [COPYRIGHT.md](COPYRIGHT.md) before reusing the material.
 
+## Shared Python Environment
+
+Use Python 3.12 and one course environment for this book, the semester's
+student-contributed notes, and coursework. Follow the
+[book setup instructions](https://statds.github.io/ids-book/#building-the-book)
+to create and activate the environment, then run these commands from
+`ids-book`:
+
+```sh
+make install
+make check-tools
+```
+
+The root `requirements.txt` is the single source for course package versions.
+Keep `ids-book` and `ids-f26` side by side when cloning them:
+
+```text
+course-work/
+├── ids-book/
+└── ids-f26/
+```
+
+The semester's `requirements.txt` includes this file rather than maintaining
+another package list. Activate the same environment when switching
+repositories; do not create a separate environment inside `ids-f26`.
+
+Propose new dependencies in `ids-book/requirements.txt` for instructor review.
+After an approved change, activate the shared environment and run
+`make install` from `ids-book` again. The `make req` target is for maintainers:
+it overwrites the requirements file with the active environment's packages.
+
 ## Contributing
 
 Make each commit a coherent change. Use an imperative, concise subject without

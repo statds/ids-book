@@ -602,3 +602,19 @@ for a presentation or `make render` for the full site. On this computer the
 book's `.ids` environment has served that purpose. The `ids-f26` repository
 has its own `SESSION_STATUS.md` handoff; this section summarizes its current
 local state. Review student contributions without replacing their authorship.
+
+## Latest session update (2026-10-16)
+
+The book's `requirements.txt` is the single source for course package versions,
+including `python-dotenv` for the Census presentation. The semester's
+`requirements.txt` includes `../ids-book/requirements.txt`; this assumes the
+repositories are cloned side by side. Other layouts should install directly
+from the book checkout. Activate one Python 3.12 environment for the book,
+student notes, and coursework. Do not create another environment in `ids-f26`.
+
+The shared-environment policy and setup instructions are documented in both
+repositories. Earlier setup snapshots describe superseded instructions;
+verify the live status and follow the current README. On this machine the
+semester checkout is nested at `/home/junyan/work/teaching/ids-f26/ids-f26`,
+so update the shared environment by running `make install` from the book
+checkout rather than installing through the semester's sibling-path include.
