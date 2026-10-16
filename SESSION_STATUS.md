@@ -618,3 +618,31 @@ verify the live status and follow the current README. On this machine the
 semester checkout is nested at `/home/junyan/work/teaching/ids-f26/ids-f26`,
 so update the shared environment by running `make install` from the book
 checkout rather than installing through the semester's sibling-path include.
+
+### Completed commits and local state
+
+The book is on `main` at `d288fb2` (`build: centralize shared course
+dependencies`), one commit ahead of the local `origin/main` tracking ref.
+The semester repository is on `main` at `55a295f` (`build: reuse book
+dependencies for student notes`), also one commit ahead of its local tracking
+ref. These counts were checked locally without fetching GitHub. Both tracked
+worktrees were clean before this handoff update; neither dependency commit
+was pushed in this session.
+
+Amanda Noe's Census presentation was merged into `ids-f26` in `df241f5`
+(PR #36). Commit `46fd421` adds its catalog entry to
+`chapters/data-acquisition.qmd` and credits Amanda Noe and Enrico Ong in the
+semester's book author metadata. Both presentation catalog entries name their
+authors. Student presentations and their catalog entries belong in `ids-f26`.
+
+The dependency cleanup updated setup, contribution, review, and handoff
+documentation. Diff checks passed; no installation or rendering was performed
+for this cleanup. A future render should use the activated shared environment.
+The earlier Census presentation render succeeded during PR review, before
+the later contributor revisions were merged.
+
+Untracked local files and repository links remain in both checkouts. The
+semester's untracked midterm analyses and instructor solutions are retained;
+the instructor deferred further midterm work. Do not stage these files or
+generated output as part of documentation maintenance. Check live Git status
+before continuing; this handoff update is not itself committed.
