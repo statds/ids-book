@@ -22,7 +22,8 @@ keeps prose, code, results, and citations together in a reproducible source.
 The instructor-authored book is the permanent source for course content. It is
 intended to remain useful across semesters and to develop over time into a
 textbook. Semester schedules, assignments, and student-contributed notes are
-maintained separately.
+maintained separately. The [Fall 2026 collaborative notes](https://statds.github.io/ids-f26)
+supplement the book with student explanations and presentations.
 
 ## Sources and Acknowledgments
 
