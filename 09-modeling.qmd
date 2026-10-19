@@ -770,16 +770,16 @@ and denominator make clear which errors a score counts:
 
 | Quantity | Common names | Definition |
 |:--|:--|:--|
-| True positive rate | TPR, sensitivity, recall, hit rate, probability of detection | $TP/(TP+FN)$: fraction of actual positives flagged |
-| False negative rate | FNR, miss rate | $FN/(TP+FN)$: fraction of actual positives missed |
-| True negative rate | TNR, specificity, selectivity | $TN/(TN+FP)$: fraction of actual negatives not flagged |
-| False positive rate | FPR, fall-out, false alarm rate | $FP/(TN+FP)$: fraction of actual negatives flagged |
-| Positive predictive value | PPV, precision | $TP/(TP+FP)$: fraction of flagged requests that are positive |
-| False discovery rate | FDR | $FP/(TP+FP)$: fraction of flagged requests that are negative |
-| Negative predictive value | NPV | $TN/(TN+FN)$: fraction of unflagged requests that are negative |
-| False omission rate | FOR | $FN/(TN+FN)$: fraction of unflagged requests that are positive |
-| Accuracy | Overall accuracy, correct classification rate | $(TP+TN)/(TP+TN+FP+FN)$ |
-| F1 score | F1 measure, F-score with $\beta=1$ | $2\,\mathrm{Precision}\,\mathrm{Recall}/(\mathrm{Precision}+\mathrm{Recall})$ |
+| True positive rate | TPR, sensitivity, recall, hit rate, probability of detection | $\text{TP}/(\text{TP}+\text{FN})$: fraction of actual positives flagged |
+| False negative rate | FNR, miss rate | $\text{FN}/(\text{TP}+\text{FN})$: fraction of actual positives missed |
+| True negative rate | TNR, specificity, selectivity | $\text{TN}/(\text{TN}+\text{FP})$: fraction of actual negatives not flagged |
+| False positive rate | FPR, fall-out, false alarm rate | $\text{FP}/(\text{TN}+\text{FP})$: fraction of actual negatives flagged |
+| Positive predictive value | PPV, precision | $\text{TP}/(\text{TP}+\text{FP})$: fraction of flagged requests that are positive |
+| False discovery rate | FDR | $\text{FP}/(\text{TP}+\text{FP})$: fraction of flagged requests that are negative |
+| Negative predictive value | NPV | $\text{TN}/(\text{TN}+\text{FN})$: fraction of unflagged requests that are negative |
+| False omission rate | FOR | $\text{FN}/(\text{TN}+\text{FN})$: fraction of unflagged requests that are positive |
+| Accuracy | Overall accuracy, correct classification rate | $(\text{TP}+\text{TN})/(\text{TP}+\text{TN}+\text{FP}+\text{FN})$ |
+| F1 score | F1 measure, F-score with $\beta=1$ | $2\,\text{Precision}\,\text{Recall}/(\text{Precision}+\text{Recall})$ |
 
 
 Different fields use different names for several of the same ratios:
@@ -802,8 +802,8 @@ one. The $F_\beta$ score makes the precision-recall balance explicit:
 
 $$
 F_\beta = (1 + \beta^2)
-\frac{\mathrm{Precision}\,\mathrm{Recall}}
-     {\beta^2\,\mathrm{Precision} + \mathrm{Recall}}.
+\frac{\text{Precision}\,\text{Recall}}
+     {\beta^2\,\text{Precision} + \text{Recall}}.
 $$
 
 
