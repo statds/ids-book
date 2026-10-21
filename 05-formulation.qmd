@@ -70,8 +70,9 @@ The first activity in the data-science workflow aligns three components:
    represent?
 
 
-This alignment gives the $D$ in the $SDC^3$ framework a practical role. For
-the bicycle-lane example, it asks us to check:
+This alignment gives the domain-knowledge component, represented by $D$ in
+the $SDC^3$ framework, a practical role. For the bicycle-lane example, it
+asks us to check:
 
 
 - whether the question concerns reports, verified obstructions, or safety;
