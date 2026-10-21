@@ -464,6 +464,7 @@ leave the central value choice unresolved. Responsible practice makes those
 choices explicit, considers who has authority and voice, records the basis for
 action, and remains open to revision as evidence and consequences become
 clearer.
+
 ## Exercises {.unnumbered}
 
 ::: {#exr-ethics-311}
