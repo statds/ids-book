@@ -102,7 +102,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -265,8 +265,14 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-ethics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+  <a href="./10-machine-learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-ethics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
   </div>
 </li>
     </ul>
@@ -333,7 +339,7 @@ window.Quarto = {
 </ol>
 <p>At each step, the four formulation checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a> limit what the observed differences can establish.</p>
 <p>The initial scope report provides an audit of the table that enters this analysis rather than a second lesson in import and cleaning. The shared <a href="scripts/parking_requests.py">preparation function</a> applies the documented time and problem filters, timestamp parsing, field names, and closure-time definition from <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. The report then verifies the number of request identifiers, missing or negative outcomes, and missing coordinates that affect later spatial comparisons. These checks establish the eligible set for the present figures; they do not resolve whether reporting behavior or agency practice differs across groups. The order of analysis is deliberate: inspect the overall distribution, apply the frequency-based group rule, examine time and place, and only then consider inferential and sensitivity calculations. This order makes it possible to distinguish a comparison specified by the working formulation from an additional pattern noticed during exploration.</p>
-<div id="7d96e325" class="cell" data-execution_count="1">
+<div id="295251a6" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -396,7 +402,7 @@ window.Quarto = {
 <section id="closure-time-by-detail" class="level2" data-number="7.3">
 <h2 data-number="7.3" class="anchored" data-anchor-id="closure-time-by-detail"><span class="header-section-number">7.3</span> Closure Time by Detail</h2>
 <p>The overall closure-time distribution establishes which summaries can represent a typical request and which features require separate attention. The median divides observed intervals into lower and upper halves, while a quantile identifies a specified fraction of intervals at or below its value. The mean reflects every recorded duration and is more sensitive to the long upper tail. Reporting these quantities together allows readers to distinguish a typical interval from delayed closures rather than reducing both to one number. The table below calculates summaries from every eligible closure interval. The accompanying histogram displays only the first 24 hours on its horizontal axis to make the dense part of the distribution legible. That visual limit is not a row exclusion from the table or subsequent comparisons; the caption and text must make the difference clear. A later sensitivity calculation explicitly applies a 24-hour row restriction and reports its effect.</p>
-<div id="d6f1c197" class="cell" data-execution_count="2">
+<div id="302809e4" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>closure_summary <span class="op">=</span> parking[<span class="st">"closure_hours"</span>].agg(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"min"</span>, <span class="st">"max"</span>]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).to_frame(<span class="st">"value"</span>)</span>
@@ -500,7 +506,7 @@ Figure&nbsp;7.1: Recorded closure times for eligible illegal-parking requests. T
 <p>Thus, “requests close in about two hours” is incomplete. A large interval could be valid, a timestamp correction, or an operational exception; its size alone does not show which. The group comparison therefore reports medians and quartiles alongside means.</p>
 <p>The group rule uses request frequency, not closure time, to choose categories. The code calculates each selected group’s count, center, spread, and upper quantile while retaining the provider’s original category labels. Similar labels are not combined without evidence that they share an operational meaning. A different week could produce a different list of frequent categories.</p>
 <p>The empirical cumulative distribution provides a second way to compare the groups. At a closure time <span class="math inline">\(t\)</span>, its vertical value is the fraction of requests closed by time <span class="math inline">\(t\)</span>. For example, a value of 0.70 at <span class="math inline">\(t=2\)</span> hours means that 70% of the group’s recorded requests closed within two hours. The curves allow comparisons at any threshold without assuming that the distributions have the same shape. Since both the group rule and analysis were developed using this week, later inferential calculations remain exploratory.</p>
-<div id="6825ce1d" class="cell" data-execution_count="4">
+<div id="9b6cd9f3" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>top_details <span class="op">=</span> parking[<span class="st">"problem_detail"</span>].value_counts().head(<span class="dv">3</span>).index.tolist()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>top <span class="op">=</span> parking.loc[parking[<span class="st">"problem_detail"</span>].isin(top_details)].copy()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>detail_summary <span class="op">=</span> top.groupby(<span class="st">"problem_detail"</span>)[<span class="st">"closure_hours"</span>].agg(</span>
@@ -601,7 +607,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 <section id="variation-across-groups" class="level2" data-number="7.4">
 <h2 data-number="7.4" class="anchored" data-anchor-id="variation-across-groups"><span class="header-section-number">7.4</span> Variation Across Groups</h2>
 <p>Temporal and geographic stratification examines whether a pooled group contrast combines different request mixes. Creation date identifies when a report entered the service system, whereas closure time is the subsequent elapsed interval; grouping by creation date does not assign a request to the date on which it closed. The first table reports the daily volume of eligible requests, so each row has a one-day observation period. The second table counts the three selected problem details by borough and shows whether their relative frequencies differ across places. These tables are descriptive checks on composition, not estimates of the frequency of illegal parking on the street. A difference in group mix can help explain why a citywide closure-time summary differs from a within-borough summary, but the tables alone do not establish the agency process that generated either pattern.</p>
-<div id="0d9f7e9f" class="cell" data-execution_count="6">
+<div id="d6638a52" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>daily_counts <span class="op">=</span> parking.groupby(parking[<span class="st">"created_at"</span>].dt.date).size()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>daily_counts.to_frame(<span class="st">"requests"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
@@ -654,7 +660,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 </div>
 </div>
-<div id="e2056d48" class="cell" data-execution_count="7">
+<div id="6cce995d" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>borough_counts <span class="op">=</span> pd.crosstab(top[<span class="st">"borough"</span>], top[<span class="st">"problem_detail"</span>])</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>borough_counts.loc[:, top_details]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
@@ -715,7 +721,7 @@ Figure&nbsp;7.2: Empirical cumulative distributions of closure time for the thre
 </div>
 <p>Recorded daily volume ranges from 1,563 on September 6 to 2,080 on September 10. The counts alone do not establish a weekday effect because they cover only one occurrence of each day of the week. The borough table shows that the mix of problem details also varies by place: Manhattan has more Posted Parking Sign Violation requests than Blocked Hydrant requests, whereas Brooklyn has the opposite ordering. Geographic composition can therefore affect the citywide comparison. A borough label still represents a broad area and cannot identify the practices of an individual precinct.</p>
 <p>Area context raises a different exploratory question and changes the unit at which a comparison is valid. The area-context workflow in <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.4</span></a> explains the five-digit ZIP-label match to 2024 American Community Survey (ACS) estimates for ZIP Code Tabulation Areas (ZCTAs), including its geographic limitations <span class="citation" data-cites="census2023zip">(<a href="#ref-census2023zip" role="doc-biblioref">U.S. Census Bureau, 2023</a>)</span>. This chapter reuses the checked lookup through <code>attach_zcta_context()</code> instead of repeating the preparation code. The resulting table still has one row per request, so an income estimate appears on every request whose ZIP label matches the same ZCTA. Those copies do not constitute independent observations of area income. The comparison below first aggregates closure time to one row per matched ZCTA, records the number of requests supporting each area median, and then groups areas by estimated income. Its target is variation among area summaries, not the relationship between a reporter’s income and that reporter’s closure time.</p>
-<div id="e92b14ff" class="cell" data-execution_count="8">
+<div id="6bfd1469" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>with_context <span class="op">=</span> attach_zcta_context(parking)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>with_context[<span class="st">"_merge"</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -726,7 +732,7 @@ right_only        0
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="44760717" class="cell" data-execution_count="9">
+<div id="ed6846a8" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>areas <span class="op">=</span> with_context.loc[with_context[<span class="st">"_merge"</span>].eq(<span class="st">"both"</span>)].groupby(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"zcta"</span>, as_index<span class="op">=</span><span class="va">False</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>).agg(</span>
@@ -801,7 +807,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 <p>The join matches 13,033 of 13,040 requests. Among areas with at least 20 requests and a reported median household income, 149 ZCTAs enter the grouped comparison. Their median closure times differ across income quartiles, but the ordering is not monotone: the lower-middle quartile has a higher median of area medians than the lowest or upper-middle quartile. The minimum count of 20 is a transparent stability rule, not a guarantee of accurate area estimates. The ACS income values describe an earlier period and have sampling uncertainty; the request-to-ZCTA match also has geographic limits <span class="citation" data-cites="census2026american">(<a href="#ref-census2026american" role="doc-biblioref">U.S. Census Bureau, 2026</a>)</span>. This table supports a question about area-level association, not a conclusion about residents’ incomes or an income effect on individual requests.</p>
 <p>Subgroup composition can also change the direction of an overall comparison. Simpson’s paradox describes cases where an association in aggregated data weakens or reverses after data are divided into subgroups defined by a third variable <span class="citation" data-cites="simpson1951interpretation">(<a href="#ref-simpson1951interpretation" role="doc-biblioref">Simpson, 1951</a>)</span>. The following hypothetical example illustrates the arithmetic with treatment success rates. Treatment A has a higher success rate than treatment B in both risk groups, but A is used much more often for high-risk cases. The pooled rates therefore favor B. The values are constructed for instruction and do not describe a medical study.</p>
-<div id="1100351b" class="cell" data-execution_count="10">
+<div id="f48870fc" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>simpson <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"risk"</span>: [<span class="st">"Lower"</span>, <span class="st">"Lower"</span>, <span class="st">"Higher"</span>, <span class="st">"Higher"</span>],</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"treatment"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>],</span>
@@ -945,7 +951,7 @@ Name: count, dtype: int64</code></pre>
 </tbody>
 </table>
 <p>The first code example uses the contingency table from the three most frequent details to ask whether the observed detail mix varies by borough. The chi-square test evaluates independence, while Cramér’s <span class="math inline">\(V\)</span> summarizes the strength of the association. The expected cell counts help assess whether the chi-square approximation is adequate. Because the details were selected by frequency in this same week, this is an exploratory calculation, not a confirmatory test of a prespecified hypothesis.</p>
-<div id="a885013e" class="cell" data-execution_count="11">
+<div id="c0f6a9a3" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chi2_contingency</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>detail_by_borough <span class="op">=</span> pd.crosstab(top[<span class="st">"problem_detail"</span>], top[<span class="st">"borough"</span>])</span>
@@ -1056,7 +1062,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>The next example uses Welch’s test to compare arithmetic mean closure hours for hydrant and sidewalk requests. It answers a different question from the median comparison below, and the long right tail can make the mean sensitive to a small number of long intervals. The request-level calculation also assumes independent observations, although requests may share locations, times, or administrative conditions.</p>
-<div id="25942f31" class="cell" data-execution_count="12">
+<div id="afcfdb00" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> ttest_ind</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
@@ -1117,7 +1123,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>Requests from one week may share time, location, or agency conditions, which weakens a simple independence model. A statistical test does not correct those design limitations, and selecting a test after searching many groupings can make its nominal <span class="math inline">\(p\)</span>-value misleading <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>. Rank-based tests such as Mann–Whitney and Kruskal–Wallis do not automatically test a difference in medians. Likewise, a bootstrap interval estimates uncertainty under a resampling scheme; it is not itself a hypothesis test. When many outcomes, subgroups, or alternatives are examined, report that search and do not treat a threshold such as 0.05 as a mechanical decision rule <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
-<div id="a684579e" class="cell" data-execution_count="13">
+<div id="4c8d314c" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hydrant <span class="op">=</span> top.loc[</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    top[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>].dropna().to_numpy()</span>
@@ -1183,7 +1189,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 <p>The observed median gap is about 0.865 hours, and the bootstrap interval is approximately 0.712 to 1.016 hours. The estimated permutation <span class="math inline">\(p\)</span>-value is about 0.0005, with the added one in the numerator and denominator preventing a reported zero from a finite set of permutations. These results show that the observed separation is large relative to these relabelings and resamples. They do not establish that the detail label causes a closure-time difference. Requests may be related through place, time, repeat reporting, or agency practice, and the analysis was chosen after inspection of this week. The bootstrap interval does not include uncertainty from coverage, measurement, or group selection. A <span class="math inline">\(p\)</span>-value should not be read as the probability that the null hypothesis is true or as a measure of practical importance <span class="citation" data-cites="wasserstein2016asa">(<a href="#ref-wasserstein2016asa" role="doc-biblioref">Wasserstein &amp; Lazar, 2016</a>)</span>.</p>
 <p>Sensitivity analysis quantifies how much a descriptive result changes under defensible alternatives to the primary calculation. Yu and Barter emphasize that choices made during cleaning, preprocessing, and analysis can affect a reported finding <span class="citation" data-cites="yu2024veridical">(<a href="#ref-yu2024veridical" role="doc-biblioref">Yu &amp; Barter, 2024</a>)</span>. The first check below restricts closure intervals to at most 24 hours to assess the influence of the long upper tail; it does not classify longer intervals as invalid. The remaining checks calculate the same hydrant-minus-sidewalk median gap within each borough, holding the outcome definition and group labels fixed while changing geographic composition. These are targeted perturbations of the eligible set rather than an exhaustive search for a desired result. The table reports group sizes alongside gaps because a large contrast based on few requests deserves a different interpretation from a similar contrast based on many. Neither sensitivity check removes confounding or extends the conclusion beyond the observed week.</p>
-<div id="c447d015" class="cell" data-execution_count="14">
+<div id="553e6780" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> median_gap(frame):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    left <span class="op">=</span> frame.loc[</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        frame[<span class="st">"problem_detail"</span>].eq(<span class="st">"Blocked Hydrant"</span>), <span class="st">"closure_hours"</span></span>

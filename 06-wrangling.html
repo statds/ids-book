@@ -102,7 +102,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -265,8 +265,14 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10-ethics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+  <a href="./10-machine-learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-ethics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
   </div>
 </li>
     </ul>
@@ -323,7 +329,7 @@ window.Quarto = {
 </ul>
 <p>Every class should leave an auditable record. Analytical choices especially require a rationale because they can change the outcome or comparison.</p>
 <p>The original ZIP archive remains unchanged. <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a> demonstrated its acquisition and initial profile; the code below repeats only the import, timestamp parsing, and row filters needed for this chapter to run independently. Temporary Feather examples in that chapter do not provide an input here. Each subsequent stage creates a derived data frame and verifies the assumptions that its operation introduces.</p>
-<div id="2d174b79" class="cell" data-execution_count="1">
+<div id="aef3b7a7" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -337,7 +343,7 @@ window.Quarto = {
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The archive is read without changing the source file. Request identifiers and ZIP labels are strings so leading zeros and identifier formatting remain intact. The next step parses the timestamps and selects the week and request type established in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a>.</p>
-<div id="3c9bf98d" class="cell" data-execution_count="2">
+<div id="581d4464" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>date_format <span class="op">=</span> <span class="st">"%m/</span><span class="sc">%d</span><span class="st">/%Y %I:%M:%S %p"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> column <span class="kw">in</span> [<span class="st">"Created Date"</span>, <span class="st">"Closed Date"</span>]:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    requests[column] <span class="op">=</span> pd.to_datetime(</span>
@@ -353,7 +359,7 @@ window.Quarto = {
 </div>
 <p>The import and filtering steps reconstruct the intended analysis scope without overwriting the downloaded archive. The half-open timestamp interval includes requests created on every day of the selected week and excludes those returned from the following Sunday; the problem condition restricts the subset to illegal-parking requests. The observational unit remains one service request, so a row restriction changes the eligible population but does not aggregate or validate individual observations. The explicit datetime format also exposes parsing failures as missing timestamps, which must be checked rather than silently interpreted as absent service activity. The resulting frame can still contain missing fields, unexpected category values, duplicate identifiers, or disagreements among geographic descriptors. Those issues require separate diagnostics before a derived variable or merge can be trusted. The subset also remains limited to NYPD-directed requests from one week, regardless of how consistently its columns are represented.</p>
 <p>The checks in <a href="05-formulation.html#sec-initial-checks" class="quarto-xref"><span>Section 5.4</span></a> profile the delivered extract before filtering, including its agency values, date boundaries, and missingness. Here, the scope report instead tests whether the reconstructed subset meets the preparation workflow’s input conditions: identifiers must be present and unique, creation times must fall within the selected week, and every retained row must carry the illegal-parking label. These executable invariants detect a changed input, altered filter, or parsing failure before derived columns are constructed. A failed check should prompt inspection of the source and preparation code, not automatic deletion until the report passes. This chapter remains independently executable while the substantive source diagnosis stays in the formulation chapter.</p>
-<div id="509cec90" class="cell" data-execution_count="3">
+<div id="f80ace4d" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scope_checks <span class="op">=</span> pd.Series({</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"rows"</span>: <span class="bu">len</span>(parking),</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no missing request identifiers"</span>: <span class="kw">not</span> parking[<span class="st">"Unique Key"</span>].isna().<span class="bu">any</span>(),</span>
@@ -417,7 +423,7 @@ window.Quarto = {
 </ul>
 <p>These choices distinguish a representation change from a data correction. For example, renaming <code>Created Date</code> to <code>created_at</code> makes code easier to read; changing an unexpected date to a plausible one would alter the source information and needs separate evidence.</p>
 <p>Category standardization requires evidence about the meanings of values, not only a preference for uniform text. The frequency table in <a href="05-formulation.html#sec-problem-detail-counts" class="quarto-xref"><span>Section 5.7</span></a> established which problem details motivate the working comparison. The following code inspects the distinct source strings before any recoding. The observed leading labels are interpretable, and apparent similarity between two labels would not by itself establish that they describe the same reporting condition. A data dictionary or curator explanation would be needed before combining categories with different names. By contrast, the code below changes column <em>names</em> to make operations easier while leaving category <em>values</em> unchanged. Keeping those two decisions separate preserves the provider’s distinctions and allows later readers to evaluate a proposed recode against the source.</p>
-<div id="2e388d50" class="cell" data-execution_count="4">
+<div id="9c3ee0e8" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>detail_column <span class="op">=</span> <span class="st">"Problem Detail (formerly Descriptor)"</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>observed_details <span class="op">=</span> (</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    parking[detail_column]</span>
@@ -504,7 +510,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The following mapping converts all 44 labels to lowercase snake case and gives shorter analytical names to the fields used repeatedly below. The imported <code>parking</code> table retains the provider’s original labels; <code>analysis</code> is the derived table with renamed columns.</p>
-<div id="65576395" class="cell" data-execution_count="5">
+<div id="3c5ad06b" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>name_map <span class="op">=</span> {</span>
@@ -515,7 +521,7 @@ window.Quarto = {
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>This normalization produces a consistent default name for each source column. A few frequently used fields receive shorter names that are easier to read in later code; the mapping remains explicit so that these names can be traced to the provider’s labels.</p>
-<div id="7a268e47" class="cell" data-execution_count="6">
+<div id="8d4bd23f" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>name_map.update({</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Unique Key"</span>: <span class="st">"request_id"</span>,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Created Date"</span>: <span class="st">"created_at"</span>,</span>
@@ -777,7 +783,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The collision check ensures that two provider fields do not become the same analysis name. Review the displayed mapping as part of the data record; the next step applies it to a copy, leaving <code>parking</code> and its source labels unchanged.</p>
-<div id="3d40ec5e" class="cell" data-execution_count="7">
+<div id="c23df766" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>analysis <span class="op">=</span> parking.rename(columns<span class="op">=</span>name_map).copy()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>analysis[[</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_id"</span>, <span class="st">"created_at"</span>, <span class="st">"problem_detail"</span>, <span class="st">"incident_zip"</span>, <span class="st">"status"</span></span>
@@ -853,7 +859,7 @@ window.Quarto = {
 T_i = (L_i - C_i)/3600.
 \]</span></p>
 <p>The timestamp difference is in seconds, so division by 3,600 converts it to hours. The calculation is defined when both timestamps parse successfully and closure follows creation. It measures administrative closure, not officer arrival or the time when the reported condition ended. Keep the original timestamps so that a surprising value can be inspected and the derived value recalculated if needed. The name <code>closure_hours</code> describes the measurement more accurately than a name that implies a field response. The check below looks for issues before this value is used as an outcome.</p>
-<div id="746382e2" class="cell" data-execution_count="8">
+<div id="24f5b648" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"closure_hours"</span>] <span class="op">=</span> (</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    analysis[<span class="st">"closed_at"</span>] <span class="op">-</span> analysis[<span class="st">"created_at"</span>]</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>).dt.total_seconds() <span class="op">/</span> <span class="dv">3600</span></span>
@@ -913,7 +919,7 @@ T_i = (L_i - C_i)/3600.
 <li>The groups do not account for differences across individual dates, such as the holiday in this week.</li>
 </ul>
 <p>The original timestamp remains available for hourly analysis or a comparison using different boundaries. If the question concerns staffing or reporting conditions, use domain information to justify the boundary rather than choosing it only because the groups are convenient.</p>
-<div id="262d4808" class="cell" data-execution_count="9">
+<div id="ce825407" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>hour <span class="op">=</span> analysis[<span class="st">"created_at"</span>].dt.hour</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>analysis[<span class="st">"time_period"</span>] <span class="op">=</span> pd.Series(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    pd.NA, index<span class="op">=</span>analysis.index, dtype<span class="op">=</span><span class="st">"string"</span></span>
@@ -949,7 +955,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 </ul>
 <p>Neither measure describes parking directly. Population density does not measure curb length or parking supply. Household vehicle availability does not identify vehicle ownership, registration, parking location, or illegal- parking behavior. The vehicle share is a ratio of survey estimates, and its sampling uncertainty is not calculated from the published margins of error. Both measures describe areas, not individual requesters, so the merge cannot support an individual-level or causal interpretation.</p>
 <p>The NYC ZCTA selection comes from the <code>zcta5</code> column of the city’s published dataset, as the following acquisition code shows. The chapter uses the saved CSV during rendering so that a live web request cannot change its results. The complete extraction, including the Gazetteer file and three ACS tables, is in <code>scripts/build_zcta_context.py</code>.</p>
-<div id="c159c216" class="cell" data-execution_count="10">
+<div id="7c9b0549" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
@@ -967,7 +973,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(city_zctas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>This optional acquisition example is not evaluated during rendering. The chapter uses the reproducible lookup saved at <code>data/zcta_context.csv</code>; its keys and estimates are checked before the join.</p>
-<div id="247cb6ac" class="cell" data-execution_count="11">
+<div id="d7a8253e" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>zcta_context <span class="op">=</span> pd.read_csv(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    Path(<span class="st">"data"</span>) <span class="op">/</span> <span class="st">"zcta_context.csv"</span>,</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span>{<span class="st">"zcta"</span>: <span class="st">"string"</span>},</span>
@@ -984,7 +990,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The ZCTA lookup contains an unexpected ACS year."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>These checks establish the lookup key and reference period before the context can be attached to requests. The measures also have constraints that follow from their definitions: land area must be positive when present, population density requires land area, and a household share must lie between zero and one.</p>
-<div id="faf9baab" class="cell" data-execution_count="12">
+<div id="b2319343" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> zcta_context[<span class="st">"land_area_sqmi"</span>].dropna().gt(<span class="dv">0</span>).<span class="bu">all</span>():</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"ZCTA land areas must be positive."</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>missing_area <span class="op">=</span> zcta_context[<span class="st">"land_area_sqmi"</span>].isna()</span>
@@ -994,7 +1000,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Household vehicle shares must be between zero and one."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Only request ZIP labels that already have five digits are eligible for an exact string match. The left join retains every request, including labels that are missing, malformed, or absent from the lookup. Its indicator records which requests found a matching ZCTA.</p>
-<div id="a432bbaf" class="cell" data-execution_count="13">
+<div id="cafe3fc0" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Match only syntactically five-digit request ZIP values. Do not silently</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pad or otherwise repair values that fail this check.</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>incident_zip <span class="op">=</span> analysis[<span class="st">"incident_zip"</span>].<span class="bu">str</span>.strip()</span>
@@ -1012,7 +1018,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The many-to-one validation prevents duplicate lookup keys from multiplying requests. Check row count and request identity after the join, then summarize the matched and unmatched records. This report distinguishes failed matches from matched areas whose land-area estimate is unavailable.</p>
-<div id="c3317326" class="cell" data-execution_count="14">
+<div id="83c24293" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(contextual_analysis) <span class="op">!=</span> <span class="bu">len</span>(analysis):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"The area-level join changed the request count."</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> contextual_analysis[<span class="st">"request_id"</span>].is_unique:</span>
@@ -1093,7 +1099,7 @@ Name: count, dtype: int64[pyarrow]</code></pre>
 <section id="validate-data" class="level2" data-number="6.5">
 <h2 data-number="6.5" class="anchored" data-anchor-id="validate-data"><span class="header-section-number">6.5</span> Validate Data</h2>
 <p>Validation compares the prepared table with the input and with the stated analytical contract. The following checks require the request count and identifier uniqueness to survive filtering, renaming, derivation, and the area merge. They also require the retained timestamps and problem label to remain within the intended scope and confirm that the closure field exists. The join report above separately records unmatched keys, so a passing row count does not conceal incomplete geographic coverage. These checks detect specific implementation errors, but they cannot prove that a source value is true or that the selected week represents a broader population. If the prepared table is saved for later use, its schema, source-to-analysis name mapping, join report, and relevant invariants should be stored with it and checked again after reading it back. A successful write operation alone does not establish semantic or numerical validity.</p>
-<div id="21ab05a2" class="cell" data-execution_count="15">
+<div id="cb7332e3" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>prepared <span class="op">=</span> contextual_analysis.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>final_checks <span class="op">=</span> pd.Series({</span>

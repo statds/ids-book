@@ -2,46 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://statds.github.io/ids-book/index.html</loc>
-    <lastmod>2026-10-11T13:39:02.919Z</lastmod>
+    <lastmod>2026-10-19T09:32:13.840Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/01-intro.html</loc>
-    <lastmod>2026-10-11T13:39:02.782Z</lastmod>
+    <lastmod>2026-10-07T16:09:37.252Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/02-git.html</loc>
-    <lastmod>2026-10-11T13:39:02.784Z</lastmod>
+    <lastmod>2026-10-07T16:09:37.258Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/03-quarto.html</loc>
-    <lastmod>2026-10-11T13:39:02.786Z</lastmod>
+    <lastmod>2026-10-07T16:09:37.261Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/04-python.html</loc>
-    <lastmod>2026-10-11T13:39:02.788Z</lastmod>
+    <lastmod>2026-10-07T16:41:52.933Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/05-formulation.html</loc>
-    <lastmod>2026-10-11T13:39:02.789Z</lastmod>
+    <lastmod>2026-10-07T16:09:37.267Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/06-wrangling.html</loc>
-    <lastmod>2026-10-11T21:17:43.810Z</lastmod>
+    <lastmod>2026-10-12T18:25:25.508Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/07-eda.html</loc>
-    <lastmod>2026-10-11T21:14:39.710Z</lastmod>
+    <lastmod>2026-10-12T18:25:25.508Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/08-visualization.html</loc>
-    <lastmod>2026-10-11T21:14:39.777Z</lastmod>
+    <lastmod>2026-10-12T18:25:25.512Z</lastmod>
   </url>
   <url>
     <loc>https://statds.github.io/ids-book/09-modeling.html</loc>
-    <lastmod>2026-10-12T11:02:39.633Z</lastmod>
+    <lastmod>2026-10-21T10:09:43.889Z</lastmod>
   </url>
   <url>
-    <loc>https://statds.github.io/ids-book/10-ethics.html</loc>
-    <lastmod>2026-10-11T13:39:02.800Z</lastmod>
+    <loc>https://statds.github.io/ids-book/10-machine-learning.html</loc>
+    <lastmod>2026-10-21T12:32:08.788Z</lastmod>
+  </url>
+  <url>
+    <loc>https://statds.github.io/ids-book/11-ethics.html</loc>
+    <lastmod>2026-10-21T12:30:07.572Z</lastmod>
   </url>
 </urlset>
