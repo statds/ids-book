@@ -1110,8 +1110,23 @@ cross-validation pipeline.
 Cross-validation selects `C` using training data alone. Within each fold,
 the pipeline learns its scaling, category encoding, and model coefficients
 from the fold's training records, then evaluates log loss on its validation
-records. The candidate with the lowest mean validation log loss is refitted
-on the complete training set. The separate test set remains untouched until
+records. For a candidate setting $h$, let $V_k$ be the validation
+records in fold $k$, and let $\widehat{p}_{i,-k}(h)$ be the predicted
+probability for record $i$ from a model fitted without fold $k$. The fold's
+log loss and the mean cross-validation score are
+
+$$
+\begin{aligned}
+L_k(h) &= -\frac{1}{|V_k|}\sum_{i\in V_k}
+\left[y_i\log\widehat{p}_{i,-k}(h)
++(1-y_i)\log\left(1-\widehat{p}_{i,-k}(h)\right)\right],\\
+\operatorname{CV}(h) &= \frac{1}{K}\sum_{k=1}^{K}L_k(h),
+\end{aligned}
+$$
+
+where $K$ is the number of folds, and $y_i$ is zero or one. The selected
+candidate has the smallest mean validation log loss. It is then refitted on
+the complete training set. The separate test set remains untouched until
 selection is complete because using the same cross-validation scores both
 to select and report final performance can be optimistic
 [@scikitlearn2026crossvalidation; @varma2006bias].
