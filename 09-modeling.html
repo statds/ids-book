@@ -271,7 +271,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11-ethics.html" class="sidebar-item-text sidebar-link">
+  <a href="./90-ethics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
   </div>
 </li>
@@ -353,7 +353,7 @@ window.Quarto = {
 <h2 data-number="9.2" class="anchored" data-anchor-id="establish-a-baseline"><span class="header-section-number">9.2</span> Establish a Baseline</h2>
 <p>A baseline sets a reference that a more complex model must improve. Because 34.5% of eligible requests close in under an hour, predicting the majority class for every request already gives roughly 65.5% accuracy. That result does not distinguish requests: it labels every case as taking at least an hour. Accuracy alone would therefore make a useless classifier look respectable.</p>
 <p>The analysis starts from <code>load_parking_requests()</code> rather than repeating the import and filtering workflow from <a href="06-wrangling.html" class="quarto-xref"><span>Chapter 6</span></a>. It links the requests to the Census context already documented in <a href="06-wrangling.html#sec-zcta-context-merge" class="quarto-xref"><span>Section 6.4</span></a>. The preparation functions leave the source request data and the Census lookup unchanged. The merge indicator identifies ZIP labels with no matching ZCTA.</p>
-<div id="ab659d31" class="cell" data-execution_count="1">
+<div id="757bc047" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scripts.parking_requests <span class="im">import</span> (</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    attach_zcta_context,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    load_parking_requests,</span>
@@ -380,7 +380,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>The ZIP-to-ZCTA link matches 13,033 of 13,040 requests. For a complete-case model, each matched request also needs all three area measures and the request fields used below. The next check reports missing area context and selects eligible requests.</p>
-<div id="b74f2bf1" class="cell" data-execution_count="2">
+<div id="bf4f48e5" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>has_income <span class="op">=</span> with_context[<span class="st">"median_household_income"</span>].notna()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>area_features <span class="op">=</span> [</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_density_per_sqmi"</span>,</span>
@@ -412,7 +412,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Among matched requests, 58 lack at least one area measure, including nine with no household vehicle estimate because their ACS household denominator is zero. The resulting analysis has 12,975 requests from 176 ZCTAs. The next step derives timing features from the creation timestamp. Four six-hour intervals describe the hour, while the weekend and Labor Day form the three non-business days in this week.</p>
-<div id="4223a81f" class="cell" data-execution_count="3">
+<div id="3dd803a1" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model_data[<span class="st">"hour_group"</span>] <span class="op">=</span> pd.cut(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    model_data[<span class="st">"created_at"</span>].dt.hour,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="op">-</span><span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">11</span>, <span class="dv">17</span>, <span class="dv">23</span>],</span>
@@ -434,7 +434,7 @@ Name: created_at, dtype: int64</code></pre>
 </div>
 </div>
 <p>The four other dates are business days. This distinction is descriptive for one week, which contains only one holiday. The outcome marks closures under one hour; closure time itself is excluded from the predictors. The feature table keeps the ZIP label for a later categorical benchmark, while the first model uses the other listed features.</p>
-<div id="aa31fc9e" class="cell" data-execution_count="4">
+<div id="a9edcb9e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model_data[<span class="st">"short_closure"</span>] <span class="op">=</span> model_data[<span class="st">"closure_hours"</span>].lt(<span class="dv">1</span>).astype(<span class="st">"int8"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>categorical_features <span class="op">=</span> [<span class="st">"problem_detail"</span>, <span class="st">"borough"</span>, <span class="st">"hour_group"</span>, <span class="st">"day_type"</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> area_features</span>
@@ -454,7 +454,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>The outcome has 4,478 requests under one hour and 8,497 at least one hour. The train-test split reserves one quarter of complete requests for evaluation and stratifies on this outcome to keep its proportion similar in both sets.</p>
-<div id="5055aa13" class="cell" data-execution_count="5">
+<div id="88b9b447" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">2026</span>, stratify<span class="op">=</span>y</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -495,7 +495,7 @@ g(\mu_i) = \eta_i
 \]</span></p>
 <p>The inverse-logit transformation maps any real-valued linear predictor to a probability between zero and one. Odds compare the probability of an event with the probability it does not occur. For example, a probability of 0.75 corresponds to odds of <span class="math inline">\(0.75/0.25=3\)</span> to 1, while a probability of 0.5 corresponds to odds of 1 to 1. A coefficient describes a change in log odds, holding the other included predictors fixed; exponentiating it gives an odds ratio. An odds ratio is not a probability difference and does not by itself describe a causal effect.</p>
 <p>The first GLM includes problem detail, borough, creation-time group, business-day status, population density, median household income, and household vehicle availability. The three area measures are standardized across training requests, so their odds ratios describe a one-standard- deviation difference in the request-weighted feature values. The formula interface compares each categorical level with a reference category and holds the other predictors fixed. These coefficients describe conditional associations in the fitted model, not changes caused by the area characteristics. In the coefficient table, each categorical label names the compared level; the level without a coefficient is the reference category <span class="citation" data-cites="statsmodels2026generalized">(<a href="#ref-statsmodels2026generalized" role="doc-biblioref"><span class="nocase">statsmodels Developers</span>, 2026</a>)</span>.</p>
-<div id="ce71cb8d" class="cell" data-execution_count="6">
+<div id="fe7528ec" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
@@ -504,7 +504,7 @@ g(\mu_i) = \eta_i
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>glm_data[<span class="st">"short_closure"</span>] <span class="op">=</span> y_train</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The training data pair each request’s predictors with its binary outcome. The formula below names the categorical predictors explicitly and standardizes the continuous area measures. This produces a logistic GLM with a binomial response and logit link. Requests in the same ZCTA share area context and may have related outcomes, so the fit uses standard errors clustered by ZCTA for its coefficient tests. Clustering changes the uncertainty estimates, not the fitted coefficients or predictions.</p>
-<div id="7d09a3c0" class="cell" data-execution_count="7">
+<div id="97bc5763" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>glm_formula <span class="op">=</span> (</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"short_closure ~ C(problem_detail) + C(borough) + "</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"C(hour_group) + C(day_type) + "</span></span>
@@ -522,7 +522,7 @@ g(\mu_i) = \eta_i
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The fitted coefficients are on the log-odds scale. Exponentiating them gives odds ratios, which make categorical contrasts and standardized continuous effects easier to describe.</p>
-<div id="9101d177" class="cell" data-execution_count="8">
+<div id="832496d9" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>glm_coefficients <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log-odds coefficient"</span>: glm_fit.params,</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"odds ratio"</span>: np.exp(glm_fit.params),</span>
@@ -674,7 +674,7 @@ g(\mu_i) = \eta_i
 </div>
 <p>For a continuous area measure, its displayed odds ratio compares requests that differ by one training-set standard deviation, while the other model features are held fixed. For a categorical term, the odds ratio compares that level with the model’s reference category. An odds ratio above one indicates higher fitted odds of a closure under one hour for the stated contrast; it does not say how many percentage points the probability rises. The context values repeat across requests in the same ZCTA, so area patterns are supported by 176 distinct ZCTAs, not by treating each request as an independent area. These are conditional associations, not individual-level effects or causal estimates. They also rely on a linear relationship between each standardized area measure and log odds.</p>
 <p>The coefficient table describes estimated effects but does not show how uncertain they are. For the three standardized area measures, a 95% interval for an odds ratio is obtained by exponentiating the corresponding coefficient interval. The p-value tests a zero coefficient, or equivalently an odds ratio of one, conditional on the other terms in this training-data model.</p>
-<div id="b89bc918" class="cell" data-execution_count="9">
+<div id="55cf2308" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>area_terms <span class="op">=</span> [<span class="ss">f"standardize(</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">)"</span> <span class="cf">for</span> name <span class="kw">in</span> numeric_features]</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>coefficient_intervals <span class="op">=</span> glm_fit.conf_int().loc[area_terms]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>area_inference <span class="op">=</span> pd.DataFrame({</span>
@@ -728,7 +728,7 @@ g(\mu_i) = \eta_i
 </div>
 <p>The fitted odds of closing in under one hour are about 1.21 times as high for a one-standard-deviation increase in median household income and about 0.81 times as high for the same increase in household vehicle availability, with the other predictors fixed. Their intervals exclude one. The density odds ratio is about 0.88, but its interval includes one, so this analysis does not provide the same strength of evidence for a density association. The interval widths and p-values reflect ZCTA-clustered standard errors; they do not account for shared conditions across nearby ZCTAs or for a different week.</p>
 <p>Categorical predictors have several coefficients, one for each displayed level relative to its reference. A joint Wald test asks whether all of a predictor’s coefficients are zero after accounting for the other terms. The single-coefficient tests for area measures answer the same null hypothesis one predictor at a time.</p>
-<div id="533ee12a" class="cell" data-execution_count="10">
+<div id="70de4edb" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>term_tests <span class="op">=</span> glm_fit.wald_test_terms(scalar<span class="op">=</span><span class="va">True</span>).table.drop(index<span class="op">=</span><span class="st">"Intercept"</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>term_tests <span class="op">=</span> term_tests.rename(columns<span class="op">=</span>{</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"statistic"</span>: <span class="st">"Wald chi-square"</span>,</span>
@@ -804,13 +804,13 @@ g(\mu_i) = \eta_i
 </section>
 <section id="poisson-regression" class="level3" data-number="9.3.2">
 <h3 data-number="9.3.2" class="anchored" data-anchor-id="poisson-regression"><span class="header-section-number">9.3.2</span> Poisson regression</h3>
-<p>To demonstrate a count outcome, this example changes the observational unit from requests to NYC ZCTAs. Let <span class="math inline">\(Y_j\)</span> be the number of recorded requests matched to NYC ZCTA <span class="math inline">\(j\)</span> during the study week, and let <span class="math inline">\(E_j\)</span> denote its population in thousands. The Poisson distribution sets the conditional mean and variance to <span class="math inline">\(\mu_j\)</span>. A log link and the known offset <span class="math inline">\(o_j=\log(E_j)\)</span> give the model</p>
+<p>To demonstrate a count outcome, this example changes the observational unit from requests to NYC ZCTAs. Let <span class="math inline">\(Y_j\)</span> be the number of recorded requests matched to NYC ZCTA <span class="math inline">\(j\)</span> during the study week, and let <span class="math inline">\(E_j\)</span> denote its population in thousands. Under the Poisson model, the conditional mean and variance of <span class="math inline">\(Y_j\)</span> are <span class="math inline">\(\mu_j\)</span>. With a log link and the known offset <span class="math inline">\(o_j=\log(E_j)\)</span>, the model with <span class="math inline">\(k\)</span> predictor terms is</p>
 <p><span class="math display">\[
 Y_j \sim \operatorname{Poisson}(\mu_j), \qquad
-\log(\mu_j) = \log(E_j) + \beta_0 + \beta_1 x_{j1} + \cdots + \beta_k x_{jk}.
+\log(\mu_j) = \log(E_j) + \beta_0 + \beta_1 x_{j1} + \cdots + \beta_k x_{jk},
 \]</span></p>
-<p>The offset fixes the coefficient of <span class="math inline">\(\log(E_j)\)</span> at one, so the model compares expected counts relative to population exposure. The request ZIP labels are matched to ZCTAs by five-digit string, so the analysis uses Census areas rather than asserting that ZIP Codes and ZCTAs have identical boundaries. The code retains ZCTAs with zero requests by starting from the full context lookup and joining the observed counts to it.</p>
-<div id="914c5aba" class="cell" data-execution_count="11">
+<p>where <span class="math inline">\(\beta_0\)</span> is the intercept, <span class="math inline">\(\beta_r\)</span> is the coefficient for predictor <span class="math inline">\(x_{jr}\)</span>, and <span class="math inline">\(x_{jr}\)</span> is predictor term <span class="math inline">\(r\)</span> for ZCTA <span class="math inline">\(j\)</span>, for <span class="math inline">\(r=1,\ldots,k\)</span>. The symbol <span class="math inline">\(k\)</span> is the number of predictor terms. The offset fixes the coefficient of <span class="math inline">\(\log(E_j)\)</span> at one, so the model compares expected counts relative to population exposure. The request ZIP labels are matched to ZCTAs by five-digit string, so the analysis uses Census areas rather than asserting that ZIP Codes and ZCTAs have identical boundaries. The code retains ZCTAs with zero requests by starting from the full context lookup and joining the observed counts to it.</p>
+<div id="34f03106" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>zcta_request_counts <span class="op">=</span> (</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    with_context.loc[matched]</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"zcta"</span>, as_index<span class="op">=</span><span class="va">False</span>)</span>
@@ -848,7 +848,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>The left join keeps ZCTAs with no matched requests, which are valid zero counts rather than missing outcomes. Areas without positive population or a population-density estimate cannot enter this example and are excluded. The model uses population in thousands as its exposure and standardizes density so that its coefficient describes a one-standard-deviation contrast.</p>
-<div id="5d31f1be" class="cell" data-execution_count="12">
+<div id="25f22ca1" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>poisson_fit <span class="op">=</span> smf.glm(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"request_count ~ standardize(population_density_per_sqmi)"</span>,</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>poisson_data,</span>
@@ -890,7 +890,7 @@ dtype: int64</code></pre>
 </div>
 <p>The offset makes <span class="math inline">\(\exp(\beta_1)\)</span> a rate ratio: a one-unit increase in <span class="math inline">\(x_{j1}\)</span> multiplies the expected number of requests per 1,000 residents by that amount, holding the other predictors fixed. For example, if <span class="math inline">\(\beta_1=0.20\)</span>, the rate ratio is <span class="math inline">\(\exp(0.20) \approx 1.22\)</span>, or about a 22% higher expected rate. A reference rate of 2 requests per 1,000 residents would become about 2.44. In the fitted model, the density coefficient is about <span class="math inline">\(-0.165\)</span>, which corresponds to a rate ratio near 0.85: the fitted request rate is about 15% lower for a one-standard-deviation increase in density, conditional on this model. Population is an imperfect denominator for illegal-parking reports: it does not measure vehicle activity, curb supply, or reporting behavior. Neither this fitted association nor the hypothetical calculation is a causal effect.</p>
 <p>The Poisson model assumes that the conditional variance equals the conditional mean. The Pearson chi-square statistic divided by residual degrees of freedom gives a rough overdispersion check; values well above one can indicate that the Poisson variation is too restrictive. Calculate this diagnostic for the fitted model:</p>
-<div id="3a4df631" class="cell" data-execution_count="13">
+<div id="0ed4dc59" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>poisson_fit.pearson_chi2 <span class="op">/</span> poisson_fit.df_resid</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>np.float64(40.709736984719775)</code></pre>
@@ -911,7 +911,7 @@ dtype: int64</code></pre>
 </ul>
 <p>Compare observed outcome rates with mean fitted probabilities across boroughs and across ordered groups of each continuous predictor, retaining the count in each group. Calibration is one check: predictions near 0.7 should correspond to an observed outcome rate near 0.7 among comparable requests <span class="citation" data-cites="vancalster2019calibration">(<a href="#ref-vancalster2019calibration" role="doc-biblioref">Calster et al., 2019</a>)</span>.</p>
 <p>The training-set summary below compares observed target rates with average fitted probabilities by borough. A large discrepancy can flag a lack of fit for a group, while close averages do not rule out errors for individual requests or interactions hidden within a borough. This is an in-sample check for the simple GLM, not an estimate of future prediction accuracy.</p>
-<div id="d08824f7" class="cell" data-execution_count="14">
+<div id="5f88602d" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>glm_diagnostics <span class="op">=</span> glm_data[[<span class="st">"borough"</span>]].copy()</span>
@@ -1162,18 +1162,18 @@ dtype: int64</code></pre>
 <p>Prediction metrics depend on the outcome’s scale. Numeric outcomes are evaluated by comparing predicted values with observed values; classification begins with class probabilities and applies a threshold to assign labels. The same train-test separation applies to both tasks, but their metrics answer different questions.</p>
 <section id="numeric-outcomes" class="level3" data-number="9.5.1">
 <h3 data-number="9.5.1" class="anchored" data-anchor-id="numeric-outcomes"><span class="header-section-number">9.5.1</span> Numeric outcomes</h3>
-<p>For a numeric outcome, a residual is the observed value minus its prediction. Three common scores summarize different aspects of these residuals:</p>
+<p>For the <span class="math inline">\(n\)</span> held-out observations, indexed by <span class="math inline">\(i=1,\ldots,n\)</span>, let <span class="math inline">\(y_i\)</span> denote the observed outcome, <span class="math inline">\(\hat{y}_i\)</span> its prediction, and <span class="math inline">\(\bar{y}\)</span> the mean of the observed outcomes. A residual is the observed value minus its prediction. Three common scores summarize different aspects of these residuals:</p>
 <p><span class="math display">\[
 \begin{aligned}
 \text{MAE} &amp;= \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|, \\
 \text{RMSE} &amp;= \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}, \\
 R^2 &amp;= 1 - \frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
               {\sum_{i=1}^{n}(y_i - \bar{y})^2}.
-\end{aligned}
+\end{aligned}.
 \]</span></p>
 <p>Mean absolute error (MAE) reports a typical miss in the outcome’s units. Root mean squared error (RMSE) uses the same units but gives large errors more influence because it squares them before averaging. The coefficient of determination, <span class="math inline">\(R^2\)</span>, compares squared prediction error with variation around the observed mean; a test-set value can be negative when predictions are worse than that reference <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>.</p>
 <p>Recorded closure hours are numeric, so the held-out records also allow us to compare simple duration baselines. The training mean is the constant prediction that minimizes squared error; the training median minimizes absolute error. This comparison shows how numeric prediction metrics work without introducing a second fitted model.</p>
-<div id="fc2c3e09" class="cell" data-execution_count="15">
+<div id="ddef5dbd" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, mean_squared_error, r2_score</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>duration_train <span class="op">=</span> model_data.loc[X_train.index, <span class="st">"closure_hours"</span>]</span>
@@ -1230,7 +1230,7 @@ R^2 &amp;= 1 - \frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
 <h3 data-number="9.5.2" class="anchored" data-anchor-id="binary-outcomes"><span class="header-section-number">9.5.2</span> Binary outcomes</h3>
 <p>For binary classification, a model often estimates a probability and then uses a threshold to assign one of two labels. The positive class is the category of interest, and changing the threshold changes the predicted labels and the resulting threshold-based scores.</p>
 <p>The earlier coefficient tests concern associations in the unpenalized training fit. The held-out scores below answer a different question: how well do the fitted probabilities and labels predict requests outside that fit? A small coefficient p-value alone cannot answer it.</p>
-<p>A confusion matrix compares observed classes with the classes predicted at a chosen threshold. Its four cells count correct and incorrect classifications. A true positive (TP) is an actual positive predicted as positive; a false negative (FN) is an actual positive predicted as negative. A false positive (FP) is an actual negative predicted as positive; a true negative (TN) is an actual negative predicted as negative. Rows below are actual classes and columns are predicted classes, matching the convention used by scikit-learn <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>.</p>
+<p>A confusion matrix compares observed classes with the classes predicted at a chosen threshold. For <span class="math inline">\(n\)</span> evaluated requests, its four cells count correct and incorrect classifications. A true positive (TP) is an actual positive predicted as positive; a false negative (FN) is an actual positive predicted as negative. A false positive (FP) is an actual negative predicted as positive; a true negative (TN) is an actual negative predicted as negative. Rows below are actual classes and columns are predicted classes, matching the convention used by scikit-learn <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>.</p>
 <div id="tbl-model-confusion-matrix" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-model-confusion-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1333,7 +1333,7 @@ Table&nbsp;9.1: General layout of a binary confusion matrix.
 </tr>
 <tr class="even">
 <td style="text-align: left;">F1 score</td>
-<td style="text-align: left;">F1 measure, F-score with <span class="math inline">\(\beta=1\)</span></td>
+<td style="text-align: left;">F1 measure, F-score</td>
 <td style="text-align: left;"><span class="math inline">\(2\,\text{Precision}\,\text{Recall}/(\text{Precision}+\text{Recall})\)</span></td>
 </tr>
 </tbody>
@@ -1345,14 +1345,14 @@ Table&nbsp;9.1: General layout of a binary confusion matrix.
 <li><strong>Specificity and TNR</strong> measure the fraction of actual negatives not flagged; <strong>FPR</strong> is the fraction of actual negatives that were flagged.</li>
 <li><strong>F1</strong> is the harmonic mean of precision and recall. It does not account for true negatives.</li>
 </ul>
-<p>The complementary pairs TPR/FNR, TNR/FPR, PPV/FDR, and NPV/FOR each sum to one. The <span class="math inline">\(F_\beta\)</span> score makes the precision-recall balance explicit:</p>
+<p>The complementary pairs TPR/FNR, TNR/FPR, PPV/FDR, and NPV/FOR each sum to one. For a positive weighting parameter <span class="math inline">\(\beta\)</span>, the <span class="math inline">\(F_\beta\)</span> score makes the precision-recall balance explicit:</p>
 <p><span class="math display">\[
 F_\beta = (1 + \beta^2)
 \frac{\text{Precision}\,\text{Recall}}
      {\beta^2\,\text{Precision} + \text{Recall}}.
 \]</span></p>
 <p>The familiar F1 score sets <span class="math inline">\(\beta=1\)</span>. Values above one give more weight to recall, while values below one give more weight to precision; the choice should reflect the decision context rather than a universal preference <span class="citation" data-cites="wikipediandevaluation scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>; <a href="#ref-wikipediandevaluation" role="doc-biblioref">Wikipedia contributors, n.d.</a>)</span>.</p>
-<p>Accuracy is the fraction of correct labels and can hide poor performance on one class when class frequencies differ. ROC AUC measures how well the model ranks positive cases above negative cases across thresholds; 0.5 indicates chance-level ranking and 1 indicates perfect ranking. AUC neither chooses a threshold nor checks whether probabilities are accurate. Log loss evaluates the probabilities themselves and penalizes confident errors. For observed binary outcomes <span class="math inline">\(y_i\)</span> and predicted probabilities <span class="math inline">\(p_i\)</span>, it is</p>
+<p>Accuracy is the fraction of correct labels and can hide poor performance on one class when class frequencies differ. ROC AUC measures how well the model ranks positive cases above negative cases across thresholds; 0.5 indicates chance-level ranking and 1 indicates perfect ranking. AUC neither chooses a threshold nor checks whether probabilities are accurate. Log loss evaluates the probabilities themselves and penalizes confident errors. For <span class="math inline">\(n\)</span> evaluated observations indexed by <span class="math inline">\(i=1,\ldots,n\)</span>, let <span class="math inline">\(y_i\in\{0,1\}\)</span> denote the observed outcome and <span class="math inline">\(0&lt;p_i&lt;1\)</span> its predicted probability. Log loss is</p>
 <p><span class="math display">\[
 -\frac{1}{n}\sum_{i=1}^{n}
 \left[y_i\log(p_i) + (1-y_i)\log(1-p_i)\right].
@@ -1360,7 +1360,7 @@ F_\beta = (1 + \beta^2)
 <p>These measures answer different questions and none is universally best <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>.</p>
 <p>The threshold determines how missed short closures trade off against unnecessary alerts. The data do not specify the costs of these errors, so the example uses 0.5 only for illustration. A threshold selected for use would be chosen with training or validation data, then evaluated once on the held-out test set.</p>
 <p>The baseline assigns every request the training-set target prevalence as its probability and predicts the majority class. The model one-hot encodes problem detail, borough, hour group, and day type; it standardizes the three area measures and fits logistic regression. A small function creates a fresh preprocessor for each model below, including the later cross-validation examples. The function is available to the exercises in <code>scripts/modeling_preprocessing.py</code>. Its encoder can handle a category in the test set that was absent from training.</p>
-<div id="907dda10" class="cell" data-execution_count="16">
+<div id="8652b53f" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scripts.modeling_preprocessing <span class="im">import</span> make_preprocessor</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
@@ -1368,7 +1368,7 @@ F_\beta = (1 + \beta^2)
 </div>
 <p>Keeping the transformer inside a pipeline makes the training step learn categories and scaling only from training requests. Later, each validation fold will learn them from its own training portion. The function also accepts an additional transformer for the ZIP target-encoding comparison.</p>
 <p>The baseline uses the training prevalence as the probability for every test request. The logistic pipeline fits its preprocessing and coefficients on training requests, then estimates a separate probability for each test request. Neither model uses test outcomes during fitting.</p>
-<div id="57c72597" class="cell" data-execution_count="17">
+<div id="6883d0b0" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>candidate_features <span class="op">=</span> categorical_features <span class="op">+</span> numeric_features</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"prior"</span>).fit(</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    X_train[candidate_features], y_train</span>
@@ -1383,7 +1383,7 @@ F_\beta = (1 + \beta^2)
 <span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>test_probability <span class="op">=</span> model.predict_proba(X_test[candidate_features])[:, <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>At the illustrative 0.5 threshold, the confusion matrix shows the actual outcomes in rows and predicted outcomes in columns. Displaying it before the summary scores makes the errors behind those scores visible.</p>
-<div id="85484f29" class="cell" data-execution_count="18">
+<div id="1fe3f2e0" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>confusion_table <span class="op">=</span> pd.DataFrame(</span>
@@ -1422,7 +1422,7 @@ F_\beta = (1 + \beta^2)
 </div>
 </div>
 <p>Of the 1,120 requests that actually closed in under one hour, the model flags 153 and misses 967. Among the 2,124 requests that took at least an hour, it flags 112 and correctly leaves 2,012 unflagged. Thus, only 265 requests receive a positive label, even though 1,120 meet the target. The following scores summarize these counts and also assess the probabilities before any threshold is applied.</p>
-<div id="fe65b691" class="cell" data-execution_count="19">
+<div id="45b7d9e8" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    accuracy_score, f1_score, log_loss, precision_score,</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    recall_score, roc_auc_score,</span>
@@ -1443,7 +1443,7 @@ F_\beta = (1 + \beta^2)
 <span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Accuracy, recall, specificity, precision, and F1 use the 0.5 labels. ROC AUC and log loss use the probabilities directly, so changing only the classification threshold would leave those two scores unchanged. The same scoring function applies to the baseline and model probabilities.</p>
-<div id="57989bc9" class="cell" data-execution_count="20">
+<div id="9202428a" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Prevalence baseline"</span>: score_predictions(baseline_probability),</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Request and Census-context logistic model"</span>: score_predictions(test_probability),</span>
@@ -1561,7 +1561,7 @@ Figure&nbsp;9.2: ROC curve for the preliminary request and Census-context model 
 <section id="regularize-a-glm" class="level2" data-number="9.6">
 <h2 data-number="9.6" class="anchored" data-anchor-id="regularize-a-glm"><span class="header-section-number">9.6</span> Regularize a GLM</h2>
 <p>The model has many coefficients because problem detail and borough are one-hot encoded, and the later ZIP-label model adds a coefficient for each observed area. Some categories are sparse, while the Census measures can be correlated. An unpenalized fit can assign unstable, large coefficients to these patterns and perform worse on new requests. Regularization limits coefficient size to trade a small amount of training fit for more stable predictions.</p>
-<p>Generalized linear models estimate coefficients by maximizing a distribution-specific likelihood. Regularization adds a penalty for large coefficients to the negative log-likelihood:</p>
+<p>Generalized linear models estimate coefficients by maximizing a distribution-specific likelihood. Let <span class="math inline">\(\mathbf{y}\)</span> be the response vector, <span class="math inline">\(\mathbf{X}\)</span> the predictor matrix, and <span class="math inline">\(\boldsymbol{\beta}\)</span> the coefficient vector. Let <span class="math inline">\(\ell(\boldsymbol{\beta};\mathbf{y},\mathbf{X})\)</span> denote the log-likelihood, <span class="math inline">\(P(\boldsymbol{\beta})\)</span> a penalty on the coefficients, and <span class="math inline">\(\lambda\geq 0\)</span> the penalty strength. The regularized estimate <span class="math inline">\(\widehat{\boldsymbol{\beta}}_\lambda\)</span> minimizes the negative log-likelihood plus the penalty:</p>
 <p><span class="math display">\[
 \widehat{\boldsymbol{\beta}}_\lambda
 = \arg\min_{\boldsymbol{\beta}}
@@ -1570,19 +1570,19 @@ Figure&nbsp;9.2: ROC curve for the preliminary request and Census-context model 
 + \lambda P(\boldsymbol{\beta})
 \right\}.
 \]</span></p>
-<p>Here, <span class="math inline">\(\ell(\boldsymbol{\beta}; \mathbf{y}, \mathbf{X})\)</span> is the log-likelihood for the responses <span class="math inline">\(\mathbf{y}\)</span> and predictor matrix <span class="math inline">\(\mathbf{X}\)</span> under the chosen GLM response distribution and link. The penalty does not include the intercept. The <span class="math inline">\(L_2\)</span> penalty is <span class="math inline">\(P(\boldsymbol{\beta}) = \sum_{j=1}^{p}\beta_j^2\)</span>; it shrinks coefficients without usually setting them exactly to zero. The <span class="math inline">\(L_1\)</span> penalty is <span class="math inline">\(P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|\)</span> and can set some coefficients to zero, producing a sparse model. Elastic net combines the two penalties <span class="citation" data-cites="tibshirani1996regression zou2005regularization">(<a href="#ref-tibshirani1996regression" role="doc-biblioref">Tibshirani, 1996</a>; <a href="#ref-zou2005regularization" role="doc-biblioref">Zou &amp; Hastie, 2005</a>)</span>. The likelihood changes with the response distribution and link, while the same penalty framework can be used across GLMs. The choice of penalty and its strength depends on the modeling goal. This chapter demonstrates the workflow with logistic regression, using <span class="math inline">\(L_2\)</span> regularization to stabilize estimates without arbitrarily selecting one of a group of correlated Census predictors.</p>
+<p>The log-likelihood depends on the chosen GLM response distribution and link. The penalty excludes the intercept. Let <span class="math inline">\(p\)</span> be the number of non-intercept coefficients, and let <span class="math inline">\(\beta_j\)</span> denote coefficient <span class="math inline">\(j\)</span>, for <span class="math inline">\(j=1,\ldots,p\)</span>. The <span class="math inline">\(L_2\)</span> penalty is <span class="math inline">\(P(\boldsymbol{\beta}) = \sum_{j=1}^{p}\beta_j^2\)</span>; it shrinks coefficients without usually setting them exactly to zero. The <span class="math inline">\(L_1\)</span> penalty is <span class="math inline">\(P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|\)</span> and can set some coefficients to zero, producing a sparse model. Elastic net combines the two penalties <span class="citation" data-cites="tibshirani1996regression zou2005regularization">(<a href="#ref-tibshirani1996regression" role="doc-biblioref">Tibshirani, 1996</a>; <a href="#ref-zou2005regularization" role="doc-biblioref">Zou &amp; Hastie, 2005</a>)</span>. The likelihood changes with the response distribution and link, while the same penalty framework can be used across GLMs. The choice of penalty and its strength depends on the modeling goal. This chapter demonstrates the workflow with logistic regression, using <span class="math inline">\(L_2\)</span> regularization to stabilize estimates without arbitrarily selecting one of a group of correlated Census predictors.</p>
 <p>The same idea applies to a Poisson GLM: the likelihood describes counts, and a penalty can shrink coefficients for correlated predictors. The penalty controls coefficient size, while the Poisson distribution still assumes that the conditional variance equals the conditional mean. Regularization does not correct overdispersion or a poorly specified mean structure.</p>
 <p>In logistic regression, scikit-learn’s <code>C</code> parameter is inversely related to the <span class="math inline">\(L_2\)</span> penalty strength, so smaller values apply stronger shrinkage <span class="citation" data-cites="scikitlearn2026logistic">(<a href="#ref-scikitlearn2026logistic" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026b</a>)</span>. Other GLM implementations expose their regularization controls differently. Numeric predictors should be standardized because the penalty acts on coefficient size; otherwise, a change in measurement units changes how strongly a predictor is penalized. The analysis standardizes area measures and keeps preprocessing inside the cross-validation pipeline.</p>
-<p>Cross-validation selects <code>C</code> using training data alone. Within each fold, the pipeline learns its scaling, category encoding, and model coefficients from the fold’s training records, then evaluates log loss on its validation records. For a candidate setting <span class="math inline">\(h\)</span>, let <span class="math inline">\(V_k\)</span> be the validation records in fold <span class="math inline">\(k\)</span>, and let <span class="math inline">\(\widehat{p}_{i,-k}(h)\)</span> be the predicted probability for record <span class="math inline">\(i\)</span> from a model fitted without fold <span class="math inline">\(k\)</span>. The fold’s log loss and the mean cross-validation score are</p>
+<p>Cross-validation selects <code>C</code> using training data alone. Within each fold, the pipeline learns its scaling, category encoding, and model coefficients from the fold’s training records, then evaluates log loss on its validation records. For a candidate setting <span class="math inline">\(h\)</span>, let <span class="math inline">\(K\)</span> be the number of folds and <span class="math inline">\(V_k\)</span> the validation records in fold <span class="math inline">\(k\)</span>, for <span class="math inline">\(k=1,\ldots,K\)</span>. For each record <span class="math inline">\(i\in V_k\)</span>, let <span class="math inline">\(y_i\in\{0,1\}\)</span> be its outcome and <span class="math inline">\(\widehat{p}_{i,-k}(h)\)</span> its predicted probability from a model fitted without fold <span class="math inline">\(k\)</span>. The fold’s log loss and the mean cross-validation score are</p>
 <p><span class="math display">\[
 \begin{aligned}
 L_k(h) &amp;= -\frac{1}{|V_k|}\sum_{i\in V_k}
 \left[y_i\log\widehat{p}_{i,-k}(h)
 +(1-y_i)\log\left(1-\widehat{p}_{i,-k}(h)\right)\right],\\
 \operatorname{CV}(h) &amp;= \frac{1}{K}\sum_{k=1}^{K}L_k(h),
-\end{aligned}
+\end{aligned}.
 \]</span></p>
-<p>where <span class="math inline">\(K\)</span> is the number of folds, and <span class="math inline">\(y_i\)</span> is zero or one. The selected candidate has the smallest mean validation log loss. It is then refitted on the complete training set. The separate test set remains untouched until selection is complete because using the same cross-validation scores both to select and report final performance can be optimistic <span class="citation" data-cites="scikitlearn2026crossvalidation varma2006bias">(<a href="#ref-scikitlearn2026crossvalidation" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>; <a href="#ref-varma2006bias" role="doc-biblioref">Varma &amp; Simon, 2006</a>)</span>.</p>
+<p>The selected candidate has the smallest mean validation log loss. It is then refitted on the complete training set. The separate test set remains untouched until selection is complete because using the same cross-validation scores both to select and report final performance can be optimistic <span class="citation" data-cites="scikitlearn2026crossvalidation varma2006bias">(<a href="#ref-scikitlearn2026crossvalidation" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>; <a href="#ref-varma2006bias" role="doc-biblioref">Varma &amp; Simon, 2006</a>)</span>.</p>
 <p>The comparison separates measured area context from a postal-code lookup. All four models use the same training and test requests. Each includes problem detail, borough, hour group, and day type. One model uses those request features; a second adds three ACS-derived area measures; a third adds the incident ZIP label as a categorical identifier; and a fourth uses a smoothed target encoding of that label. Five-fold stratified cross-validation selects <code>C</code> by log loss, a probability-focused criterion. Standardization and one-hot encoding are inside the pipeline so each fold learns its preprocessing from its own training portion. The ZIP-label model is a predictive benchmark for areas already represented in the data; its coefficient for a ZIP label does not explain what neighborhood feature may relate to closure time.</p>
 <p>One-hot encoding gives each ZIP label its own coefficient, which can be unstable when some labels have few requests. Smoothed target encoding offers another representation: it replaces a label with an estimate of its under-one-hour closure rate, then shrinks that estimate toward the overall rate. For ZCTA <span class="math inline">\(j\)</span>, a common estimate is</p>
 <p><span class="math display">\[
@@ -1590,7 +1590,7 @@ L_k(h) &amp;= -\frac{1}{|V_k|}\sum_{i\in V_k}
   \frac{s_j + \alpha \bar{p}}{n_j + \alpha},
 \]</span></p>
 <p>where <span class="math inline">\(s_j\)</span> is the number of requests closing in under an hour in ZCTA <span class="math inline">\(j\)</span>, <span class="math inline">\(n_j\)</span> is its number of requests, <span class="math inline">\(\bar{p}\)</span> is the overall training-set rate, and <span class="math inline">\(\alpha\)</span> controls shrinkage. Larger values of <span class="math inline">\(\alpha\)</span> pull area estimates more strongly toward the overall rate. This empirical Bayes idea is useful for categories with different sample sizes <span class="citation" data-cites="micci-barreca2001preprocessing pargent2022regularized">(<a href="#ref-micci-barreca2001preprocessing" role="doc-biblioref">Micci-Barreca, 2001</a>; <a href="#ref-pargent2022regularized" role="doc-biblioref">Pargent et al., 2022</a>)</span>. Since the encoding uses the outcome, fitting it on each row’s own outcome would leak information into the training data. The encoder below cross-fits the training values within each training fold; for the held-out test set, it uses category rates estimated from the full training set <span class="citation" data-cites="scikitlearn2026targetencoder">(<a href="#ref-scikitlearn2026targetencoder" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026d</a>)</span>.</p>
-<div id="8fcd20db" class="cell" data-execution_count="23">
+<div id="a130209a" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, StratifiedKFold</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> TargetEncoder</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1615,7 +1615,7 @@ L_k(h) &amp;= -\frac{1}{|V_k|}\sum_{i\in V_k}
 <span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> search, probability</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The helper places standardization and one-hot encoding inside each cross-validation fold, so validation records do not determine their own preprocessing. It uses log loss to select <code>C</code>, then returns probabilities for the untouched test set. The first comparisons assess request features, area context, and a ZIP-label identifier.</p>
-<div id="fc6d2d9a" class="cell" data-execution_count="24">
+<div id="54adce4c" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>zip_identifier_features <span class="op">=</span> categorical_features <span class="op">+</span> [<span class="st">"incident_zip"</span>]</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>request_features_search, request_features_probability <span class="op">=</span> tune_logistic(</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    categorical_features, []</span>
@@ -1628,7 +1628,7 @@ L_k(h) &amp;= -\frac{1}{|V_k|}\sum_{i\in V_k}
 <span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>ZIP target encoding uses the outcome to create an area-level feature, so training rows must not contribute their own outcomes to their encoded values. The encoder cross-fits those values within its training folds and uses rates estimated from the training data for the test set. The smoothing value and logistic penalty strength are selected together by cross-validation.</p>
-<div id="fe086a91" class="cell" data-execution_count="25">
+<div id="027f4fe2" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>zip_target_pipeline <span class="op">=</span> make_pipeline(</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    make_preprocessor(</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>        categorical_features,</span>
@@ -1660,7 +1660,7 @@ L_k(h) &amp;= -\frac{1}{|V_k|}\sum_{i\in V_k}
 <span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>)[:, <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The table compares all four held-out models using the same score functions. It also records the penalty strength selected within cross-validation and, for target encoding, its selected smoothing value.</p>
-<div id="462265fb" class="cell" data-execution_count="26">
+<div id="a144ea36" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Request details and timing"</span>: score_predictions(request_features_probability),</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Census area context"</span>: score_predictions(census_probability),</span>
