@@ -98,19 +98,15 @@ would require reconsideration.
 
 We first need rules that behave correctly before asking a learner to use
 them. A tuple stores the board so that it can later serve as a dictionary
-key. We use standard-library random-number generators with explicit seeds,
-and display plots as SVG.
+key. We use standard-library random-number generators with explicit seeds.
+The constants below describe the empty board, the printed marks, and the
+eight possible winning lines.
 
 ```{python}
 import random
-import pandas as pd
-import matplotlib.pyplot as plt
-import plotnine as gg
-from matplotlib_inline.backend_inline import set_matplotlib_formats
 
-set_matplotlib_formats("svg")
-gg.options.figure_format = "svg"
 EMPTY = (0,) * 9
+MARKS = {1: "X", -1: "O"}
 LINES = ((0, 1, 2), (3, 4, 5), (6, 7, 8),
          (0, 3, 6), (1, 4, 7), (2, 5, 8),
          (0, 4, 8), (2, 4, 6))
@@ -122,6 +118,7 @@ win, and `0` for a draw. An unfinished game returns `None`.
 
 ```{python}
 def outcome(board):
+    """Return 1 for a crosses win, -1 for noughts, 0 for a draw, or None."""
     for i, j, k in LINES:
         if board[i] != 0 and board[i] == board[j] == board[k]:
             return board[i]
@@ -134,6 +131,7 @@ from continuing a game merely because some squares remain blank.
 
 ```{python}
 def legal_actions(board):
+    """Return empty-square indices, or an empty tuple if the game ended."""
     if outcome(board) is not None:
         return ()
     return tuple(i for i, mark in enumerate(board) if mark == 0)
@@ -146,8 +144,9 @@ whose turn it is; this helper checks the marker and square.
 
 ```{python}
 def place(board, action, mark):
+    """Place a mark on a legal square and return a new board."""
     if mark not in (1, -1) or action not in legal_actions(board):
-        raise ValueError('Use an empty square in an unfinished game.')
+        raise ValueError("Use an empty square in an unfinished game.")
     updated = list(board)
     updated[action] = mark
     return tuple(updated)
@@ -155,14 +154,21 @@ def place(board, action, mark):
 
 The display helper draws a board and can show indices on empty squares.
 It provides the same position convention used by the action-selection
-code and the human-play interface.
+code and the human-play interface. The `divmod(pos, 3)` call gives
+the row and column of a square. The vertical coordinate increases upward,
+so `2 - row` puts the first row at the top.
 
 ```{python}
+import matplotlib.pyplot as plt
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+
+set_matplotlib_formats("svg")
+
 def draw_board(board, ax, number_empty=False):
-    marks = {1: "X", -1: "O"}
+    """Draw marks and, optionally, indices on empty squares."""
     for pos, value in enumerate(board):
         row, col = divmod(pos, 3)
-        label = marks.get(value, str(pos) if number_empty else "")
+        label = MARKS.get(value, str(pos) if number_empty else "")
         ax.text(col, 2 - row, label, ha="center", va="center", fontsize=20)
     for edge in (0.5, 1.5):
         ax.plot([-0.5, 2.5], [edge, edge], color="black")
@@ -197,28 +203,46 @@ plt.show()
 The training opponent chooses uniformly from its legal replies. Its
 function accepts the current board and a random-number generator. Later
 we can substitute another opponent without changing the episode loop.
+The argument `rng` is a `random.Random` object, whose `choice` method
+samples one item from a sequence. Passing the opponent function as an
+argument lets the game engine call it whenever noughts must reply.
 
 ```{python}
 def random_opponent(board, rng):
+    """Choose a legal noughts reply uniformly at random."""
     return rng.choice(legal_actions(board))
 ```
 
 The transition function places crosses, checks whether the game ended,
 then obtains and places the opponent's reply if needed. Only after both
-parts does it return the next decision state. The three outputs are the
-next board, the reward, and the termination flag `done`.
+parts does it return the next decision state. It saves the interaction
+in one dictionary, including the opponent's chosen square. A crosses win
+has `reply=None` because the opponent gets no further move.
+
+| Dictionary key | Meaning |
+|:--|:--|
+| `board` | State $X_t$ before the learner acts |
+| `action` | Chosen action $A_t$ |
+| `reply` | Opponent's square, or `None` if crosses ended the game |
+| `reward` | Reward $Y_{t+1}$ |
+| `next_board` | Resulting state $X_{t+1}$ |
+| `done` | Whether the game has ended |
 
 ```{python}
 def step(board, action, opponent, rng):
+    """Play a crosses action and any reply; return the transition record."""
     next_board = place(board, action, 1)
     result = outcome(next_board)
-    if result is not None:
-        return next_board, result, True
-    reply = opponent(next_board, rng)
-    next_board = place(next_board, reply, -1)
-    result = outcome(next_board)
-    reward = 0 if result is None else result
-    return next_board, reward, result is not None
+    reply = None
+    if result is None:
+        reply = opponent(next_board, rng)
+        next_board = place(next_board, reply, -1)
+        result = outcome(next_board)
+    return {
+        "board": board, "action": action, "reply": reply,
+        "reward": 0 if result is None else result,
+        "next_board": next_board, "done": result is not None
+    }
 ```
 
 For the winning position above, the game ends immediately after action
@@ -226,10 +250,8 @@ For the winning position above, the game ends immediately after action
 though the terminal board still has blank squares.
 
 ```{python}
-next_board, reward, done = step(
-    win_board, 2, random_opponent, random.Random(2026)
-)
-{"reward": reward, "done": done, "remaining_actions": legal_actions(next_board)}
+win_transition = step(win_board, 2, random_opponent, random.Random(2026))
+win_transition
 ```
 
 ## Learning Action Values
@@ -253,6 +275,27 @@ estimates, rather than labels supplied by an expert or probabilities that
 must lie between zero and one. With our reward definition they can also
 be negative.
 
+The following helper collects the estimates for legal actions in one
+place. The expression `q.get((board, action), 0.0)` reads an existing
+value or returns zero for a missing key; it does not add that key to
+`q`. A terminal board gives an empty dictionary. Both action selection
+and learning will use this helper so that their action sets agree.
+
+```{python}
+def q_values(q, board):
+    """Return current estimates for this board's legal actions."""
+    return {action: q.get((board, action), 0.0)
+            for action in legal_actions(board)}
+```
+
+Before training, the winning position's legal actions all have zero
+estimates. The program knows which squares are legal from the rules;
+it has not yet learned their consequences.
+
+```{python}
+q_values({}, win_board)
+```
+
 ### Exploration and Exploitation
 
 Always choosing the current largest estimate exploits the table but may
@@ -263,15 +306,21 @@ current value. Equal best values are broken randomly, so the initial
 all-zero table does not automatically favor square `0`.
 
 The function below reads the table without changing it. Both the random
-choice and the maximization consider legal actions only.
+choice and the maximization consider legal actions only. Iterating
+over a dictionary gives its keys, so `list(values)` is a list of legal
+square indices. The last two lines find the largest estimate and collect
+all actions tied at that value before choosing among them.
 
 ```{python}
 def choose_action(q, board, rng, epsilon=0.0):
-    actions = legal_actions(board)
+    """Choose an epsilon-greedy action without changing q."""
+    values = q_values(q, board)
+    if not values:
+        raise ValueError("Cannot choose an action after the game has ended.")
     if rng.random() < epsilon:
-        return rng.choice(actions)
-    best = max(q.get((board, a), 0.0) for a in actions)
-    ties = [a for a in actions if q.get((board, a), 0.0) == best]
+        return rng.choice(list(values))
+    best = max(values.values())
+    ties = [action for action, value in values.items() if value == best]
     return rng.choice(ties)
 ```
 
@@ -312,22 +361,25 @@ the sampled action may have been exploratory; Q-learning is therefore
 an off-policy method [@watkins1992qlearning].
 
 ```{python}
-def update_q(q, board, action, reward, next_board, done, alpha=0.2, gamma=1.0):
-    target = reward
-    if not done:
-        target += gamma * max(q.get((next_board, a), 0.0)
-                              for a in legal_actions(next_board))
-    old = q.get((board, action), 0.0)
-    q[(board, action)] = old + alpha * (target - old)
+def update_q(q, transition, alpha=0.2, gamma=1.0):
+    """Update one entry of q in place using a transition record."""
+    target = transition["reward"]
+    if not transition["done"]:
+        next_values = q_values(q, transition["next_board"])
+        target += gamma * max(next_values.values())
+    key = (transition["board"], transition["action"])
+    old = q.get(key, 0.0)
+    q[key] = old + alpha * (target - old)
 ```
 
 A single winning observation moves a previously zero entry to 0.2 when
 `alpha=0.2`. This checks the terminal branch of the update using a known
-outcome from the game rules.
+outcome from the game rules. The function changes `q_demo` directly;
+it does not return a replacement dictionary.
 
 ```{python}
 q_demo = {}
-update_q(q_demo, win_board, 2, reward, next_board, done)
+update_q(q_demo, win_transition, alpha=0.2, gamma=1.0)
 q_demo[(win_board, 2)]
 ```
 
@@ -338,9 +390,11 @@ then has target 0.8 and moves from zero to 0.16. The value 0.8 below is a
 specified illustration, not an estimate from the trained agent.
 
 ```{python}
-mid_board = place(place(EMPTY, 0, 1), 4, -1)
-q_demo[(mid_board, 1)] = 0.8
-update_q(q_demo, EMPTY, 0, 0, mid_board, False)
+mid_transition = step(EMPTY, 0, random_opponent, random.Random(2026))
+mid_board = mid_transition["next_board"]
+next_action = legal_actions(mid_board)[0]
+q_demo[(mid_board, next_action)] = 0.8
+update_q(q_demo, mid_transition, alpha=0.2, gamma=1.0)
 round(q_demo[(EMPTY, 0)], 2)
 ```
 
@@ -359,24 +413,38 @@ trace for inspecting a game without storing every training transition.
 
 The loop starts from the same empty board each time. A nonterminal next
 board is always another crosses decision, so no extra player-to-move field
-is needed in this particular state representation.
+is needed in this particular state representation. The first three
+arguments supply the value table, the opponent function, and the random
+generator. The remaining options control learning or recording:
+
+| Option | Role |
+|:--|:--|
+| `epsilon` | Probability of exploring rather than selecting a best estimate |
+| `learn` | Update the table when `True`; leave it fixed when `False` |
+| `alpha` | Learning rate $\alpha$ passed to the update |
+| `gamma` | Discount factor $\gamma$ passed to the update |
+| `record` | Save transitions in a list for later inspection |
+
+The function always returns the final reward and a list of recorded
+transitions. When `record=False`, that list is empty. One shared loop keeps
+training, evaluation, and human play subject to exactly the same game rules.
 
 ```{python}
 def play_episode(q, opponent, rng, epsilon=0.0, learn=False,
                  alpha=0.2, gamma=1.0, record=False):
+    """Play one game; optionally update q or save its transitions."""
     board = EMPTY
     trace = []
     while True:
-        action = choose_action(q, board, rng, epsilon)
-        next_board, reward, done = step(board, action, opponent, rng)
+        action = choose_action(q, board, rng, epsilon=epsilon)
+        transition = step(board, action, opponent, rng)
         if learn:
-            update_q(q, board, action, reward, next_board, done, alpha, gamma)
+            update_q(q, transition, alpha=alpha, gamma=gamma)
         if record:
-            trace.append({'board': board, 'action': action, 'reward': reward,
-                          'next_board': next_board, 'done': done})
-        if done:
-            return reward, trace
-        board = next_board
+            trace.append(transition)
+        if transition["done"]:
+            return transition["reward"], trace
+        board = transition["next_board"]
 ```
 
 ### Evaluating a Frozen Policy
@@ -386,17 +454,24 @@ The evaluator plays complete games with `epsilon=0` and the default
 perspective. Mean reward is the win proportion minus the loss proportion
 under our reward definition. Evaluation cannot insert or update table
 entries because action selection uses dictionary lookups and the update
-branch is disabled.
+branch is disabled. The underscore in `reward, _` discards the unused
+recording list; the reward determines which outcome count increases.
 
 ```{python}
 def evaluate(q, opponent, games, seed):
+    """Count outcomes in fresh games without updating q."""
+    if games < 1:
+        raise ValueError("games must be positive")
     rng = random.Random(seed)
     counts = {1: 0, 0: 0, -1: 0}
     for _ in range(games):
-        reward, _ = play_episode(q, opponent, rng)
+        reward, _ = play_episode(q, opponent, rng, epsilon=0.0, learn=False)
         counts[reward] += 1
-    return {'games': games, 'wins': counts[1], 'draws': counts[0],
-            'losses': counts[-1], 'mean_reward': (counts[1]-counts[-1])/games}
+    return {
+        "games": games, "wins": counts[1], "draws": counts[0],
+        "losses": counts[-1],
+        "mean_reward": (counts[1] - counts[-1]) / games
+    }
 ```
 
 Before training, an empty table supplies the random-action baseline.
@@ -426,7 +501,17 @@ model settings and final training length are fixed in advance.
 ```{python}
 q = {}
 train_rng = random.Random(2026)
-history = [{"episodes": 0, **evaluate(q, random_opponent, 500, 2027)}]
+initial = baseline.copy()
+initial["episodes"] = 0
+history = [initial]
+```
+
+We reuse the baseline evaluation for the zero-training checkpoint. A copy
+lets us add the episode counter without changing the original baseline
+record. The loop then trains one game at a time and stores a new evaluation
+record at each checkpoint.
+
+```{python}
 for episode in range(1, 30_001):
     epsilon = max(0.1, 1 - episode / 20_000)
     play_episode(
@@ -434,10 +519,9 @@ for episode in range(1, 30_001):
         alpha=0.2, gamma=1.0
     )
     if episode % 2500 == 0:
-        history.append({
-            "episodes": episode,
-            **evaluate(q, random_opponent, 500, 2027)
-        })
+        scores = evaluate(q, random_opponent, games=500, seed=2027)
+        scores["episodes"] = episode
+        history.append(scores)
 ```
 
 The resulting table reports performance of frozen greedy policies, rather
@@ -446,6 +530,8 @@ a learning agent can deliberately make exploratory mistakes during training
 that its evaluated policy would avoid.
 
 ```{python}
+import pandas as pd
+
 learning_history = pd.DataFrame(history)
 learning_history[["episodes", "wins", "draws", "losses", "mean_reward"]]
 ```
@@ -454,6 +540,13 @@ The figure uses facets to compare the three outcome proportions. All panels
 have the same vertical scale. The policies at successive checkpoints
 share training history, and the monitoring experiments reuse a seed;
 the points should not be treated as independent training replications.
+We use plotnine for the faceted display.
+
+```{python}
+import plotnine as gg
+
+gg.options.figure_format = "svg"
+```
 
 ```{python}
 #| label: fig-rl-learning-curves
@@ -516,7 +609,9 @@ The recursive function returns the result from crosses' perspective.
 At a crosses turn it takes the largest value among legal continuations;
 at a noughts turn it takes the smallest. A terminal board supplies its
 known outcome. The `cache` decorator saves previously computed board-turn
-values, avoiding repeated searches of the same continuation.
+values, avoiding repeated searches of the same continuation. This uses
+the same recursion and caching ideas as the Fibonacci examples in
+@sec-python. Multiplying a marker by $-1$ switches whose turn is searched.
 
 This is minimax search, a planning procedure using the known game rules.
 It is used only as a benchmark here. The Q-learning training loop did not
@@ -529,12 +624,18 @@ from functools import cache
 ```{python}
 @cache
 def perfect_value(board, mark):
+    """Return the optimal game outcome from crosses' perspective."""
     result = outcome(board)
     if result is not None:
         return result
-    values = [perfect_value(place(board, a, mark), -mark)
-              for a in legal_actions(board)]
-    return max(values) if mark == 1 else min(values)
+    values = []
+    for action in legal_actions(board):
+        next_board = place(board, action, mark)
+        value = perfect_value(next_board, -mark)
+        values.append(value)
+    if mark == 1:
+        return max(values)
+    return min(values)
 ```
 
 Under optimal play from the empty board, the value is zero: either side
@@ -551,10 +652,14 @@ continuation is finite, the recursion stops without a depth cutoff.
 
 ```{python}
 def perfect_opponent(board, rng):
-    values = {a: perfect_value(place(board, a, -1), 1)
-              for a in legal_actions(board)}
+    """Choose a game-theoretically optimal noughts reply."""
+    values = {}
+    for action in legal_actions(board):
+        next_board = place(board, action, -1)
+        values[action] = perfect_value(next_board, 1)
     best = min(values.values())
-    return rng.choice([a for a in values if values[a] == best])
+    ties = [action for action, value in values.items() if value == best]
+    return rng.choice(ties)
 ```
 
 ### Final Evaluation
@@ -570,10 +675,10 @@ for agent, table in [("random", {}), ("learned", q)]:
     for opponent_name, opponent in [
         ("random", random_opponent), ("minimax", perfect_opponent)
     ]:
-        rows.append({
-            "agent": agent, "opponent": opponent_name,
-            **evaluate(table, opponent, games=2000, seed=2028)
-        })
+        scores = evaluate(table, opponent, games=2000, seed=2028)
+        scores["agent"] = agent
+        scores["opponent"] = opponent_name
+        rows.append(scores)
 results = pd.DataFrame(rows)
 results[["agent", "opponent", "games", "wins", "draws", "losses", "mean_reward"]]
 ```
@@ -595,13 +700,20 @@ proportion. For zero losses in 2,000 independent simulated games under a
 fixed policy-opponent combination, the upper endpoint is about 0.0019.
 This interval conditions on the fitted table; it does not measure
 variation across independent training runs or unfamiliar opponents
-[@statsmodels2026proportion].
+[@statsmodels2026proportion]. The calculation reads the observed counts
+from the results table, so changing the experiment also changes its interval.
 
 ```{python}
 from statsmodels.stats.proportion import proportion_confint
 
-loss_limits = proportion_confint(0, 2000, alpha=0.05, method="wilson")
-{"loss_rate_lower": loss_limits[0], "loss_rate_upper": loss_limits[1]}
+random_result = results.loc[
+    (results["agent"] == "learned") & (results["opponent"] == "random")
+].iloc[0]
+loss_limits = proportion_confint(
+    random_result["losses"], random_result["games"],
+    alpha=0.05, method="wilson"
+)
+pd.DataFrame({"lower": [loss_limits[0]], "upper": [loss_limits[1]]})
 ```
 
 ## Inspecting a Learned Game
@@ -615,24 +727,19 @@ learning back on.
 demo_return, trace = play_episode(
     q, random_opponent, random.Random(2029), record=True
 )
-turns = []
-for turn, transition in enumerate(trace, start=1):
-    replies = [
-        i for i in range(9)
-        if transition["board"][i] == 0 and transition["next_board"][i] == -1
-    ]
-    turns.append({
-        "turn": turn, "action": transition["action"],
-        "reply": replies[0] if replies else pd.NA,
-        "reward": transition["reward"], "done": transition["done"]
-    })
-pd.DataFrame(turns)
+turns = pd.DataFrame(trace)
+turns["turn"] = range(1, len(turns) + 1)
+turns["reply"] = turns["reply"].astype("Int64")
+turns[["turn", "action", "reply", "reward", "done"]]
 ```
 
 The snapshots show the empty board and the board after each environment
 transition. A terminal crosses win has no opponent reply in its final
 transition. Follow the square indices from @fig-rl-board-rules to relate
-these boards to the actions in the table.
+these boards to the actions in the table. The saved `reply` field gives
+the opponent move directly. Pandas' nullable integer type `Int64` displays
+the absent final reply as a missing value while keeping square indices
+as integers.
 
 ```{python}
 #| label: fig-rl-recorded-game
@@ -653,9 +760,9 @@ this position: the rules identify legal actions, and the table assigns
 estimated returns only to those actions.
 
 ```{python}
+values = q_values(q, win_board)
 action_values = pd.DataFrame({
-    "action": legal_actions(win_board),
-    "q_value": [q.get((win_board, a), 0.0) for a in legal_actions(win_board)]
+    "action": list(values), "q_value": list(values.values())
 })
 action_values
 ```
@@ -677,25 +784,34 @@ preceding code chunks.
 
 ```{python}
 def print_board(board):
-    labels = [{1: "X", -1: "O"}.get(value, str(i))
-              for i, value in enumerate(board)]
-    print("\n---------\n".join(
-        " | ".join(labels[i:i + 3]) for i in (0, 3, 6)
-    ))
+    """Print marks and empty-square indices for a console player."""
+    labels = [MARKS.get(value, str(i)) for i, value in enumerate(board)]
+    for start in (0, 3, 6):
+        print(" | ".join(labels[start:start + 3]))
+        if start < 6:
+            print("---------")
 ```
 
 The human opponent is asked for a legal square after crosses has moved.
 It retries an invalid entry before returning a move to the game engine.
 The `rng` argument keeps the same interface as the other opponent
 functions, although this opponent obtains its action from the keyboard.
+The `try` block converts the entry to an integer. A `ValueError` triggers
+a new prompt for text such as `hello` or `²`; `continue` restarts the loop.
+A converted integer must still pass the legal-square check.
 
 ```{python}
 def human_opponent(board, rng):
+    """Ask for a legal noughts move, retrying invalid input."""
     print_board(board)
     while True:
-        answer = input("Your square (0–8): ")
-        if answer.isdigit() and int(answer) in legal_actions(board):
-            return int(answer)
+        try:
+            action = int(input("Your square (0–8): "))
+        except ValueError:
+            print("Enter a whole-number square index.")
+            continue
+        if action in legal_actions(board):
+            return action
         print("Choose an empty square shown on the board.")
 ```
 
@@ -705,8 +821,9 @@ so their outcomes should be interpreted in that context.
 
 ```{python}
 def play_human(q, seed=2029):
+    """Play one game as noughts against the frozen learned policy."""
     reward, trace = play_episode(
-        q, human_opponent, random.Random(seed), record=True
+        q, human_opponent, random.Random(seed), learn=False, record=True
     )
     print_board(trace[-1]["next_board"])
     print({1: "Crosses wins.", 0: "Draw.", -1: "You win."}[reward])
