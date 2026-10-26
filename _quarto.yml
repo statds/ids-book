@@ -31,6 +31,7 @@ book:
     - 10-machine-learning.qmd
     - 11-supervised.qmd
     - 12-unsupervised.qmd
+    - 13-reinforcement.qmd
     - 90-ethics.qmd
 
 format:
