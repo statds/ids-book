@@ -1055,26 +1055,35 @@ by considering the consequences of each kind of error with the people who
 would use the predictions.
 
 
-## Regularize a GLM
+## Regularize a GLM {#sec-glm-regularization}
 
+
+<!-- Instructor-source material: ids-s25/stats.qmd, LASSO Logistic Models
+     (formulation, practical benefits, solution path, preprocessing), and
+     ids-f25/09-classification.qmd, Tuning Regularized Logistic Models.
+     Generalize the likelihood to GLMs; retain the simulated lasso path.
+     Correct the likelihood scaling in the C-to-lambda conversion, fit
+     scaling before computing the path, and keep preprocessing within CV. -->
 
 The model has many coefficients because problem detail and borough are
 one-hot encoded, and the later ZIP-label model adds a coefficient for each
 observed area. Some categories are sparse, while the Census measures can be
 correlated. An unpenalized fit can assign unstable, large coefficients to
 these patterns and perform worse on new requests. Regularization limits
-coefficient size to trade a small amount of training fit for more stable
-predictions.
+coefficient size to trade some training fit for more stable predictions.
 
+
+### Penalized Likelihood
 
 Generalized linear models estimate coefficients by maximizing a
-distribution-specific likelihood. Let $\mathbf{y}$ be the response vector,
-$\mathbf{X}$ the predictor matrix, and $\boldsymbol{\beta}$ the coefficient
-vector. Let $\ell(\boldsymbol{\beta};\mathbf{y},\mathbf{X})$ denote the
-log-likelihood, $P(\boldsymbol{\beta})$ a penalty on the coefficients, and
-$\lambda\geq 0$ the penalty strength. The regularized estimate
-$\widehat{\boldsymbol{\beta}}_\lambda$ minimizes the negative
-log-likelihood plus the penalty:
+distribution-specific likelihood. Let $\mathbf{y}$ be the response vector
+for $n$ observations, $\mathbf{X}$ the predictor matrix, and
+$\boldsymbol{\beta}=(\beta_0,\beta_1,\ldots,\beta_p)^\top$ the
+coefficient vector, where $\beta_0$ is the intercept and $p$ is the
+number of other coefficients. Let
+$\ell(\boldsymbol{\beta};\mathbf{y},\mathbf{X})$ denote the **summed**
+log-likelihood and $P(\boldsymbol{\beta})$ a penalty excluding the
+intercept. A regularized GLM estimates the coefficients by
 
 
 $$
@@ -1083,90 +1092,364 @@ $$
 \left\{
 -\ell(\boldsymbol{\beta}; \mathbf{y}, \mathbf{X})
 + \lambda P(\boldsymbol{\beta})
-\right\}.
+\right\},
+$$ {#eq-glm-penalized}
+
+where $\lambda\geq 0$ is a tuning parameter controlling the strength of
+regularization. A zero value gives the unpenalized objective; larger
+values place greater weight on shrinking the coefficients. The likelihood
+changes with the GLM response distribution and link, while the penalty
+restricts the coefficients [@hastie2009elements].
+
+
+The least absolute shrinkage and selection operator (**lasso**) uses
+
+
+$$
+P(\boldsymbol{\beta})=\sum_{j=1}^{p}|\beta_j|,
 $$
 
-
-The log-likelihood depends on the chosen GLM response distribution and link.
-The penalty excludes the intercept. Let $p$ be the number of
-non-intercept coefficients, and let $\beta_j$ denote coefficient $j$,
-for $j=1,\ldots,p$. The $L_2$ penalty is
-$P(\boldsymbol{\beta}) = \sum_{j=1}^{p}\beta_j^2$; it shrinks coefficients
-without usually setting them exactly to zero. The $L_1$ penalty is
-$P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|$ and can set some
-coefficients to zero, producing a sparse model. Elastic net combines the
-two penalties [@tibshirani1996regression; @zou2005regularization]. The
-likelihood changes with the response distribution and link, while the same
-penalty framework can be used across GLMs. The choice of penalty and its
-strength depends on the modeling goal. This chapter demonstrates the
-workflow with logistic regression, using $L_2$ regularization to stabilize
-estimates without arbitrarily selecting one of a group of correlated Census
-predictors.
+where $j$ indexes the non-intercept coefficients. The absolute-value penalty
+can shrink some coefficients exactly to zero, giving a sparse model
+[@tibshirani1996regression]. Thus, lasso performs coefficient estimation
+and variable selection together. It can be useful when many candidate
+predictors are available, even when their number exceeds the number of
+observations. Fewer nonzero coefficients can simplify interpretation, but
+they do not establish which variables cause the outcome. With correlated
+predictors, the selected variables can also change across samples.
 
 
-The same idea applies to a Poisson GLM: the likelihood describes counts,
-and a penalty can shrink coefficients for correlated predictors. The
-penalty controls coefficient size, while the Poisson distribution still
-assumes that the conditional variance equals the conditional mean.
-Regularization does not correct overdispersion or a poorly specified mean
-structure.
+Ridge uses the squared-coefficient penalty
+$P(\boldsymbol{\beta})=\tfrac{1}{2}\sum_{j=1}^{p}\beta_j^2$ and
+usually shrinks coefficients without setting them exactly to zero. These
+are also called the $\ell_1$ and squared $\ell_2$ penalties,
+respectively. Elastic net combines the lasso and ridge penalties
+[@zou2005regularization]. Here we use lasso to make both shrinkage and
+variable selection visible, following the logistic-model example below.
+The earlier preliminary scikit-learn fit used its default ridge penalty;
+penalty choice should be explicit when fitting the final model.
 
 
-In logistic regression, scikit-learn's `C` parameter is inversely related
-to the $L_2$ penalty strength, so smaller values apply stronger shrinkage
-[@scikitlearn2026logistic]. Other GLM implementations expose their
-regularization controls differently. Numeric predictors should be
-standardized because the penalty acts on coefficient size; otherwise, a
-change in measurement units changes how strongly a predictor is penalized.
-The analysis standardizes area measures and keeps preprocessing inside the
-cross-validation pipeline.
+The same formulation applies to a Poisson GLM: replace the Bernoulli
+log-likelihood with the Poisson log-likelihood and retain the chosen
+coefficient penalty. Regularization does not correct overdispersion: a
+Poisson GLM still assumes that conditional variance equals conditional
+mean. Nor does it repair an inappropriate link or omitted predictors.
 
 
-Cross-validation selects `C` using training data alone. Within each fold,
-the pipeline learns its scaling, category encoding, and model coefficients
-from the fold's training records, then evaluates log loss on its validation
-records. For a candidate setting $h$, let $K$ be the number of folds and
-$V_k$ the validation records in fold $k$, for $k=1,\ldots,K$. For each
-record $i\in V_k$, let $y_i\in\{0,1\}$ be its outcome and
-$\widehat{p}_{i,-k}(h)$ its predicted probability from a model fitted
-without fold $k$. The fold's log loss and the mean cross-validation score
-are
+### Connecting the Formula to scikit-learn
+
+Scikit-learn's `LogisticRegression` uses `C` to control regularization.
+For unweighted observations, its objective can be written as
+
+
+$$
+-\ell(\boldsymbol{\beta};\mathbf{y},\mathbf{X})
++\frac{1}{C}P(\boldsymbol{\beta}),
+$$
+
+so comparison with @eq-glm-penalized gives $\lambda=1/C$. A smaller
+`C` therefore means a larger $\lambda$ and stronger regularization;
+a larger `C` permits larger coefficient estimates. This relationship
+holds for both the lasso and ridge penalties just defined
+[@scikitlearn2026logistic].
+
+
+The likelihood convention matters. Dividing the entire objective by $n$
+gives average negative log-likelihood plus $P(\boldsymbol{\beta})/(nC)$.
+If $\lambda$ instead multiplies the penalty beside an **average** negative
+log-likelihood, then $\lambda=1/(nC)$. These conventions describe the
+same fit after converting the parameter; the examples here use the summed
+likelihood convention. The conversion is specific to `LogisticRegression`;
+other GLM implementations may use different controls.
+
+
+Numeric predictors should be standardized before penalized fitting because
+the penalty acts on coefficient size. Changing a predictor's units changes
+the coefficient needed to describe the same relationship and therefore
+changes its penalty. Standardization gives each numeric predictor mean zero
+and standard deviation one in the fitting data. As in the earlier pipeline,
+category encoding and scaling must be learned from training records alone.
+
+
+### The Lasso Solution Path
+
+A solution path shows how coefficient estimates change as $\lambda$
+varies. We retain the simulated example with 100 observations, 20 candidate
+features, and two informative features. The generator's default also creates
+two redundant features from the informative features; the remaining features
+are noise. A selected feature need not be one of the two original informative
+features when correlated alternatives are available.
+
+
+```{python}
+import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.preprocessing import StandardScaler
+
+path_X, path_y = make_classification(
+    n_samples=100, n_features=20, n_informative=2, random_state=2026
+)
+path_X = StandardScaler().fit_transform(path_X)
+```
+
+
+The fixed seed 2026 makes this simulation reproducible. All observations
+are used to illustrate fitting; this path is not a prediction-performance
+evaluation. Standardizing before constructing the grid ensures that its
+scale matches the features actually supplied to the model.
+
+
+For lasso logistic regression, the intercept-only fitted probability is
+$\bar y=n^{-1}\sum_{i=1}^{n}y_i$, the observed event rate. The largest
+absolute slope of its log-likelihood at zero coefficients gives
+
+
+$$
+\lambda_{\max}
+=\max_{1\leq j\leq p}
+\left|\sum_{i=1}^{n}z_{ij}(y_i-\bar y)\right|,
+$$
+
+where $z_{ij}$ is standardized feature $j$ for observation $i$.
+At or above this value, zero is a solution for every non-intercept
+coefficient. We fit 100 candidates from $\lambda_{\max}$ down to
+$0.01\lambda_{\max}$, equally spaced on a logarithmic scale.
+
+
+```{python}
+lambda_max = np.abs(path_X.T @ (path_y - path_y.mean())).max()
+lambda_grid = np.geomspace(lambda_max, 0.01 * lambda_max, 100)
+```
+
+
+The `saga` solver supports lasso and leaves the intercept unpenalized.
+With the class environment's scikit-learn version, `l1_ratio=1` specifies
+lasso; `l1_ratio=0` specifies ridge. Each model below uses `C=1/lam`
+to match the summed-likelihood definition of $\lambda$.
+
+
+```{python}
+path_rows = []
+for lam in lambda_grid:
+    path_model = LogisticRegression(
+        l1_ratio=1, solver="saga", C=1 / lam,
+        max_iter=5000, tol=1e-6, random_state=2026
+    )
+    path_model.fit(path_X, path_y)
+    path_rows.append(path_model.coef_.ravel())
+```
+
+
+We reshape the estimates so that each curve represents one coefficient.
+The intercept is excluded because it is not penalized.
+
+
+```{python}
+path = pd.DataFrame(path_rows, columns=[f"x{j + 1}" for j in range(20)])
+path["lambda"] = lambda_grid
+path = path.melt(id_vars="lambda", var_name="feature", value_name="coef")
+```
+
+
+The horizontal axis is logarithmic, so equal distances correspond to equal
+ratios of penalty strength. Moving right increases $\lambda$ and pulls
+more coefficients to zero. The figure illustrates shrinkage; selecting
+$\lambda$ requires a separate validation criterion.
+
+
+```{python}
+#| label: fig-model-lasso-path
+#| fig-format: svg
+#| fig-cap: "Lasso logistic coefficient paths for 20 standardized simulated features. Moving right increases the penalty strength; the intercept is not shown."
+#| fig-alt: "Twenty coefficient curves approach zero as lambda increases on a logarithmic axis. At the strongest penalty, all non-intercept coefficients are zero to numerical tolerance."
+import plotnine as gg
+
+gg.options.figure_format = "svg"
+
+(
+    gg.ggplot(path, gg.aes("lambda", "coef", group="feature"))
+    + gg.geom_hline(yintercept=0, color="gray", linetype="dashed")
+    + gg.geom_line(color="#0072B2", alpha=0.65)
+    + gg.scale_x_log10()
+    + gg.labs(x=r"Penalty strength $\lambda$", y="Coefficient estimate")
+    + gg.theme(figure_size=(7, 4))
+)
+```
+
+
+## Select the Tuning Parameter {#sec-glm-tuning}
+
+
+A tuning parameter controls the fitting procedure rather than being
+estimated as a regression coefficient. Too much regularization can remove
+useful predictors; too little can retain patterns specific to the training
+sample. We select its value by comparing predictions on validation records,
+using the same criterion for every candidate. The coefficient path helps
+explain what the parameter does, while cross-validation assesses its
+predictive consequences.
+
+
+Cross-validation uses training data alone. Within each fold, the pipeline
+learns its scaling, category encoding, and model coefficients from the
+fold's fitting records. For a candidate setting $h$, let $K$ be the number
+of folds, $V_k$ the validation records in fold $k$, and $|V_k|$ their
+number, for $k=1,\ldots,K$. Let
+$\widehat{\boldsymbol{\beta}}_{-k}(h)$ denote the coefficients fitted
+without fold $k$, and let $\mathbf{y}_{V_k}$ and $\mathbf{X}_{V_k}$
+be its validation responses and predictor matrix. The fold's average
+negative log-likelihood and the mean cross-validation loss are
+
 
 $$
 \begin{aligned}
-L_k(h) &= -\frac{1}{|V_k|}\sum_{i\in V_k}
-\left[y_i\log\widehat{p}_{i,-k}(h)
-+(1-y_i)\log\left(1-\widehat{p}_{i,-k}(h)\right)\right],\\
-\operatorname{CV}(h) &= \frac{1}{K}\sum_{k=1}^{K}L_k(h),
-\end{aligned}.
+L_k(h) &=-\frac{1}{|V_k|}
+\ell\!\left(\widehat{\boldsymbol{\beta}}_{-k}(h);
+\mathbf{y}_{V_k},\mathbf{X}_{V_k}\right),\\
+\operatorname{CV}(h)&=\frac{1}{K}\sum_{k=1}^{K}L_k(h).
+\end{aligned}
 $$
 
-The selected candidate has the smallest mean validation log loss. It is then
-refitted on the complete training set. The separate test set remains untouched until
-selection is complete because using the same cross-validation scores both
-to select and report final performance can be optimistic
-[@scikitlearn2026crossvalidation; @varma2006bias].
 
+The validation likelihood evaluates predictions without adding the fitting
+penalty. For Bernoulli responses, this average negative log-likelihood is
+log loss, introduced in the prediction-metrics section. Other criteria
+include ROC AUC, F1, and accuracy; the criterion should match the intended
+use and be chosen before inspecting test results. We use log loss because
+the goal is to estimate closure probabilities rather than optimize a
+particular classification threshold.
+
+
+The selected candidate has the smallest mean validation loss and is
+refitted on the complete training set. The separate test set remains
+untouched until selection is complete. Reporting the best validation score
+as final performance can be optimistic because that score also guided the
+selection [@scikitlearn2026crossvalidation; @varma2006bias]. The more
+general model-selection discussion continues in @sec-machine-learning.
+
+
+### Tune the Request Models
 
 The comparison separates measured area context from a postal-code lookup.
 All four models use the same training and test requests. Each includes
 problem detail, borough, hour group, and day type. One model uses those
 request features; a second adds three ACS-derived area measures; a third adds
 the incident ZIP label as a categorical identifier; and a fourth uses a
-smoothed target encoding of that label. Five-fold stratified
-cross-validation selects `C` by log loss,
-a probability-focused criterion. Standardization and one-hot encoding are
+smoothed target encoding of that label. All four use lasso.
+Five-fold stratified cross-validation selects `C` by log loss. Standardization and one-hot encoding are
 inside the pipeline so each fold learns its preprocessing from its own
 training portion. The ZIP-label model is a predictive benchmark for areas
 already represented in the data; its coefficient for a ZIP label does not
 explain what neighborhood feature may relate to closure time.
 
 
+```{python}
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=2026)
+candidate_C = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10]}
+```
+
+
+The candidate grid covers four orders of magnitude in `C`. It is specified
+explicitly, not inferred automatically from the data. If validation loss
+keeps improving at a grid boundary, extend that boundary using training
+data before evaluating the test set. The search holds `C` fixed across
+folds and during refitting; its summed-likelihood penalty is therefore
+$\lambda=1/C$ throughout.
+
+
+The helper creates a fresh preprocessing pipeline for each feature set.
+`GridSearchCV` fits and scores every candidate within the five folds and
+refits the best candidate on all training records. Scikit-learn maximizes
+scores, so `neg_log_loss` returns the negative of the loss we want to
+minimize. The double underscore in `logisticregression__C` names the
+`C` parameter of the pipeline's logistic-regression step.
+
+
+```{python}
+def tune_logistic(categorical, numeric):
+    pipeline = make_pipeline(
+        make_preprocessor(categorical, numeric),
+        LogisticRegression(
+            l1_ratio=1, solver="saga", max_iter=5000, random_state=2026
+        ),
+    )
+    search = GridSearchCV(
+        pipeline,
+        candidate_C,
+        scoring="neg_log_loss",
+        cv=cv,
+        refit=True,
+    )
+    features = categorical + numeric
+    search.fit(X_train[features], y_train)
+    return search
+```
+
+
+The helper places standardization and one-hot encoding inside each
+cross-validation fold, so validation records do not determine their own
+preprocessing. It uses log loss to select `C` and returns the fitted search.
+The first comparisons assess request features, area context, and a ZIP-label
+identifier.
+
+
+```{python}
+
+zip_identifier_features = categorical_features + ["incident_zip"]
+request_features_search = tune_logistic(
+    categorical_features, []
+)
+census_search = tune_logistic(
+    categorical_features, numeric_features
+)
+zip_id_search = tune_logistic(
+    zip_identifier_features, []
+)
+```
+
+
+The validation curve makes the selection visible rather than reporting only
+the winning `C`. We extract each candidate's mean validation log loss for
+the Census-context model and mark the selected value. All values in this
+plot come from training folds.
+
+
+```{python}
+cv_result = pd.DataFrame(census_search.cv_results_)
+cv_loss = pd.DataFrame({
+    "C": cv_result["param_logisticregression__C"].astype(float),
+    "log_loss": -cv_result["mean_test_score"],
+})
+selected_C = census_search.best_params_["logisticregression__C"]
+```
+
+
+```{python}
+#| label: fig-model-lasso-cv
+#| fig-format: svg
+#| fig-cap: "Mean five-fold validation log loss for the lasso model with Census context. The dashed line marks the selected C; smaller losses are better."
+#| fig-alt: "Validation log loss is plotted against C on a logarithmic axis. A vertical dashed line identifies the candidate with the smallest mean loss."
+(
+    gg.ggplot(cv_loss, gg.aes("C", "log_loss"))
+    + gg.geom_line(color="#0072B2")
+    + gg.geom_point(color="#0072B2")
+    + gg.geom_vline(xintercept=selected_C, linetype="dashed")
+    + gg.scale_x_log10()
+    + gg.labs(x=r"$C=1/\lambda$", y="Mean validation log loss")
+    + gg.theme(figure_size=(7, 4))
+)
+```
+
+
+### Tune the ZIP Encoding
+
 One-hot encoding gives each ZIP label its own coefficient, which can be
 unstable when some labels have few requests. Smoothed target encoding offers
 another representation: it replaces a label with an estimate of its
 under-one-hour closure rate, then shrinks that estimate toward the overall rate.
-For ZCTA $j$, a common estimate is
+For ZIP label $j$, a common estimate is
 
 
 $$
@@ -1175,8 +1458,8 @@ $$
 $$
 
 
-where $s_j$ is the number of requests closing in under an hour in ZCTA $j$, $n_j$ is
-its number of requests, $\bar{p}$ is the overall training-set rate, and
+where $s_j$ is the number of requests closing in under an hour with
+label $j$, $n_j$ is its number of requests, $\bar{p}$ is the overall training-set rate, and
 $\alpha$ controls shrinkage. Larger values of $\alpha$ pull area
 estimates more strongly toward the overall rate. This empirical Bayes idea
 is useful for categories with different sample sizes
@@ -1188,62 +1471,13 @@ uses category rates estimated from the full training set
 [@scikitlearn2026targetencoder].
 
 
+The smoothing value and logistic penalty strength are selected together by
+cross-validation. The first part of the pipeline constructs the predictors,
+including a target encoder for the ZIP label.
+
+
 ```{python}
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.preprocessing import TargetEncoder
-
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=2026)
-candidate_C = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10]}
-
-def tune_logistic(categorical, numeric):
-    pipeline = make_pipeline(
-        make_preprocessor(categorical, numeric),
-        LogisticRegression(max_iter=3000),
-    )
-    search = GridSearchCV(
-        pipeline,
-        candidate_C,
-        scoring="neg_log_loss",
-        cv=cv,
-        refit=True,
-    )
-    features = categorical + numeric
-    search.fit(X_train[features], y_train)
-    probability = search.predict_proba(X_test[features])[:, 1]
-    return search, probability
-```
-
-
-The helper places standardization and one-hot encoding inside each
-cross-validation fold, so validation records do not determine their own
-preprocessing. It uses log loss to select `C`, then returns probabilities
-for the untouched test set. The first comparisons assess request features,
-area context, and a ZIP-label identifier.
-
-
-```{python}
-
-zip_identifier_features = categorical_features + ["incident_zip"]
-request_features_search, request_features_probability = tune_logistic(
-    categorical_features, []
-)
-census_search, census_probability = tune_logistic(
-    categorical_features, numeric_features
-)
-zip_id_search, zip_id_probability = tune_logistic(
-    zip_identifier_features, []
-)
-```
-
-
-ZIP target encoding uses the outcome to create an area-level feature, so
-training rows must not contribute their own outcomes to their encoded
-values. The encoder cross-fits those values within its training folds and
-uses rates estimated from the training data for the test set. The smoothing
-value and logistic penalty strength are selected together by cross-validation.
-
-
-```{python}
 
 zip_target_pipeline = make_pipeline(
     make_preprocessor(
@@ -1257,8 +1491,20 @@ zip_target_pipeline = make_pipeline(
             ["incident_zip"],
         )],
     ),
-    LogisticRegression(max_iter=3000),
+    LogisticRegression(
+        l1_ratio=1, solver="saga", max_iter=5000, random_state=2026
+    ),
 )
+```
+
+
+The grid now has 15 combinations: three smoothing strengths and five `C`
+values. The outer folds evaluate the whole pipeline. Inside each outer
+fitting fold, the target encoder uses its own inner folds to keep a row's
+outcome out of its encoded value. Both layers use training data alone.
+
+
+```{python}
 zip_target_search = GridSearchCV(
     zip_target_pipeline,
     {
@@ -1270,16 +1516,37 @@ zip_target_search = GridSearchCV(
     refit=True,
 )
 zip_target_features = categorical_features + ["incident_zip"]
-zip_target_search.fit(X_train[zip_target_features], y_train)
+_ = zip_target_search.fit(X_train[zip_target_features], y_train)
+```
+
+
+### Evaluate the Selected Models
+
+All tuning is complete before the following test predictions are made.
+The four prespecified comparisons use the same held-out requests; their
+scores describe this comparison, rather than supplying a further tuning
+criterion.
+
+
+```{python}
+request_features_probability = request_features_search.predict_proba(
+    X_test[categorical_features]
+)[:, 1]
+census_probability = census_search.predict_proba(
+    X_test[categorical_features + numeric_features]
+)[:, 1]
+zip_id_probability = zip_id_search.predict_proba(
+    X_test[zip_identifier_features]
+)[:, 1]
 zip_target_probability = zip_target_search.predict_proba(
     X_test[zip_target_features]
 )[:, 1]
 ```
 
 
-The table compares all four held-out models using the same score functions.
-It also records the penalty strength selected within cross-validation and,
-for target encoding, its selected smoothing value.
+The first table compares held-out prediction scores using the same scoring
+function for all four models. The following table reports their tuning
+settings separately.
 
 ```{python}
 comparison = pd.DataFrame({
@@ -1288,41 +1555,52 @@ comparison = pd.DataFrame({
     "ZIP label identifier": score_predictions(zip_id_probability),
     "ZIP target encoding": score_predictions(zip_target_probability),
 }).T
-comparison["selected C"] = [
+comparison.round(4)
+```
+
+
+The tuning summary records each selected `C`, its equivalent $\lambda$
+for the summed likelihood, and its validation loss. The target-encoding
+model also reports its selected smoothing strength.
+
+
+```{python}
+comparison["C"] = [
     request_features_search.best_params_["logisticregression__C"],
     census_search.best_params_["logisticregression__C"],
     zip_id_search.best_params_["logisticregression__C"],
     zip_target_search.best_params_["logisticregression__C"],
 ]
-comparison["mean CV log loss"] = [
+comparison["lambda"] = 1 / comparison["C"]
+comparison["cv_log_loss"] = [
     -request_features_search.best_score_,
     -census_search.best_score_,
     -zip_id_search.best_score_,
     -zip_target_search.best_score_,
 ]
-comparison["selected ZIP smoothing"] = [
+comparison["zip_smooth"] = [
     None,
     None,
     None,
     zip_target_search.best_params_["columntransformer__zip_target__smooth"],
 ]
-comparison
+comparison[["C", "lambda", "cv_log_loss", "zip_smooth"]].round(4)
 ```
 
 
 For this split, adding the Census measures changes test ROC AUC from about
-0.602 to 0.620 and log loss from 0.630 to 0.623. The improvement is modest,
+0.601 to 0.620 and log loss from 0.630 to 0.622. The improvement is modest,
 but it indicates that the supplied area attributes add some predictive
 information beyond problem detail, borough, hour group, and day type in this
-test design. The ZIP-label model scores higher, with ROC AUC about 0.686 and
-log loss 0.595.
+test design. The ZIP-label model scores higher, with ROC AUC about 0.687 and
+log loss 0.594.
 Because the same ZCTAs occur in training and test sets, this score reflects
 area-specific prediction for locations represented in training. It neither
 identifies a cause nor demonstrates transfer to a new ZCTA or a later week.
 
 
-Smoothed target encoding gives a similar test ROC AUC of about 0.687 and
-log loss of 0.594, with the cross-validation procedure selecting a smoothing
+Smoothed target encoding gives a similar test ROC AUC of about 0.690 and
+log loss of 0.593, with the cross-validation procedure selecting a smoothing
 value of 10. Three test requests have ZIP labels absent from the training
 set; the encoder assigns those labels the overall training rate. This
 comparison shows that a compact, partially pooled encoding can retain much
