@@ -1,4 +1,4 @@
-# Modeling {#sec-modeling}
+# Statistical Models {#sec-modeling}
 
 
 Predictive modeling uses information available at a defined time to estimate
