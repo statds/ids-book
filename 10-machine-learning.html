@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>10&nbsp; Machine Learning – Introduction to Data Science</title>
+<title>10&nbsp; Machine Learning Overview – Introduction to Data Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 /* CSS for citations */
 div.csl-bib-body { }
@@ -49,14 +84,14 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./90-ethics.html" rel="next">
+<link href="./11-supervised.html" rel="next">
 <link href="./09-modeling.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -95,6 +130,9 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -137,7 +175,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./10-machine-learning.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./10-machine-learning.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning Overview</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -222,19 +260,37 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-machine-learning.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning Overview</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13-reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./90-ethics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
   </div>
 </li>
     </ul>
@@ -247,11 +303,28 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#learning-settings" id="toc-learning-settings" class="nav-link active" data-scroll-target="#learning-settings"><span class="header-section-number">10.1</span> Learning Settings</a></li>
-  <li><a href="#models-and-algorithms" id="toc-models-and-algorithms" class="nav-link" data-scroll-target="#models-and-algorithms"><span class="header-section-number">10.2</span> Models and Algorithms</a></li>
-  <li><a href="#generalization" id="toc-generalization" class="nav-link" data-scroll-target="#generalization"><span class="header-section-number">10.3</span> Generalization</a></li>
-  <li><a href="#evaluation-and-tuning" id="toc-evaluation-and-tuning" class="nav-link" data-scroll-target="#evaluation-and-tuning"><span class="header-section-number">10.4</span> Evaluation and Tuning</a></li>
-  <li><a href="#pipelines" id="toc-pipelines" class="nav-link" data-scroll-target="#pipelines"><span class="header-section-number">10.5</span> Pipelines</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">10.1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#supervised-learning" id="toc-supervised-learning" class="nav-link" data-scroll-target="#supervised-learning"><span class="header-section-number">10.1.1</span> Supervised Learning</a></li>
+  <li><a href="#unsupervised-learning" id="toc-unsupervised-learning" class="nav-link" data-scroll-target="#unsupervised-learning"><span class="header-section-number">10.1.2</span> Unsupervised Learning</a></li>
+  <li><a href="#reinforcement-learning" id="toc-reinforcement-learning" class="nav-link" data-scroll-target="#reinforcement-learning"><span class="header-section-number">10.1.3</span> Reinforcement Learning</a></li>
+  </ul></li>
+  <li><a href="#bias-variance-tradeoff" id="toc-bias-variance-tradeoff" class="nav-link" data-scroll-target="#bias-variance-tradeoff"><span class="header-section-number">10.2</span> Bias-Variance Tradeoff</a>
+  <ul class="collapse">
+  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">10.2.1</span> Bias</a></li>
+  <li><a href="#variance" id="toc-variance" class="nav-link" data-scroll-target="#variance"><span class="header-section-number">10.2.2</span> Variance</a></li>
+  <li><a href="#the-tradeoff" id="toc-the-tradeoff" class="nav-link" data-scroll-target="#the-tradeoff"><span class="header-section-number">10.2.3</span> The Tradeoff</a></li>
+  <li><a href="#bias-variance-in-supervised-learning" id="toc-bias-variance-in-supervised-learning" class="nav-link" data-scroll-target="#bias-variance-in-supervised-learning"><span class="header-section-number">10.2.4</span> Bias-Variance in Supervised Learning</a></li>
+  <li><a href="#bias-variance-in-unsupervised-learning" id="toc-bias-variance-in-unsupervised-learning" class="nav-link" data-scroll-target="#bias-variance-in-unsupervised-learning"><span class="header-section-number">10.2.5</span> Bias-Variance in Unsupervised Learning</a></li>
+  <li><a href="#striking-the-right-balance" id="toc-striking-the-right-balance" class="nav-link" data-scroll-target="#striking-the-right-balance"><span class="header-section-number">10.2.6</span> Striking the Right Balance</a></li>
+  </ul></li>
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation"><span class="header-section-number">10.3</span> Cross-Validation</a>
+  <ul class="collapse">
+  <li><a href="#k-fold-cross-validation" id="toc-k-fold-cross-validation" class="nav-link" data-scroll-target="#k-fold-cross-validation"><span class="header-section-number">10.3.1</span> K-Fold Cross-Validation</a></li>
+  <li><a href="#benefits-of-cross-validation" id="toc-benefits-of-cross-validation" class="nav-link" data-scroll-target="#benefits-of-cross-validation"><span class="header-section-number">10.3.2</span> Benefits of Cross-Validation</a></li>
+  <li><a href="#cross-validation-in-unsupervised-learning" id="toc-cross-validation-in-unsupervised-learning" class="nav-link" data-scroll-target="#cross-validation-in-unsupervised-learning"><span class="header-section-number">10.3.3</span> Cross-Validation in Unsupervised Learning</a></li>
+  <li><a href="#curve-fitting-with-splines" id="toc-curve-fitting-with-splines" class="nav-link" data-scroll-target="#curve-fitting-with-splines"><span class="header-section-number">10.3.4</span> Curve Fitting with Splines</a></li>
+  </ul></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -262,7 +335,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-machine-learning" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></h1>
+<h1 class="title"><span id="sec-machine-learning" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning Overview</span></span></h1>
 </div>
 
 
@@ -279,89 +352,445 @@ window.Quarto = {
 </header>
 
 
-<p>The models in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> include logistic and Poisson regression for 311 request outcomes. These are statistical models, and they are also examples of supervised machine learning when the goal is to predict a known outcome from features. Statistics and machine learning overlap; they differ more in their emphases than in a clean boundary. Statistical modeling often emphasizes a specified relationship, uncertainty, and interpretation. Machine learning often emphasizes predictive performance and procedures that learn patterns from data. Both fields develop methods for explanation and prediction <span class="citation" data-cites="james2023introduction">(<a href="#ref-james2023introduction" role="doc-biblioref">James et al., 2023</a>)</span>.</p>
-<p>This chapter places the models from <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> in a broader map of learning methods. It introduces common learning tasks, explains why performance on new data matters, and shows how tuning and pipelines fit into model development. The worked examples in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> demonstrate model fitting, score calculation, tuning, and prediction evaluation.</p>
-<section id="learning-settings" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="learning-settings"><span class="header-section-number">10.1</span> Learning Settings</h2>
-<p>Learning methods differ partly in the feedback available during learning. Let <span class="math inline">\(X\)</span> denote input features and, when an outcome is observed, let <span class="math inline">\(Y\)</span> denote that outcome. These symbols describe the information available to a learning procedure; they do not determine which method is appropriate or what conclusions its results support.</p>
-<div id="tbl-ml-settings" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ml-settings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;10.1: Common learning settings and the feedback they use.
-</figcaption>
-<div aria-describedby="tbl-ml-settings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
+<section id="introduction" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">10.1</span> Introduction</h2>
+<p>Machine learning (ML) develops procedures that learn patterns from data and use those patterns to make decisions or predictions. The procedure is programmed, but its fitted rules depend on the examples supplied. A fitted model need not keep learning after it is deployed; whether it updates over time is a separate design choice <span class="citation" data-cites="james2023introduction">(<a href="#ref-james2023introduction" role="doc-biblioref">James et al., 2023</a>)</span>.</p>
+<p>The statistical models in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> are also supervised learning methods when used to predict an outcome from features. Statistical learning and machine learning overlap substantially. This chapter introduces learning settings, generalization, and model selection before <a href="11-supervised.html" class="quarto-xref"><span>Chapter 11</span></a>, <a href="12-unsupervised.html" class="quarto-xref"><span>Chapter 12</span></a>, and <a href="13-reinforcement.html" class="quarto-xref"><span>Chapter 13</span></a> develop particular methods.</p>
+<p>Three common learning settings are supervised learning, unsupervised learning, and reinforcement learning. Each type differs in the data it uses and the learning tasks it performs. Supervised learning aims to predict outcomes based on labeled data, unsupervised learning focuses on discovering hidden patterns within the data, and reinforcement learning centers around learning optimal actions through interaction with an environment.</p>
+<p>We use the following notation to describe the information available to a learning procedure:</p>
+<ul>
+<li><p><span class="math inline">\(X\)</span>: Input features or states. In a dataset, <span class="math inline">\(X_i\)</span> is the feature vector for observation <span class="math inline">\(i\)</span>, where <span class="math inline">\(i\)</span> indexes the observations.</p></li>
+<li><p><span class="math inline">\(Y\)</span>: Outcomes or rewards. In supervised learning, <span class="math inline">\(Y_i\)</span> is the observed outcome paired with <span class="math inline">\(X_i\)</span>. In reinforcement learning, <span class="math inline">\(Y\)</span> represents feedback received as rewards.</p></li>
+<li><p><span class="math inline">\(A\)</span>: A chosen action. In reinforcement learning, the available choices depend on the situation, and the learner selects an action with the aim of improving expected cumulative reward.</p></li>
+</ul>
+<section id="supervised-learning" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="supervised-learning"><span class="header-section-number">10.1.1</span> Supervised Learning</h3>
+<p>Supervised learning uses feature vectors <span class="math inline">\(X\)</span> and corresponding observed outcomes <span class="math inline">\(Y\)</span> to train a prediction rule. Known outcomes provide feedback about prediction error during fitting. The fitting algorithm estimates parameters by reducing a specified training loss, while cross-validation compares the predictive performance of candidate procedures on held-out folds. These are distinct steps of the modeling workflow.</p>
+<p>Key tasks in supervised learning include:</p>
+<ul>
+<li>Classification: Assigning data points to predefined categories or classes.</li>
+<li>Regression: Predicting a numeric outcome, such as a price, duration, or count, based on input data.</li>
+</ul>
+<p>In supervised learning, the data consists of both feature vectors <span class="math inline">\(X\)</span> and labels <span class="math inline">\(Y\)</span>, namely, <span class="math inline">\((X, Y)\)</span>.</p>
+</section>
+<section id="unsupervised-learning" class="level3" data-number="10.1.2">
+<h3 data-number="10.1.2" class="anchored" data-anchor-id="unsupervised-learning"><span class="header-section-number">10.1.2</span> Unsupervised Learning</h3>
+<p>Unsupervised learning finds patterns without using a specified outcome to guide fitting. A dataset may still contain known labels that are used later to interpret a plot or grouping. The objective is to explore and identify hidden structures in the feature vectors <span class="math inline">\(X\)</span>. Since there are no specified labels <span class="math inline">\(Y\)</span> to guide the fit, the algorithm instead uses a criterion such as within-group similarity or reconstruction error. This is particularly useful when subject matter experts are unsure of common properties within a data set.</p>
+<p>Common tasks in unsupervised learning include:</p>
+<ul>
+<li><p>Clustering: Grouping similar data points together based on certain features.</p></li>
+<li><p>Dimension Reduction: Simplifying the input data by reducing the number of features while preserving essential patterns.</p></li>
+</ul>
+<p>The information used in an unsupervised fit consists of feature vectors <span class="math inline">\(X\)</span>.</p>
+</section>
+<section id="reinforcement-learning" class="level3" data-number="10.1.3">
+<h3 data-number="10.1.3" class="anchored" data-anchor-id="reinforcement-learning"><span class="header-section-number">10.1.3</span> Reinforcement Learning</h3>
+<p>Reinforcement learning involves learning how to make a sequence of decisions to maximize expected cumulative reward. In supervised learning, known outcomes give feedback on predictions. In reinforcement learning, an agent instead interacts with an environment by taking actions <span class="math inline">\(A\)</span> and receiving rewards <span class="math inline">\(Y\)</span>. Its actions influence which states and rewards it encounters later, so it must learn how a present choice affects the consequences of future choices.</p>
+<p>The process in reinforcement learning involves:</p>
+<ul>
+<li><p>States: Descriptions <span class="math inline">\(X\)</span> of the current situation in which an action is chosen.</p></li>
+<li><p>Actions: Choices made from the options available in the current state, denoted as <span class="math inline">\(A\)</span>.</p></li>
+<li><p>Rewards: Feedback <span class="math inline">\(Y\)</span> received after an action, which guides the learning process. A reward may arrive after a delay.</p></li>
+</ul>
+<p>In reinforcement learning, the data consists of feature vectors <span class="math inline">\(X\)</span>, actions <span class="math inline">\(A\)</span>, and rewards <span class="math inline">\(Y\)</span>, namely, <span class="math inline">\((X, A, Y)\)</span>. These observations form a sequence: actions can change the later states and rewards. The worked tic-tac-toe example in <a href="13-reinforcement.html" class="quarto-xref"><span>Chapter 13</span></a> makes the time ordering explicit as <span class="math inline">\((X_t, A_t, Y_{t+1}, X_{t+1})\)</span>, where <span class="math inline">\(t\)</span> indexes the learner’s decisions.</p>
+</section>
+</section>
+<section id="bias-variance-tradeoff" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="bias-variance-tradeoff"><span class="header-section-number">10.2</span> Bias-Variance Tradeoff</h2>
+<p>The bias-variance tradeoff connects model flexibility with performance on training observations and on new observations. A model generalizes when its fitted patterns help predict new cases from the intended setting. The formal squared-error decomposition applies to a stated supervised prediction problem; related ideas about approximation and stability also help interpret unsupervised methods <span class="citation" data-cites="james2023introduction">(<a href="#ref-james2023introduction" role="doc-biblioref">James et al., 2023</a>)</span>.</p>
+<section id="bias" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="bias"><span class="header-section-number">10.2.1</span> Bias</h3>
+<p>Bias refers to the error introduced by approximating a complex real-world problem with a simplified model. A model with high bias is too restrictive to represent the relationship of interest. This can lead to poor performance on both training and new observations. Underfitting occurs when that restriction prevents the model from capturing important structure. The precise definition of bias below compares predictions across possible training samples with the true conditional mean.</p>
+<ul>
+<li><p>Example (Supervised): In supervised learning, using a linear regression model to fit data that has a nonlinear relationship can produce high bias when the curvature is important over the predictor range being studied.</p></li>
+<li><p>Example (Unsupervised): In clustering (an unsupervised task), setting the number of clusters too low (e.g., forcing data into two clusters when more exist) can oversimplify structure relevant to the analysis. This is an analogy to supervised prediction bias, not the same error decomposition.</p></li>
+</ul>
+</section>
+<section id="variance" class="level3" data-number="10.2.2">
+<h3 data-number="10.2.2" class="anchored" data-anchor-id="variance"><span class="header-section-number">10.2.2</span> Variance</h3>
+<p>Variance refers to the model’s sensitivity to small changes in the training data. A model with high variance can adapt closely to the training data, potentially capturing noise or fluctuations that are not representative of the general data distribution. High variance can lead to overfitting: features of the training sample are learned so closely that they harm prediction on new observations.</p>
+<ul>
+<li><p>Example (Supervised): A decision tree with many branches can exhibit high variance. It may closely fit the training data but perform poorly on test data because it overfits to specific idiosyncrasies in the training set.</p></li>
+<li><p>Example (Unsupervised): In clustering, setting the number of clusters too high or fitting overly flexible cluster shapes (e.g., in Gaussian Mixture Models) can lead to overfitting, where the model captures noise and splits data unnecessarily.</p></li>
+</ul>
+</section>
+<section id="the-tradeoff" class="level3" data-number="10.2.3">
+<h3 data-number="10.2.3" class="anchored" data-anchor-id="the-tradeoff"><span class="header-section-number">10.2.3</span> The Tradeoff</h3>
+<p>The bias-variance tradeoff describes two tendencies as flexibility increases:</p>
+<ul>
+<li>Bias can decrease: A more flexible model can represent relationships that a restrictive model misses.</li>
+<li>Variance can increase: The fitted prediction can become more sensitive to the particular training observations, including their noise.</li>
+</ul>
+<p>Conversely, a simpler model may:</p>
+<ul>
+<li>Have higher bias: It may miss a relationship important for prediction.</li>
+<li>Have lower variance: It may change less across training samples.</li>
+</ul>
+<p>These are tendencies, not guarantees for every learning procedure or sequence of models. A very stable model can still generalize poorly if it is too restrictive.</p>
+</section>
+<section id="bias-variance-in-supervised-learning" class="level3" data-number="10.2.4">
+<h3 data-number="10.2.4" class="anchored" data-anchor-id="bias-variance-in-supervised-learning"><span class="header-section-number">10.2.4</span> Bias-Variance in Supervised Learning</h3>
+<p>In supervised regression, the aim is to balance bias and variance to reduce prediction error. Suppose a new outcome at feature value <span class="math inline">\(x\)</span> is <span class="math inline">\(Y=f(x)+\varepsilon\)</span>, where <span class="math inline">\(f(x)\)</span> is the conditional mean, the noise <span class="math inline">\(\varepsilon\)</span> has conditional mean zero and variance <span class="math inline">\(\sigma^2\)</span>, and the new outcome is independent of the training data <span class="math inline">\(D\)</span> given <span class="math inline">\(x\)</span>. Let <span class="math inline">\(\widehat f_D(x)\)</span> be the prediction from a model fitted to <span class="math inline">\(D\)</span>. Its expected squared prediction error can be decomposed as</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{D,Y\mid x}[(Y-\widehat f_D(x))^2]
+&amp;= \{\mathbb{E}_D[\widehat f_D(x)]-f(x)\}^2 \\
+&amp;\quad + \operatorname{Var}_D[\widehat f_D(x)] + \sigma^2,
+\end{aligned}
+\]</span></p>
+<p>where the first term is squared bias, the second is variance across possible training samples, and the last is irreducible outcome variation under the stated assumptions <span class="citation" data-cites="james2023introduction">(<a href="#ref-james2023introduction" role="doc-biblioref">James et al., 2023</a>)</span>. Thus:</p>
+<ul>
+<li><strong>Bias</strong> measures the difference between the average fitted prediction and the true conditional mean. A model that is too restrictive can retain this discrepancy even with abundant training data.</li>
+<li><strong>Variance</strong> measures how much the fitted prediction changes across training samples. Flexibility can increase that sensitivity.</li>
+<li><strong>Irreducible error</strong> is the variation remaining around the conditional mean with these features. Tuning the fitting procedure cannot remove that noise under the model assumptions.</li>
+</ul>
+<p>The expectations average over possible samples and new outcomes. A pair of training and validation error curves from one dataset does not separately estimate the three components. The decomposition is specifically for squared-error prediction; it does not directly become an equivalent formula for classification error or clustering quality.</p>
+</section>
+<section id="bias-variance-in-unsupervised-learning" class="level3" data-number="10.2.5">
+<h3 data-number="10.2.5" class="anchored" data-anchor-id="bias-variance-in-unsupervised-learning"><span class="header-section-number">10.2.5</span> Bias-Variance in Unsupervised Learning</h3>
+<p>In unsupervised learning, the bias-variance tradeoff is less formally defined but still relevant. For example:</p>
+<ul>
+<li><p>In clustering, too few groups can miss relevant differences, while overly detailed groupings can change substantially when observations are perturbed or resampled. What counts as too few or too many depends on the purpose of the grouping.</p></li>
+<li><p>In principal component analysis (PCA), retaining too few components loses variation needed to reconstruct the observations. Retaining additional components can also retain noise. The digit-image example in <a href="12-unsupervised.html" class="quarto-xref"><span>Chapter 12</span></a> makes this compression tradeoff visible.</p></li>
+</ul>
+<p>In unsupervised learning, balancing bias and variance typically involves tuning hyperparameters (e.g., number of clusters, number of components) to find the right complexity level.</p>
+</section>
+<section id="striking-the-right-balance" class="level3" data-number="10.2.6">
+<h3 data-number="10.2.6" class="anchored" data-anchor-id="striking-the-right-balance"><span class="header-section-number">10.2.6</span> Striking the Right Balance</h3>
+<p>To strike the balance between bias and variance in both supervised and unsupervised learning, techniques such as regularization, early stopping, cross-validation, and hyperparameter tuning are useful. Early stopping, for example, halts an iterative fit when its validation performance stops improving. These techniques help compare or control flexibility; none guarantees good prediction under a changed population or an unsuitable validation design.</p>
+</section>
+</section>
+<section id="cross-validation" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">10.3</span> Cross-Validation</h2>
+<p>Cross-validation estimates predictive performance by repeatedly fitting a procedure on one subset and evaluating it on held-out observations. It can compare hyperparameters, such as the number of spline knots, without relying on a single training-validation split. The validation design should reflect the intended prediction setting <span class="citation" data-cites="scikitlearn2026crossvalidation">(<a href="#ref-scikitlearn2026crossvalidation" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>)</span>.</p>
+<p>Training, validation, and test records have different roles. Training records fit a candidate model. Validation records compare its settings. A test set is reserved for a final assessment after selection. When cross-validation tunes a model, its folds come from the training portion; the final test set remains outside that process.</p>
+<section id="k-fold-cross-validation" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="k-fold-cross-validation"><span class="header-section-number">10.3.1</span> K-Fold Cross-Validation</h3>
+<p>For <span class="math inline">\(n\)</span> training observations, <span class="math inline">\(K\)</span>-fold cross-validation uses an integer number of folds <span class="math inline">\(K\)</span> between two and <span class="math inline">\(n\)</span>:</p>
+<ul>
+<li>Split the training data into <span class="math inline">\(K\)</span> folds of nearly equal size.</li>
+<li>Fit on <span class="math inline">\(K-1\)</span> folds and predict the remaining validation fold.</li>
+<li>Repeat so that each fold is held out once.</li>
+<li>Average the validation scores across the <span class="math inline">\(K\)</span> fits.</li>
+</ul>
+<p>For squared-error prediction, let <span class="math inline">\(I_k\)</span> contain the observation indices in validation fold <span class="math inline">\(k\)</span>, let <span class="math inline">\(n_k\)</span> be its size, and let <span class="math inline">\(\widehat f_{-k}\)</span> be fitted without that fold. The fold loss <span class="math inline">\(L_k\)</span> and mean score are</p>
+<p><span class="math display">\[
+L_k = \frac{1}{n_k}\sum_{i\in I_k}
+\{y_i-\widehat f_{-k}(x_i)\}^2,
+\qquad
+\operatorname{CV}_K = \frac{1}{K}\sum_{k=1}^K L_k,
+\]</span></p>
+<p>where <span class="math inline">\(x_i\)</span> and <span class="math inline">\(y_i\)</span> are the recorded features and outcome for observation <span class="math inline">\(i\)</span>. Smaller scores are preferred for a loss such as mean squared error (MSE), while other scores, such as accuracy, are maximized. For unequal fold sizes, the mean of fold losses need not equal a loss calculated by pooling all held-out predictions. We report the mean of fold losses in the example.</p>
+<p>Averaging reduces dependence on a particular partition, but the scores are not independent replications: their training sets overlap. Model selection can still overfit the validation results if many choices are tried. The reserved test set assesses the selected procedure once.</p>
+<p>Leave-one-out cross-validation (LOOCV) takes each observation as one fold. It makes <span class="math inline">\(n\)</span> fits for <span class="math inline">\(n\)</span> training observations, each using <span class="math inline">\(n-1\)</span> records. This can be computationally expensive and is not automatically a more stable assessment than a moderate number of folds.</p>
+</section>
+<section id="benefits-of-cross-validation" class="level3" data-number="10.3.2">
+<h3 data-number="10.3.2" class="anchored" data-anchor-id="benefits-of-cross-validation"><span class="header-section-number">10.3.2</span> Benefits of Cross-Validation</h3>
+<ul>
+<li><strong>Detecting poor generalization:</strong> Low training error coupled with higher validation error can reveal an overly flexible fit.</li>
+<li><strong>Identifying inadequate fit:</strong> Poor training and validation performance can motivate a more flexible model or more useful features.</li>
+<li><strong>Comparing candidates:</strong> Reusing the same folds gives each candidate the same fitting and validation observations, making scores easier to compare.</li>
+</ul>
+<p>Cross-validation does not automatically prevent either underfitting or overfitting. In addition, a random fold split is unsuitable when the prediction task requires future periods or unseen groups to be kept separate. Temporal and grouped validation designs address those settings.</p>
+</section>
+<section id="cross-validation-in-unsupervised-learning" class="level3" data-number="10.3.3">
+<h3 data-number="10.3.3" class="anchored" data-anchor-id="cross-validation-in-unsupervised-learning"><span class="header-section-number">10.3.3</span> Cross-Validation in Unsupervised Learning</h3>
+<p>Unsupervised methods need a criterion suited to their purpose; there is no common outcome prediction error for every method. Two useful kinds of assessment are:</p>
+<ul>
+<li><strong>Stability testing:</strong> Refit a clustering method after perturbing or resampling observations and compare assignments for shared cases. Allow for arbitrary permutations of cluster IDs. This measures sensitivity to the data rather than prediction of known labels.</li>
+<li><strong>Internal validation:</strong> A silhouette score or Davies-Bouldin index describes within-group cohesion and separation between groups. These scores can compare candidate groupings, but do not by themselves measure stability across refits or establish that groups are real scientific categories <span class="citation" data-cites="hastie2009elements">(<a href="#ref-hastie2009elements" role="doc-biblioref">Hastie et al., 2009</a>)</span>.</li>
+</ul>
+<p>A dimension-reduction method can instead be evaluated by how accurately it reconstructs held-out observations. The evaluation criterion and data split must match the intended use. Both supervised and unsupervised procedures need these choices before a tuning result can be interpreted.</p>
+<p>Preprocessing must also respect each split. A modeling pipeline fits its preparation steps and estimator together on the fitting records, then applies the learned operations to held-out records. The worked example below uses a pipeline to learn spline features separately within every fold, following the same principle as the encoding and scaling examples in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a>.</p>
+</section>
+<section id="curve-fitting-with-splines" class="level3" data-number="10.3.4">
+<h3 data-number="10.3.4" class="anchored" data-anchor-id="curve-fitting-with-splines"><span class="header-section-number">10.3.4</span> Curve Fitting with Splines</h3>
+<!-- Adapted from the instructor's ids-s25/machinelearning.qmd example.
+The true curve, sample size, noise level, and original 6–16 knot list
+are retained. The reproducible simulation and split use seed 2025. -->
+<p>Overfitting occurs when a flexible fit captures sample-specific noise that harms prediction on new observations. We compare fitted shapes with a known true relationship, then compare training loss with held-out loss. The simulation uses 200 observations and candidate knot counts from 6 to 16. Its fixed simulation and split seeds make the comparison reproducible.</p>
+<p>A cubic spline joins degree-three polynomial pieces at locations called knots. More knots allow more local changes in shape. The polynomial degree stays at three throughout the example; the knot count controls flexibility. We do not need extremely many knots to compare underfitting with the point where further flexibility stops improving validation performance.</p>
+<section id="simulating-the-observations" class="level4" data-number="10.3.4.1">
+<h4 data-number="10.3.4.1" class="anchored" data-anchor-id="simulating-the-observations"><span class="header-section-number">10.3.4.1</span> Simulating the Observations</h4>
+<p>We use NumPy and pandas for the data and scikit-learn for model fitting and validation. The plotting package is introduced when we draw the figures.</p>
+<div id="9eb6f3aa" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, KFold, cross_val_score</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> SplineTransformer</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_squared_error</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The true conditional mean is the same function used in the earlier example:</p>
+<p><span class="math display">\[
+f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
+\]</span></p>
+<p>We name it explicitly so that it can generate the outcomes and supply the reference curve in the plots. It accepts an array and returns an array of the same shape.</p>
+<div id="08e6c029" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_function(x):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the simulated conditional mean at each input value."""</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sin(<span class="fl">1.5</span> <span class="op">*</span> x) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> np.cos(<span class="fl">0.5</span> <span class="op">*</span> x) <span class="op">+</span> np.sin(<span class="dv">2</span> <span class="op">*</span> x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Each observation has one input sampled uniformly between zero and ten. Independent Gaussian noise has mean zero and standard deviation 0.2, so the conditional noise variance is <span class="math inline">\(0.2^2=0.04\)</span>. Scikit-learn expects a feature matrix, so <code>reshape(-1, 1)</code> gives the input 200 rows and one column; <code>ravel()</code> gives the response a one-dimensional shape.</p>
+<div id="5f0bed84" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2025</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.sort(rng.random(<span class="dv">200</span>) <span class="op">*</span> <span class="dv">10</span>).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.2</span>, X.shape[<span class="dv">0</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> true_function(X).ravel() <span class="op">+</span> noise</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We reserve 30% of the observations for the final test. That leaves 140 training observations and 60 test observations. The random split is appropriate for this simulation’s independently generated observations; a temporal prediction problem would require a different design.</p>
+<div id="9ab98ced" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">2025</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>{<span class="st">"training_rows"</span>: <span class="bu">len</span>(y_train), <span class="st">"test_rows"</span>: <span class="bu">len</span>(y_test)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>{'training_rows': 140, 'test_rows': 60}</code></pre>
+</div>
+</div>
+</section>
+<section id="constructing-the-pipeline" class="level4" data-number="10.3.4.2">
+<h4 data-number="10.3.4.2" class="anchored" data-anchor-id="constructing-the-pipeline"><span class="header-section-number">10.3.4.2</span> Constructing the Pipeline</h4>
+<p>A spline transformer converts the single input into several basis features, each describing part of its range. Linear regression estimates coefficients for those features. The resulting prediction is nonlinear in the input, even though it is linear in the fitted coefficients.</p>
+<p>The helper below constructs that two-step pipeline. The knots are uniformly spaced between the fitting data’s boundaries. The transformer omits one basis column because the full basis already represents a constant, while <code>LinearRegression</code> supplies an intercept. Outside the fitted input range, we explicitly use the transformer’s constant-boundary extrapolation rule <span class="citation" data-cites="scikitlearn2026splines">(<a href="#ref-scikitlearn2026splines" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026b</a>)</span>.</p>
+<div id="3f212540" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_spline(n_knots):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Construct a cubic-spline regression pipeline with n_knots knots."""</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    spline <span class="op">=</span> SplineTransformer(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        degree<span class="op">=</span><span class="dv">3</span>, n_knots<span class="op">=</span>n_knots, knots<span class="op">=</span><span class="st">"uniform"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        include_bias<span class="op">=</span><span class="va">False</span>, extrapolation<span class="op">=</span><span class="st">"constant"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> make_pipeline(spline, LinearRegression())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We compare six knot counts. Five-fold cross-validation uses only the training portion, with the same folds for every candidate. Each fold therefore fits on 112 records and validates on the other 28.</p>
+<div id="094bfe86" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knots_list <span class="op">=</span> [<span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">2025</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Scikit-learn reports negative mean squared error so that its scoring interface consistently prefers larger values. We negate those returned scores to obtain ordinary MSE, for which smaller is better. After obtaining the validation losses, we also fit each candidate on all training records for the training-loss comparison and the shape plots. The test records are not used in these steps.</p>
+<div id="0c6cce1f" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> {}</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n_knots <span class="kw">in</span> knots_list:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> make_spline(n_knots)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    fold_mse <span class="op">=</span> <span class="op">-</span>cross_val_score(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        model, X_train, y_train, cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"neg_mean_squared_error"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train, y_train)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    models[n_knots] <span class="op">=</span> model</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    rows.append({</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"knots"</span>: n_knots,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"basis_cols"</span>: model.named_steps[<span class="st">"splinetransformer"</span>].n_features_out_,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"train_mse"</span>: mean_squared_error(y_train, model.predict(X_train)),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"cv_mse"</span>: fold_mse.mean()</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    })</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The labeled table makes the number of features and the two kinds of loss explicit. The original input has one column; the candidate pipelines create 7 through 17 basis columns, plus a regression intercept. Increasing the knot count changes model flexibility without increasing the polynomial degree or the number of observations.</p>
+<div id="4bfd386b" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame(rows)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>scores.<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
-<th style="text-align: left;">Setting</th>
-<th style="text-align: left;">Feedback available</th>
-<th style="text-align: left;">Example task</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">knots</th>
+<th data-quarto-table-cell-role="th">basis_cols</th>
+<th data-quarto-table-cell-role="th">train_mse</th>
+<th data-quarto-table-cell-role="th">cv_mse</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Supervised learning</td>
-<td style="text-align: left;">Feature-outcome pairs <span class="math inline">\((X,Y)\)</span></td>
-<td style="text-align: left;">Predict a 311 closure category or count</td>
+<th data-quarto-table-cell-role="th">0</th>
+<td>6</td>
+<td>7</td>
+<td>0.1184</td>
+<td>0.1499</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Unsupervised learning</td>
-<td style="text-align: left;">Features <span class="math inline">\(X\)</span>, with no specified outcome</td>
-<td style="text-align: left;">Explore groups among requests with similar features</td>
+<th data-quarto-table-cell-role="th">1</th>
+<td>8</td>
+<td>9</td>
+<td>0.0625</td>
+<td>0.0771</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Reinforcement learning</td>
-<td style="text-align: left;">States, actions, and rewards over time</td>
-<td style="text-align: left;">Choose traffic-signal actions from traffic feedback</td>
+<th data-quarto-table-cell-role="th">2</th>
+<td>10</td>
+<td>11</td>
+<td>0.0412</td>
+<td>0.0555</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>12</td>
+<td>13</td>
+<td>0.0384</td>
+<td>0.0523</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>14</td>
+<td>15</td>
+<td>0.0386</td>
+<td>0.0540</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>16</td>
+<td>17</td>
+<td>0.0380</td>
+<td>0.0556</td>
 </tr>
 </tbody>
 </table>
+
 </div>
+</div>
+</div>
+</section>
+<section id="comparing-the-fitted-shapes" class="level4" data-number="10.3.4.3">
+<h4 data-number="10.3.4.3" class="anchored" data-anchor-id="comparing-the-fitted-shapes"><span class="header-section-number">10.3.4.3</span> Comparing the Fitted Shapes</h4>
+<p>We predict on a fine input grid to draw each fitted function. These are plotting locations, not additional training observations. The known true mean is kept alongside the predictions. Converting those two columns to long form lets a plot distinguish the reference curve from the fitted one.</p>
+<div id="91160040" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_grid <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1000</span>).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>curve_frames <span class="op">=</span> []</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n_knots, model <span class="kw">in</span> models.items():</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"x"</span>: x_grid.ravel(), <span class="st">"fitted"</span>: model.predict(x_grid),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"truth"</span>: true_function(x_grid).ravel()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    frame[<span class="st">"knots"</span>] <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>n_knots<span class="sc">}</span><span class="ss"> knots"</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    curve_frames.append(frame)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>curves <span class="op">=</span> pd.concat(curve_frames, ignore_index<span class="op">=</span><span class="va">True</span>).melt(</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span>[<span class="st">"x"</span>, <span class="st">"knots"</span>], value_vars<span class="op">=</span>[<span class="st">"fitted"</span>, <span class="st">"truth"</span>],</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    var_name<span class="op">=</span><span class="st">"curve"</span>, value_name<span class="op">=</span><span class="st">"y"</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>curves[<span class="st">"knots"</span>] <span class="op">=</span> pd.Categorical(</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    curves[<span class="st">"knots"</span>], categories<span class="op">=</span>[<span class="ss">f"</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss"> knots"</span> <span class="cf">for</span> k <span class="kw">in</span> knots_list], ordered<span class="op">=</span><span class="va">True</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>observations <span class="op">=</span> pd.DataFrame({<span class="st">"x"</span>: X_train.ravel(), <span class="st">"y"</span>: y_train})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Each facet shows the same training observations and uses the same axes. Separate panels make local changes visible. A solid blue line identifies the fitted spline, and a dashed black line identifies the true mean, so line style also distinguishes the curves without relying on color alone. The training-point layer lacks a <code>knots</code> column and is repeated in all facets by plotnine.</p>
+<div id="7098abbf" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotnine <span class="im">as</span> gg</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>gg.options.figure_format <span class="op">=</span> <span class="st">"svg"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-fig-ml-spline-fits" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"Fitted spline"</span>, <span class="st">"True mean"</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fit_plot <span class="op">=</span> (</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    gg.ggplot(curves, gg.aes(<span class="st">"x"</span>, <span class="st">"y"</span>, color<span class="op">=</span><span class="st">"curve"</span>, linetype<span class="op">=</span><span class="st">"curve"</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_point(data<span class="op">=</span>observations, mapping<span class="op">=</span>gg.aes(<span class="st">"x"</span>, <span class="st">"y"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                    inherit_aes<span class="op">=</span><span class="va">False</span>, color<span class="op">=</span><span class="st">"#666666"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, size<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_line(size<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.facet_wrap(<span class="st">"~ knots"</span>, ncol<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_color_manual(values<span class="op">=</span>{<span class="st">"fitted"</span>: <span class="st">"#0072B2"</span>, <span class="st">"truth"</span>: <span class="st">"black"</span>},</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                            breaks<span class="op">=</span>[<span class="st">"fitted"</span>, <span class="st">"truth"</span>], labels<span class="op">=</span>labels)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_linetype_manual(values<span class="op">=</span>{<span class="st">"fitted"</span>: <span class="st">"solid"</span>, <span class="st">"truth"</span>: <span class="st">"dashed"</span>},</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                               breaks<span class="op">=</span>[<span class="st">"fitted"</span>, <span class="st">"truth"</span>], labels<span class="op">=</span>labels)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.labs(x<span class="op">=</span><span class="st">"$x$"</span>, y<span class="op">=</span><span class="st">"Outcome"</span>, color<span class="op">=</span><span class="st">"Curve"</span>, linetype<span class="op">=</span><span class="st">"Curve"</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.theme(figure_size<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">5.2</span>), legend_position<span class="op">=</span><span class="st">"bottom"</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>fit_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div id="fig-ml-spline-fits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Six comparable panels show that six knots miss part of the true curve, while additional knots follow its bends and introduce smaller local variations.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ml-spline-fits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="10-machine-learning_files/figure-html/fig-ml-spline-fits-output-1.svg" class="img-fluid figure-img" alt="Six comparable panels show that six knots miss part of the true curve, while additional knots follow its bends and introduce smaller local variations.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ml-spline-fits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: Cubic spline fits with the original 6–16 knot range. All panels use the same axes and training observations; the true mean is dashed.
+</figcaption>
 </figure>
 </div>
-<p>Supervised learning uses examples with known outcomes to fit a rule that predicts outcomes for new cases. Classification predicts a category, such as whether a request closes within a stated time. Regression predicts a numeric quantity, such as a count or duration. Logistic regression in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> is a classification method; the Poisson model is used there for a count outcome.</p>
-<p>Unsupervised learning looks for structure when the analysis has no specified outcome to predict. Clustering assigns observations to groups based on their features, and dimension reduction represents many features with fewer quantities. These methods can help explore data, but a cluster is not automatically a real-world kind of person or event. The result depends on which observations and features are included, how they are measured, and how the method is configured.</p>
-<p>Reinforcement learning concerns a sequence of decisions. An agent observes a state, chooses an action, and receives a reward after interacting with an environment. The aim is to learn a policy, or rule for choosing actions, that performs well over time. A reward is not simply a label attached to each record: actions can change later states and rewards. This chapter introduces the setting but does not develop reinforcement-learning algorithms <span class="citation" data-cites="sutton2018reinforcement">(<a href="#ref-sutton2018reinforcement" role="doc-biblioref">Sutton &amp; Barto, 2018</a>)</span>.</p>
-<p>These three settings provide a useful introduction, but they do not cover every learning design. For example, semi-supervised and self-supervised methods use additional structures in the data. The right method depends on the question, available feedback, and intended use of the result.</p>
+</div>
+</div>
+<p>The six-knot fit misses some of the curvature. Fits with 10 or more knots follow the true mean more closely. Additional local variation at larger knot counts can fit the noise as well as the signal. All panels share axes that span the observations and fitted values.</p>
 </section>
-<section id="models-and-algorithms" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="models-and-algorithms"><span class="header-section-number">10.2</span> Models and Algorithms</h2>
-<p>A model is a representation of a relationship or a rule for producing predictions. A learning algorithm is the procedure that uses data to fit a model. The distinction matters because different algorithms can fit models for the same task, and a single algorithm can produce different fitted models when its data or settings change.</p>
-<p>Fitting a model estimates parameters from training data. In logistic regression, the fitted coefficients are parameters. A hyperparameter controls how the fitting procedure works rather than being estimated as an ordinary model coefficient. The <code>C</code> setting in scikit-learn’s regularized logistic regression controls the strength of regularization; <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> tunes it using cross-validation. A hyperparameter can change model complexity and predictive performance <span class="citation" data-cites="scikitlearn2026logistic">(<a href="#ref-scikitlearn2026logistic" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026b</a>)</span>.</p>
-<p>Statistical models remain central to machine learning. A generalized linear model can estimate interpretable associations and make predictions. A more flexible algorithm can capture patterns that a simple model misses, but its predictions may be harder to explain and can be more sensitive to the training data. The task determines which properties matter: predictive accuracy, interpretability, uncertainty, computational cost, or a combination of them.</p>
+<section id="comparing-training-and-validation-loss" class="level4" data-number="10.3.4.4">
+<h4 data-number="10.3.4.4" class="anchored" data-anchor-id="comparing-training-and-validation-loss"><span class="header-section-number">10.3.4.4</span> Comparing Training and Validation Loss</h4>
+<p>A shape plot alone cannot select the best complexity. We reshape the loss table for a second comparison, retaining the distinction between training loss and mean cross-validation loss.</p>
+<div id="468187dc" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> scores.melt(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span><span class="st">"knots"</span>, value_vars<span class="op">=</span>[<span class="st">"train_mse"</span>, <span class="st">"cv_mse"</span>],</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    var_name<span class="op">=</span><span class="st">"sample"</span>, value_name<span class="op">=</span><span class="st">"mse"</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The training loss falls substantially before leveling off. Validation loss reaches its smallest mean at 12 knots and then rises modestly. The rise is small in this example; it should not be described as a dramatic failure of the larger models. The point is that a better training fit does not ensure better prediction on observations excluded from fitting. The training loss uses each fit on all 140 training records, whereas cross-validation fits use 112 records per fold. The gap therefore also reflects the smaller fitting samples used during validation; it does not isolate variance or measure overfitting by itself.</p>
+<div id="cell-fig-ml-spline-loss" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"Training"</span>, <span class="st">"Cross-validation"</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>error_plot <span class="op">=</span> (</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    gg.ggplot(errors, gg.aes(<span class="st">"knots"</span>, <span class="st">"mse"</span>, color<span class="op">=</span><span class="st">"sample"</span>, linetype<span class="op">=</span><span class="st">"sample"</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_line()</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_point(size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_x_continuous(breaks<span class="op">=</span>knots_list)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.expand_limits(y<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_color_manual(values<span class="op">=</span>{<span class="st">"train_mse"</span>: <span class="st">"#0072B2"</span>, <span class="st">"cv_mse"</span>: <span class="st">"#D55E00"</span>},</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                            breaks<span class="op">=</span>[<span class="st">"train_mse"</span>, <span class="st">"cv_mse"</span>], labels<span class="op">=</span>labels)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_linetype_manual(values<span class="op">=</span>{<span class="st">"train_mse"</span>: <span class="st">"solid"</span>, <span class="st">"cv_mse"</span>: <span class="st">"dashed"</span>},</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                               breaks<span class="op">=</span>[<span class="st">"train_mse"</span>, <span class="st">"cv_mse"</span>], labels<span class="op">=</span>labels)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.labs(x<span class="op">=</span><span class="st">"Number of knots"</span>, y<span class="op">=</span><span class="st">"Mean squared error"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>              color<span class="op">=</span><span class="st">"Data"</span>, linetype<span class="op">=</span><span class="st">"Data"</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>), legend_position<span class="op">=</span><span class="st">"bottom"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>error_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="fig-ml-spline-loss" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Training MSE falls from about 0.118 to 0.038. Validation MSE falls from about 0.150 to 0.052 at twelve knots, then rises slightly to 0.056 at sixteen knots.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ml-spline-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="10-machine-learning_files/figure-html/fig-ml-spline-loss-output-1.svg" class="img-fluid figure-img" alt="Training MSE falls from about 0.118 to 0.038. Validation MSE falls from about 0.150 to 0.052 at twelve knots, then rises slightly to 0.056 at sixteen knots.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ml-spline-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.2: Training and five-fold validation MSE for the same cubic-spline candidates. Validation loss is smallest at 12 knots, with a modest increase afterward.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Training error is not strictly decreasing at every step. Changing the number of uniform knots moves their positions, so the candidates are not exact extensions of one another. Small reversals in training loss are possible. The broader comparison still shows the initial gain in flexibility and the later point where validation improvement stops.</p>
 </section>
-<section id="generalization" class="level2" data-number="10.3">
-<h2 data-number="10.3" class="anchored" data-anchor-id="generalization"><span class="header-section-number">10.3</span> Generalization</h2>
-<p>A model is useful for prediction when it performs well on cases beyond those used to fit it. This ability is called generalization. Training performance describes how well a fitted model matches the data used for fitting; it does not by itself measure performance on future or otherwise unseen cases.</p>
-<p>Model complexity can create two different problems. An overly simple model may miss structure in the data and perform poorly even on its training observations. This is underfitting. A highly flexible model may match the training observations closely, including chance variation that will not repeat in new data. This is overfitting. Training error can keep decreasing as flexibility increases, even while predictive error on new data increases.</p>
-<p>The bias–variance tradeoff gives one account of why complexity affects prediction. For a new numeric outcome independent of training data <span class="math inline">\(D\)</span>, suppose <span class="math inline">\(Y=f(x)+\varepsilon\)</span> at a fixed feature value <span class="math inline">\(x\)</span>, where <span class="math inline">\(\mathbb{E}[\varepsilon\mid x]=0\)</span> and <span class="math inline">\(\operatorname{Var}(\varepsilon\mid x)=\sigma^2\)</span>. If <span class="math inline">\(\widehat{f}_D(x)\)</span> is a prediction from a model fitted to <span class="math inline">\(D\)</span>, then its expected squared prediction error can be decomposed as</p>
-<p><span class="math display">\[
-\mathbb{E}_{D,Y\mid x}\left[
-  \{Y-\widehat{f}_D(x)\}^2
-\right]
-= \left\{\mathbb{E}_D[\widehat{f}_D(x)]-f(x)\right\}^2
-+ \operatorname{Var}_D\left[\widehat{f}_D(x)\right]
-+ \sigma^2,
-\]</span></p>
-<p>where the first term is squared bias, the second is variance across possible training samples, and the final term is irreducible outcome variation under these assumptions. A model with high bias tends to be too restrictive; a model with high variance changes substantially when its training data change. Greater flexibility can reduce bias while increasing variance, but the balance depends on the data and the learning procedure. The decomposition is a result for squared-error prediction under stated assumptions, not a universal formula for every task. For classification and unsupervised learning, the same words are sometimes used as intuition, but the decomposition above does not directly apply <span class="citation" data-cites="james2023introduction">(<a href="#ref-james2023introduction" role="doc-biblioref">James et al., 2023</a>)</span>.</p>
+<section id="evaluating-the-selected-model" class="level4" data-number="10.3.4.5">
+<h4 data-number="10.3.4.5" class="anchored" data-anchor-id="evaluating-the-selected-model"><span class="header-section-number">10.3.4.5</span> Evaluating the Selected Model</h4>
+<p>We select the smallest observed mean validation loss. The corresponding pipeline has already been fitted on all 140 training observations. Only now do we evaluate that selected pipeline on the 60 reserved test cases. The test loss is not used to revise the knot count.</p>
+<div id="9a6cbcb3" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>best_knots <span class="op">=</span> <span class="bu">int</span>(scores.loc[scores[<span class="st">"cv_mse"</span>].idxmin(), <span class="st">"knots"</span>])</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>selected_model <span class="op">=</span> models[best_knots]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>test_mse <span class="op">=</span> mean_squared_error(y_test, selected_model.predict(X_test))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"knots"</span>: [best_knots], <span class="st">"test_mse"</span>: [test_mse]}).<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">knots</th>
+<th data-quarto-table-cell-role="th">test_mse</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>12</td>
+<td>0.0574</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The selected model uses 12 knots and has test MSE about 0.057. Its cross-validation MSE is about 0.052. Both are above the conditional noise variance of 0.04, though finite-sample errors need not obey an exact lower bound at that number. Another sample or fold assignment could change the selected complexity and the final error.</p>
+<p>The example illustrates underfitting, the gain from additional flexibility, and the risk of fitting sample-specific variation. It does not separately estimate theoretical bias and variance. In practice, cross-validation, regularization, early stopping, or a restriction on complexity can help choose a fit that generalizes. The test set then evaluates the selected procedure under its intended prediction setting.</p>
 </section>
-<section id="evaluation-and-tuning" class="level2" data-number="10.4">
-<h2 data-number="10.4" class="anchored" data-anchor-id="evaluation-and-tuning"><span class="header-section-number">10.4</span> Evaluation and Tuning</h2>
-<p>Evaluation estimates how well a fitted model performs for the cases that matter to its intended use. The data split should reflect that use. A random split may be unsuitable when predictions concern future time periods, unseen locations, or groups whose observations are dependent. In those settings, a temporal or grouped split may give a more relevant assessment.</p>
-<p>Training, validation, and test data serve different purposes. Training data fit model parameters. Validation data compare candidate models or hyperparameter settings. A test set is held aside for a final assessment after the model and its settings have been selected. When data are limited, cross-validation repeatedly divides the training data into fitting and validation folds. Its score summarizes performance across those folds for a chosen metric. The score depends on the split design and does not guarantee performance under a different population or deployment setting <span class="citation" data-cites="scikitlearn2026crossvalidation">(<a href="#ref-scikitlearn2026crossvalidation" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>)</span>.</p>
-<p>Tuning chooses hyperparameters, such as regularization strength or tree depth. Clustering methods also have settings, such as the number of clusters, that require criteria suited to an unsupervised task. The tuning criterion should match the task and the costs of errors. In <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a>, cross-validation selects logistic regression’s <code>C</code> by mean log loss, and an untouched test set assesses the selected model. The chapter also explains why using the same validation results both to select and report final performance can make the reported score optimistic <span class="citation" data-cites="varma2006bias">(<a href="#ref-varma2006bias" role="doc-biblioref">Varma &amp; Simon, 2006</a>)</span>.</p>
-<p>No single score answers every question. Accuracy summarizes the fraction of correct classifications at a specified threshold, while log loss assesses predicted probabilities and ROC AUC assesses ranking across thresholds. Numeric outcomes require other measures, such as mean absolute error or root mean squared error. The score should be interpreted with the baseline, the prediction setting, and the consequences of errors in view <span class="citation" data-cites="scikitlearn2026metrics">(<a href="#ref-scikitlearn2026metrics" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026c</a>)</span>. The 311 example in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> works through these distinctions.</p>
 </section>
-<section id="pipelines" class="level2" data-number="10.5">
-<h2 data-number="10.5" class="anchored" data-anchor-id="pipelines"><span class="header-section-number">10.5</span> Pipelines</h2>
-<p>A modeling pipeline connects data preparation steps to a final estimator. For example, a classification pipeline may impute missing values, encode categorical variables, scale numeric variables, and then fit a classifier. The fitted pipeline applies the same sequence to new records when producing predictions. In scikit-learn, a <code>Pipeline</code> or <code>make_pipeline</code> object represents such a sequence; a <code>ColumnTransformer</code> can apply different preparation steps to different columns <span class="citation" data-cites="scikitlearn2026composite">(<a href="#ref-scikitlearn2026composite" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026d</a>)</span>.</p>
-<p>Keeping preparation in the pipeline is essential during cross-validation. Each fold must learn quantities such as scaling means, imputation values, or category encodings from that fold’s training records. It then applies those learned transformations to the validation records. If the entire data set determines a transformation before the split, information from validation records can affect fitting and make the score too optimistic. The example in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a> demonstrates a pipeline with mixed variable types and shows how it works inside cross-validation.</p>
-<p>A pipeline chains data transformations and a final estimator. Ensembles and stacking combine predictions from multiple fitted models; they are different algorithmic constructions. This chapter focuses on pipelines that combine preprocessing steps with an estimator, as in <a href="09-modeling.html" class="quarto-xref"><span>Chapter 9</span></a>.</p>
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
@@ -423,26 +852,17 @@ Table&nbsp;10.1: Common learning settings and the feedback they use.
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-hastie2009elements" class="csl-entry" role="listitem">
+Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The elements of statistical learning: Data mining, inference, and prediction</em>. Springer.
+</div>
 <div id="ref-james2023introduction" class="csl-entry" role="listitem">
 James, G., Witten, D., Hastie, T., Tibshirani, R., &amp; Taylor, J. (2023). <em>An introduction to statistical learning: With applications in <span>Python</span></em>. Springer. <a href="https://doi.org/10.1007/978-3-031-38747-0">https://doi.org/10.1007/978-3-031-38747-0</a>
 </div>
 <div id="ref-scikitlearn2026crossvalidation" class="csl-entry" role="listitem">
 <span class="nocase">scikit-learn Developers</span>. (2026a). <em>Cross-validation: Evaluating estimator performance</em>. <a href="https://scikit-learn.org/stable/modules/cross_validation.html">https://scikit-learn.org/stable/modules/cross_validation.html</a>
 </div>
-<div id="ref-scikitlearn2026logistic" class="csl-entry" role="listitem">
-<span class="nocase">scikit-learn Developers</span>. (2026b). <em>LogisticRegression</em>. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html</a>
-</div>
-<div id="ref-scikitlearn2026metrics" class="csl-entry" role="listitem">
-<span class="nocase">scikit-learn Developers</span>. (2026c). <em>Metrics and scoring: Quantifying the quality of predictions</em>. <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">https://scikit-learn.org/stable/modules/model_evaluation.html</a>
-</div>
-<div id="ref-scikitlearn2026composite" class="csl-entry" role="listitem">
-<span class="nocase">scikit-learn Developers</span>. (2026d). <em>Pipelines and composite estimators</em>. <a href="https://scikit-learn.org/stable/modules/compose.html">https://scikit-learn.org/stable/modules/compose.html</a>
-</div>
-<div id="ref-sutton2018reinforcement" class="csl-entry" role="listitem">
-Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement learning: An introduction</em> (2nd ed.). The MIT Press. <a href="http://incompleteideas.net/book/the-book-2nd.html">http://incompleteideas.net/book/the-book-2nd.html</a>
-</div>
-<div id="ref-varma2006bias" class="csl-entry" role="listitem">
-Varma, S., &amp; Simon, R. (2006). Bias in error estimation when using cross-validation for model selection. <em>BMC Bioinformatics</em>, <em>7</em>, 91. <a href="https://doi.org/10.1186/1471-2105-7-91">https://doi.org/10.1186/1471-2105-7-91</a>
+<div id="ref-scikitlearn2026splines" class="csl-entry" role="listitem">
+<span class="nocase">scikit-learn Developers</span>. (2026b). <em>SplineTransformer</em>. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.SplineTransformer.html">https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.SplineTransformer.html</a>
 </div>
 </div>
 </section>
@@ -850,13 +1270,13 @@ Varma, S., &amp; Simon, R. (2006). Bias in error estimation when using cross-val
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./09-modeling.html" class="pagination-link" aria-label="Modeling">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span>
+      <a href="./09-modeling.html" class="pagination-link" aria-label="Statistical Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Statistical Models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./90-ethics.html" class="pagination-link" aria-label="Ethics">
-        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./11-supervised.html" class="pagination-link" aria-label="Supervised Learning">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>13&nbsp; Reinforcement Learning – Introduction to Data Science</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./90-ethics.html" rel="next">
+<link href="./12-unsupervised.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c935fea28ce5a425f876bb828138d8e6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./13-reinforcement.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to Data Science</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/statds/ids-book" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preliminaries</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Project Management</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Reproducible Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Python Practice</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05-formulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Problem Formulation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06-wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Preparation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07-eda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Exploratory Data Analysis</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08-visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10-machine-learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning Overview</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13-reinforcement.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./90-ethics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#states-actions-and-rewards" id="toc-states-actions-and-rewards" class="nav-link active" data-scroll-target="#states-actions-and-rewards"><span class="header-section-number">13.1</span> States, Actions, and Rewards</a>
+  <ul class="collapse">
+  <li><a href="#policy-and-return" id="toc-policy-and-return" class="nav-link" data-scroll-target="#policy-and-return"><span class="header-section-number">13.1.1</span> Policy and Return</a></li>
+  </ul></li>
+  <li><a href="#implementing-the-game" id="toc-implementing-the-game" class="nav-link" data-scroll-target="#implementing-the-game"><span class="header-section-number">13.2</span> Implementing the Game</a>
+  <ul class="collapse">
+  <li><a href="#one-environment-transition" id="toc-one-environment-transition" class="nav-link" data-scroll-target="#one-environment-transition"><span class="header-section-number">13.2.1</span> One Environment Transition</a></li>
+  </ul></li>
+  <li><a href="#learning-action-values" id="toc-learning-action-values" class="nav-link" data-scroll-target="#learning-action-values"><span class="header-section-number">13.3</span> Learning Action Values</a>
+  <ul class="collapse">
+  <li><a href="#exploration-and-exploitation" id="toc-exploration-and-exploitation" class="nav-link" data-scroll-target="#exploration-and-exploitation"><span class="header-section-number">13.3.1</span> Exploration and Exploitation</a></li>
+  <li><a href="#the-q-learning-update" id="toc-the-q-learning-update" class="nav-link" data-scroll-target="#the-q-learning-update"><span class="header-section-number">13.3.2</span> The Q-Learning Update</a></li>
+  </ul></li>
+  <li><a href="#from-one-game-to-training" id="toc-from-one-game-to-training" class="nav-link" data-scroll-target="#from-one-game-to-training"><span class="header-section-number">13.4</span> From One Game to Training</a>
+  <ul class="collapse">
+  <li><a href="#evaluating-a-frozen-policy" id="toc-evaluating-a-frozen-policy" class="nav-link" data-scroll-target="#evaluating-a-frozen-policy"><span class="header-section-number">13.4.1</span> Evaluating a Frozen Policy</a></li>
+  <li><a href="#training-schedule" id="toc-training-schedule" class="nav-link" data-scroll-target="#training-schedule"><span class="header-section-number">13.4.2</span> Training Schedule</a></li>
+  </ul></li>
+  <li><a href="#testing-against-a-stronger-opponent" id="toc-testing-against-a-stronger-opponent" class="nav-link" data-scroll-target="#testing-against-a-stronger-opponent"><span class="header-section-number">13.5</span> Testing against a Stronger Opponent</a>
+  <ul class="collapse">
+  <li><a href="#an-exact-search-benchmark" id="toc-an-exact-search-benchmark" class="nav-link" data-scroll-target="#an-exact-search-benchmark"><span class="header-section-number">13.5.1</span> An Exact-Search Benchmark</a></li>
+  <li><a href="#final-evaluation" id="toc-final-evaluation" class="nav-link" data-scroll-target="#final-evaluation"><span class="header-section-number">13.5.2</span> Final Evaluation</a></li>
+  </ul></li>
+  <li><a href="#inspecting-a-learned-game" id="toc-inspecting-a-learned-game" class="nav-link" data-scroll-target="#inspecting-a-learned-game"><span class="header-section-number">13.6</span> Inspecting a Learned Game</a>
+  <ul class="collapse">
+  <li><a href="#playing-against-the-agent" id="toc-playing-against-the-agent" class="nav-link" data-scroll-target="#playing-against-the-agent"><span class="header-section-number">13.6.1</span> Playing against the Agent</a></li>
+  </ul></li>
+  <li><a href="#scope-of-the-example" id="toc-scope-of-the-example" class="nav-link" data-scroll-target="#scope-of-the-example"><span class="header-section-number">13.7</span> Scope of the Example</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/13-reinforcement.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-reinforcement-learning" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A tic-tac-toe player chooses a square, observes the opponent’s reply, and chooses again. A move that looks harmless now may allow a loss several moves later. How can a program learn which choices lead to good outcomes without receiving a correct-move label for every position?</p>
+<p>Reinforcement learning addresses this kind of sequential decision problem. An agent acts in an environment, receives rewards, and uses its experience to improve a policy for choosing actions. The <span class="math inline">\((X, A, Y)\)</span> formulation in <a href="10-machine-learning.html" class="quarto-xref"><span>Chapter 10</span></a> becomes a sequence of states, actions, and rewards. Unlike the labeled prediction problems in <a href="11-supervised.html" class="quarto-xref"><span>Chapter 11</span></a>, the agent’s choices also affect which situations it encounters next <span class="citation" data-cites="sutton2018reinforcement">(<a href="#ref-sutton2018reinforcement" role="doc-biblioref">Sutton &amp; Barto, 2018</a>)</span>.</p>
+<p>This chapter builds a tic-tac-toe learner in small steps. We implement the rules, define one interaction with an opponent, store action values, and update them with Q-learning. We then train the agent, evaluate it with learning turned off, inspect a complete game, and provide a way to play against it. The code uses a Python dictionary for the value table; no neural network or additional reinforcement-learning package is needed.</p>
+<p>Tic-tac-toe is also an introductory example in Sutton and Barto’s book. The implementation here uses action-value Q-learning, rather than the state-value procedure in their opening example. The small game lets us inspect the complete learning process and construct an exact-search benchmark <span class="citation" data-cites="sutton2018reinforcement watkins1992qlearning">(<a href="#ref-sutton2018reinforcement" role="doc-biblioref">Sutton &amp; Barto, 2018</a>; <a href="#ref-watkins1992qlearning" role="doc-biblioref">Watkins &amp; Dayan, 1992</a>)</span>.</p>
+<section id="states-actions-and-rewards" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="states-actions-and-rewards"><span class="header-section-number">13.1</span> States, Actions, and Rewards</h2>
+<p>The learner always plays crosses, <strong>X</strong>, and moves first. Its opponent plays noughts, <strong>O</strong>. We keep those roles fixed throughout training and evaluation. Results therefore describe learning to play first; playing second requires a different starting-state procedure or representation.</p>
+<p>A state records all nine squares immediately before the learner chooses an action. Empty squares are encoded as <span class="math inline">\(0\)</span>, crosses as <span class="math inline">\(1\)</span>, and noughts as <span class="math inline">\(-1\)</span>. The mathematical symbol <span class="math inline">\(X_t\)</span> denotes the entire state at decision time <span class="math inline">\(t\)</span>; the game mark <strong>X</strong> is just one kind of entry on that board. A legal action is the index of an empty square, numbered <code>0</code> through <code>8</code> from left to right and top to bottom.</p>
+<p>One learning transition includes the learner’s move and, if the game continues, the opponent’s reply. We record it as</p>
+<p><span class="math display">\[
+(X_t, A_t, Y_{t+1}, X_{t+1}),
+\]</span></p>
+<p>where <span class="math inline">\(A_t\)</span> is the chosen square, <span class="math inline">\(Y_{t+1}\)</span> is the reward received after that interaction, and <span class="math inline">\(X_{t+1}\)</span> is the resulting board. Time counts the learner’s decisions, rather than every individual mark placed. If either player ends the game, the transition stops immediately.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Part of the learning problem</th>
+<th style="text-align: left;">Tic-tac-toe implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Agent</td>
+<td style="text-align: left;">The player making crosses</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">State <span class="math inline">\(X_t\)</span></td>
+<td style="text-align: left;">The nine-square board before its decision</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Action <span class="math inline">\(A_t\)</span></td>
+<td style="text-align: left;">An empty square</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Environment</td>
+<td style="text-align: left;">The game rules and the opponent’s behavior</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reward <span class="math inline">\(Y_{t+1}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(+1\)</span> for a win, <span class="math inline">\(-1\)</span> for a loss, and <span class="math inline">\(0\)</span> otherwise</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Terminal state</td>
+<td style="text-align: left;">A winning line or a full board with no winner</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Episode</td>
+<td style="text-align: left;">One complete game, starting from an empty board</td>
+</tr>
+</tbody>
+</table>
+<p>The reward is zero both for an unfinished interaction and for a draw. A separate termination flag distinguishes those cases. A loss caused by the opponent’s reply belongs to the transition that began with the learner’s preceding move. Updating before that reply would miss an important consequence of the chosen action.</p>
+<section id="policy-and-return" class="level3" data-number="13.1.1">
+<h3 data-number="13.1.1" class="anchored" data-anchor-id="policy-and-return"><span class="header-section-number">13.1.1</span> Policy and Return</h3>
+<p>A policy <span class="math inline">\(\pi(a \mid x)\)</span> gives the probability of choosing action <span class="math inline">\(a\)</span> in state <span class="math inline">\(x\)</span>. The aim is to maximize expected return, which combines the rewards remaining in an episode. If <span class="math inline">\(T\)</span> is the number of learner decisions until termination, the return from time <span class="math inline">\(t\)</span> is</p>
+<p><span class="math display">\[
+G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
+\]</span></p>
+<p>where <span class="math inline">\(k\)</span> indexes future rewards and <span class="math inline">\(\gamma \in [0,1]\)</span> is the discount factor. We set <span class="math inline">\(\gamma = 1\)</span>. Every legal game terminates in at most five learner decisions, so an undiscounted return is finite. With only a final nonzero reward, the return is the game’s outcome: win, draw, or loss. This objective does not favor a faster win over a slower win.</p>
+<p>The opponent is part of the environment. During training it chooses each legal reply with equal probability. With that fixed, memoryless rule, the board at the learner’s turn contains the information needed for the next transition: previous boards do not supply additional information about which reply will be sampled. This is the Markov property in this example. If an opponent’s behavior depends on unrecorded history, that assumption would require reconsideration.</p>
+</section>
+</section>
+<section id="implementing-the-game" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="implementing-the-game"><span class="header-section-number">13.2</span> Implementing the Game</h2>
+<p>We first need rules that behave correctly before asking a learner to use them. A tuple stores the board so that it can later serve as a dictionary key. We use standard-library random-number generators with explicit seeds. The constants below describe the empty board, the printed marks, and the eight possible winning lines.</p>
+<div id="b820f909" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>EMPTY <span class="op">=</span> (<span class="dv">0</span>,) <span class="op">*</span> <span class="dv">9</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>MARKS <span class="op">=</span> {<span class="dv">1</span>: <span class="st">"X"</span>, <span class="op">-</span><span class="dv">1</span>: <span class="st">"O"</span>}</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>LINES <span class="op">=</span> ((<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>), (<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>), (<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">6</span>), (<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">7</span>), (<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>), (<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The eight triples in <code>LINES</code> are the rows, columns, and diagonals. The outcome function returns <code>1</code> for a crosses win, <code>-1</code> for a noughts win, and <code>0</code> for a draw. An unfinished game returns <code>None</code>.</p>
+<div id="0549128e" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> outcome(board):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return 1 for a crosses win, -1 for noughts, 0 for a draw, or None."""</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, j, k <span class="kw">in</span> LINES:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> board[i] <span class="op">!=</span> <span class="dv">0</span> <span class="kw">and</span> board[i] <span class="op">==</span> board[j] <span class="op">==</span> board[k]:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> board[i]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span> <span class="cf">if</span> <span class="dv">0</span> <span class="kw">not</span> <span class="kw">in</span> board <span class="cf">else</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>An action is legal only when the game is unfinished and its square is empty. Returning no actions after a winning line prevents the simulator from continuing a game merely because some squares remain blank.</p>
+<div id="67a4533b" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> legal_actions(board):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return empty-square indices, or an empty tuple if the game ended."""</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> outcome(board) <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(i <span class="cf">for</span> i, mark <span class="kw">in</span> <span class="bu">enumerate</span>(board) <span class="cf">if</span> mark <span class="op">==</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The move function checks legality and returns a new tuple. It leaves the previous board intact, so a stored transition continues to describe the position that existed before the move. The episode loop below controls whose turn it is; this helper checks the marker and square.</p>
+<div id="671db9c3" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> place(board, action, mark):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Place a mark on a legal square and return a new board."""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mark <span class="kw">not</span> <span class="kw">in</span> (<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>) <span class="kw">or</span> action <span class="kw">not</span> <span class="kw">in</span> legal_actions(board):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Use an empty square in an unfinished game."</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    updated <span class="op">=</span> <span class="bu">list</span>(board)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    updated[action] <span class="op">=</span> mark</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(updated)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The display helper draws a board and can show indices on empty squares. It provides the same position convention used by the action-selection code and the human-play interface. The <code>divmod(pos, 3)</code> call gives the row and column of a square. The vertical coordinate increases upward, so <code>2 - row</code> puts the first row at the top.</p>
+<div id="b8bf6079" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib_inline.backend_inline <span class="im">import</span> set_matplotlib_formats</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>set_matplotlib_formats(<span class="st">"svg"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_board(board, ax, number_empty<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Draw marks and, optionally, indices on empty squares."""</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pos, value <span class="kw">in</span> <span class="bu">enumerate</span>(board):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        row, col <span class="op">=</span> <span class="bu">divmod</span>(pos, <span class="dv">3</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        label <span class="op">=</span> MARKS.get(value, <span class="bu">str</span>(pos) <span class="cf">if</span> number_empty <span class="cf">else</span> <span class="st">""</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        ax.text(col, <span class="dv">2</span> <span class="op">-</span> row, label, ha<span class="op">=</span><span class="st">"center"</span>, va<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> edge <span class="kw">in</span> (<span class="fl">0.5</span>, <span class="fl">1.5</span>):</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        ax.plot([<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>], [edge, edge], color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        ax.plot([edge, edge], [<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>], color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>), aspect<span class="op">=</span><span class="st">"equal"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">"off"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The example below shows an empty board and a position where crosses can win by choosing square <code>2</code>. The display makes that winning line visible; the learning algorithm will receive only the numerical consequence of its sampled action.</p>
+<div id="cell-fig-rl-board-rules" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>win_board <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>won_board <span class="op">=</span> place(win_board, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">2.8</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, board, title <span class="kw">in</span> <span class="bu">zip</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    axes, [EMPTY, win_board, won_board],</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"Square indices"</span>, <span class="st">"Before action 2"</span>, <span class="st">"Crosses wins"</span>]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    draw_board(board, ax, number_empty<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-rl-board-rules" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rl-board-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="13-reinforcement_files/figure-html/fig-rl-board-rules-output-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-board-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.1: Square indices, a position before a winning move, and the terminal board after crosses chooses square 2.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="one-environment-transition" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="one-environment-transition"><span class="header-section-number">13.2.1</span> One Environment Transition</h3>
+<p>The training opponent chooses uniformly from its legal replies. Its function accepts the current board and a random-number generator. Later we can substitute another opponent without changing the episode loop. The argument <code>rng</code> is a <code>random.Random</code> object, whose <code>choice</code> method samples one item from a sequence. Passing the opponent function as an argument lets the game engine call it whenever noughts must reply.</p>
+<div id="51274a6f" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_opponent(board, rng):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose a legal noughts reply uniformly at random."""</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rng.choice(legal_actions(board))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The transition function places crosses, checks whether the game ended, then obtains and places the opponent’s reply if needed. Only after both parts does it return the next decision state. It saves the interaction in one dictionary, including the opponent’s chosen square. A crosses win has <code>reply=None</code> because the opponent gets no further move.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dictionary key</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>board</code></td>
+<td style="text-align: left;">State <span class="math inline">\(X_t\)</span> before the learner acts</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>action</code></td>
+<td style="text-align: left;">Chosen action <span class="math inline">\(A_t\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>reply</code></td>
+<td style="text-align: left;">Opponent’s square, or <code>None</code> if crosses ended the game</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>reward</code></td>
+<td style="text-align: left;">Reward <span class="math inline">\(Y_{t+1}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>next_board</code></td>
+<td style="text-align: left;">Resulting state <span class="math inline">\(X_{t+1}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>done</code></td>
+<td style="text-align: left;">Whether the game has ended</td>
+</tr>
+</tbody>
+</table>
+<div id="6b7dd1f3" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> step(board, action, opponent, rng):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play a crosses action and any reply; return the transition record."""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    next_board <span class="op">=</span> place(board, action, <span class="dv">1</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> outcome(next_board)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    reply <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        reply <span class="op">=</span> opponent(next_board, rng)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        next_board <span class="op">=</span> place(next_board, reply, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> outcome(next_board)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"board"</span>: board, <span class="st">"action"</span>: action, <span class="st">"reply"</span>: reply,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"reward"</span>: <span class="dv">0</span> <span class="cf">if</span> result <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> result,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"next_board"</span>: next_board, <span class="st">"done"</span>: result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For the winning position above, the game ends immediately after action <code>2</code>; the opponent must not receive another move. The reward is <code>1</code> even though the terminal board still has blank squares.</p>
+<div id="9cc8ce3c" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>win_transition <span class="op">=</span> step(win_board, <span class="dv">2</span>, random_opponent, random.Random(<span class="dv">2026</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>win_transition</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>{'board': (1, 1, 0, -1, -1, 0, 0, 0, 0),
+ 'action': 2,
+ 'reply': None,
+ 'reward': 1,
+ 'next_board': (1, 1, 1, -1, -1, 0, 0, 0, 0),
+ 'done': True}</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="learning-action-values" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="learning-action-values"><span class="header-section-number">13.3</span> Learning Action Values</h2>
+<p>An action value describes expected return after taking a particular action and then following a policy. For policy <span class="math inline">\(\pi\)</span>, define</p>
+<p><span class="math display">\[
+q_\pi(x,a) = \mathbb{E}_\pi[G_t \mid X_t=x, A_t=a].
+\]</span></p>
+<p>The expectation includes the opponent’s random replies and any randomness in the learner’s later decisions. An optimal action value, denoted <span class="math inline">\(q_*(x,a)\)</span>, maximizes expected return over the learner’s policies for this fixed environment. It need not describe optimal play against every possible opponent.</p>
+<p>Our estimate is a table <span class="math inline">\(Q(x,a)\)</span>, stored in a Python dictionary with <code>(board, action)</code> keys. Missing entries have value zero. These are value estimates, rather than labels supplied by an expert or probabilities that must lie between zero and one. With our reward definition they can also be negative.</p>
+<p>The following helper collects the estimates for legal actions in one place. The expression <code>q.get((board, action), 0.0)</code> reads an existing value or returns zero for a missing key; it does not add that key to <code>q</code>. A terminal board gives an empty dictionary. Both action selection and learning will use this helper so that their action sets agree.</p>
+<div id="49e5e3ee" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> q_values(q, board):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return current estimates for this board's legal actions."""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {action: q.get((board, action), <span class="fl">0.0</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> action <span class="kw">in</span> legal_actions(board)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Before training, the winning position’s legal actions all have zero estimates. The program knows which squares are legal from the rules; it has not yet learned their consequences.</p>
+<div id="f3b63666" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>q_values({}, win_board)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>{2: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0}</code></pre>
+</div>
+</div>
+<section id="exploration-and-exploitation" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="exploration-and-exploitation"><span class="header-section-number">13.3.1</span> Exploration and Exploitation</h3>
+<p>Always choosing the current largest estimate exploits the table but may neglect actions that were unlucky or never tried. An epsilon-greedy rule explores with probability <span class="math inline">\(\epsilon \in [0,1]\)</span>: it chooses a uniformly random legal action. Otherwise it chooses an action with the largest current value. Equal best values are broken randomly, so the initial all-zero table does not automatically favor square <code>0</code>.</p>
+<p>The function below reads the table without changing it. Both the random choice and the maximization consider legal actions only. Iterating over a dictionary gives its keys, so <code>list(values)</code> is a list of legal square indices. The last two lines find the largest estimate and collect all actions tied at that value before choosing among them.</p>
+<div id="cbf16c1a" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> choose_action(q, board, rng, epsilon<span class="op">=</span><span class="fl">0.0</span>):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose an epsilon-greedy action without changing q."""</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> q_values(q, board)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> values:</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Cannot choose an action after the game has ended."</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng.random() <span class="op">&lt;</span> epsilon:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> rng.choice(<span class="bu">list</span>(values))</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    best <span class="op">=</span> <span class="bu">max</span>(values.values())</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    ties <span class="op">=</span> [action <span class="cf">for</span> action, value <span class="kw">in</span> values.items() <span class="cf">if</span> value <span class="op">==</span> best]</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rng.choice(ties)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With an empty table and <code>epsilon=0</code>, all legal actions tie, so this rule still behaves as a uniformly random player. As estimates change, the explicit exploration probability keeps other actions available during training. We will use <code>epsilon=0</code> when evaluating the fitted policy.</p>
+</section>
+<section id="the-q-learning-update" class="level3" data-number="13.3.2">
+<h3 data-number="13.3.2" class="anchored" data-anchor-id="the-q-learning-update"><span class="header-section-number">13.3.2</span> The Q-Learning Update</h3>
+<p>A sampled transition supplies an immediate reward and a new estimate of what may follow. Define its target <span class="math inline">\(Z_t\)</span> by</p>
+<p><span class="math display">\[
+Z_t =
+\begin{cases}
+Y_{t+1}, &amp; \text{if the game has ended}, \\
+Y_{t+1} + \gamma
+\max_{b \in \mathcal{A}(X_{t+1})} Q(X_{t+1},b),
+&amp; \text{otherwise},
+\end{cases}
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal{A}(x)\)</span> is the set of legal actions in state <span class="math inline">\(x\)</span> and <span class="math inline">\(b\)</span> indexes a possible next action. Q-learning moves the current estimate toward that target:</p>
+<p><span class="math display">\[
+Q(X_t,A_t) \leftarrow Q(X_t,A_t)
++ \alpha\{Z_t-Q(X_t,A_t)\},
+\]</span></p>
+<p>where <span class="math inline">\(\alpha \in (0,1]\)</span> is the learning rate. The difference between the target and the old value is the temporal-difference error. A terminal transition has no future action value, even if blank squares remain. For a nonterminal transition, the maximum makes the target greedy while the sampled action may have been exploratory; Q-learning is therefore an off-policy method <span class="citation" data-cites="watkins1992qlearning">(<a href="#ref-watkins1992qlearning" role="doc-biblioref">Watkins &amp; Dayan, 1992</a>)</span>.</p>
+<div id="f2a5c70d" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_q(q, transition, alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Update one entry of q in place using a transition record."""</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> transition[<span class="st">"reward"</span>]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> transition[<span class="st">"done"</span>]:</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        next_values <span class="op">=</span> q_values(q, transition[<span class="st">"next_board"</span>])</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        target <span class="op">+=</span> gamma <span class="op">*</span> <span class="bu">max</span>(next_values.values())</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    key <span class="op">=</span> (transition[<span class="st">"board"</span>], transition[<span class="st">"action"</span>])</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    old <span class="op">=</span> q.get(key, <span class="fl">0.0</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    q[key] <span class="op">=</span> old <span class="op">+</span> alpha <span class="op">*</span> (target <span class="op">-</span> old)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A single winning observation moves a previously zero entry to 0.2 when <code>alpha=0.2</code>. This checks the terminal branch of the update using a known outcome from the game rules. The function changes <code>q_demo</code> directly; it does not return a replacement dictionary.</p>
+<div id="ffa3b173" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>q_demo <span class="op">=</span> {}</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>update_q(q_demo, win_transition, alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>q_demo[(win_board, <span class="dv">2</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>0.2</code></pre>
+</div>
+</div>
+<p>Earlier decisions can improve without an immediate reward. To isolate that arithmetic, suppose an illustrative table already gives the best next action a value of 0.8. A preceding action with zero immediate reward then has target 0.8 and moves from zero to 0.16. The value 0.8 below is a specified illustration, not an estimate from the trained agent.</p>
+<div id="078aacf1" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mid_transition <span class="op">=</span> step(EMPTY, <span class="dv">0</span>, random_opponent, random.Random(<span class="dv">2026</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>mid_board <span class="op">=</span> mid_transition[<span class="st">"next_board"</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>next_action <span class="op">=</span> legal_actions(mid_board)[<span class="dv">0</span>]</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>q_demo[(mid_board, next_action)] <span class="op">=</span> <span class="fl">0.8</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>update_q(q_demo, mid_transition, alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">round</span>(q_demo[(EMPTY, <span class="dv">0</span>)], <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>0.16</code></pre>
+</div>
+</div>
+<p>Repeated interactions allow information about late outcomes to affect estimates for earlier choices. That is the credit-assignment problem in this example: learning which earlier actions help produce a final win or loss. The table update uses the sampled consequence, without searching the entire game tree.</p>
+</section>
+</section>
+<section id="from-one-game-to-training" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="from-one-game-to-training"><span class="header-section-number">13.4</span> From One Game to Training</h2>
+<p>An episode repeats four operations: choose an action, take an environment step, optionally update the table, and stop if the game ended. The <code>learn</code> flag determines whether updates occur. A separate <code>record</code> flag saves a trace for inspecting a game without storing every training transition.</p>
+<p>The loop starts from the same empty board each time. A nonterminal next board is always another crosses decision, so no extra player-to-move field is needed in this particular state representation. The first three arguments supply the value table, the opponent function, and the random generator. The remaining options control learning or recording:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>epsilon</code></td>
+<td style="text-align: left;">Probability of exploring rather than selecting a best estimate</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>learn</code></td>
+<td style="text-align: left;">Update the table when <code>True</code>; leave it fixed when <code>False</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>alpha</code></td>
+<td style="text-align: left;">Learning rate <span class="math inline">\(\alpha\)</span> passed to the update</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>gamma</code></td>
+<td style="text-align: left;">Discount factor <span class="math inline">\(\gamma\)</span> passed to the update</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>record</code></td>
+<td style="text-align: left;">Save transitions in a list for later inspection</td>
+</tr>
+</tbody>
+</table>
+<p>The function always returns the final reward and a list of recorded transitions. When <code>record=False</code>, that list is empty. One shared loop keeps training, evaluation, and human play subject to exactly the same game rules.</p>
+<div id="4b2d7f1a" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> play_episode(q, opponent, rng, epsilon<span class="op">=</span><span class="fl">0.0</span>, learn<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                 alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>, record<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play one game; optionally update q or save its transitions."""</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    board <span class="op">=</span> EMPTY</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    trace <span class="op">=</span> []</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        action <span class="op">=</span> choose_action(q, board, rng, epsilon<span class="op">=</span>epsilon)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        transition <span class="op">=</span> step(board, action, opponent, rng)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> learn:</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>            update_q(q, transition, alpha<span class="op">=</span>alpha, gamma<span class="op">=</span>gamma)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> record:</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>            trace.append(transition)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> transition[<span class="st">"done"</span>]:</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> transition[<span class="st">"reward"</span>], trace</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        board <span class="op">=</span> transition[<span class="st">"next_board"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="evaluating-a-frozen-policy" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="evaluating-a-frozen-policy"><span class="header-section-number">13.4.1</span> Evaluating a Frozen Policy</h3>
+<p>The evaluator plays complete games with <code>epsilon=0</code> and the default <code>learn=False</code>. It counts wins, draws, and losses from the learner’s perspective. Mean reward is the win proportion minus the loss proportion under our reward definition. Evaluation cannot insert or update table entries because action selection uses dictionary lookups and the update branch is disabled. The underscore in <code>reward, _</code> discards the unused recording list; the reward determines which outcome count increases.</p>
+<div id="e9ac1a25" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate(q, opponent, games, seed):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Count outcomes in fresh games without updating q."""</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> games <span class="op">&lt;</span> <span class="dv">1</span>:</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"games must be positive"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> {<span class="dv">1</span>: <span class="dv">0</span>, <span class="dv">0</span>: <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>: <span class="dv">0</span>}</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(games):</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        reward, _ <span class="op">=</span> play_episode(q, opponent, rng, epsilon<span class="op">=</span><span class="fl">0.0</span>, learn<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        counts[reward] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"games"</span>: games, <span class="st">"wins"</span>: counts[<span class="dv">1</span>], <span class="st">"draws"</span>: counts[<span class="dv">0</span>],</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"losses"</span>: counts[<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"mean_reward"</span>: (counts[<span class="dv">1</span>] <span class="op">-</span> counts[<span class="op">-</span><span class="dv">1</span>]) <span class="op">/</span> games</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Before training, an empty table supplies the random-action baseline. Every player in this comparison moves first as crosses, so the baseline shares the same first-move role as the learner.</p>
+<div id="236c15ce" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> evaluate({}, random_opponent, games<span class="op">=</span><span class="dv">500</span>, seed<span class="op">=</span><span class="dv">2027</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>baseline</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>{'games': 500, 'wins': 285, 'draws': 60, 'losses': 155, 'mean_reward': 0.26}</code></pre>
+</div>
+</div>
+</section>
+<section id="training-schedule" class="level3" data-number="13.4.2">
+<h3 data-number="13.4.2" class="anchored" data-anchor-id="training-schedule"><span class="header-section-number">13.4.2</span> Training Schedule</h3>
+<p>We train for 30,000 games against the same random opponent. The exploration probability decreases linearly from near one to 0.1 during the first 18,000 games and remains at 0.1 afterward. The formula below uses 20,000 as its denominator, so the floor is reached when <span class="math inline">\(1-\text{episode}/20{,}000 = 0.1\)</span>. The learning rate remains 0.2 and the discount factor remains one.</p>
+<p>Training uses its own random generator with seed 2026. Every 2,500 training games, we evaluate the current table on 500 games using the separate monitoring seed 2027. Resetting that evaluation seed makes the monitoring experiment reproducible and does not consume training randomness. The model settings and final training length are fixed in advance.</p>
+<div id="9932db04" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> {}</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>train_rng <span class="op">=</span> random.Random(<span class="dv">2026</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>initial <span class="op">=</span> baseline.copy()</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>initial[<span class="st">"episodes"</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>history <span class="op">=</span> [initial]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We reuse the baseline evaluation for the zero-training checkpoint. A copy lets us add the episode counter without changing the original baseline record. The loop then trains one game at a time and stores a new evaluation record at each checkpoint.</p>
+<div id="a494051a" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> episode <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30_001</span>):</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    epsilon <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.1</span>, <span class="dv">1</span> <span class="op">-</span> episode <span class="op">/</span> <span class="dv">20_000</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    play_episode(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        q, random_opponent, train_rng, epsilon<span class="op">=</span>epsilon, learn<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> episode <span class="op">%</span> <span class="dv">2500</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> evaluate(q, random_opponent, games<span class="op">=</span><span class="dv">500</span>, seed<span class="op">=</span><span class="dv">2027</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>        scores[<span class="st">"episodes"</span>] <span class="op">=</span> episode</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        history.append(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The resulting table reports performance of frozen greedy policies, rather than outcomes of the exploratory training games. That distinction matters: a learning agent can deliberately make exploratory mistakes during training that its evaluated policy would avoid.</p>
+<div id="badc9d2d" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>learning_history <span class="op">=</span> pd.DataFrame(history)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>learning_history[[<span class="st">"episodes"</span>, <span class="st">"wins"</span>, <span class="st">"draws"</span>, <span class="st">"losses"</span>, <span class="st">"mean_reward"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">episodes</th>
+<th data-quarto-table-cell-role="th">wins</th>
+<th data-quarto-table-cell-role="th">draws</th>
+<th data-quarto-table-cell-role="th">losses</th>
+<th data-quarto-table-cell-role="th">mean_reward</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0</td>
+<td>285</td>
+<td>60</td>
+<td>155</td>
+<td>0.260</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2500</td>
+<td>421</td>
+<td>23</td>
+<td>56</td>
+<td>0.730</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>5000</td>
+<td>475</td>
+<td>12</td>
+<td>13</td>
+<td>0.924</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>7500</td>
+<td>481</td>
+<td>10</td>
+<td>9</td>
+<td>0.944</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>10000</td>
+<td>489</td>
+<td>3</td>
+<td>8</td>
+<td>0.962</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>12500</td>
+<td>494</td>
+<td>3</td>
+<td>3</td>
+<td>0.982</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>15000</td>
+<td>495</td>
+<td>4</td>
+<td>1</td>
+<td>0.988</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>17500</td>
+<td>495</td>
+<td>4</td>
+<td>1</td>
+<td>0.988</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>20000</td>
+<td>497</td>
+<td>3</td>
+<td>0</td>
+<td>0.994</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>22500</td>
+<td>495</td>
+<td>4</td>
+<td>1</td>
+<td>0.988</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>25000</td>
+<td>496</td>
+<td>4</td>
+<td>0</td>
+<td>0.992</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>27500</td>
+<td>496</td>
+<td>4</td>
+<td>0</td>
+<td>0.992</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>30000</td>
+<td>496</td>
+<td>4</td>
+<td>0</td>
+<td>0.992</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The figure uses facets to compare the three outcome proportions. All panels have the same vertical scale. The policies at successive checkpoints share training history, and the monitoring experiments reuse a seed; the points should not be treated as independent training replications. We use plotnine for the faceted display.</p>
+<div id="887e6765" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotnine <span class="im">as</span> gg</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>gg.options.figure_format <span class="op">=</span> <span class="st">"svg"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-fig-rl-learning-curves" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>curve <span class="op">=</span> learning_history.melt(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span>[<span class="st">"episodes"</span>, <span class="st">"games"</span>], value_vars<span class="op">=</span>[<span class="st">"wins"</span>, <span class="st">"draws"</span>, <span class="st">"losses"</span>],</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    var_name<span class="op">=</span><span class="st">"outcome"</span>, value_name<span class="op">=</span><span class="st">"count"</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>curve[<span class="st">"rate"</span>] <span class="op">=</span> curve[<span class="st">"count"</span>] <span class="op">/</span> curve[<span class="st">"games"</span>]</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>curve[<span class="st">"outcome"</span>] <span class="op">=</span> pd.Categorical(</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    curve[<span class="st">"outcome"</span>], categories<span class="op">=</span>[<span class="st">"wins"</span>, <span class="st">"draws"</span>, <span class="st">"losses"</span>], ordered<span class="op">=</span><span class="va">True</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> (</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    gg.ggplot(curve, gg.aes(x<span class="op">=</span><span class="st">"episodes"</span>, y<span class="op">=</span><span class="st">"rate"</span>))</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_line()</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.geom_point()</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.facet_wrap(<span class="st">"~ outcome"</span>, nrow<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.scale_y_continuous(limits<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.labs(x<span class="op">=</span><span class="st">"Training games"</span>, y<span class="op">=</span><span class="st">"Evaluation proportion"</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> gg.theme(figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">3</span>))</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<div id="fig-rl-learning-curves" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rl-learning-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="13-reinforcement_files/figure-html/fig-rl-learning-curves-output-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-learning-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive amounts of training. Each checkpoint uses 500 evaluation games.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Against the random opponent, the win proportion rises and the loss proportion falls substantially in this run. The last monitoring checkpoint has 496 wins and four draws in 500 games. Small fluctuations between checkpoints are expected; an increasing win curve is not a guarantee of convergence or a proof about every reachable board.</p>
+<p>The table stores 7,311 visited state-action pairs across 2,413 decision states. It does not combine rotated or reflected boards. Keeping a table is feasible for this small game, but the number of states grows rapidly in larger problems. Function approximation, including neural networks, can share information across states instead of storing every pair.</p>
+<div id="4099a502" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>{<span class="st">"state_action_pairs"</span>: <span class="bu">len</span>(q), <span class="st">"decision_states"</span>: <span class="bu">len</span>({board <span class="cf">for</span> board, a <span class="kw">in</span> q})}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>{'state_action_pairs': 7311, 'decision_states': 2413}</code></pre>
+</div>
+</div>
+<p>The classical convergence result for tabular Q-learning requires sufficient state-action exploration and appropriate learning-rate conditions. A finite run with a constant learning rate does not establish those asymptotic conditions. Here the evidence is the measured behavior of a fitted table in a controlled game <span class="citation" data-cites="watkins1992qlearning">(<a href="#ref-watkins1992qlearning" role="doc-biblioref">Watkins &amp; Dayan, 1992</a>)</span>.</p>
+</section>
+</section>
+<section id="testing-against-a-stronger-opponent" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="testing-against-a-stronger-opponent"><span class="header-section-number">13.5</span> Testing against a Stronger Opponent</h2>
+<p>Learning against random play answers a specific question: how well can crosses perform when noughts makes random legal replies? A stronger opponent changes the transition probabilities. We therefore evaluate the same frozen table against an opponent that searches the remaining game tree. This benchmark also checks whether a high win rate against random play hides avoidable losses against deliberate play.</p>
+<section id="an-exact-search-benchmark" class="level3" data-number="13.5.1">
+<h3 data-number="13.5.1" class="anchored" data-anchor-id="an-exact-search-benchmark"><span class="header-section-number">13.5.1</span> An Exact-Search Benchmark</h3>
+<p>For this small game, we can calculate the outcome under optimal play. The recursive function returns the result from crosses’ perspective. At a crosses turn it takes the largest value among legal continuations; at a noughts turn it takes the smallest. A terminal board supplies its known outcome. The <code>cache</code> decorator saves previously computed board-turn values, avoiding repeated searches of the same continuation. This uses the same recursion and caching ideas as the Fibonacci examples in <a href="04-python.html" class="quarto-xref"><span>Chapter 4</span></a>. Multiplying a marker by <span class="math inline">\(-1\)</span> switches whose turn is searched.</p>
+<p>This is minimax search, a planning procedure using the known game rules. It is used only as a benchmark here. The Q-learning training loop did not call it or receive its chosen moves as labels.</p>
+<div id="077472de" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> cache</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1de8f543" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="at">@cache</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perfect_value(board, mark):</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the optimal game outcome from crosses' perspective."""</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> outcome(board)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> result</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> []</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> action <span class="kw">in</span> legal_actions(board):</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>        next_board <span class="op">=</span> place(board, action, mark)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>        value <span class="op">=</span> perfect_value(next_board, <span class="op">-</span>mark)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        values.append(value)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mark <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(values)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">min</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Under optimal play from the empty board, the value is zero: either side can prevent a loss, resulting in a draw. This is a property of the searched game tree, rather than an inference from a finite batch of training games.</p>
+<div id="a06b4503" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>perfect_value(EMPTY, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>0</code></pre>
+</div>
+</div>
+<p>The benchmark opponent plays noughts. It chooses a reply whose searched value is smallest for crosses, breaking ties randomly. Because every continuation is finite, the recursion stops without a depth cutoff.</p>
+<div id="e0da1e8e" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perfect_opponent(board, rng):</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose a game-theoretically optimal noughts reply."""</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> {}</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> action <span class="kw">in</span> legal_actions(board):</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>        next_board <span class="op">=</span> place(board, action, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>        values[action] <span class="op">=</span> perfect_value(next_board, <span class="dv">1</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    best <span class="op">=</span> <span class="bu">min</span>(values.values())</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    ties <span class="op">=</span> [action <span class="cf">for</span> action, value <span class="kw">in</span> values.items() <span class="cf">if</span> value <span class="op">==</span> best]</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rng.choice(ties)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="final-evaluation" class="level3" data-number="13.5.2">
+<h3 data-number="13.5.2" class="anchored" data-anchor-id="final-evaluation"><span class="header-section-number">13.5.2</span> Final Evaluation</h3>
+<p>We now use a fresh evaluation seed, 2028, and 2,000 games for each agent-opponent combination. The training table and all settings remain fixed. The random-action baseline is still an empty table interpreted by the same action-selection rule.</p>
+<div id="664793bf" class="cell" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> agent, table <span class="kw">in</span> [(<span class="st">"random"</span>, {}), (<span class="st">"learned"</span>, q)]:</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> opponent_name, opponent <span class="kw">in</span> [</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"random"</span>, random_opponent), (<span class="st">"minimax"</span>, perfect_opponent)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    ]:</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> evaluate(table, opponent, games<span class="op">=</span><span class="dv">2000</span>, seed<span class="op">=</span><span class="dv">2028</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>        scores[<span class="st">"agent"</span>] <span class="op">=</span> agent</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>        scores[<span class="st">"opponent"</span>] <span class="op">=</span> opponent_name</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>        rows.append(scores)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame(rows)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>results[[<span class="st">"agent"</span>, <span class="st">"opponent"</span>, <span class="st">"games"</span>, <span class="st">"wins"</span>, <span class="st">"draws"</span>, <span class="st">"losses"</span>, <span class="st">"mean_reward"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">agent</th>
+<th data-quarto-table-cell-role="th">opponent</th>
+<th data-quarto-table-cell-role="th">games</th>
+<th data-quarto-table-cell-role="th">wins</th>
+<th data-quarto-table-cell-role="th">draws</th>
+<th data-quarto-table-cell-role="th">losses</th>
+<th data-quarto-table-cell-role="th">mean_reward</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>random</td>
+<td>random</td>
+<td>2000</td>
+<td>1181</td>
+<td>241</td>
+<td>578</td>
+<td>0.3015</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>random</td>
+<td>minimax</td>
+<td>2000</td>
+<td>0</td>
+<td>467</td>
+<td>1533</td>
+<td>-0.7665</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>learned</td>
+<td>random</td>
+<td>2000</td>
+<td>1992</td>
+<td>8</td>
+<td>0</td>
+<td>0.9960</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>learned</td>
+<td>minimax</td>
+<td>2000</td>
+<td>0</td>
+<td>2000</td>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The learned policy wins 1,992 games and draws eight against random play, with no observed losses. Against the search opponent, all 2,000 games are draws. Its mean rewards are therefore 0.996 and zero, respectively. A draw against perfect play is a successful defensive result, because crosses cannot force a win against that opponent from the empty board.</p>
+<p>These counts describe one trained table, a fixed starting role, and the specified opponents. Zero observed losses alone does not prove that the table handles every legal continuation. The search opponent chooses among its game-theoretic best moves; it does not explicitly search for mistakes in this particular learned table.</p>
+<p>A Wilson interval illustrates the simulation uncertainty in a loss proportion. For zero losses in 2,000 independent simulated games under a fixed policy-opponent combination, the upper endpoint is about 0.0019. This interval conditions on the fitted table; it does not measure variation across independent training runs or unfamiliar opponents <span class="citation" data-cites="statsmodels2026proportion">(<a href="#ref-statsmodels2026proportion" role="doc-biblioref"><span class="nocase">statsmodels Developers</span>, 2026</a>)</span>. The calculation reads the observed counts from the results table, so changing the experiment also changes its interval.</p>
+<div id="a9d690bf" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.proportion <span class="im">import</span> proportion_confint</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>random_result <span class="op">=</span> results.loc[</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    (results[<span class="st">"agent"</span>] <span class="op">==</span> <span class="st">"learned"</span>) <span class="op">&amp;</span> (results[<span class="st">"opponent"</span>] <span class="op">==</span> <span class="st">"random"</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>].iloc[<span class="dv">0</span>]</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>loss_limits <span class="op">=</span> proportion_confint(</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    random_result[<span class="st">"losses"</span>], random_result[<span class="st">"games"</span>],</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.05</span>, method<span class="op">=</span><span class="st">"wilson"</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"lower"</span>: [loss_limits[<span class="dv">0</span>]], <span class="st">"upper"</span>: [loss_limits[<span class="dv">1</span>]]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">lower</th>
+<th data-quarto-table-cell-role="th">upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1.084202e-19</td>
+<td>0.001917</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="inspecting-a-learned-game" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="inspecting-a-learned-game"><span class="header-section-number">13.6</span> Inspecting a Learned Game</h2>
+<p>A summary score does not show which decisions produced it. We record one game against random play using seed 2029. Recording saves each board, chosen action, reward, next board, and termination flag; it does not turn learning back on.</p>
+<div id="8a212ee3" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>demo_return, trace <span class="op">=</span> play_episode(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    q, random_opponent, random.Random(<span class="dv">2029</span>), record<span class="op">=</span><span class="va">True</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>turns <span class="op">=</span> pd.DataFrame(trace)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>turns[<span class="st">"turn"</span>] <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(turns) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>turns[<span class="st">"reply"</span>] <span class="op">=</span> turns[<span class="st">"reply"</span>].astype(<span class="st">"Int64"</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>turns[[<span class="st">"turn"</span>, <span class="st">"action"</span>, <span class="st">"reply"</span>, <span class="st">"reward"</span>, <span class="st">"done"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">turn</th>
+<th data-quarto-table-cell-role="th">action</th>
+<th data-quarto-table-cell-role="th">reply</th>
+<th data-quarto-table-cell-role="th">reward</th>
+<th data-quarto-table-cell-role="th">done</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>8</td>
+<td>2</td>
+<td>0</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>7</td>
+<td>5</td>
+<td>0</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3</td>
+<td>6</td>
+<td>&lt;NA&gt;</td>
+<td>1</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The snapshots show the empty board and the board after each environment transition. A terminal crosses win has no opponent reply in its final transition. Follow the square indices from <a href="#fig-rl-board-rules" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> to relate these boards to the actions in the table. The saved <code>reply</code> field gives the opponent move directly. Pandas’ nullable integer type <code>Int64</code> displays the absent final reply as a missing value while keeping square indices as integers.</p>
+<div id="cell-fig-rl-recorded-game" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>boards <span class="op">=</span> [EMPTY] <span class="op">+</span> [transition[<span class="st">"next_board"</span>] <span class="cf">for</span> transition <span class="kw">in</span> trace]</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(boards), figsize<span class="op">=</span>(<span class="fl">2.3</span> <span class="op">*</span> <span class="bu">len</span>(boards), <span class="fl">2.8</span>))</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (ax, board) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(axes, boards)):</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    draw_board(board, ax)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    title <span class="op">=</span> <span class="st">"Start"</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="ss">f"Turn </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: reward </span><span class="sc">{</span>trace[i<span class="op">-</span><span class="dv">1</span>][<span class="st">'reward'</span>]<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-rl-recorded-game" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rl-recorded-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="13-reinforcement_files/figure-html/fig-rl-recorded-game-output-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-recorded-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent panel follows a crosses action and, if needed, a noughts reply.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The legal moves and game outcomes are computed by rules, while the action preferences come from the learned table. The distinction is visible in this position: the rules identify legal actions, and the table assigns estimated returns only to those actions.</p>
+<div id="f2da2dd7" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> q_values(q, win_board)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>action_values <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"action"</span>: <span class="bu">list</span>(values), <span class="st">"q_value"</span>: <span class="bu">list</span>(values.values())</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>action_values</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">action</th>
+<th data-quarto-table-cell-role="th">q_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2</td>
+<td>0.914101</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>5</td>
+<td>0.196160</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>6</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>7</td>
+<td>-0.275520</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>8</td>
+<td>0.097600</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Action <code>2</code> has the largest estimate, about 0.914, and completes the winning row shown in <a href="#fig-rl-board-rules" class="quarto-xref">Figure&nbsp;<span>13.1</span></a>. The estimate has not reached the known terminal return of one because the table has received only a finite number of incremental updates at this position. A zero entry can also reflect lack of experience rather than evidence that the action leads to a draw.</p>
+<section id="playing-against-the-agent" class="level3" data-number="13.6.1">
+<h3 data-number="13.6.1" class="anchored" data-anchor-id="playing-against-the-agent"><span class="header-section-number">13.6.1</span> Playing against the Agent</h3>
+<p>A human can take the noughts role by supplying a different opponent function. The console display uses the same square indices as the plot. These functions are defined during rendering; they request input only when <code>play_human(q)</code> is called in an interactive session after running the preceding code chunks.</p>
+<div id="35dafdd0" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_board(board):</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Print marks and empty-square indices for a console player."""</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> [MARKS.get(value, <span class="bu">str</span>(i)) <span class="cf">for</span> i, value <span class="kw">in</span> <span class="bu">enumerate</span>(board)]</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> start <span class="kw">in</span> (<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">6</span>):</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">" | "</span>.join(labels[start:start <span class="op">+</span> <span class="dv">3</span>]))</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> start <span class="op">&lt;</span> <span class="dv">6</span>:</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"---------"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The human opponent is asked for a legal square after crosses has moved. It retries an invalid entry before returning a move to the game engine. The <code>rng</code> argument keeps the same interface as the other opponent functions, although this opponent obtains its action from the keyboard. The <code>try</code> block converts the entry to an integer. A <code>ValueError</code> triggers a new prompt for text such as <code>hello</code> or <code>²</code>; <code>continue</code> restarts the loop. A converted integer must still pass the legal-square check.</p>
+<div id="a8e7c137" class="cell" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> human_opponent(board, rng):</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Ask for a legal noughts move, retrying invalid input."""</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    print_board(board)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>            action <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"Your square (0–8): "</span>))</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"Enter a whole-number square index."</span>)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> action <span class="kw">in</span> legal_actions(board):</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> action</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Choose an empty square shown on the board."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The wrapper plays one frozen-policy game and prints the final board and result. Human moves are outside the random-opponent training environment, so their outcomes should be interpreted in that context.</p>
+<div id="a9af2f3f" class="cell" data-execution_count="36">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> play_human(q, seed<span class="op">=</span><span class="dv">2029</span>):</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play one game as noughts against the frozen learned policy."""</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    reward, trace <span class="op">=</span> play_episode(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>        q, human_opponent, random.Random(seed), learn<span class="op">=</span><span class="va">False</span>, record<span class="op">=</span><span class="va">True</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    print_board(trace[<span class="op">-</span><span class="dv">1</span>][<span class="st">"next_board"</span>])</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>({<span class="dv">1</span>: <span class="st">"Crosses wins."</span>, <span class="dv">0</span>: <span class="st">"Draw."</span>, <span class="op">-</span><span class="dv">1</span>: <span class="st">"You win."</span>}[reward])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>To start a game in the interactive session, run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>play_human(q)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="scope-of-the-example" class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="scope-of-the-example"><span class="header-section-number">13.7</span> Scope of the Example</h2>
+<p>This agent learns a table from sampled interactions and receives no expert-action labels. It nevertheless relies on substantial choices made by the analyst: the board encoding, legal-action rules, reward definition, opponent, exploration schedule, learning rate, and evaluation design. A different reward or opponent can change what a good policy means.</p>
+<p>The Markov assumption is manageable because the full board is visible and the training opponent has a fixed rule. Larger applications may involve partial observations, changing environments, costly exploration, or a reward that only imperfectly represents the intended goal. Those issues must be addressed before transferring the method to a substantive real-world decision problem <span class="citation" data-cites="sutton2018reinforcement">(<a href="#ref-sutton2018reinforcement" role="doc-biblioref">Sutton &amp; Barto, 2018</a>)</span>.</p>
+<p>The representation also limits transfer. Rotations and reflections are stored separately, and the learner always moves first. Extending the agent to both roles requires recording whose turn it is, maintaining a consistent reward perspective, and defining which positions begin an episode. Self-play would additionally make the training opponent change as learning proceeds. These are changes to the learning problem, not just new hyperparameter values.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
+<div id="exr-rl-transitions" class="theorem exercise">
+<p><span class="theorem-title"><strong> 13.1</strong></span> Trace the state, action, and reward sequence.</p>
+<ol type="a">
+<li>Using <code>win_board</code>, list the legal actions and identify an action that ends the game immediately. Report the next state, reward, and <code>done</code>.</li>
+<li>Construct a nonterminal crosses-turn board where a poor action allows noughts to win on its reply. Use a specified legal opponent reply to demonstrate why the update must wait for the complete transition.</li>
+<li>Starting from a zero entry, calculate two consecutive terminal updates with reward one and learning rate 0.2. Check the values in Python.</li>
+<li>Explain how zero reward differs between an unfinished transition and a terminal draw, and how the implementation handles that difference.</li>
+</ol>
+</div>
+<div id="exr-rl-exploration" class="theorem exercise">
+<p><span class="theorem-title"><strong> 13.2</strong></span> Investigate exploration and evaluation.</p>
+<ol type="a">
+<li>Compare the chapter’s exploration schedule with a fixed epsilon of 0.1, keeping the training length and learning rate unchanged. Report the settings and use several independent training seeds.</li>
+<li>Plot frozen-policy win, draw, and loss proportions against training games, using facets and comparable axes. Describe the variation across training runs.</li>
+<li>Evaluate the final tables using fresh games against both random and minimax opponents. Report counts and average rewards, and distinguish evaluation-game uncertainty from training-run variation.</li>
+<li>Explain why training-game win proportions can differ from the frozen-policy evaluation proportions even against the same opponent.</li>
+</ol>
+</div>
+<div id="exr-rl-design" class="theorem exercise">
+<p><span class="theorem-title"><strong> 13.3</strong></span> Consider changes to the learning problem.</p>
+<ol type="a">
+<li>Explain how setting a discount factor below one changes the relative value of early and late wins and losses in this game.</li>
+<li>Propose a state representation and starting procedure for a learner that sometimes plays second. Explain whose perspective the rewards use.</li>
+<li>Describe how rotation or reflection symmetry could reduce the table size. Explain why the action indices must be transformed with the board.</li>
+<li>Explain how a changing self-play opponent affects the fixed-environment interpretation used in this chapter, and propose an evaluation plan using frozen opponents.</li>
+</ol>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-statsmodels2026proportion" class="csl-entry" role="listitem">
+<span class="nocase">statsmodels Developers</span>. (2026). <em>Proportion tests and confidence intervals</em>. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html">https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html</a>
+</div>
+<div id="ref-sutton2018reinforcement" class="csl-entry" role="listitem">
+Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement learning: An introduction</em> (2nd ed.). The MIT Press. <a href="http://incompleteideas.net/book/the-book-2nd.html">http://incompleteideas.net/book/the-book-2nd.html</a>
+</div>
+<div id="ref-watkins1992qlearning" class="csl-entry" role="listitem">
+Watkins, C. J. C. H., &amp; Dayan, P. (1992). <span>Q</span>-learning. <em>Machine Learning</em>, <em>8</em>, 279–292. <a href="https://doi.org/10.1007/BF00992698">https://doi.org/10.1007/BF00992698</a>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/statds\.github\.io\/ids-book");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./12-unsupervised.html" class="pagination-link" aria-label="Unsupervised Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./90-ethics.html" class="pagination-link" aria-label="Ethics">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/statds/ids-book/edit/main/13-reinforcement.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

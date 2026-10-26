@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>11&nbsp; Ethics – Introduction to Data Science</title>
+<title>14&nbsp; Ethics – Introduction to Data Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -91,7 +91,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./10-machine-learning.html" rel="prev">
+<link href="./13-reinforcement.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -145,7 +145,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./90-ethics.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./90-ethics.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -230,19 +230,37 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09-modeling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Modeling</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Statistical Models</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./10-machine-learning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning Overview</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11-supervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Supervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12-unsupervised.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Unsupervised Learning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13-reinforcement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./90-ethics.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></span></a>
   </div>
 </li>
     </ul>
@@ -255,16 +273,16 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ethical-reasoning" id="toc-ethical-reasoning" class="nav-link active" data-scroll-target="#ethical-reasoning"><span class="header-section-number">11.1</span> Ethical Reasoning</a></li>
-  <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose"><span class="header-section-number">11.2</span> Purpose</a></li>
-  <li><a href="#privacy" id="toc-privacy" class="nav-link" data-scroll-target="#privacy"><span class="header-section-number">11.3</span> Privacy</a></li>
-  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">11.4</span> Bias</a></li>
-  <li><a href="#fairness" id="toc-fairness" class="nav-link" data-scroll-target="#fairness"><span class="header-section-number">11.5</span> Fairness</a></li>
-  <li><a href="#uncertainty" id="toc-uncertainty" class="nav-link" data-scroll-target="#uncertainty"><span class="header-section-number">11.6</span> Uncertainty</a></li>
-  <li><a href="#robustness" id="toc-robustness" class="nav-link" data-scroll-target="#robustness"><span class="header-section-number">11.7</span> Robustness</a></li>
-  <li><a href="#transparency" id="toc-transparency" class="nav-link" data-scroll-target="#transparency"><span class="header-section-number">11.8</span> Transparency</a></li>
-  <li><a href="#accountability" id="toc-accountability" class="nav-link" data-scroll-target="#accountability"><span class="header-section-number">11.9</span> Accountability</a></li>
-  <li><a href="#review" id="toc-review" class="nav-link" data-scroll-target="#review"><span class="header-section-number">11.10</span> Review</a></li>
+  <li><a href="#ethical-reasoning" id="toc-ethical-reasoning" class="nav-link active" data-scroll-target="#ethical-reasoning"><span class="header-section-number">14.1</span> Ethical Reasoning</a></li>
+  <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose"><span class="header-section-number">14.2</span> Purpose</a></li>
+  <li><a href="#privacy" id="toc-privacy" class="nav-link" data-scroll-target="#privacy"><span class="header-section-number">14.3</span> Privacy</a></li>
+  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">14.4</span> Bias</a></li>
+  <li><a href="#fairness" id="toc-fairness" class="nav-link" data-scroll-target="#fairness"><span class="header-section-number">14.5</span> Fairness</a></li>
+  <li><a href="#uncertainty" id="toc-uncertainty" class="nav-link" data-scroll-target="#uncertainty"><span class="header-section-number">14.6</span> Uncertainty</a></li>
+  <li><a href="#robustness" id="toc-robustness" class="nav-link" data-scroll-target="#robustness"><span class="header-section-number">14.7</span> Robustness</a></li>
+  <li><a href="#transparency" id="toc-transparency" class="nav-link" data-scroll-target="#transparency"><span class="header-section-number">14.8</span> Transparency</a></li>
+  <li><a href="#accountability" id="toc-accountability" class="nav-link" data-scroll-target="#accountability"><span class="header-section-number">14.9</span> Accountability</a></li>
+  <li><a href="#review" id="toc-review" class="nav-link" data-scroll-target="#review"><span class="header-section-number">14.10</span> Review</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -275,7 +293,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ethics" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Ethics</span></span></h1>
+<h1 class="title"><span id="sec-ethics" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Ethics</span></span></h1>
 </div>
 
 
@@ -293,8 +311,8 @@ div.csl-indent {
 
 
 <p>Choices about questions, data, methods, and communication can affect people and institutions. This chapter offers a way to identify those effects, consider responsibilities, and document a decision. It draws on research ethics, professional statistical practice, and risk management, while recognizing that no framework replaces judgment about the setting. We use the NYPD 311 requests from earlier chapters as a case: public data can still raise privacy, equity, and accountability concerns.</p>
-<section id="ethical-reasoning" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="ethical-reasoning"><span class="header-section-number">11.1</span> Ethical Reasoning</h2>
+<section id="ethical-reasoning" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="ethical-reasoning"><span class="header-section-number">14.1</span> Ethical Reasoning</h2>
 <p>Ethical analysis asks more than whether an action is legal or technically possible. Legal rules establish requirements in particular jurisdictions and contexts; professional standards describe responsibilities attached to practice; ethical reasoning also considers foreseeable benefits, harms, power, and the interests of affected people. A project may satisfy a data license and still expose a vulnerable person, produce a misleading comparison, or support a harmful decision. Conversely, identifying a possible risk does not by itself show that a project must stop. The analyst should specify the purpose, who is affected, what evidence is available, which alternatives exist, and who has the authority to decide.</p>
 <p>Ethical review returns to the purpose, measurement, scope, and evidence checks in <a href="05-formulation.html#sec-formulation-checks" class="quarto-xref"><span>Section 5.1</span></a>. These choices shape who may be affected and what consequences an analysis could have. Several frameworks offer useful, but different, starting points:</p>
 <ul>
@@ -314,8 +332,8 @@ div.csl-indent {
 </ol>
 <p>Return to these questions as the project changes. They do not produce an automatic ethical score; they make judgments and unresolved issues visible to collaborators, reviewers, and decision makers.</p>
 </section>
-<section id="purpose" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="purpose"><span class="header-section-number">11.2</span> Purpose</h2>
+<section id="purpose" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="purpose"><span class="header-section-number">14.2</span> Purpose</h2>
 <p>A defensible project begins with a purpose specific enough to evaluate. State:</p>
 <ul>
 <li>who needs the analysis;</li>
@@ -334,8 +352,8 @@ div.csl-indent {
 </ul>
 <p>These groups can have different interests and different opportunities to challenge an interpretation. Consultation is most useful when it can change the question, safeguards, or decision, rather than serving only as approval after analysis is complete.</p>
 </section>
-<section id="privacy" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="privacy"><span class="header-section-number">11.3</span> Privacy</h2>
+<section id="privacy" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="privacy"><span class="header-section-number">14.3</span> Privacy</h2>
 <p>Privacy risk depends on context, not only on whether a table contains names. Precise locations, timestamps, rare categories, and external information can combine to reveal details about a person, household, or business. Removing direct identifiers may reduce risk, but it does not guarantee anonymity. Public accessibility also does not establish that every downstream use is expected, harmless, or consistent with the original collection purpose.</p>
 <p>The distributed 311 extract does not provide a reporter name, but individual addresses and coordinates can still expose the location of a reported condition. A citywide count may need no street address at all; a neighborhood comparison may require only an aggregated geography. Data minimization asks the analyst to use and disclose the least detailed data adequate for the stated task. The appropriate resolution depends on the question, the population at risk, the possibility of linkage, and the consequences of disclosure.</p>
 <p>The following example prepares a borough-by-detail summary without importing request identifiers, street addresses, or coordinates. It suppresses small cells in the displayed release table to illustrate one possible safeguard. The threshold is a teaching choice, not a universal privacy standard, and the internal count is not included in the table intended for release.</p>
@@ -488,8 +506,8 @@ div.csl-indent {
 </ul>
 <p>Each safeguard has analytical costs. Aggregation can conceal local patterns, and suppression can make some groups less visible than others. State which risk a safeguard addresses and check whether it distorts the comparison. Data security and privacy protection are related but distinct: secure storage does not decide whether a collection or analysis is appropriate.</p>
 </section>
-<section id="bias" class="level2" data-number="11.4">
-<h2 data-number="11.4" class="anchored" data-anchor-id="bias"><span class="header-section-number">11.4</span> Bias</h2>
+<section id="bias" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="bias"><span class="header-section-number">14.4</span> Bias</h2>
 <p>Bias can enter before a model is fitted. Administrative data reflect how a system defines categories, who can access it, what people choose to report, how staff record events, and which records are retained. Consequently, a large dataset can measure a process precisely while representing the underlying phenomenon incompletely. Bias is not limited to a mistaken algorithm; it can arise from the purpose, measurement, sampling, labels, missingness, and decisions surrounding the analysis.</p>
 <p>311 requests illustrate the distinction between an event and its observation. The data contain reported conditions, not all conditions on city streets. Reporting may vary with awareness of 311, access to a phone or internet, language, trust in public agencies, time available, and expectations about response. A neighborhood with more requests could have more underlying conditions, more reporting, or both. A population denominator may improve one comparison but cannot correct every difference in exposure or reporting behavior. The data alone may not identify those mechanisms.</p>
 <p>Missing values and outcome labels can also encode system processes. Requests without coordinates may be less suitable for mapping, but dropping them can change which areas or categories appear in the analysis. A label such as “closed” describes an administrative state and should not be treated as proof that a reported condition was resolved. The data-curation issues documented for NYC 311, including inconsistent representations and temporal anomalies, show why analysts should investigate how fields were produced before treating them as neutral measurements <span class="citation" data-cites="tussey2025principles">(<a href="#ref-tussey2025principles" role="doc-biblioref">Tussey &amp; Yan, 2025</a>)</span>.</p>
@@ -502,8 +520,8 @@ div.csl-indent {
 </ul>
 <p>If the extract lacks relevant group information, fairness may not be evaluated from the available records. Inferring sensitive attributes from location can add privacy risks and classification errors.</p>
 </section>
-<section id="fairness" class="level2" data-number="11.5">
-<h2 data-number="11.5" class="anchored" data-anchor-id="fairness"><span class="header-section-number">11.5</span> Fairness</h2>
+<section id="fairness" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="fairness"><span class="header-section-number">14.5</span> Fairness</h2>
 <p>Fairness concerns how benefits, errors, burdens, and opportunities are distributed. It is not a single property that can be established by reporting one metric. A descriptive comparison may raise fairness questions even when no predictive model is used; a prediction system makes those questions more consequential when its output changes access, scrutiny, enforcement, or resources. The relevant groups, outcomes, and harms depend on the decision context and should be identified before selecting a metric.</p>
 <p>Suppose an analyst predicts which locations will receive future illegal- parking complaints and proposes that the city use the predictions to allocate enforcement. The target is future complaints, not verified violations. Historical complaint patterns can reproduce differences in reporting and enforcement, while enforcement can generate new records that appear to confirm the original pattern. A high overall prediction score would not establish that the system identifies violations accurately or distributes enforcement fairly. The team would need validated outcome measures, a specified decision process, subgroup error analysis where suitable data and sample sizes permit, and a justification for the costs of false positives and false negatives.</p>
 <p>Fairness review should make several decisions explicit:</p>
@@ -515,40 +533,40 @@ div.csl-indent {
 </ul>
 <p>Group metrics can conflict, and apparent parity can conceal unequal harms or poor measurement. If the available data cannot evaluate the proposed use, the project may need better evidence, a narrower use, or no deployment. That limitation is not evidence that the system is fair by default.</p>
 </section>
-<section id="uncertainty" class="level2" data-number="11.6">
-<h2 data-number="11.6" class="anchored" data-anchor-id="uncertainty"><span class="header-section-number">11.6</span> Uncertainty</h2>
+<section id="uncertainty" class="level2" data-number="14.6">
+<h2 data-number="14.6" class="anchored" data-anchor-id="uncertainty"><span class="header-section-number">14.6</span> Uncertainty</h2>
 <p>Uncertainty is an ethical concern when decisions depend on estimates, predictions, or classifications. A single performance score can conceal variation across places, time periods, or groups, while a precise-looking estimate can imply more certainty than the data-generating process supports. Trustworthy analysis therefore describes what is uncertain, why it is uncertain, and how that uncertainty affects the decision. Statistical uncertainty is only one component: ambiguity in field definitions, incomplete coverage, measurement error, and unknown reporting behavior can limit a conclusion even when a model’s standard errors are small.</p>
 <p>The 311 extract contains the requests delivered for a defined agency and week. If the goal is to describe those delivered records, a sampling confidence interval is not needed to account for random selection from that finite file. If the goal is to generalize to other weeks, locations, or all illegal-parking conditions, uncertainty arises from a broader process that the one-week file does not fully represent. Such generalization requires a defensible model or sampling framework, not merely a confidence interval attached to the observed count. The distinction between describing the extract and making claims beyond it determines which uncertainty statements are appropriate.</p>
 <p>For a proposed prediction system, uncertainty also concerns the stability and calibration of predictions in the population where they would be used. A model’s average accuracy does not show whether its errors cluster in a particular area or whether an individual prediction is reliable. Analysts should report evaluation design, uncertainty in performance estimates, and the consequences of errors for the decision. If those quantities cannot be estimated with adequate evidence, the correct response is to narrow the claim or postpone the decision rather than present uncertain output as fact.</p>
 </section>
-<section id="robustness" class="level2" data-number="11.7">
-<h2 data-number="11.7" class="anchored" data-anchor-id="robustness"><span class="header-section-number">11.7</span> Robustness</h2>
+<section id="robustness" class="level2" data-number="14.7">
+<h2 data-number="14.7" class="anchored" data-anchor-id="robustness"><span class="header-section-number">14.7</span> Robustness</h2>
 <p>Robustness asks whether a conclusion changes under reasonable alternatives in data preparation, measurement, modeling, or evaluation. It does not mean that every possible analysis must produce the same result, nor does agreement across several specifications prove a claim true. The alternatives should correspond to genuine uncertainties identified before the result is known. Reporting which findings persist, which change, and why helps decision makers understand how dependent a conclusion is on analyst choices.</p>
 <p>The 311 example offers concrete sensitivity checks. A time-of-day comparison could use alternative, explicitly defined day and night boundaries. A geographic summary could compare boroughs with ZIP/ZCTA-level results while reporting unmatched locations. A closure-time comparison could examine the effect of missing or unusually long durations without silently deleting them. For every check, the analyst should state the plausible alternative, the reason it is defensible, and whether it changes the substantive conclusion. Selecting only the specification that gives the strongest result is not a robustness analysis.</p>
 <p>Robustness is especially important before deployment because operational conditions can differ from the evaluation data. A model trained on one week of requests may fail in another season, under a changed reporting interface, or after enforcement practices change the records being used as outcomes. A technical validation on held-out rows from the same short period cannot establish stability under these shifts. The team should identify foreseeable changes, test them where data permit, and restrict use where they remain untested.</p>
 </section>
-<section id="transparency" class="level2" data-number="11.8">
-<h2 data-number="11.8" class="anchored" data-anchor-id="transparency"><span class="header-section-number">11.8</span> Transparency</h2>
+<section id="transparency" class="level2" data-number="14.8">
+<h2 data-number="14.8" class="anchored" data-anchor-id="transparency"><span class="header-section-number">14.8</span> Transparency</h2>
 <p>Transparency makes a project inspectable by communicating its purpose, data sources, transformations, assumptions, methods, uncertainty, limitations, and intended use. It is more than releasing code or choosing an interpretable model. Different audiences need different explanations: another analyst may need executable details, an affected community may need to know how a result could influence them, and a decision maker may need a clear account of what the evidence does and does not support. The ASA guidelines treat communication and disclosure of limitations as core parts of responsible statistical practice <span class="citation" data-cites="asastatistical2022guidelines">(<a href="#ref-asastatistical2022guidelines" role="doc-biblioref">American Statistical Association, 2022</a>)</span>. The JDS editorial also emphasizes that trustworthy analysis depends on the interaction between analytic choices and human judgment <span class="citation" data-cites="hicks2026statistical">(<a href="#ref-hicks2026statistical" role="doc-biblioref">Hicks et al., 2026</a>)</span>.</p>
 <p>In this book’s 311 example, transparent reporting distinguishes requests from verified incidents, NYPD-directed data from all 311 requests, closure time from officer response, and ZIP Codes from ZCTAs. A map should state its aggregation level and denominator; a comparison should disclose missing locations and the time period; a predictive claim should identify the target and evaluation population. These qualifications are not peripheral caveats. They define the interpretation that the evidence supports.</p>
 <p>Visualization choices can either clarify or distort that interpretation. Selective time windows, unexplained denominators, cropped axes, and maps with unadjusted counts can lead an audience toward an unsupported conclusion. Responsible communication presents uncertainty and alternatives in proportion to their relevance and avoids implying causation from descriptive or predictive results. The communication chapter develops visual design in more detail; the ethical requirement here is to represent the evidence faithfully for the decisions at stake.</p>
 <p>Audience fit requires choosing the level and form of explanation without changing the underlying evidence. A technical report may present model validation details, while a public summary may explain what a prediction can and cannot support in direct language. Both should identify the target, population, uncertainty, and material limitations. Simplifying vocabulary is appropriate; omitting a caveat that could change a decision is not. The intended audience should be considered when formulating the analysis, not only when polishing its final display.</p>
 </section>
-<section id="accountability" class="level2" data-number="11.9">
-<h2 data-number="11.9" class="anchored" data-anchor-id="accountability"><span class="header-section-number">11.9</span> Accountability</h2>
+<section id="accountability" class="level2" data-number="14.9">
+<h2 data-number="14.9" class="anchored" data-anchor-id="accountability"><span class="header-section-number">14.9</span> Accountability</h2>
 <p>Accountability identifies who must explain, review, and respond to a data product and its effects. A reproducible workflow provides an audit trail of code and decisions, but reproducibility alone is not accountability: a harmful analysis can be perfectly reproducible. Teams should assign responsibility for data stewardship, methodological review, approval of intended uses, communication with affected parties, and monitoring after deployment.</p>
 <p>Risk review should continue as a project changes. A descriptive class exercise using aggregated public data has a different risk profile from a system that automatically directs enforcement. New data sources, finer geographic detail, new audiences, or operational deployment can change who is exposed and what errors cost. The NIST framework’s governance and risk-management functions provide one structure for making review continuous in AI applications <span class="citation" data-cites="nist2023ai">(<a href="#ref-nist2023ai" role="doc-biblioref">Tabassi, 2023</a>)</span>. A review should have a route to pause, revise, or discontinue the work when safeguards fail or harms emerge.</p>
 <p>An ethical decision record can be concise while still being useful. It should state the purpose, affected parties, data and intended uses, major risks, uncertainties, safeguards, alternatives considered, responsible reviewers, and conditions that would trigger reassessment. The record should distinguish evidence from assumptions and identify questions that could not be resolved. This documentation supports later review and helps prevent provisional assumptions from becoming invisible facts as a project is handed to others.</p>
 </section>
-<section id="review" class="level2" data-number="11.10">
-<h2 data-number="11.10" class="anchored" data-anchor-id="review"><span class="header-section-number">11.10</span> Review</h2>
+<section id="review" class="level2" data-number="14.10">
+<h2 data-number="14.10" class="anchored" data-anchor-id="review"><span class="header-section-number">14.10</span> Review</h2>
 <p>Ethical review is a continuing part of data-science work rather than a final approval step. A practical review asks whether the question remains justified, whether the data represent the intended population, whether the measurement and model fit the proposed decision, whether risks are proportionate to expected benefits, and whether affected people can understand or challenge the use. Sometimes the result is to proceed with safeguards; sometimes it is to change the question, seek additional evidence, limit release, or stop.</p>
 <p>The frameworks discussed here provide vocabulary and structure, but they do not remove disagreement. Respect, benefit, justice, privacy, and fairness can point in different directions, and a technically precise analysis may still leave the central value choice unresolved. Responsible practice makes those choices explicit, considers who has authority and voice, records the basis for action, and remains open to revision as evidence and consequences become clearer.</p>
 </section>
 <section id="exercises" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <div id="exr-ethics-311" class="theorem exercise">
-<p><span class="theorem-title"><strong> 11.1</strong></span> Evaluate an ethical decision involving the NYPD 311 data. Work individually or in a small group, and distinguish evidence in the data from assumptions about people or agency processes.</p>
+<p><span class="theorem-title"><strong> 14.1</strong></span> Evaluate an ethical decision involving the NYPD 311 data. Work individually or in a small group, and distinguish evidence in the data from assumptions about people or agency processes.</p>
 <ol type="a">
 <li>Select one question proposed in <a href="05-formulation.html" class="quarto-xref"><span>Chapter 5</span></a>. State its purpose, intended audience, observational unit, and potential use. Identify at least three affected parties and describe one possible benefit and one possible harm for each.</li>
 <li>Trace how a request enters the dataset, including who may report, what is recorded, how the request reaches NYPD, and what closure means. Mark which parts are documented and which require further evidence or curator input.</li>
@@ -563,7 +581,7 @@ div.csl-indent {
 </ol>
 </div>
 <div id="exr-ethics-visual" class="theorem exercise">
-<p><span class="theorem-title"><strong> 11.2</strong></span> Assess the communication of a data-science result.</p>
+<p><span class="theorem-title"><strong> 14.2</strong></span> Assess the communication of a data-science result.</p>
 <ol type="a">
 <li>Find a published chart, map, or model claim that could inform a public or organizational decision. Record its source and intended audience.</li>
 <li>Identify design or reporting choices that shape interpretation, including denominators, uncertainty, aggregation, axis limits, missing observations, and causal language where applicable.</li>
@@ -998,8 +1016,8 @@ Tussey, D., &amp; Yan, J. (2025). <em>Principles for open data curation: A case 
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./10-machine-learning.html" class="pagination-link" aria-label="Machine Learning">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Machine Learning</span></span>
+      <a href="./13-reinforcement.html" class="pagination-link" aria-label="Reinforcement Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Reinforcement Learning</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
