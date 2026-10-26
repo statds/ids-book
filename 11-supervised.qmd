@@ -1,7 +1,10 @@
 # Supervised Learning {#sec-supervised-learning}
 
 <!-- Instructor-authored sources: ids-s24/supervised.qmd and
-ids-f25/10-supervised.qmd plus ids-f25/_nnet.qmd. The student-authored
+ids-f25/10-supervised.qmd plus ids-f25/_nnet.qmd; and earlier material in
+ids-s22/notes/docs/bagging_vs_boosting.md, ids-f24/supervised.qmd, and
+ids-s25/supervised.qmd (including its California housing demonstration).
+The student-authored
 _tree.qmd in ids-s24 and the attributed student inclusions in ids-f25
 are excluded. Repeated learning-settings, evaluation, and cross-validation
 exposition is covered by Chapters 9–10. -->
@@ -342,6 +345,10 @@ learners, gradient boosting can be generalized to other base
 models. This iterative method optimizes a specified loss function by
 repeatedly adding models designed to reduce residual errors.
 
+A fitted ensemble of this type is often called a gradient boosting
+machine (GBM). Boosting describes the sequential ensemble strategy;
+gradient boosting specifies how loss gradients determine its updates.
+
 
 Gradient boosting builds a strong predictor from sequentially fitted
 weak learners, often shallow decision trees. Each stage uses the loss
@@ -375,6 +382,37 @@ Key concepts:
   speed and generalization.
 - Regularization: Reduces overfitting through tree depth limitation,
   subsampling, and L1/L2 penalties.
+
+#### Loss Functions
+
+The loss determines what error each update tries to correct. For a numeric
+outcome $y$ and prediction $F$, half squared-error loss is
+
+$$
+L(y, F) = \frac{1}{2}(y - F)^2.
+$$
+
+Its negative derivative with respect to $F$ is $y - F$, the ordinary
+residual. For a binary outcome coded as $y \in \{0,1\}$, logistic loss
+on a log-odds score $F$ is
+
+$$
+L(y, F) = \log(1 + e^F) - yF.
+$$
+
+Equivalently, after defining the signed label $s = 2y - 1$, this loss is
+
+$$
+L(s, F) = \log(1 + e^{-sF}).
+$$
+
+The signed-label expression uses $s \in \{-1,1\}$; inserting a zero-one
+label into it directly would give the wrong loss. The logistic negative
+gradient is $y - \{1 + \exp(-F)\}^{-1}$, so it compares the observed
+indicator with the fitted probability rather than with the log-odds score.
+Different losses therefore lead to different pseudo-residuals
+[@friedman2001greedy; @hastie2009elements].
+
 
 #### Model Iteration
 
@@ -446,7 +484,7 @@ logistic function before classification.
 Stochastic gradient boosting is a variant that enhances gradient
 boosting by introducing randomness through subsampling at each
 iteration, selecting a random fraction of data points (typically
-50%–80%) to fit the model [@friedman2002stochastic]. This
+50%–80%) without replacement to fit the model [@friedman2002stochastic]. This
 randomness helps reduce correlation among trees, improve model
 robustness, and lower the risk of overfitting.
 
@@ -481,6 +519,57 @@ reduce correlation among trees [@hastie2009elements].
 Both strategies require validation against the same prediction task and
 baseline. Neither has a universal performance advantage, and neither
 establishes causal effects simply by predicting well.
+
+#### Random Forests and Bagging Controls
+
+The earlier bagging discussion identifies random forests as an important
+extension of bagged decision trees. In a random forest, the algorithm
+considers a random subset of candidate features at each split. This is
+more specific than choosing a single feature subset for an entire tree:
+the eligible features can change from node to node. Combined with
+bootstrap sampling, this randomization helps make the trees' predictions
+less correlated [@hastie2009elements].
+
+Three controls from that discussion govern different parts of the fit:
+
+- **Number of trees:** more trees average over more fitted predictors,
+  usually stabilizing the ensemble at greater computational cost.
+- **Number of candidate features:** fewer candidates introduce more
+  randomness and may reduce dependence among trees, while weakening an
+  individual tree if useful predictors are often unavailable.
+- **Tree depth:** depth and minimum leaf size limit the flexibility of
+  each individual tree.
+
+These choices should be assessed using the same validation design as other
+candidate methods. Feature subsampling does not itself guarantee robustness
+to missing data; missing-value support depends on the implementation.
+
+#### Adaptive Boosting
+
+Adaptive boosting, or AdaBoost, illustrates a different way to construct
+an additive ensemble. It changes the weights attached to observations
+rather than fitting ordinary residuals. Each weak learner is fitted using
+the current observation weights, and its contribution to the ensemble
+depends on its weighted prediction error [@hastie2009elements].
+
+For binary classification with $n$ training observations, the procedure
+starts with equal weights $1/n$ and repeats the following steps:
+
+1. Fit a weak learner to the observations using their current weights.
+2. Calculate its weighted classification error and an associated
+   coefficient controlling its contribution to the ensemble.
+3. Add the learner's weighted contribution to the ensemble score.
+4. Increase the relative weights of observations misclassified by that
+   learner and decrease those correctly classified, then normalize the
+   weights before the next fit.
+
+The final classifier uses the combined scores of the fitted learners.
+This construction avoids trying to optimize every learner and coefficient
+at once, although sequential fitting need not find a global optimum.
+Gradient boosting instead fits learners to negative loss gradients. Its
+use of a differentiable loss makes the update applicable to regression
+and other tasks as well as classification. Both methods build sequential
+ensembles, while bagging fits members independently.
 
 
 ### Boosted Trees with Ames Housing
@@ -583,6 +672,74 @@ complexity, learning stability, and overfitting control:
 In practice, moderate learning rates with a sufficiently large number
 of estimators and shallow trees are useful starting points, balancing bias,
 variance, and computational cost.
+
+### Stochastic GBM with California Housing
+
+The California housing example illustrates stochastic gradient boosting
+with `subsample=0.7`, so each round uses 70% of the training observations,
+sampled without replacement. This differs from the preceding Ames
+example's default `subsample=1.0`. It preserves the earlier demonstration
+and its dated seeds, 20250407 for the data split and 20250408 for fitting.
+
+Each observation describes a California census block group. The response
+is the group's median house value, expressed in units of 100,000 US dollars; the
+features summarize income, housing, population, and location. These are
+area summaries, unlike the individual house sales in Ames
+[@scikitlearn2026california].
+
+```{python}
+from sklearn.datasets import fetch_california_housing
+
+housing = fetch_california_housing(as_frame=True, data_home=".cache/sklearn")
+X_cal, y_cal = housing.data, housing.target
+X_cal.shape
+```
+
+We retain the original 80% training and 20% test split. The example fixes
+its model settings in advance and uses the test set for evaluation.
+Changing those settings after comparing test errors would turn the test
+set into validation data.
+
+```{python}
+X_cal_train, X_cal_test, y_cal_train, y_cal_test = train_test_split(
+    X_cal, y_cal, test_size=0.2, random_state=20250407
+)
+```
+
+The model combines 200 trees, a learning rate of 0.1, maximum tree depth 3,
+and stochastic subsampling. These are the same settings as in the earlier
+example. The fixed random state reproduces both subsampling and the
+algorithm's other randomized choices.
+
+```{python}
+gbm = GradientBoostingRegressor(
+    n_estimators=200,
+    learning_rate=0.1,
+    max_depth=3,
+    subsample=0.7,
+    random_state=20250408
+)
+_ = gbm.fit(X_cal_train, y_cal_train)
+```
+
+We calculate predictions and report mean squared error (MSE), retaining
+the original evaluation. RMSE gives the error scale in the same units as
+the response, while $R^2$ compares squared errors with a constant prediction
+of the test-set mean. This example evaluates one stochastic GBM; a direct
+comparison of subsampling settings would require validation within the
+training records.
+
+```{python}
+y_cal_pred = gbm.predict(X_cal_test)
+cal_mse = mean_squared_error(y_cal_test, y_cal_pred)
+cal_results = pd.DataFrame({
+    "test_mse": [cal_mse],
+    "test_rmse": [np.sqrt(cal_mse)],
+    "test_r2": [r2_score(y_cal_test, y_cal_pred)]
+})
+cal_results
+```
+
 
 ### XGBoost: Extreme Gradient Boosting
 
@@ -1289,7 +1446,7 @@ mlp = MLPClassifier(hidden_layer_sizes=(10, 5),
                     alpha=0.001,
                     max_iter=2000,
                     random_state=2026)
-mlp.fit(X_train, y_train)
+_ = mlp.fit(X_train, y_train)
 ```
 
 
