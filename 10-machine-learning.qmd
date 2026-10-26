@@ -1,209 +1,441 @@
-# Machine Learning {#sec-machine-learning}
+# Machine Learning Overview {#sec-machine-learning}
 
-The models in @sec-modeling include logistic and Poisson regression for 311
-request outcomes. These are statistical models, and they are also examples
-of supervised machine learning when the goal is to predict a known outcome
-from features. Statistics and machine learning overlap; they differ more in
-their emphases than in a clean boundary. Statistical modeling often
-emphasizes a specified relationship, uncertainty, and interpretation.
-Machine learning often emphasizes predictive performance and procedures
-that learn patterns from data. Both fields develop methods for explanation
-and prediction [@james2023introduction].
+## Introduction
 
-This chapter places the models from @sec-modeling in a broader map of
-learning methods. It introduces common learning tasks, explains why
-performance on new data matters, and shows how tuning and pipelines fit into
-model development. The worked examples in @sec-modeling demonstrate model
-fitting, score calculation, tuning, and prediction evaluation.
+Machine Learning (ML) is a branch of artificial intelligence that
+enables systems to learn from data and improve their performance over
+time without being explicitly programmed. At its core, machine
+learning algorithms aim to identify patterns in data and use those
+patterns to make decisions or predictions.
 
 
-## Learning Settings
-
-Learning methods differ partly in the feedback available during learning.
-Let $X$ denote input features and, when an outcome is observed, let $Y$
-denote that outcome. These symbols describe the information available to a
-learning procedure; they do not determine which method is appropriate or
-what conclusions its results support.
-
-
-| Setting | Feedback available | Example task |
-|:--|:--|:--|
-| Supervised learning | Feature-outcome pairs $(X,Y)$ | Predict a 311 closure category or count |
-| Unsupervised learning | Features $X$, with no specified outcome | Explore groups among requests with similar features |
-| Reinforcement learning | States, actions, and rewards over time | Choose traffic-signal actions from traffic feedback |
-
-: Common learning settings and the feedback they use. {#tbl-ml-settings}
+Machine learning can be categorized into three main types:
+supervised learning, unsupervised learning, and reinforcement
+learning. Each type differs in the data it uses and the learning tasks
+it performs, addressing addresses different tasks and
+problems. Supervised learning aims to predict outcomes based on
+labeled data, unsupervised learning focuses on discovering hidden
+patterns within the data, and reinforcement learning centers around
+learning optimal actions through interaction with an environment.
 
 
-Supervised learning uses examples with known outcomes to fit a rule that
-predicts outcomes for new cases. Classification predicts a category, such as
-whether a request closes within a stated time. Regression predicts a numeric
-quantity, such as a count or duration. Logistic regression in @sec-modeling
-is a classification method; the Poisson model is used there for a count
-outcome.
+Let's define some notations to introduce them:
+
+- $X$: A set of feature vectors representing the input data. Each
+  element $X_i$ corresponds to a set of features or attributes that
+  describe an instance of data.
+
+- $Y$: A set of labels or rewards associated with outcomes. In
+  supervised learning, $Y$ is used to evaluate the correctness of the
+  model’s predictions. In reinforcement learning, $Y$ represents the
+  rewards that guide the learning process.
+
+- $A$: A set of possible actions in a given context. In reinforcement
+  learning, actions $A$ represent choices that can be made in response
+  to a given situation, with the goal of maximizing a reward.
+
+### Supervised Learning
+Supervised learning is the most widely used type of machine
+learning. In supervised learning, we have both feature vectors $X$ and
+their corresponding labels $Y$. The objective is to train a model that
+can predict $Y$ based on $X$. This model is trained on labeled
+examples, where the correct outcome is known, and it adjusts its
+internal parameters to minimize the error in its predictions, which
+occurs as part of the cross-validation process.
 
 
-Unsupervised learning looks for structure when the analysis has no specified
-outcome to predict. Clustering assigns observations to groups based on their
-features, and dimension reduction represents many features with fewer
-quantities. These methods can help explore data, but a cluster is not
-automatically a real-world kind of person or event. The result depends on
-which observations and features are included, how they are measured, and how
-the method is configured.
+Key tasks in supervised learning include:
+
+- Classification: Assigning data points to predefined categories or classes.
+- Regression: Predicting a continuous value based on input data.
+
+In supervised learning, the data consists of both feature vectors $X$
+and labels $Y$, namely, $(X, Y)$.
 
 
-Reinforcement learning concerns a sequence of decisions. An agent observes a
-state, chooses an action, and receives a reward after interacting with an
-environment. The aim is to learn a policy, or rule for choosing actions, that
-performs well over time. A reward is not simply a label attached to each
-record: actions can change later states and rewards. This chapter introduces
-the setting but does not develop reinforcement-learning algorithms
-[@sutton2018reinforcement].
+### Unsupervised Learning
+Unsupervised learning involves learning patterns from data without any
+associated labels or outcomes. The objective is to explore and
+identify hidden structures in the feature vectors $X$. Since there are
+no ground-truth labels $Y$ to guide the learning process, the
+algorithm must discover patterns on its own. This is particularly useful
+when subject matter experts are unsure of common properties within a
+data set.
 
 
-These three settings provide a useful introduction, but they do not cover
-every learning design. For example, semi-supervised and self-supervised
-methods use additional structures in the data. The right method depends on
-the question, available feedback, and intended use of the result.
+
+Common tasks in unsupervised learning include:
+
+- Clustering: Grouping similar data points together based on certain
+  features.
+
+- Dimension Reduction: Simplifying the input data by reducing the
+  number of features while preserving essential patterns.
 
 
-## Models and Algorithms
-
-A model is a representation of a relationship or a rule for producing
-predictions. A learning algorithm is the procedure that uses data to fit a
-model. The distinction matters because different algorithms can fit models
-for the same task, and a single algorithm can produce different fitted models
-when its data or settings change.
+In unsupervised learning, the data consists solely of feature vectors
+$X$.
 
 
-Fitting a model estimates parameters from training data. In logistic
-regression, the fitted coefficients are parameters. A hyperparameter controls
-how the fitting procedure works rather than being estimated as an ordinary
-model coefficient. The `C` setting in scikit-learn's regularized logistic
-regression controls the strength of regularization; @sec-modeling tunes it
-using cross-validation. A hyperparameter can change model complexity and
-predictive performance [@scikitlearn2026logistic].
+
+### Reinforcement Learning
+Reinforcement learning involves learning how to make a sequence of
+decisions to maximize a cumulative reward. Unlike supervised learning,
+where the model learns from a static dataset of labeled examples,
+reinforcement learning involves an agent that interacts with an
+environment by taking actions $A$, receiving feedback in the form of
+rewards $Y$, and learning over time which actions lead to the highest
+cumulative reward.
 
 
-Statistical models remain central to machine learning. A generalized linear
-model can estimate interpretable associations and make predictions. A more
-flexible algorithm can capture patterns that a simple model misses, but its
-predictions may be harder to explain and can be more sensitive to the
-training data. The task determines which properties matter: predictive
-accuracy, interpretability, uncertainty, computational cost, or a
-combination of them.
+The process in reinforcement learning involves:
+
+- States: The context or environment the agent is in, represented by
+  feature vectors $X$.
+
+- Actions: The set of possible choices the agent can make in response
+  to the current state, denoted as $A$.
+
+- Rewards: Feedback the agent receives after taking an action, which
+  guides the learning process.
 
 
-## Generalization
-
-A model is useful for prediction when it performs well on cases beyond those
-used to fit it. This ability is called generalization. Training performance
-describes how well a fitted model matches the data used for fitting; it does
-not by itself measure performance on future or otherwise unseen cases.
+In reinforcement learning, the data consists of feature vectors $X$,
+actions $A$, and rewards $Y$, namely, $(X, A, Y)$.
 
 
-Model complexity can create two different problems. An overly simple model
-may miss structure in the data and perform poorly even on its training
-observations. This is underfitting. A highly flexible model may match the
-training observations closely, including chance variation that will not
-repeat in new data. This is overfitting. Training error can keep decreasing
-as flexibility increases, even while predictive error on new data increases.
+## Bias-Variance Tradeoff
+
+The variance-bias trade-off is a core concept in machine learning that
+explains the relationship between the complexity of a model, its
+performance on training data, and its ability to generalize to unseen
+data. It applies to both supervised and unsupervised learning, though
+it manifests differently in each.
 
 
-The bias–variance tradeoff gives one account of why complexity affects
-prediction. For a new numeric outcome independent of training data $D$,
-suppose $Y=f(x)+\varepsilon$ at a fixed feature value $x$, where
-$\mathbb{E}[\varepsilon\mid x]=0$ and
-$\operatorname{Var}(\varepsilon\mid x)=\sigma^2$. If
-$\widehat{f}_D(x)$ is a prediction from a model fitted to $D$, then its
-expected squared prediction error can be decomposed as
+### Bias
+Bias refers to the error introduced by approximating a complex
+real-world problem with a simplified model. A model with high bias
+makes strong assumptions about the data, leading to oversimplified
+patterns and poor performance on both the training data and new
+data. High bias results in underfitting, where the model fails to
+capture important trends in the data.
+
++ Example (Supervised): In supervised learning, using a linear
+  regression model to fit data that has a nonlinear relationship
+  results in high bias because the model cannot capture the complexity
+  of the data.
+
++ Example (Unsupervised): In clustering (an unsupervised task),
+  setting the number of clusters too low (e.g., forcing data into two
+  clusters when more exist) leads to high bias, as the model
+  oversimplifies the underlying structure.
+
+### Variance
+Variance refers to the model's sensitivity to small changes in the
+training data. A model with high variance will adapt closely to the
+training data, potentially capturing noise or fluctuations that are
+not representative of the general data distribution. High variance
+leads to overfitting, where the model performs well on training data
+but poorly on new, unseen data.
+
+
++ Example (Supervised): A decision tree with many branches can exhibit
+  high variance. The model perfectly fits the training data but may
+  perform poorly on test data because it overfits to specific
+  idiosyncrasies in the training set.
+
++ Example (Unsupervised): In clustering, setting the number of
+  clusters too high or fitting overly flexible cluster shapes (e.g.,
+  in Gaussian Mixture Models) can lead to overfitting, where the model
+  captures noise and splits data unnecessarily.
+
+### The Trade-Off
+
+The bias-variance trade-off reflects the tension between bias and
+variance. As model complexity increases:
+
++ Bias decreases: The model becomes more flexible and can capture more
+  details of the data.
++ Variance increases: The model becomes more sensitive to the
+  particular training data, potentially capturing noise.
+
+Conversely, a simpler model will:
+
++ Have high bias: It may not capture all relevant patterns in the
+  data.
++ Have low variance: It will be less sensitive to fluctuations in the
+  data and is more likely to generalize well to unseen data.
+
+### Bias-Variance in Supervised Learning
+In supervised learning, the goal is to strike the right balance
+between bias and variance to minimize prediction error. This balance
+is critical for developing models that generalize well to new
+data. The total error of a model can be decomposed into:
 
 $$
-\mathbb{E}_{D,Y\mid x}\left[
-  \{Y-\widehat{f}_D(x)\}^2
-\right]
-= \left\{\mathbb{E}_D[\widehat{f}_D(x)]-f(x)\right\}^2
-+ \operatorname{Var}_D\left[\widehat{f}_D(x)\right]
-+ \sigma^2,
+\text{Total Error} = \text{Bias}^2 + \text{Variance}
++\text{Irreducible Error}.
 $$
 
-where the first term is squared bias, the second is variance across possible
-training samples, and the final term is irreducible outcome variation under
-these assumptions. A model with high bias tends to be too restrictive; a
-model with high variance changes substantially when its training data
-change. Greater flexibility can reduce bias while increasing variance, but
-the balance depends on the data and the learning procedure. The decomposition
-is a result for squared-error prediction under stated assumptions, not a
-universal formula for every task. For classification and unsupervised
-learning, the same words are sometimes used as intuition, but the
-decomposition above does not directly apply [@james2023introduction].
++ Bias: The error from using a model that is too simple.
+
++ Variance: The error from using a model that is too complex and
+  overfits the training data.
+
++ Irreducible Error: This is the noise inherent in the data itself,
+  which cannot be eliminated no matter how well the model is tuned.
+
+### Bias-Variance in Unsupervised Learning
+In unsupervised learning, the bias-variance trade-off is less formally
+defined but still relevant. For example:
 
 
-## Evaluation and Tuning
++ In clustering, choosing the wrong number of clusters can lead to
+  either high bias (too few clusters, oversimplifying the data) or
+  high variance (too many clusters, overfitting the data).
 
-Evaluation estimates how well a fitted model performs for the cases that
-matter to its intended use. The data split should reflect that use. A random
-split may be unsuitable when predictions concern future time periods,
-unseen locations, or groups whose observations are dependent. In those
-settings, a temporal or grouped split may give a more relevant assessment.
++ In dimensionality reduction, keeping too few components in Principal
+  Component Analysis (PCA) increases bias by losing important
+  information, while keeping too many components retains noise,
+  increasing variance.
 
-
-Training, validation, and test data serve different purposes. Training data
-fit model parameters. Validation data compare candidate models or
-hyperparameter settings. A test set is held aside for a final assessment
-after the model and its settings have been selected. When data are limited,
-cross-validation repeatedly divides the training data into fitting and
-validation folds. Its score summarizes performance across those folds for a
-chosen metric. The score depends on the split design and does not guarantee
-performance under a different population or deployment setting
-[@scikitlearn2026crossvalidation].
+In unsupervised learning, balancing bias and variance typically
+involves tuning hyperparameters (e.g., number of clusters, number of
+components) to find the right complexity level.
 
 
-Tuning chooses hyperparameters, such as regularization strength or tree
-depth. Clustering methods also have settings, such as the number of
-clusters, that require criteria suited to an unsupervised task. The tuning
-criterion should match the task and the costs of errors. In @sec-modeling,
-cross-validation selects logistic regression's `C` by mean log loss, and an
-untouched test set assesses the selected model. The chapter also explains
-why using the same validation results both to select and report final
-performance can make the reported score optimistic [@varma2006bias].
+### Striking the Right Balance
+To strike the balance between bias and variance in both supervised and
+unsupervised learning, techniques such as regularization, early
+stopping, cross-validation, and hyperparameter tuning are
+essential. These techniques help ensure the model is complex enough to
+capture patterns in the data but not so complex that it overfits to
+noise or irrelevant details.
+
+## Crossvalidation
+
+Cross-validation is a technique used to evaluate machine learning
+models and tune hyperparameters by splitting the dataset into multiple
+subsets. This approach helps to avoid overfitting and provides a
+better estimate of the model's performance on unseen
+data. Cross-validation is especially useful for managing the
+bias-variance trade-off by allowing you to test how well the model
+generalizes without relying on a single train-test split.
 
 
-No single score answers every question. Accuracy summarizes the fraction of
-correct classifications at a specified threshold, while log loss assesses
-predicted probabilities and ROC AUC assesses ranking across thresholds.
-Numeric outcomes require other measures, such as mean absolute error or
-root mean squared error. The score should be interpreted with the baseline,
-the prediction setting, and the consequences of errors in view
-[@scikitlearn2026metrics]. The 311 example in @sec-modeling works through
-these distinctions.
+### K-Fold Cross-Validation
+
+The most commonly used method is $k$-fold cross-validation:
+
++ Split the data: The dataset is divided into $k$ equally-sized folds
+  (subsets).
++ Train on $k - 1$ folds: The model is trained on $k - 1$ folds,
+  leaving one fold as a test set.
++ Test on the remaining fold: The model’s performance is evaluated on
+  the fold that was left out.
++ Repeat: This process is repeated $k$ times, with each fold used once
+  as the test set.
++ Average performance: The final cross-validation score is the average
+  performance across all $k$ iterations.
+
+By averaging the results across multiple test sets, cross-validation
+provides a more robust estimate of model performance and helps avoid
+overfitting or underfitting to any particular training-test split.
 
 
-## Pipelines
-
-A modeling pipeline connects data preparation steps to a final estimator.
-For example, a classification pipeline may impute missing values, encode
-categorical variables, scale numeric variables, and then fit a classifier.
-The fitted pipeline applies the same sequence to new records when producing
-predictions. In scikit-learn, a `Pipeline` or `make_pipeline` object
-represents such a sequence; a `ColumnTransformer` can apply different
-preparation steps to different columns [@scikitlearn2026composite].
+Leave-One-Out Cross-Validation (LOOCV) takes each observation as one
+fold. The dataset is split into $n$ subsets (where $n$ is the sample
+size), with each sample acting as a test set once. While this method
+provides the most exhaustive evaluation, it can be computationally
+expensive for large datasets.
 
 
-Keeping preparation in the pipeline is essential during cross-validation.
-Each fold must learn quantities such as scaling means, imputation values,
-or category encodings from that fold's training records. It then applies
-those learned transformations to the validation records. If the entire data
-set determines a transformation before the split, information from
-validation records can affect fitting and make the score too optimistic.
-The example in @sec-modeling demonstrates a pipeline with mixed variable
-types and shows how it works inside cross-validation.
+### Benefits of Cross-Validation
+
++ Prevents overfitting: By testing the model on multiple subsets of
+  data, cross-validation helps to identify if the model is too complex
+  and overfits to the training data.
++ Prevents underfitting: If the model performs poorly across all
+  folds, it may indicate that the model is too simple (high bias).
++ Better estimation: Cross-validation gives a better estimate of how
+  the model will perform on unseen data compared to a single
+  train-test split.
+
+### Cross-Validation in Unsupervised Learning
+
+While cross-validation is most commonly used in supervised learning,
+it can also be applied to unsupervised learning through:
 
 
-A pipeline chains data transformations and a final estimator. Ensembles and
-stacking combine predictions from multiple fitted models; they are different
-algorithmic constructions. This chapter focuses on pipelines that combine
-preprocessing steps with an estimator, as in @sec-modeling.
++ Stability testing: Running unsupervised algorithms (e.g.,
+  clustering) on different data splits and measuring the stability of
+  the results (e.g., using the silhouette score).
+
++ Internal validation metrics: In clustering, internal metrics like
+  the silhouette score or Davies-Bouldin index can be used to evaluate
+  the quality of clustering across different data splits.
+
+
+The bias-variance trade-off is a universal problem in machine
+learning, affecting both supervised and unsupervised
+models. Cross-validation is a powerful tool for controlling this
+trade-off by providing a reliable estimate of model performance and
+helping to fine-tune model complexity. By balancing bias and variance
+through careful model selection, regularization, and cross-validation,
+you can develop models that generalize well to unseen data without
+overfitting or underfitting.
+
+### A Curve-Fitting with Splines: An Example
+
+
+Overfitting occurs when a model becomes overly complex and starts to
+capture not just the underlying patterns in the data but also the
+noise or random fluctuations. This can lead to poor generalization to
+new, unseen data. A clear sign of overfitting is when a model performs
+very well on the training data but performs poorly on test data, as it
+fails to generalize beyond the data it was trained on.
+
+
+In this example, we examine model flexibility using cubic spline
+regression with different numbers of knots. Splines are a flexible
+tool that allow for piecewise polynomial regression, with knots
+defining where the pieces of the polynomial meet. The more knots we
+use, the more flexible the model becomes, which can potentially lead
+to overfitting.
+
+We use seed 2025, the year of the original example, to make the
+simulation reproducible. The knot counts range from 3 to 65 so that
+we can compare restrictive, moderately flexible, and highly flexible
+models on the same observations.
+
+```{python}
+#| fig-format: svg
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib_inline.backend_inline import set_matplotlib_formats
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import SplineTransformer
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import mean_squared_error
+
+set_matplotlib_formats('svg')
+
+def true_function(X):
+    return np.sin(1.5 * X) + 0.5 * np.cos(0.5 * X) + np.sin(2 * X)
+
+# Generate synthetic data using the more complex true function
+rng = np.random.default_rng(2025)
+X = np.sort(rng.random(200) * 10).reshape(-1, 1)
+y = true_function(X).ravel() + rng.normal(0, 0.2, X.shape[0])
+
+# Split data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=2025)
+
+# Function to explore overfitting by plotting both errors and fitted curves
+def overfitting_example_with_fitted_curves(X_train, y_train, X_test, y_test, knots_list):
+    train_errors = []
+    test_errors = []
+
+    # Generate fine grid for plotting the true curve and fitted models
+    X_line = np.linspace(0, 10, 1000).reshape(-1, 1)
+    y_true = true_function(X_line)
+
+    # Plot the true function and observed data
+    plt.figure(figsize=(10, 6))
+    plt.scatter(X_train, y_train, color='blue', label='Training data', alpha=0.6)
+    plt.plot(X_line, y_true, label='True function', color='black', linestyle='--')
+
+    for n_knots in knots_list:
+        # Create a spline model with fixed degree = 3 (cubic) and varying knots
+        spline = SplineTransformer(
+            degree=3, n_knots=n_knots, knots='uniform', include_bias=False
+        )
+        model = make_pipeline(spline, LinearRegression())
+
+        # Fit the model to training data
+        model.fit(X_train, y_train)
+
+        # Predict on training and test data
+        y_pred_train = model.predict(X_train)
+        y_pred_test = model.predict(X_test)
+        y_pred = model.predict(X_line)
+
+        # Calculate training and test errors (mean squared error)
+        train_errors.append(mean_squared_error(y_train, y_pred_train))
+        test_errors.append(mean_squared_error(y_test, y_pred_test))
+
+        # Plot the fitted curve
+        plt.plot(X_line, y_pred, label=f'{n_knots} Knots (Fit)', alpha=0.7)
+
+    print(train_errors, test_errors)
+
+    plt.title('Spline Fits and Observed Data')
+    plt.xlabel('X')
+    plt.ylabel('y')
+    plt.legend()
+    plt.show()
+
+    # Plot training and test error separately
+    plt.figure(figsize=(10, 6))
+    plt.plot(knots_list, train_errors, label='Training Error', marker='o', color='blue')
+    plt.plot(knots_list, test_errors, label='Test Error', marker='o', color='red')
+    plt.title('Training vs. Test Error with Varying Knots')
+    plt.xlabel('Number of Knots')
+    plt.ylabel('Mean Squared Error')
+    plt.legend()
+    plt.show()
+
+# Explore overfitting by varying the number of knots and overlaying the fitted curves
+knots_list = [3, 5, 9, 17, 33, 65]
+overfitting_example_with_fitted_curves(X_train, y_train, X_test, y_test, knots_list)
+```
+
+In the first plot, we fit cubic splines with 3, 5, 9, 17, 33, and 65
+knots to the data. As the number of knots increases, the model becomes
+more flexible and better able to fit the training data. With 3 or 5
+knots, the model underfits: it cannot capture the detailed structure
+of the true underlying function. With 9 knots, the fitted curve follows
+that structure much more closely. With 65 knots, the model follows
+local fluctuations in the training data and makes unstable predictions
+in some regions between observations.
+
+
+In the second plot, we observe the training error and test error as
+the number of knots increases. As expected, the training error
+decreases in this run, from about 0.298 with 3 knots to 0.020 with
+65 knots. The test error initially decreases, from about 0.621 with
+3 knots to 0.051 with 9 knots, then rises to 0.324 with 65 knots.
+The increasingly flexible model continues to improve its fit to the
+training observations while predicting the held-out observations
+less accurately. This divergence illustrates overfitting.
+
+
+The bias-variance trade-off concerns performance across possible
+training samples. Adding more complexity (in this case, more knots)
+can reduce bias while increasing sensitivity to fluctuations and
+noise in the training data. The fitted curves and errors illustrate
+the resulting tension between underfitting and overfitting. A single
+train-test split does not separately estimate bias and variance, and
+another sample could produce a different ranking of knot counts.
+
+
+The example demonstrates how additional flexibility first improves an
+underfitting model and eventually leads to overfitting. In practice, we seek a
+balance between underfitting (high bias) and overfitting (high
+variance). Techniques such as cross-validation, regularization, or
+limiting model complexity (e.g., setting a reasonable number of knots
+in spline regression) can help manage this trade-off and produce
+models that generalize well to unseen data. When choosing the number
+of knots, use cross-validation within the training data and reserve
+the test set for a final evaluation; repeatedly selecting models from
+their test errors would use the test set as validation data.
+
+
+By tuning the number of knots or other model parameters, we can
+achieve a model that strikes the right balance, capturing the true
+patterns in the data without fitting the noise.
 
 
 ## Exercises {.unnumbered}
