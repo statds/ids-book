@@ -1065,18 +1065,20 @@ would use the predictions.
      Correct the likelihood scaling in the C-to-lambda conversion, fit
      scaling before computing the path, and keep preprocessing within CV. -->
 
-The model has many coefficients because problem detail and borough are
-one-hot encoded, and the later ZIP-label model adds a coefficient for each
-observed area. Some categories are sparse, while the Census measures can be
-correlated. An unpenalized fit can assign unstable, large coefficients to
-these patterns and perform worse on new requests. Regularization limits
-coefficient size to trade some training fit for more stable predictions.
+Regularization limits coefficient size to reduce instability in a GLM fit.
+The request model has many coefficients because problem detail and borough
+are one-hot encoded, and the later ZIP-label model adds a coefficient for
+each observed area. Some categories are sparse, while the Census measures
+can be correlated. An unpenalized fit can assign unstable, large
+coefficients to these patterns and perform worse on new requests.
+Regularization trades some training fit for more stable predictions.
 
 
 ### Penalized Likelihood
 
-Generalized linear models estimate coefficients by maximizing a
-distribution-specific likelihood. Let $\mathbf{y}$ be the response vector
+Penalized likelihood balances fit to the observed outcomes against
+coefficient size. An unpenalized GLM estimates coefficients by maximizing
+a distribution-specific likelihood. Let $\mathbf{y}$ be the response vector
 for $n$ observations, $\mathbf{X}$ the predictor matrix, and
 $\boldsymbol{\beta}=(\beta_0,\beta_1,\ldots,\beta_p)^\top$ the
 coefficient vector, where $\beta_0$ is the intercept and $p$ is the
@@ -1102,39 +1104,64 @@ changes with the GLM response distribution and link, while the penalty
 restricts the coefficients [@hastie2009elements].
 
 
-The least absolute shrinkage and selection operator (**lasso**) uses
+The choice of penalty determines how coefficients shrink and whether they
+can become exactly zero. Three common choices are:
+
+- **Lasso** (least absolute shrinkage and selection operator) uses the
+  absolute-value, or $\ell_1$, penalty
+
+  $$
+  P(\boldsymbol{\beta}) = \sum_{j=1}^{p}|\beta_j|,
+  $$
+
+  where $j$ indexes the non-intercept coefficients. This penalty can shrink
+  some coefficients exactly to zero, giving a sparse model
+  [@tibshirani1996regression].
+
+- **Ridge** uses the squared-coefficient, or squared $\ell_2$, penalty
+
+  $$
+  P(\boldsymbol{\beta}) = \frac{1}{2}\sum_{j=1}^{p}\beta_j^2.
+  $$
+
+  It usually shrinks coefficients without setting them exactly to zero,
+  retaining predictors while limiting coefficient size
+  [@hastie2009elements].
+
+- **Elastic net** combines the lasso and ridge penalties:
+
+  $$
+  P(\boldsymbol{\beta})
+  = \rho\sum_{j=1}^{p}|\beta_j|
+  + \frac{1-\rho}{2}\sum_{j=1}^{p}\beta_j^2,
+  $$
+
+  where $\rho\in[0,1]$ controls the mixture. The endpoints give ridge
+  ($\rho=0$) and lasso ($\rho=1$); intermediate values combine variable
+  selection with shrinkage that can retain groups of correlated predictors
+  [@zou2005regularization].
 
 
-$$
-P(\boldsymbol{\beta})=\sum_{j=1}^{p}|\beta_j|,
-$$
-
-where $j$ indexes the non-intercept coefficients. The absolute-value penalty
-can shrink some coefficients exactly to zero, giving a sparse model
-[@tibshirani1996regression]. Thus, lasso performs coefficient estimation
-and variable selection together. It can be useful when many candidate
-predictors are available, even when their number exceeds the number of
-observations. Fewer nonzero coefficients can simplify interpretation, but
-they do not establish which variables cause the outcome. With correlated
-predictors, the selected variables can also change across samples.
+Lasso performs coefficient estimation and variable selection together.
+It can be useful when many candidate predictors are available, even when
+their number exceeds the number of observations. Fewer nonzero coefficients
+can simplify interpretation, but they do not establish which variables
+cause the outcome. With correlated predictors, the selected variables can
+also change across samples.
 
 
-Ridge uses the squared-coefficient penalty
-$P(\boldsymbol{\beta})=\tfrac{1}{2}\sum_{j=1}^{p}\beta_j^2$ and
-usually shrinks coefficients without setting them exactly to zero. These
-are also called the $\ell_1$ and squared $\ell_2$ penalties,
-respectively. Elastic net combines the lasso and ridge penalties
-[@zou2005regularization]. Here we use lasso to make both shrinkage and
-variable selection visible, following the logistic-model example below.
-The earlier preliminary scikit-learn fit used its default ridge penalty;
-penalty choice should be explicit when fitting the final model.
+The worked example uses lasso to make both shrinkage and variable selection
+visible. The earlier preliminary scikit-learn fit used its default ridge
+penalty. Specifying the penalty explicitly makes this modeling choice clear
+when fitting the final model.
 
 
-The same formulation applies to a Poisson GLM: replace the Bernoulli
-log-likelihood with the Poisson log-likelihood and retain the chosen
-coefficient penalty. Regularization does not correct overdispersion: a
-Poisson GLM still assumes that conditional variance equals conditional
-mean. Nor does it repair an inappropriate link or omitted predictors.
+Penalized likelihood applies across GLM response distributions. For a
+Poisson GLM, replace the Bernoulli log-likelihood with the Poisson
+log-likelihood and retain the chosen coefficient penalty. Regularization
+does not correct overdispersion: a Poisson GLM still assumes that
+conditional variance equals conditional mean. Nor does it repair an
+inappropriate link or omitted predictors.
 
 
 ### Connecting the Formula to scikit-learn
