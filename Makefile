@@ -12,8 +12,8 @@ QUARTO_ARGS ?=
 
 VENV_PYTHON := $(VENV)/bin/python
 
-.PHONY: help check-python check-tools check-venv check render preview render-one install upgrade req \
-	packages publish clean clean-output clean-cache
+.PHONY: help check-python check-tools check-venv check check-book render preview \
+	render-one install upgrade req packages publish clean clean-output clean-cache
 
 help: ## Show the available targets.
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\n\nTargets:\n"} \
@@ -35,6 +35,9 @@ check-venv: $(VENV_PYTHON) ## Verify that the project environment uses Python 3.
 
 check: check-tools ## Run Quarto's installation and environment checks.
 	$(QUARTO) check
+
+check-book: check-tools check-venv ## Check chapter structure and rendered book links.
+	$(VENV_PYTHON) scripts/check_book.py
 
 render: check-tools ## Render the complete book.
 	$(QUARTO) render $(QUARTO_ARGS)

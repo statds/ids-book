@@ -38,6 +38,21 @@ After an approved change, activate the shared environment and run
 `make install` from `ids-book` again. The `make req` target is for maintainers:
 it overwrites the requirements file with the active environment's packages.
 
+## Checking the Book
+
+After rendering, run `make check-book`. It checks heading spacing in the
+chapter sources and verifies headings, exercise numbering, citations,
+figure alternative text, local files, and link anchors in the rendered HTML.
+A successful Quarto render alone does not establish that these are correct.
+For a source-only check, run `python scripts/check_book.py --source-only`
+in the shared environment.
+
+The book uses `freeze: auto`, so a whole-book render can reuse computations
+from unchanged chapters. Render an individual chapter with
+`make render-one FILE=chapter.qmd` to execute its code again. Check the
+rendered page as well as the execution log. External URLs and visual layout
+need separate review.
+
 ## Contributing
 
 Make each commit a coherent change. Use an imperative, concise subject without

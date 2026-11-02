@@ -32,3 +32,20 @@ skill covers chapter structure, explanations, examples, code, and exercises.
 If the skills are not available to Codex, read their `SKILL.md` files from
 `~/.codex/skills/` or the neighboring `wit-skills` clone. Skills can be
 invoked again if a long session no longer has their instructions in context.
+
+## Quarto structure and verification
+
+Preserve blank lines before headings. Quarto uses Pandoc Markdown, whose
+[heading rules](https://pandoc.org/MANUAL.html#extension-blank_before_header)
+require that separation from a preceding paragraph. A heading that looks
+correct in the source can otherwise render as ordinary text without an error.
+Preserve code fences, div boundaries, and list indentation when editing layout.
+
+After rendering changed chapters, run `make check-book` and inspect the
+affected headings, exercise numbers, tables, and figures in the rendered
+pages. Do not treat a successful render command as sufficient verification.
+
+Use quoted YAML strings with escaped line continuations for multiline
+`fig-alt` cell options. A minimal test with the current Quarto/Jupyter
+pipeline showed that folded strings can corrupt image attributes. Verify
+figure IDs and captions along with alternative text in the rendered HTML.
