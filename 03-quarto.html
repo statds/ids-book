@@ -307,6 +307,7 @@ window.Quarto = {
   <li><a href="#reproducibility-in-practice" id="toc-reproducibility-in-practice" class="nav-link" data-scroll-target="#reproducibility-in-practice"><span class="header-section-number">3.5</span> Reproducibility in Practice</a></li>
   <li><a href="#sec-rendering-the-book" id="toc-sec-rendering-the-book" class="nav-link" data-scroll-target="#sec-rendering-the-book"><span class="header-section-number">3.6</span> Rendering the Book</a></li>
   <li><a href="#presentations-with-quarto" id="toc-presentations-with-quarto" class="nav-link" data-scroll-target="#presentations-with-quarto"><span class="header-section-number">3.7</span> Presentations with Quarto</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/statds/ids-book/edit/main/03-quarto.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/statds/ids-book/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -389,10 +390,10 @@ g(x) =
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Subject"</span>, ylabel<span class="op">=</span><span class="st">"Mean score"</span>, title<span class="op">=</span><span class="st">"Simulated class scores"</span>)</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-scores" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-scores" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Mean simulated scores for data science, statistics, and programming, with standard-error bars for each subject.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="03-quarto_files/figure-html/fig-scores-output-1.svg" class="img-fluid figure-img">
+<img src="03-quarto_files/figure-html/fig-scores-output-1.svg" class="img-fluid figure-img" alt="Mean simulated scores for data science, statistics, and programming, with standard-error bars for each subject.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; error bars show standard errors
@@ -514,7 +515,10 @@ Figure&nbsp;3.1: Mean simulated score by subject for a class of 30 students; err
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Evidence</span></span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>Explain the important figure and its limitations.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Render it with <code>quarto render presentation.qmd</code> or preview it with <code>quarto preview presentation.qmd</code>. Use headings for slides, keep one central idea on each slide, and write speaker notes when additional explanation belongs in the oral presentation rather than on the slide. Export a PDF only when a course or audience requires a static copy; keep the <code>.qmd</code> source as the authoritative presentation. ## Exercises {.unnumbered}</p>
+<p>Render it with <code>quarto render presentation.qmd</code> or preview it with <code>quarto preview presentation.qmd</code>. Use headings for slides, keep one central idea on each slide, and write speaker notes when additional explanation belongs in the oral presentation rather than on the slide. Export a PDF only when a course or audience requires a static copy; keep the <code>.qmd</code> source as the authoritative presentation.</p>
+</section>
+<section id="exercises" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises">Exercises</h2>
 <p>Complete the Git setup in <a href="01-intro.html#sec-install-git" class="quarto-xref"><span>Section 1.6.2</span></a> and the Quarto installation in <a href="01-intro.html#sec-install-quarto" class="quarto-xref"><span>Section 1.6.1</span></a> before beginning. Write one <code>.qmd</code> file containing your answers to all problems.</p>
 <div id="exr-python-environment" class="theorem exercise">
 <p><span class="theorem-title"><strong> 3.1</strong></span> Follow the complete workflow in <a href="#sec-rendering-the-book" class="quarto-xref"><span>Section 3.6</span></a> to clone and render this book from source. In the assignment <code>.qmd</code>, report the following evidence:</p>

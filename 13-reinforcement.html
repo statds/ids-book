@@ -427,7 +427,7 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <section id="implementing-the-game" class="level2" data-number="13.2">
 <h2 data-number="13.2" class="anchored" data-anchor-id="implementing-the-game"><span class="header-section-number">13.2</span> Implementing the Game</h2>
 <p>We first need rules that behave correctly before asking a learner to use them. A tuple stores the board so that it can later serve as a dictionary key. We use standard-library random-number generators with explicit seeds. The constants below describe the empty board, the printed marks, and the eight possible winning lines.</p>
-<div id="b820f909" class="cell" data-execution_count="1">
+<div id="7ecdab37" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>EMPTY <span class="op">=</span> (<span class="dv">0</span>,) <span class="op">*</span> <span class="dv">9</span></span>
@@ -437,7 +437,7 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         (<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>), (<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The eight triples in <code>LINES</code> are the rows, columns, and diagonals. The outcome function returns <code>1</code> for a crosses win, <code>-1</code> for a noughts win, and <code>0</code> for a draw. An unfinished game returns <code>None</code>.</p>
-<div id="0549128e" class="cell" data-execution_count="2">
+<div id="504ac7f3" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> outcome(board):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return 1 for a crosses win, -1 for noughts, 0 for a draw, or None."""</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, j, k <span class="kw">in</span> LINES:</span>
@@ -446,7 +446,7 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span> <span class="cf">if</span> <span class="dv">0</span> <span class="kw">not</span> <span class="kw">in</span> board <span class="cf">else</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>An action is legal only when the game is unfinished and its square is empty. Returning no actions after a winning line prevents the simulator from continuing a game merely because some squares remain blank.</p>
-<div id="67a4533b" class="cell" data-execution_count="3">
+<div id="0a065609" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> legal_actions(board):</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return empty-square indices, or an empty tuple if the game ended."""</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> outcome(board) <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
@@ -454,7 +454,7 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(i <span class="cf">for</span> i, mark <span class="kw">in</span> <span class="bu">enumerate</span>(board) <span class="cf">if</span> mark <span class="op">==</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The move function checks legality and returns a new tuple. It leaves the previous board intact, so a stored transition continues to describe the position that existed before the move. The episode loop below controls whose turn it is; this helper checks the marker and square.</p>
-<div id="671db9c3" class="cell" data-execution_count="4">
+<div id="9fc4244e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> place(board, action, mark):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Place a mark on a legal square and return a new board."""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mark <span class="kw">not</span> <span class="kw">in</span> (<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>) <span class="kw">or</span> action <span class="kw">not</span> <span class="kw">in</span> legal_actions(board):</span>
@@ -464,7 +464,7 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(updated)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The display helper draws a board and can show indices on empty squares. It provides the same position convention used by the action-selection code and the human-play interface. The <code>divmod(pos, 3)</code> call gives the row and column of a square. The vertical coordinate increases upward, so <code>2 - row</code> puts the first row at the top.</p>
-<div id="b8bf6079" class="cell" data-execution_count="5">
+<div id="261cd5d1" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib_inline.backend_inline <span class="im">import</span> set_matplotlib_formats</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -496,10 +496,10 @@ G_t = \sum_{k=0}^{T-t-1} \gamma^k Y_{t+k+1},
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-rl-board-rules" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-rl-board-rules" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Three tic-tac-toe boards show square indices, a position before crosses plays square 2, and the resulting winning top row.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rl-board-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="13-reinforcement_files/figure-html/fig-rl-board-rules-output-1.svg" class="img-fluid figure-img">
+<img src="13-reinforcement_files/figure-html/fig-rl-board-rules-output-1.svg" class="img-fluid figure-img" alt="Three tic-tac-toe boards show square indices, a position before crosses plays square 2, and the resulting winning top row.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-board-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13.1: Square indices, a position before a winning move, and the terminal board after crosses chooses square 2.
@@ -511,7 +511,7 @@ Figure&nbsp;13.1: Square indices, a position before a winning move, and the term
 <section id="one-environment-transition" class="level3" data-number="13.2.1">
 <h3 data-number="13.2.1" class="anchored" data-anchor-id="one-environment-transition"><span class="header-section-number">13.2.1</span> One Environment Transition</h3>
 <p>The training opponent chooses uniformly from its legal replies. Its function accepts the current board and a random-number generator. Later we can substitute another opponent without changing the episode loop. The argument <code>rng</code> is a <code>random.Random</code> object, whose <code>choice</code> method samples one item from a sequence. Passing the opponent function as an argument lets the game engine call it whenever noughts must reply.</p>
-<div id="51274a6f" class="cell" data-execution_count="7">
+<div id="497215bd" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_opponent(board, rng):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose a legal noughts reply uniformly at random."""</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rng.choice(legal_actions(board))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -551,7 +551,7 @@ Figure&nbsp;13.1: Square indices, a position before a winning move, and the term
 </tr>
 </tbody>
 </table>
-<div id="6b7dd1f3" class="cell" data-execution_count="8">
+<div id="8e32f172" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> step(board, action, opponent, rng):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play a crosses action and any reply; return the transition record."""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    next_board <span class="op">=</span> place(board, action, <span class="dv">1</span>)</span>
@@ -568,7 +568,7 @@ Figure&nbsp;13.1: Square indices, a position before a winning move, and the term
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>For the winning position above, the game ends immediately after action <code>2</code>; the opponent must not receive another move. The reward is <code>1</code> even though the terminal board still has blank squares.</p>
-<div id="9cc8ce3c" class="cell" data-execution_count="9">
+<div id="7f830f34" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>win_transition <span class="op">=</span> step(win_board, <span class="dv">2</span>, random_opponent, random.Random(<span class="dv">2026</span>))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>win_transition</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
@@ -591,14 +591,14 @@ q_\pi(x,a) = \mathbb{E}_\pi[G_t \mid X_t=x, A_t=a].
 <p>The expectation includes the opponent’s random replies and any randomness in the learner’s later decisions. An optimal action value, denoted <span class="math inline">\(q_*(x,a)\)</span>, maximizes expected return over the learner’s policies for this fixed environment. It need not describe optimal play against every possible opponent.</p>
 <p>Our estimate is a table <span class="math inline">\(Q(x,a)\)</span>, stored in a Python dictionary with <code>(board, action)</code> keys. Missing entries have value zero. These are value estimates, rather than labels supplied by an expert or probabilities that must lie between zero and one. With our reward definition they can also be negative.</p>
 <p>The following helper collects the estimates for legal actions in one place. The expression <code>q.get((board, action), 0.0)</code> reads an existing value or returns zero for a missing key; it does not add that key to <code>q</code>. A terminal board gives an empty dictionary. Both action selection and learning will use this helper so that their action sets agree.</p>
-<div id="49e5e3ee" class="cell" data-execution_count="10">
+<div id="10cbc90e" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> q_values(q, board):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return current estimates for this board's legal actions."""</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {action: q.get((board, action), <span class="fl">0.0</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> action <span class="kw">in</span> legal_actions(board)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Before training, the winning position’s legal actions all have zero estimates. The program knows which squares are legal from the rules; it has not yet learned their consequences.</p>
-<div id="f3b63666" class="cell" data-execution_count="11">
+<div id="6b5d269d" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>q_values({}, win_board)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>{2: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0}</code></pre>
@@ -608,7 +608,7 @@ q_\pi(x,a) = \mathbb{E}_\pi[G_t \mid X_t=x, A_t=a].
 <h3 data-number="13.3.1" class="anchored" data-anchor-id="exploration-and-exploitation"><span class="header-section-number">13.3.1</span> Exploration and Exploitation</h3>
 <p>Always choosing the current largest estimate exploits the table but may neglect actions that were unlucky or never tried. An epsilon-greedy rule explores with probability <span class="math inline">\(\epsilon \in [0,1]\)</span>: it chooses a uniformly random legal action. Otherwise it chooses an action with the largest current value. Equal best values are broken randomly, so the initial all-zero table does not automatically favor square <code>0</code>.</p>
 <p>The function below reads the table without changing it. Both the random choice and the maximization consider legal actions only. Iterating over a dictionary gives its keys, so <code>list(values)</code> is a list of legal square indices. The last two lines find the largest estimate and collect all actions tied at that value before choosing among them.</p>
-<div id="cbf16c1a" class="cell" data-execution_count="12">
+<div id="6db0030b" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> choose_action(q, board, rng, epsilon<span class="op">=</span><span class="fl">0.0</span>):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose an epsilon-greedy action without changing q."""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> q_values(q, board)</span>
@@ -640,7 +640,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 + \alpha\{Z_t-Q(X_t,A_t)\},
 \]</span></p>
 <p>where <span class="math inline">\(\alpha \in (0,1]\)</span> is the learning rate. The difference between the target and the old value is the temporal-difference error. A terminal transition has no future action value, even if blank squares remain. For a nonterminal transition, the maximum makes the target greedy while the sampled action may have been exploratory; Q-learning is therefore an off-policy method <span class="citation" data-cites="watkins1992qlearning">(<a href="#ref-watkins1992qlearning" role="doc-biblioref">Watkins &amp; Dayan, 1992</a>)</span>.</p>
-<div id="f2a5c70d" class="cell" data-execution_count="13">
+<div id="340c61a1" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_q(q, transition, alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Update one entry of q in place using a transition record."""</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> transition[<span class="st">"reward"</span>]</span>
@@ -652,7 +652,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    q[key] <span class="op">=</span> old <span class="op">+</span> alpha <span class="op">*</span> (target <span class="op">-</span> old)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A single winning observation moves a previously zero entry to 0.2 when <code>alpha=0.2</code>. This checks the terminal branch of the update using a known outcome from the game rules. The function changes <code>q_demo</code> directly; it does not return a replacement dictionary.</p>
-<div id="ffa3b173" class="cell" data-execution_count="14">
+<div id="cddc08c8" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>q_demo <span class="op">=</span> {}</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>update_q(q_demo, win_transition, alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>q_demo[(win_board, <span class="dv">2</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -661,7 +661,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 </div>
 </div>
 <p>Earlier decisions can improve without an immediate reward. To isolate that arithmetic, suppose an illustrative table already gives the best next action a value of 0.8. A preceding action with zero immediate reward then has target 0.8 and moves from zero to 0.16. The value 0.8 below is a specified illustration, not an estimate from the trained agent.</p>
-<div id="078aacf1" class="cell" data-execution_count="15">
+<div id="b9c9d0ef" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mid_transition <span class="op">=</span> step(EMPTY, <span class="dv">0</span>, random_opponent, random.Random(<span class="dv">2026</span>))</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>mid_board <span class="op">=</span> mid_transition[<span class="st">"next_board"</span>]</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>next_action <span class="op">=</span> legal_actions(mid_board)[<span class="dv">0</span>]</span>
@@ -714,7 +714,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 </tbody>
 </table>
 <p>The function always returns the final reward and a list of recorded transitions. When <code>record=False</code>, that list is empty. One shared loop keeps training, evaluation, and human play subject to exactly the same game rules.</p>
-<div id="4b2d7f1a" class="cell" data-execution_count="16">
+<div id="20648640" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> play_episode(q, opponent, rng, epsilon<span class="op">=</span><span class="fl">0.0</span>, learn<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                 alpha<span class="op">=</span><span class="fl">0.2</span>, gamma<span class="op">=</span><span class="fl">1.0</span>, record<span class="op">=</span><span class="va">False</span>):</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play one game; optionally update q or save its transitions."""</span></span>
@@ -734,7 +734,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <section id="evaluating-a-frozen-policy" class="level3" data-number="13.4.1">
 <h3 data-number="13.4.1" class="anchored" data-anchor-id="evaluating-a-frozen-policy"><span class="header-section-number">13.4.1</span> Evaluating a Frozen Policy</h3>
 <p>The evaluator plays complete games with <code>epsilon=0</code> and the default <code>learn=False</code>. It counts wins, draws, and losses from the learner’s perspective. Mean reward is the win proportion minus the loss proportion under our reward definition. Evaluation cannot insert or update table entries because action selection uses dictionary lookups and the update branch is disabled. The underscore in <code>reward, _</code> discards the unused recording list; the reward determines which outcome count increases.</p>
-<div id="e9ac1a25" class="cell" data-execution_count="17">
+<div id="2d49d301" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate(q, opponent, games, seed):</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Count outcomes in fresh games without updating q."""</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> games <span class="op">&lt;</span> <span class="dv">1</span>:</span>
@@ -751,7 +751,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Before training, an empty table supplies the random-action baseline. Every player in this comparison moves first as crosses, so the baseline shares the same first-move role as the learner.</p>
-<div id="236c15ce" class="cell" data-execution_count="18">
+<div id="b7d932f9" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>baseline <span class="op">=</span> evaluate({}, random_opponent, games<span class="op">=</span><span class="dv">500</span>, seed<span class="op">=</span><span class="dv">2027</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>baseline</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
@@ -763,7 +763,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <h3 data-number="13.4.2" class="anchored" data-anchor-id="training-schedule"><span class="header-section-number">13.4.2</span> Training Schedule</h3>
 <p>We train for 30,000 games against the same random opponent. The exploration probability decreases linearly from near one to 0.1 during the first 18,000 games and remains at 0.1 afterward. The formula below uses 20,000 as its denominator, so the floor is reached when <span class="math inline">\(1-\text{episode}/20{,}000 = 0.1\)</span>. The learning rate remains 0.2 and the discount factor remains one.</p>
 <p>Training uses its own random generator with seed 2026. Every 2,500 training games, we evaluate the current table on 500 games using the separate monitoring seed 2027. Resetting that evaluation seed makes the monitoring experiment reproducible and does not consume training randomness. The model settings and final training length are fixed in advance.</p>
-<div id="9932db04" class="cell" data-execution_count="19">
+<div id="9b5654f6" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> {}</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>train_rng <span class="op">=</span> random.Random(<span class="dv">2026</span>)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>initial <span class="op">=</span> baseline.copy()</span>
@@ -771,7 +771,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>history <span class="op">=</span> [initial]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We reuse the baseline evaluation for the zero-training checkpoint. A copy lets us add the episode counter without changing the original baseline record. The loop then trains one game at a time and stores a new evaluation record at each checkpoint.</p>
-<div id="a494051a" class="cell" data-execution_count="20">
+<div id="98cb62cd" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> episode <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">30_001</span>):</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    epsilon <span class="op">=</span> <span class="bu">max</span>(<span class="fl">0.1</span>, <span class="dv">1</span> <span class="op">-</span> episode <span class="op">/</span> <span class="dv">20_000</span>)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    play_episode(</span>
@@ -784,7 +784,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        history.append(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The resulting table reports performance of frozen greedy policies, rather than outcomes of the exploratory training games. That distinction matters: a learning agent can deliberately make exploratory mistakes during training that its evaluated policy would avoid.</p>
-<div id="badc9d2d" class="cell" data-execution_count="21">
+<div id="c1dfe74e" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>learning_history <span class="op">=</span> pd.DataFrame(history)</span>
@@ -916,7 +916,7 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 </div>
 </div>
 <p>The figure uses facets to compare the three outcome proportions. All panels have the same vertical scale. The policies at successive checkpoints share training history, and the monitoring experiments reuse a seed; the points should not be treated as independent training replications. We use plotnine for the faceted display.</p>
-<div id="887e6765" class="cell" data-execution_count="22">
+<div id="516f26f8" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotnine <span class="im">as</span> gg</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>gg.options.figure_format <span class="op">=</span> <span class="st">"svg"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -941,10 +941,10 @@ Q(X_t,A_t) \leftarrow Q(X_t,A_t)
 <span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
-<div id="fig-rl-learning-curves" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-rl-learning-curves" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Win, draw, and loss rates against random play at successive training checkpoints, with separate panels for wins, draws, and losses.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rl-learning-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="13-reinforcement_files/figure-html/fig-rl-learning-curves-output-1.svg" class="img-fluid figure-img">
+<img src="13-reinforcement_files/figure-html/fig-rl-learning-curves-output-1.svg" class="img-fluid figure-img" alt="Win, draw, and loss rates against random play at successive training checkpoints, with separate panels for wins, draws, and losses.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-learning-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive amounts of training. Each checkpoint uses 500 evaluation games.
@@ -955,7 +955,7 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 </div>
 <p>Against the random opponent, the win proportion rises and the loss proportion falls substantially in this run. The last monitoring checkpoint has 496 wins and four draws in 500 games. Small fluctuations between checkpoints are expected; an increasing win curve is not a guarantee of convergence or a proof about every reachable board.</p>
 <p>The table stores 7,311 visited state-action pairs across 2,413 decision states. It does not combine rotated or reflected boards. Keeping a table is feasible for this small game, but the number of states grows rapidly in larger problems. Function approximation, including neural networks, can share information across states instead of storing every pair.</p>
-<div id="4099a502" class="cell" data-execution_count="24">
+<div id="71daac34" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>{<span class="st">"state_action_pairs"</span>: <span class="bu">len</span>(q), <span class="st">"decision_states"</span>: <span class="bu">len</span>({board <span class="cf">for</span> board, a <span class="kw">in</span> q})}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <pre><code>{'state_action_pairs': 7311, 'decision_states': 2413}</code></pre>
@@ -971,10 +971,10 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <h3 data-number="13.5.1" class="anchored" data-anchor-id="an-exact-search-benchmark"><span class="header-section-number">13.5.1</span> An Exact-Search Benchmark</h3>
 <p>For this small game, we can calculate the outcome under optimal play. The recursive function returns the result from crosses’ perspective. At a crosses turn it takes the largest value among legal continuations; at a noughts turn it takes the smallest. A terminal board supplies its known outcome. The <code>cache</code> decorator saves previously computed board-turn values, avoiding repeated searches of the same continuation. This uses the same recursion and caching ideas as the Fibonacci examples in <a href="04-python.html" class="quarto-xref"><span>Chapter 4</span></a>. Multiplying a marker by <span class="math inline">\(-1\)</span> switches whose turn is searched.</p>
 <p>This is minimax search, a planning procedure using the known game rules. It is used only as a benchmark here. The Q-learning training loop did not call it or receive its chosen moves as labels.</p>
-<div id="077472de" class="cell" data-execution_count="25">
+<div id="a492cc31" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> cache</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="1de8f543" class="cell" data-execution_count="26">
+<div id="819d49d5" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="at">@cache</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perfect_value(board, mark):</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the optimal game outcome from crosses' perspective."""</span></span>
@@ -991,14 +991,14 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">min</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Under optimal play from the empty board, the value is zero: either side can prevent a loss, resulting in a draw. This is a property of the searched game tree, rather than an inference from a finite batch of training games.</p>
-<div id="a06b4503" class="cell" data-execution_count="27">
+<div id="327c0b70" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>perfect_value(EMPTY, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="27">
 <pre><code>0</code></pre>
 </div>
 </div>
 <p>The benchmark opponent plays noughts. It chooses a reply whose searched value is smallest for crosses, breaking ties randomly. Because every continuation is finite, the recursion stops without a depth cutoff.</p>
-<div id="e0da1e8e" class="cell" data-execution_count="28">
+<div id="dda85c44" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perfect_opponent(board, rng):</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Choose a game-theoretically optimal noughts reply."""</span></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    values <span class="op">=</span> {}</span>
@@ -1013,7 +1013,7 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <section id="final-evaluation" class="level3" data-number="13.5.2">
 <h3 data-number="13.5.2" class="anchored" data-anchor-id="final-evaluation"><span class="header-section-number">13.5.2</span> Final Evaluation</h3>
 <p>We now use a fresh evaluation seed, 2028, and 2,000 games for each agent-opponent combination. The training table and all settings remain fixed. The random-action baseline is still an empty table interpreted by the same action-selection rule.</p>
-<div id="664793bf" class="cell" data-execution_count="29">
+<div id="3a6213d1" class="cell" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> agent, table <span class="kw">in</span> [(<span class="st">"random"</span>, {}), (<span class="st">"learned"</span>, q)]:</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> opponent_name, opponent <span class="kw">in</span> [</span>
@@ -1092,7 +1092,7 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <p>The learned policy wins 1,992 games and draws eight against random play, with no observed losses. Against the search opponent, all 2,000 games are draws. Its mean rewards are therefore 0.996 and zero, respectively. A draw against perfect play is a successful defensive result, because crosses cannot force a win against that opponent from the empty board.</p>
 <p>These counts describe one trained table, a fixed starting role, and the specified opponents. Zero observed losses alone does not prove that the table handles every legal continuation. The search opponent chooses among its game-theoretic best moves; it does not explicitly search for mistakes in this particular learned table.</p>
 <p>A Wilson interval illustrates the simulation uncertainty in a loss proportion. For zero losses in 2,000 independent simulated games under a fixed policy-opponent combination, the upper endpoint is about 0.0019. This interval conditions on the fitted table; it does not measure variation across independent training runs or unfamiliar opponents <span class="citation" data-cites="statsmodels2026proportion">(<a href="#ref-statsmodels2026proportion" role="doc-biblioref"><span class="nocase">statsmodels Developers</span>, 2026</a>)</span>. The calculation reads the observed counts from the results table, so changing the experiment also changes its interval.</p>
-<div id="a9d690bf" class="cell" data-execution_count="30">
+<div id="97905ccb" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.proportion <span class="im">import</span> proportion_confint</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>random_result <span class="op">=</span> results.loc[</span>
@@ -1132,7 +1132,7 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <section id="inspecting-a-learned-game" class="level2" data-number="13.6">
 <h2 data-number="13.6" class="anchored" data-anchor-id="inspecting-a-learned-game"><span class="header-section-number">13.6</span> Inspecting a Learned Game</h2>
 <p>A summary score does not show which decisions produced it. We record one game against random play using seed 2029. Recording saves each board, chosen action, reward, next board, and termination flag; it does not turn learning back on.</p>
-<div id="8a212ee3" class="cell" data-execution_count="31">
+<div id="66fe7185" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>demo_return, trace <span class="op">=</span> play_episode(</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    q, random_opponent, random.Random(<span class="dv">2029</span>), record<span class="op">=</span><span class="va">True</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -1197,10 +1197,10 @@ Figure&nbsp;13.2: Frozen-policy evaluation against random play after successive 
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-rl-recorded-game" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-rl-recorded-game" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A sequence of tic-tac-toe boards shows one game by the frozen learned policy, with each panel labeled by turn and reward.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rl-recorded-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="13-reinforcement_files/figure-html/fig-rl-recorded-game-output-1.svg" class="img-fluid figure-img">
+<img src="13-reinforcement_files/figure-html/fig-rl-recorded-game-output-1.svg" class="img-fluid figure-img" alt="A sequence of tic-tac-toe boards shows one game by the frozen learned policy, with each panel labeled by turn and reward.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rl-recorded-game-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent panel follows a crosses action and, if needed, a noughts reply.
@@ -1210,7 +1210,7 @@ Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent 
 </div>
 </div>
 <p>The legal moves and game outcomes are computed by rules, while the action preferences come from the learned table. The distinction is visible in this position: the rules identify legal actions, and the table assigns estimated returns only to those actions.</p>
-<div id="f2da2dd7" class="cell" data-execution_count="33">
+<div id="2b77d685" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> q_values(q, win_board)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>action_values <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"action"</span>: <span class="bu">list</span>(values), <span class="st">"q_value"</span>: <span class="bu">list</span>(values.values())</span>
@@ -1264,7 +1264,7 @@ Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent 
 <section id="playing-against-the-agent" class="level3" data-number="13.6.1">
 <h3 data-number="13.6.1" class="anchored" data-anchor-id="playing-against-the-agent"><span class="header-section-number">13.6.1</span> Playing against the Agent</h3>
 <p>A human can take the noughts role by supplying a different opponent function. The console display uses the same square indices as the plot. These functions are defined during rendering; they request input only when <code>play_human(q)</code> is called in an interactive session after running the preceding code chunks.</p>
-<div id="35dafdd0" class="cell" data-execution_count="34">
+<div id="6be6f8ae" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_board(board):</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Print marks and empty-square indices for a console player."""</span></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> [MARKS.get(value, <span class="bu">str</span>(i)) <span class="cf">for</span> i, value <span class="kw">in</span> <span class="bu">enumerate</span>(board)]</span>
@@ -1274,7 +1274,7 @@ Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent 
 <span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"---------"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The human opponent is asked for a legal square after crosses has moved. It retries an invalid entry before returning a move to the game engine. The <code>rng</code> argument keeps the same interface as the other opponent functions, although this opponent obtains its action from the keyboard. The <code>try</code> block converts the entry to an integer. A <code>ValueError</code> triggers a new prompt for text such as <code>hello</code> or <code>²</code>; <code>continue</code> restarts the loop. A converted integer must still pass the legal-square check.</p>
-<div id="a8e7c137" class="cell" data-execution_count="35">
+<div id="b92aea30" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> human_opponent(board, rng):</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Ask for a legal noughts move, retrying invalid input."""</span></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    print_board(board)</span>
@@ -1289,7 +1289,7 @@ Figure&nbsp;13.3: One game played by the frozen learned policy. Each subsequent 
 <span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Choose an empty square shown on the board."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The wrapper plays one frozen-policy game and prints the final board and result. Human moves are outside the random-opponent training environment, so their outcomes should be interpreted in that context.</p>
-<div id="a9af2f3f" class="cell" data-execution_count="36">
+<div id="49e70862" class="cell" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> play_human(q, seed<span class="op">=</span><span class="dv">2029</span>):</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Play one game as noughts against the frozen learned policy."""</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    reward, trace <span class="op">=</span> play_episode(</span>

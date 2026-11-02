@@ -444,10 +444,10 @@ X_{\text{reduced}} = X_c W_k,
 Target vector shape: (1797,)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-digits-sample" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-digits-sample" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A grid of small grayscale handwritten digit images illustrates the 8-by-8 pixel observations used for principal component analysis.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-digits-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-digits-sample-output-2.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-digits-sample-output-2.svg" class="img-fluid figure-img" alt="A grid of small grayscale handwritten digit images illustrates the 8-by-8 pixel observations used for principal component analysis.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-digits-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.1: Sample 8×8 grayscale images from the handwritten digit dataset.
@@ -512,10 +512,10 @@ Figure&nbsp;12.1: Sample 8×8 grayscale images from the handwritten digit datase
 <span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-pca-scree-digits" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-pca-scree-digits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Individual explained-variance ratios decrease across principal components, while cumulative explained variance rises toward one.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-pca-scree-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-scree-digits-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-scree-digits-output-1.svg" class="img-fluid figure-img" alt="Individual explained-variance ratios decrease across principal components, while cumulative explained variance rises toward one.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-pca-scree-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.2: Variance contribution of each principal component and cumulative explained variance for the digit dataset.
@@ -535,7 +535,7 @@ Figure&nbsp;12.2: Variance contribution of each principal component and cumulati
 <li>Elbow Method: Choose the elbow point on the cumulative variance curve, balancing compactness and representational accuracy.</li>
 </ul>
 <p>In this dataset, the first 10 components account for about 74% of the variance. Retaining 21 components reaches 90%, and retaining 29 reaches 95%. The first 50 account for more than 99.9%. These thresholds summarize pixel variance, not digit-classification accuracy.</p>
-<div id="039dff7b" class="cell" data-execution_count="3">
+<div id="a54e0888" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>variance_summary <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"components"</span>: [<span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">21</span>, <span class="dv">29</span>, <span class="dv">50</span>],</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"variance_fraction"</span>: cumulative_variance[[<span class="dv">2</span>, <span class="dv">9</span>, <span class="dv">20</span>, <span class="dv">28</span>, <span class="dv">49</span>]]</span>
@@ -614,10 +614,10 @@ Figure&nbsp;12.2: Variance contribution of each principal component and cumulati
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>plt.colorbar(scatter, label<span class="op">=</span><span class="st">"Digit label"</span>, ticks<span class="op">=</span><span class="bu">range</span>(<span class="dv">10</span>))</span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-pca-2d-digits" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-pca-2d-digits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Handwritten digit observations projected onto the first two principal components, with colors identifying labels that were not used in fitting.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-pca-2d-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-2d-digits-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-2d-digits-output-1.svg" class="img-fluid figure-img" alt="Handwritten digit observations projected onto the first two principal components, with colors identifying labels that were not used in fitting.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-pca-2d-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.3: A two-dimensional PCA projection of the 8×8 digit data. Labels color the points but do not enter the PCA fit.
@@ -640,10 +640,10 @@ Figure&nbsp;12.3: A two-dimensional PCA projection of the 8×8 digit data. Label
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>fig.colorbar(scatter, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Digit label"</span>, ticks<span class="op">=</span><span class="bu">range</span>(<span class="dv">10</span>))</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-pca-3d-digits" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-pca-3d-digits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The same handwritten digit observations projected onto three principal components and colored by their known digit labels.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-pca-3d-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-3d-digits-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-3d-digits-output-1.svg" class="img-fluid figure-img" alt="The same handwritten digit observations projected onto three principal components and colored by their known digit labels.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-pca-3d-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.4: A three-dimensional PCA projection of the same digit images, with labels added after fitting.
@@ -718,10 +718,10 @@ Figure&nbsp;12.4: A three-dimensional PCA projection of the same digit images, w
 <span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>plot_digits([X, X_noisy, X_reconstructed_50],</span>
 <span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>            [<span class="st">"Original"</span>, <span class="st">"Noisy"</span>, <span class="st">"Reconstructed"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-pca-noise-digits" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-pca-noise-digits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Rows compare original digit images, versions with added Gaussian noise, and smoother reconstructions from retained principal components.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-pca-noise-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-noise-digits-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-pca-noise-digits-output-1.svg" class="img-fluid figure-img" alt="Rows compare original digit images, versions with added Gaussian noise, and smoother reconstructions from retained principal components.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-pca-noise-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.5: Noise filtering using PCA: original, noisy, and reconstructed digit images.
@@ -736,7 +736,7 @@ Figure&nbsp;12.5: Noise filtering using PCA: original, noisy, and reconstructed 
 <li>Reconstructed Images: In the third row, PCA has filtered out much of the random noise, reconstructing cleaner versions of the digits while smoothing some genuine details as well. This illustrates the tradeoff between noise suppression and loss of image detail.</li>
 </ul>
 <p>Because the clean images are known here, we can calculate the mean squared pixel error before and after reconstruction rather than judging only the displayed images. The 50% variance threshold retains 12 components and reduces the error from about 15.91 to 7.27 in this run. Both the noisy pixels and their reconstructions are displayed on the same 0–16 grayscale range; the error calculation uses their actual values.</p>
-<div id="3af26154" class="cell" data-execution_count="7">
+<div id="ca018330" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>denoising_summary <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"version"</span>: [<span class="st">"noisy"</span>, <span class="st">"reconstructed"</span>],</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pixel_mse"</span>: [</span>
@@ -788,7 +788,7 @@ Figure&nbsp;12.5: Noise filtering using PCA: original, noisy, and reconstructed 
 <section id="mnist-example" class="level3" data-number="12.2.2">
 <h3 data-number="12.2.2" class="anchored" data-anchor-id="mnist-example"><span class="header-section-number">12.2.2</span> MNIST Example</h3>
 <p>The earlier notes use MNIST for two Isomap displays: a subset containing all ten digits and a subset containing only handwritten “1”s. We retain both. Each MNIST image has 28×28 pixels, giving 784 features, and is distinct from the 8×8 digit data in the PCA example. We fetch MNIST once and reuse it for the t-SNE example. OpenML caches the download locally; the first download includes the complete 70,000-image dataset even though the fits below use smaller subsets.</p>
-<div id="611f765d" class="cell" data-execution_count="8">
+<div id="9910b39e" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> fetch_openml</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>mnist <span class="op">=</span> fetch_openml(</span>
@@ -810,10 +810,10 @@ Figure&nbsp;12.5: Noise filtering using PCA: original, noisy, and reconstructed 
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-mnist-samples" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-mnist-samples" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A grid of 48 grayscale MNIST handwritten digit images sampled at fixed positions in the dataset.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-mnist-samples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-mnist-samples-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-mnist-samples-output-1.svg" class="img-fluid figure-img" alt="A grid of 48 grayscale MNIST handwritten digit images sampled at fixed positions in the dataset.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-mnist-samples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.6: Forty-eight MNIST images sampled at fixed positions in the dataset.
@@ -823,7 +823,7 @@ Figure&nbsp;12.6: Forty-eight MNIST images sampled at fixed positions in the dat
 </div>
 </div>
 <p>We take every thirtieth image, giving 2,334 observations, to keep the pairwise-distance calculations manageable. The model uses five neighbors. We first check that its undirected neighbor graph is connected; otherwise, shortest-path distances between some observations would be undefined without additional graph completion.</p>
-<div id="477e52ba" class="cell" data-execution_count="10">
+<div id="7d45fd51" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.manifold <span class="im">import</span> Isomap</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> kneighbors_graph</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse.csgraph <span class="im">import</span> connected_components</span>
@@ -854,10 +854,10 @@ Figure&nbsp;12.6: Forty-eight MNIST images sampled at fixed positions in the dat
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-isomap-digits" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-isomap-digits" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two Isomap coordinates for a subsample of MNIST digit images, with point colors identifying digit labels after fitting.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-isomap-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-isomap-digits-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-isomap-digits-output-1.svg" class="img-fluid figure-img" alt="Two Isomap coordinates for a subsample of MNIST digit images, with point colors identifying digit labels after fitting.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-isomap-digits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.7: Isomap coordinates for every thirtieth MNIST image, colored by digit label after fitting.
@@ -871,7 +871,7 @@ Figure&nbsp;12.7: Isomap coordinates for every thirtieth MNIST image, colored by
 <h3 data-number="12.2.3" class="anchored" data-anchor-id="variation-within-one-digit"><span class="header-section-number">12.2.3</span> Variation within One Digit</h3>
 <p>The second display maps every fourth image labeled “1”, retaining 1,970 images. Restricting to one digit lets us examine variation in its writing style rather than differences among all ten classes. This selection uses labels to define the observations under study, but the embedding itself still fits only pixel values.</p>
 <p>The thumbnail helper from the earlier notes is adapted from the <em>Python Data Science Handbook</em> <span class="citation" data-cites="vanderplas2016python">(<a href="#ref-vanderplas2016python" role="doc-biblioref">VanderPlas, 2016</a>)</span>. It plots the fitted coordinates and places image thumbnails only when they are sufficiently far from previously placed thumbnails. Omitting a thumbnail prevents visual overlap; it does not remove an observation from the fit.</p>
-<div id="2fad4815" class="cell" data-execution_count="12">
+<div id="c7c68603" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> offsetbox</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Adapted from Jacob VanderPlas, Python Data Science Handbook (2016).</span></span>
@@ -909,10 +909,10 @@ Figure&nbsp;12.7: Isomap coordinates for every thirtieth MNIST image, colored by
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Isomap coordinate 2"</span>)</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-isomap-ones" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-isomap-ones" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Selected thumbnails of handwritten ones overlaid on their Isomap coordinates to relate image variation to the fitted embedding.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-isomap-ones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-isomap-ones-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-isomap-ones-output-1.svg" class="img-fluid figure-img" alt="Selected thumbnails of handwritten ones overlaid on their Isomap coordinates to relate image variation to the fitted embedding.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-isomap-ones-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.8: An Isomap view of handwritten ones, with selected image thumbnails overlaid on the fitted coordinates.
@@ -1018,10 +1018,10 @@ C = \sum_{i}\sum_{j \neq i} p_{ij}\log\!\frac{p_{ij}}{q_{ij}}.
 <span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-tsne-mnist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-tsne-mnist" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A two-dimensional t-SNE embedding of 2,000 MNIST images, colored by digit labels that were not supplied to the fit.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-tsne-mnist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-tsne-mnist-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-tsne-mnist-output-1.svg" class="img-fluid figure-img" alt="A two-dimensional t-SNE embedding of 2,000 MNIST images, colored by digit labels that were not supplied to the fit.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-tsne-mnist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.9: A t-SNE map of the first 2,000 MNIST images. Digit labels color the points after the unsupervised fit.
@@ -1064,14 +1064,14 @@ Figure&nbsp;12.9: A t-SNE map of the first 2,000 MNIST images. Digit labels colo
 <section id="example-iris-data" class="level3" data-number="12.4.2">
 <h3 data-number="12.4.2" class="anchored" data-anchor-id="example-iris-data"><span class="header-section-number">12.4.2</span> Example: Iris Data</h3>
 <p>K-means clustering can be implemented using the <code>scikit-learn</code> library. Below, we apply it to the Iris dataset, which contains 150 flowers with four measurements each. We use the first two features, sepal length and sepal width in centimeters. Both are in the same units, and we fit on these original scales. Species labels are used only for comparison. We set <span class="math inline">\(k = 3\)</span> for this illustration; the availability of three species does not establish that three distance-based clusters are optimal.</p>
-<div id="e4b949a4" class="cell" data-execution_count="15">
+<div id="256c275f" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn <span class="im">import</span> datasets</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="0f225a67" class="cell" data-execution_count="16">
+<div id="33134e4c" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the Iris dataset</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>iris <span class="op">=</span> datasets.load_iris()</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> iris.data[:, :<span class="dv">2</span>]  <span class="co"># Sepal length and sepal width, both in centimeters</span></span>
@@ -1090,10 +1090,10 @@ Figure&nbsp;12.9: A t-SNE map of the first 2,000 MNIST images. Digit labels colo
 <span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"True Species Distribution"</span>)</span>
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-iris-species" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-iris-species" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Iris sepal length and width plotted by known species to show the original measurements before examining cluster assignments.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-iris-species-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-species-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-species-output-1.svg" class="img-fluid figure-img" alt="Iris sepal length and width plotted by known species to show the original measurements before examining cluster assignments.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-iris-species-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.10: Iris sepal measurements colored by species; these labels do not enter the K-means fit.
@@ -1103,7 +1103,7 @@ Figure&nbsp;12.10: Iris sepal measurements colored by species; these labels do n
 </div>
 </div>
 <p>Now, we apply K-means clustering to the data.</p>
-<div id="fcb5eaaf" class="cell" data-execution_count="18">
+<div id="4c445e3f" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train K-means model</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">3</span>, init<span class="op">=</span><span class="st">'k-means++'</span>,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>               n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">2026</span>)</span>
@@ -1111,7 +1111,7 @@ Figure&nbsp;12.10: Iris sepal measurements colored by species; these labels do n
 </div>
 <p>The fit uses <code>k-means++</code> initialization, ten starts, and seed 2026 for reproducibility. The controls <code>n_clusters</code>, <code>n_init</code>, and <code>max_iter</code> affect the solution and computational cost <span class="citation" data-cites="scikitlearn2026clustering">(<a href="#ref-scikitlearn2026clustering" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026a</a>)</span>.</p>
 <p>K-means provides cluster centroids, representing the center of each cluster.</p>
-<div id="4f934a59" class="cell" data-execution_count="19">
+<div id="05a8d5d6" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print predicted cluster centers</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(kmeans.cluster_centers_, columns<span class="op">=</span>[<span class="st">"sepal_length"</span>, <span class="st">"sepal_width"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
@@ -1164,10 +1164,10 @@ Figure&nbsp;12.10: Iris sepal measurements colored by species; these labels do n
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"K-means Clustering Results"</span>)</span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-iris-clusters" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-iris-clusters" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Iris sepal measurements colored by their three K-means cluster assignments, with the fitted centroids marked separately.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-iris-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-clusters-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-clusters-output-1.svg" class="img-fluid figure-img" alt="Iris sepal measurements colored by their three K-means cluster assignments, with the fitted centroids marked separately.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-iris-clusters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.11: K-means assignments and the three fitted centroids in the original sepal-measurement units.
@@ -1206,10 +1206,10 @@ Figure&nbsp;12.11: K-means assignments and the three fitted centroids in the ori
 <span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].legend()</span>
 <span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-unsupervised-iris-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-unsupervised-iris-comparison" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Side-by-side views of the same Iris sepal measurements colored by species and by numeric K-means cluster membership.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-unsupervised-iris-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-comparison-output-1.svg" class="img-fluid figure-img">
+<img src="12-unsupervised_files/figure-html/fig-unsupervised-iris-comparison-output-1.svg" class="img-fluid figure-img" alt="Side-by-side views of the same Iris sepal measurements colored by species and by numeric K-means cluster membership.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-unsupervised-iris-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12.12: The same Iris observations colored by species and by cluster membership. Numeric cluster IDs do not identify species.
@@ -1219,7 +1219,7 @@ Figure&nbsp;12.12: The same Iris observations colored by species and by cluster 
 </div>
 </div>
 <p>The table shows how observations from each species are distributed across the fitted clusters. An overlap need not be an algorithmic error: K-means minimizes squared distances and has no species labels to optimize.</p>
-<div id="20da1ebe" class="cell" data-execution_count="22">
+<div id="417e67a3" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pd.crosstab(</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    iris.target_names[y], kmeans.labels_,</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    rownames<span class="op">=</span>[<span class="st">"species"</span>], colnames<span class="op">=</span>[<span class="st">"cluster"</span>]</span>
@@ -1273,7 +1273,7 @@ Figure&nbsp;12.12: The same Iris observations colored by species and by cluster 
 <section id="making-predictions-on-new-data" class="level3" data-number="12.4.3">
 <h3 data-number="12.4.3" class="anchored" data-anchor-id="making-predictions-on-new-data"><span class="header-section-number">12.4.3</span> Making Predictions on New Data</h3>
 <p>Once fitted, the model assigns a new feature vector to its nearest cluster center. This is a cluster assignment, not a supervised species prediction.</p>
-<div id="b673e6ba" class="cell" data-execution_count="23">
+<div id="2e18952a" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample test data points</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>sample_test <span class="op">=</span> np.array([[<span class="dv">3</span>, <span class="dv">4</span>], [<span class="dv">7</span>, <span class="dv">4</span>]])</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>

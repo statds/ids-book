@@ -513,7 +513,7 @@ are retained. The reproducible simulation and split use seed 2025. -->
 <section id="simulating-the-observations" class="level4" data-number="10.3.4.1">
 <h4 data-number="10.3.4.1" class="anchored" data-anchor-id="simulating-the-observations"><span class="header-section-number">10.3.4.1</span> Simulating the Observations</h4>
 <p>We use NumPy and pandas for the data and scikit-learn for model fitting and validation. The plotting package is introduced when we draw the figures.</p>
-<div id="9eb6f3aa" class="cell" data-execution_count="1">
+<div id="1a4a3594" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, KFold, cross_val_score</span>
@@ -527,20 +527,20 @@ are retained. The reproducible simulation and split use seed 2025. -->
 f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 \]</span></p>
 <p>We name it explicitly so that it can generate the outcomes and supply the reference curve in the plots. It accepts an array and returns an array of the same shape.</p>
-<div id="08e6c029" class="cell" data-execution_count="2">
+<div id="c1c5d5f3" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_function(x):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the simulated conditional mean at each input value."""</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sin(<span class="fl">1.5</span> <span class="op">*</span> x) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> np.cos(<span class="fl">0.5</span> <span class="op">*</span> x) <span class="op">+</span> np.sin(<span class="dv">2</span> <span class="op">*</span> x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Each observation has one input sampled uniformly between zero and ten. Independent Gaussian noise has mean zero and standard deviation 0.2, so the conditional noise variance is <span class="math inline">\(0.2^2=0.04\)</span>. Scikit-learn expects a feature matrix, so <code>reshape(-1, 1)</code> gives the input 200 rows and one column; <code>ravel()</code> gives the response a one-dimensional shape.</p>
-<div id="5f0bed84" class="cell" data-execution_count="3">
+<div id="5ae957d4" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">2025</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.sort(rng.random(<span class="dv">200</span>) <span class="op">*</span> <span class="dv">10</span>).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.2</span>, X.shape[<span class="dv">0</span>])</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> true_function(X).ravel() <span class="op">+</span> noise</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We reserve 30% of the observations for the final test. That leaves 140 training observations and 60 test observations. The random split is appropriate for this simulation’s independently generated observations; a temporal prediction problem would require a different design.</p>
-<div id="9ab98ced" class="cell" data-execution_count="4">
+<div id="a159ef81" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">2025</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -554,7 +554,7 @@ f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 <h4 data-number="10.3.4.2" class="anchored" data-anchor-id="constructing-the-pipeline"><span class="header-section-number">10.3.4.2</span> Constructing the Pipeline</h4>
 <p>A spline transformer converts the single input into several basis features, each describing part of its range. Linear regression estimates coefficients for those features. The resulting prediction is nonlinear in the input, even though it is linear in the fitted coefficients.</p>
 <p>The helper below constructs that two-step pipeline. The knots are uniformly spaced between the fitting data’s boundaries. The transformer omits one basis column because the full basis already represents a constant, while <code>LinearRegression</code> supplies an intercept. Outside the fitted input range, we explicitly use the transformer’s constant-boundary extrapolation rule <span class="citation" data-cites="scikitlearn2026splines">(<a href="#ref-scikitlearn2026splines" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026b</a>)</span>.</p>
-<div id="3f212540" class="cell" data-execution_count="5">
+<div id="6f75aa11" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_spline(n_knots):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Construct a cubic-spline regression pipeline with n_knots knots."""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    spline <span class="op">=</span> SplineTransformer(</span>
@@ -564,12 +564,12 @@ f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> make_pipeline(spline, LinearRegression())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We compare six knot counts. Five-fold cross-validation uses only the training portion, with the same folds for every candidate. Each fold therefore fits on 112 records and validates on the other 28.</p>
-<div id="094bfe86" class="cell" data-execution_count="6">
+<div id="5adfe868" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knots_list <span class="op">=</span> [<span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">16</span>]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">2025</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Scikit-learn reports negative mean squared error so that its scoring interface consistently prefers larger values. We negate those returned scores to obtain ordinary MSE, for which smaller is better. After obtaining the validation losses, we also fit each candidate on all training records for the training-loss comparison and the shape plots. The test records are not used in these steps.</p>
-<div id="0c6cce1f" class="cell" data-execution_count="7">
+<div id="1e715c9d" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> {}</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n_knots <span class="kw">in</span> knots_list:</span>
@@ -587,7 +587,7 @@ f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    })</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The labeled table makes the number of features and the two kinds of loss explicit. The original input has one column; the candidate pipelines create 7 through 17 basis columns, plus a regression intercept. Increasing the knot count changes model flexibility without increasing the polynomial degree or the number of observations.</p>
-<div id="4bfd386b" class="cell" data-execution_count="8">
+<div id="a57eeb72" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame(rows)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>scores.<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -657,7 +657,7 @@ f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 <section id="comparing-the-fitted-shapes" class="level4" data-number="10.3.4.3">
 <h4 data-number="10.3.4.3" class="anchored" data-anchor-id="comparing-the-fitted-shapes"><span class="header-section-number">10.3.4.3</span> Comparing the Fitted Shapes</h4>
 <p>We predict on a fine input grid to draw each fitted function. These are plotting locations, not additional training observations. The known true mean is kept alongside the predictions. Converting those two columns to long form lets a plot distinguish the reference curve from the fitted one.</p>
-<div id="91160040" class="cell" data-execution_count="9">
+<div id="79957687" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_grid <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1000</span>).reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>curve_frames <span class="op">=</span> []</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n_knots, model <span class="kw">in</span> models.items():</span>
@@ -677,7 +677,7 @@ f(x)=\sin(1.5x)+0.5\cos(0.5x)+\sin(2x).
 <span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>observations <span class="op">=</span> pd.DataFrame({<span class="st">"x"</span>: X_train.ravel(), <span class="st">"y"</span>: y_train})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Each facet shows the same training observations and uses the same axes. Separate panels make local changes visible. A solid blue line identifies the fitted spline, and a dashed black line identifies the true mean, so line style also distinguishes the curves without relying on color alone. The training-point layer lacks a <code>knots</code> column and is repeated in all facets by plotnine.</p>
-<div id="7098abbf" class="cell" data-execution_count="10">
+<div id="17b7f54e" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotnine <span class="im">as</span> gg</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>gg.options.figure_format <span class="op">=</span> <span class="st">"svg"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -716,7 +716,7 @@ Figure&nbsp;10.1: Cubic spline fits with the original 6–16 knot range. All pan
 <section id="comparing-training-and-validation-loss" class="level4" data-number="10.3.4.4">
 <h4 data-number="10.3.4.4" class="anchored" data-anchor-id="comparing-training-and-validation-loss"><span class="header-section-number">10.3.4.4</span> Comparing Training and Validation Loss</h4>
 <p>A shape plot alone cannot select the best complexity. We reshape the loss table for a second comparison, retaining the distinction between training loss and mean cross-validation loss.</p>
-<div id="468187dc" class="cell" data-execution_count="12">
+<div id="cfdd205a" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> scores.melt(</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span><span class="st">"knots"</span>, value_vars<span class="op">=</span>[<span class="st">"train_mse"</span>, <span class="st">"cv_mse"</span>],</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    var_name<span class="op">=</span><span class="st">"sample"</span>, value_name<span class="op">=</span><span class="st">"mse"</span></span>
@@ -758,7 +758,7 @@ Figure&nbsp;10.2: Training and five-fold validation MSE for the same cubic-splin
 <section id="evaluating-the-selected-model" class="level4" data-number="10.3.4.5">
 <h4 data-number="10.3.4.5" class="anchored" data-anchor-id="evaluating-the-selected-model"><span class="header-section-number">10.3.4.5</span> Evaluating the Selected Model</h4>
 <p>We select the smallest observed mean validation loss. The corresponding pipeline has already been fitted on all 140 training observations. Only now do we evaluate that selected pipeline on the 60 reserved test cases. The test loss is not used to revise the knot count.</p>
-<div id="9a6cbcb3" class="cell" data-execution_count="14">
+<div id="fa725abd" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>best_knots <span class="op">=</span> <span class="bu">int</span>(scores.loc[scores[<span class="st">"cv_mse"</span>].idxmin(), <span class="st">"knots"</span>])</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>selected_model <span class="op">=</span> models[best_knots]</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>test_mse <span class="op">=</span> mean_squared_error(y_test, selected_model.predict(X_test))</span>

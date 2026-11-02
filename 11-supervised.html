@@ -443,7 +443,7 @@ H(Q_m) = \frac{1}{n_m} \sum_{i=1}^{n_m} |y_i - \widetilde{y}_m|,
 <section id="ames-housing-example" class="level3" data-number="11.1.5">
 <h3 data-number="11.1.5" class="anchored" data-anchor-id="ames-housing-example"><span class="header-section-number">11.1.5</span> Ames Housing Example</h3>
 <p>The Ames Housing data illustrate a regression tree for predicting log house price <span class="citation" data-cites="decock2011ames">(<a href="#ref-decock2011ames" role="doc-biblioref">De Cock, 2011</a>)</span>. Each observation is a house sale. We retrieve the OpenML dataset with ID 42165. This version has 1,460 observations; it is a subset of the larger Ames dataset described in the original article. The response is the natural logarithm of <code>SalePrice</code>, so the prediction errors below are on the log-price scale.</p>
-<div id="f77a142f" class="cell" data-execution_count="1">
+<div id="48ed840c" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotnine <span class="im">as</span> gg</span>
@@ -469,7 +469,7 @@ H(Q_m) = \frac{1}{n_m} \sum_{i=1}^{n_m} |y_i - \widetilde{y}_m|,
 </div>
 </div>
 <p>A decision tree partitions the feature space into regions where the mean log price is relatively constant. We use six numeric predictors and kitchen-quality category. The numeric features measure overall quality, living area, garage capacity, basement area, construction year, and the number of full bathrooms. Missing numeric values are filled with training medians; missing kitchen-quality values are filled with the most frequent training category. The imputation and encoding steps remain inside the pipeline so that validation and test observations do not determine their own preparation.</p>
-<div id="ae456603" class="cell" data-execution_count="2">
+<div id="0e789c83" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> [</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OverallQual"</span>, <span class="st">"GrLivArea"</span>, <span class="st">"GarageCars"</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TotalBsmtSF"</span>, <span class="st">"YearBuilt"</span>, <span class="st">"FullBath"</span></span>
@@ -492,7 +492,7 @@ H(Q_m) = \frac{1}{n_m} \sum_{i=1}^{n_m} |y_i - \widetilde{y}_m|,
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">2026</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We compare depths 2 through 10 by five-fold cross-validation on the training records. The score is <span class="math inline">\(R^2\)</span>, the coefficient of determination; larger scores indicate smaller squared errors relative to predicting a validation fold’s mean. The same folds will be used for boosting so that model comparisons use the same observations.</p>
-<div id="4097aa0c" class="cell" data-execution_count="3">
+<div id="b7d2fb8f" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>depths <span class="op">=</span> <span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">11</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tree_model <span class="op">=</span> Pipeline([</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"pre"</span>, preprocessor),</span>
@@ -572,7 +572,7 @@ H(Q_m) = \frac{1}{n_m} \sum_{i=1}^{n_m} |y_i - \widetilde{y}_m|,
 </div>
 </div>
 <p>Cross-validation identifies a depth that balances fit and generalization. A very shallow tree can miss structure; a very deep tree can adapt to noise. We select the depth with the largest mean validation score.</p>
-<div id="8d75b465" class="cell" data-execution_count="4">
+<div id="826aac63" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>best_depth <span class="op">=</span> <span class="bu">int</span>(tree_scores.loc[tree_scores[<span class="st">"cv_r2"</span>].idxmax(), <span class="st">"depth"</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> clone(tree_model).set_params(model__max_depth<span class="op">=</span>best_depth)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>dt.fit(X_train, y_train)</span>
@@ -620,10 +620,10 @@ H(Q_m) = \frac{1}{n_m} \sum_{i=1}^{n_m} |y_i - \widetilde{y}_m|,
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<div id="fig-supervised-tree-ames" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-supervised-tree-ames" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Held-out predicted log sale prices versus observed log prices from the selected Ames regression tree, with an identity reference line.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-tree-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-tree-ames-output-1.svg" class="img-fluid figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-tree-ames-output-1.svg" class="img-fluid figure-img" alt="Held-out predicted log sale prices versus observed log prices from the selected Ames regression tree, with an identity reference line.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-tree-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.1: Observed and predicted log prices for the held-out Ames houses, using the cross-validation-selected regression tree.
@@ -774,7 +774,7 @@ F_m(x) = F_{m-1}(x) + \eta\, \gamma_m\, h_m(x),
 <section id="boosted-trees-with-ames-housing" class="level3" data-number="11.2.3">
 <h3 data-number="11.2.3" class="anchored" data-anchor-id="boosted-trees-with-ames-housing"><span class="header-section-number">11.2.3</span> Boosted Trees with Ames Housing</h3>
 <p>We now apply gradient boosting to the same house-price prediction task, using the same features, preprocessing, training records, and validation folds as the single tree. Keeping these choices fixed lets us compare methods without attributing a different data split to a model improvement. We tune the number of trees while fixing the learning rate at 0.05 and the maximum depth of each tree at 3.</p>
-<div id="9ab28e7f" class="cell" data-execution_count="6">
+<div id="457f33ba" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> GradientBoostingRegressor</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>n_estimators_list <span class="op">=</span> [<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>]</span>
@@ -835,7 +835,7 @@ F_m(x) = F_{m-1}(x) + \eta\, \gamma_m\, h_m(x),
 </div>
 </div>
 <p>Cross-validation measures the benefit of additional boosting rounds. A score that keeps improving over this grid does not demonstrate that overfitting never occurs; it only describes these candidates. We select the number of rounds with the highest mean validation <span class="math inline">\(R^2\)</span>, fit that pipeline on all training records, and then evaluate it on the reserved test houses.</p>
-<div id="c4ca7c5d" class="cell" data-execution_count="7">
+<div id="68002ed7" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>best_rounds <span class="op">=</span> <span class="bu">int</span>(boost_scores.loc[</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    boost_scores[<span class="st">"cv_r2"</span>].idxmax(), <span class="st">"n_estimators"</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>])</span>
@@ -886,10 +886,10 @@ F_m(x) = F_{m-1}(x) + \eta\, \gamma_m\, h_m(x),
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<div id="fig-supervised-boost-ames" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-supervised-boost-ames" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Held-out predicted log sale prices versus observed log prices from the selected boosted-tree model, with an identity reference line.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-boost-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-boost-ames-output-1.svg" class="img-fluid figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-boost-ames-output-1.svg" class="img-fluid figure-img" alt="Held-out predicted log sale prices versus observed log prices from the selected boosted-tree model, with an identity reference line.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-boost-ames-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.2: Observed and predicted log prices for the same held-out Ames houses, using the selected boosted-tree model.
@@ -912,7 +912,7 @@ Figure&nbsp;11.2: Observed and predicted log prices for the same held-out Ames h
 <h3 data-number="11.2.4" class="anchored" data-anchor-id="stochastic-gbm-with-california-housing"><span class="header-section-number">11.2.4</span> Stochastic GBM with California Housing</h3>
 <p>The California housing example illustrates stochastic gradient boosting with <code>subsample=0.7</code>, so each round uses 70% of the training observations, sampled without replacement. This differs from the preceding Ames example’s default <code>subsample=1.0</code>. It preserves the earlier demonstration and its dated seeds, 20250407 for the data split and 20250408 for fitting.</p>
 <p>Each observation describes a California census block group. The response is the group’s median house value, expressed in units of 100,000 US dollars; the features summarize income, housing, population, and location. These are area summaries, unlike the individual house sales in Ames <span class="citation" data-cites="scikitlearn2026california">(<a href="#ref-scikitlearn2026california" role="doc-biblioref"><span class="nocase">scikit-learn Developers</span>, 2026</a>)</span>.</p>
-<div id="bae79367" class="cell" data-execution_count="9">
+<div id="65919306" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> fetch_california_housing</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>housing <span class="op">=</span> fetch_california_housing(as_frame<span class="op">=</span><span class="va">True</span>, data_home<span class="op">=</span><span class="st">".cache/sklearn"</span>)</span>
@@ -923,13 +923,13 @@ Figure&nbsp;11.2: Observed and predicted log prices for the same held-out Ames h
 </div>
 </div>
 <p>We retain the original 80% training and 20% test split. The example fixes its model settings in advance and uses the test set for evaluation. Changing those settings after comparing test errors would turn the test set into validation data.</p>
-<div id="dfcc09fd" class="cell" data-execution_count="10">
+<div id="ede426d7" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>X_cal_train, X_cal_test, y_cal_train, y_cal_test <span class="op">=</span> train_test_split(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    X_cal, y_cal, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">20250407</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The model combines 200 trees, a learning rate of 0.1, maximum tree depth 3, and stochastic subsampling. These are the same settings as in the earlier example. The fixed random state reproduces both subsampling and the algorithm’s other randomized choices.</p>
-<div id="b8e275b7" class="cell" data-execution_count="11">
+<div id="389069de" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gbm <span class="op">=</span> GradientBoostingRegressor(</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    n_estimators<span class="op">=</span><span class="dv">200</span>,</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    learning_rate<span class="op">=</span><span class="fl">0.1</span>,</span>
@@ -940,7 +940,7 @@ Figure&nbsp;11.2: Observed and predicted log prices for the same held-out Ames h
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> gbm.fit(X_cal_train, y_cal_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We calculate predictions and report mean squared error (MSE), retaining the original evaluation. RMSE gives the error scale in the same units as the response, while <span class="math inline">\(R^2\)</span> compares squared errors with a constant prediction of the test-set mean. This example evaluates one stochastic GBM; a direct comparison of subsampling settings would require validation within the training records.</p>
-<div id="13672fe6" class="cell" data-execution_count="12">
+<div id="0d431e1a" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>y_cal_pred <span class="op">=</span> gbm.predict(X_cal_test)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>cal_mse <span class="op">=</span> mean_squared_error(y_cal_test, y_cal_pred)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>cal_results <span class="op">=</span> pd.DataFrame({</span>
@@ -1094,10 +1094,10 @@ Figure&nbsp;11.2: Observed and predicted log prices for the same held-out Ames h
 <p>The figure below shows an input layer, one hidden layer, and an output layer with directed connections. (We will formalize the mathematics in the next subsection.)</p>
 <div id="cell-fig-supervised-basic-network" class="cell" data-fig-height="5" data-fig-width="7" data-execution_count="13">
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-basic-network" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-supervised-basic-network" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Nodes in input, hidden, and output layers connected by directed arrows, showing information flowing forward through a neural network.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-basic-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-basic-network-output-1.svg" class="img-fluid figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-basic-network-output-1.svg" class="img-fluid figure-img" alt="Nodes in input, hidden, and output layers connected by directed arrows, showing information flowing forward through a neural network.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-basic-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.3: A minimal feed-forward neural network with an input layer (3 nodes), one hidden layer (4 nodes), and an output layer (1 node). Edges indicate the direction of information flow.
@@ -1141,10 +1141,10 @@ h = \sigma(Wx + b),
 <p><a href="#fig-supervised-deep-network" class="quarto-xref">Figure&nbsp;<span>11.4</span></a> illustrates a feed-forward neural network with two hidden layers. Arrows indicate the direction of information flow from one layer to the next. Each connection carries a learnable weight, and nonlinear activations transform the signals as they propagate forward.</p>
 <div id="cell-fig-supervised-deep-network" class="cell" data-fig-format="svg" data-fig-height="4" data-fig-width="8" data-execution_count="14">
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-deep-network" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-supervised-deep-network" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A feed-forward network with an input layer, two hidden layers, and an output layer connected by directed arrows.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-deep-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-deep-network-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-deep-network-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="A feed-forward network with an input layer, two hidden layers, and an output layer connected by directed arrows.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-deep-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.4: A feed-forward neural network with two hidden layers. Directed arrows represent weighted connections; one example weight <span class="math inline">\(w^{(1)}_{32}\)</span> is annotated to indicate its origin and destination neurons.
@@ -1217,13 +1217,13 @@ Note
 <p><a href="#fig-supervised-activation-curves" class="quarto-xref">Figure&nbsp;<span>11.5</span></a> shows the shape of these activation functions. Notice how ReLU sharply truncates negative values while sigmoid and tanh saturate for large magnitudes.</p>
 <div id="cell-fig-supervised-activation-curves" class="cell" data-fig-format="svg" data-fig-height="4" data-fig-width="7" data-execution_count="15">
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-activation-curves" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-supervised-activation-curves" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Curves showing how sigmoid, tanh, ReLU, and leaky ReLU transform their input scores into activation outputs.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-activation-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-activation-curves-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-activation-curves-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Curves showing how sigmoid, tanh, ReLU, and leaky ReLU transform their input scores into activation outputs.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-activation-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.5: Activation functions commonly used in neural networks. ReLU and its variants introduce sparsity, while sigmoid and tanh are smooth and saturating.
+Figure&nbsp;11.5: Activation functions commonly used in neural networks. ReLU is zero for negative inputs; leaky ReLU retains a small negative slope. Sigmoid and tanh are smooth and saturating.
 </figcaption>
 </figure>
 </div>
@@ -1280,10 +1280,10 @@ Figure&nbsp;11.5: Activation functions commonly used in neural networks. ReLU an
 <p><a href="#fig-supervised-loss-landscape" class="quarto-xref">Figure&nbsp;<span>11.6</span></a> gives a two-dimensional analogy of gradient descent. In practice, a neural network may contain millions of parameters, meaning the loss function is defined over an extremely high-dimensional space. The contours shown here use a constructed two-parameter function, with a schematic path to illustrate movement across the surface. The true optimization surface is much more complex, with flat regions, sharp valleys, and numerous local minima, but the intuition of moving “downhill” along the loss gradient remains valid.</p>
 <div id="cell-fig-supervised-loss-landscape" class="cell" data-fig-format="svg" data-fig-height="4" data-fig-width="6" data-execution_count="16">
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-loss-landscape" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-supervised-loss-landscape" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Contours of a constructed two-parameter loss surface with an illustrative path from a high-loss starting point toward lower loss.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-loss-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-loss-landscape-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-loss-landscape-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Contours of a constructed two-parameter loss surface with an illustrative path from a high-loss starting point toward lower loss.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-loss-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.6: Conceptual illustration of gradient descent. The optimizer path illustrates movement across a constructed loss surface; it is not a recorded training trajectory.
@@ -1302,10 +1302,10 @@ Figure&nbsp;11.6: Conceptual illustration of gradient descent. The optimizer pat
 <p>Adding model complexity (more layers or neurons) can reduce bias while increasing sensitivity to the training sample, as discussed in <a href="10-machine-learning.html" class="quarto-xref"><span>Chapter 10</span></a>. The goal of regularization is to find a balance between these forces. <a href="#fig-supervised-overfitting-illustration" class="quarto-xref">Figure&nbsp;<span>11.7</span></a> provides a schematic view: the wiggly curve fluctuates around a smoother trend. The two curves below are constructed functions, not fitted neural networks or empirical estimates of bias and variance.</p>
 <div id="cell-fig-supervised-overfitting-illustration" class="cell" data-fig-format="svg" data-fig-height="4" data-fig-width="6" data-execution_count="17">
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-overfitting-illustration" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-supervised-overfitting-illustration" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A constructed wiggly curve and a smoother reference trend illustrate local fluctuations; neither curve is a fitted neural network.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-overfitting-illustration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-overfitting-illustration-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-overfitting-illustration-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="A constructed wiggly curve and a smoother reference trend illustrate local fluctuations; neither curve is a fitted neural network.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-overfitting-illustration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.7: Constructed wiggly and smooth curves illustrate the idea of regularization; neither curve is a fitted network.
@@ -1360,7 +1360,7 @@ L_{\text{total}} = L_{\text{data}} + \lambda \sum_{l}\sum_{i,j} (w_{ij}^{(l)})^2
 <p>The <em>two-moons</em> dataset consists of two interleaving half-circles, forming a pattern that resembles a pair of crescents. Each point represents an observation with two features <span class="math inline">\((x_1, x_2)\)</span>, and the color indicates its class. The two classes overlap slightly due to added random noise.</p>
 <p>A linear classifier such as logistic regression would draw a straight line through the plane, misclassifying many points. In contrast, a neural network can learn the <strong>nonlinear boundary</strong> that curves along the interface between the moons. This problem, although simple, captures the essence of nonlinear learning in higher dimensions.</p>
 <p>We generate the data using <code>make_moons()</code> from <code>scikit-learn</code> and train a feed-forward neural network with two hidden layers. The model’s task is to assign each observation to one of the two moon shapes.</p>
-<div id="4af0c191" class="cell" data-execution_count="18">
+<div id="f78cb7e0" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_moons</span>
@@ -1400,10 +1400,10 @@ L_{\text{total}} = L_{\text{data}} + \lambda \sum_{l}\sum_{i,j} (w_{ij}^{(l)})^2
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"Two-Moons Classification (Train Acc: </span><span class="sc">{</span>acc_train<span class="sc">:.2f}</span><span class="ss">, Test Acc: </span><span class="sc">{</span>acc_test<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div id="fig-supervised-mlp-training" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<div id="fig-supervised-mlp-training" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Training points from two curved moon-shaped classes overlaid on the nonlinear decision regions learned by a multilayer perceptron.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-supervised-mlp-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="11-supervised_files/figure-html/fig-supervised-mlp-training-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img">
+<img src="11-supervised_files/figure-html/fig-supervised-mlp-training-output-1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Training points from two curved moon-shaped classes overlaid on the nonlinear decision regions learned by a multilayer perceptron.">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-supervised-mlp-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11.8: Decision boundary learned by a simple multilayer perceptron on the two-moons dataset. The network captures the nonlinear separation between the classes.
