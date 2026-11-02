@@ -81,6 +81,8 @@ the same observations:
 
 ```{python}
 #| label: fig-scores
+#| fig-alt: "Mean simulated scores for data science, statistics, and \
+#| programming, with standard-error bars for each subject."
 #| fig-cap: "Mean simulated score by subject for a class of 30 students; error bars show standard errors"
 #| fig-format: svg
 import matplotlib.pyplot as plt
@@ -417,6 +419,8 @@ each slide, and write speaker notes when additional explanation belongs in the
 oral presentation rather than on the slide. Export a PDF only when a course or
 audience requires a static copy; keep the `.qmd` source as the authoritative
 presentation.
+
+
 ## Exercises {.unnumbered}
 
 Complete the Git setup in @sec-install-git and the Quarto installation in

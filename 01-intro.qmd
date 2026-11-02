@@ -525,6 +525,8 @@ causal language when the design supports only association. Provide enough
 information about data sources, software, and analytical choices for others to
 inspect or reproduce the work. The objective is not to make a result sound
 certain; it is to make the reasoning transparent and useful.
+
+
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems.

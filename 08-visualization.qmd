@@ -1202,6 +1202,7 @@ from being discarded before all frames are rendered.
 
 ```{python}
 fig, ax = plt.subplots(figsize=(6.4, 3.8))
+fig.subplots_adjust(left=0.25, bottom=0.16)
 count_limit = daily_borough_counts.to_numpy().max() * 1.1
 
 def update_count(frame):

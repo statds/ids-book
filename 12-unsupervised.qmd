@@ -185,6 +185,9 @@ understand its structure.
 
 ```{python}
 #| label: fig-unsupervised-digits-sample
+#| fig-alt: "A grid of small grayscale handwritten digit images \
+#| illustrates the 8-by-8 pixel observations used for principal \
+#| component analysis."
 #| fig-cap: "Sample 8×8 grayscale images from the handwritten digit dataset."
 #| fig-width: 8
 #| fig-height: 4
@@ -250,6 +253,9 @@ reduction and information retention.
 
 ```{python}
 #| label: fig-unsupervised-pca-scree-digits
+#| fig-alt: "Individual explained-variance ratios decrease across \
+#| principal components, while cumulative explained variance \
+#| rises toward one."
 #| fig-cap: >
 #|    Variance contribution of each principal component and cumulative
 #|    explained variance for the digit dataset.
@@ -339,6 +345,9 @@ in reduced dimensions.
 
 ```{python}
 #| label: fig-unsupervised-pca-2d-digits
+#| fig-alt: "Handwritten digit observations projected onto the first two \
+#| principal components, with colors identifying labels that \
+#| were not used in fitting."
 #| fig-cap: "A two-dimensional PCA projection of the 8×8 digit data. Labels color the points but do not enter the PCA fit."
 #| fig-width: 8
 #| fig-height: 6
@@ -374,6 +383,9 @@ the three-dimensional scores below with the same colors for digit labels.
 
 ```{python}
 #| label: fig-unsupervised-pca-3d-digits
+#| fig-alt: "The same handwritten digit observations projected onto three \
+#| principal components and colored by their known digit \
+#| labels."
 #| fig-cap: "A three-dimensional PCA projection of the same digit images, with labels added after fitting."
 # 3D projection
 fig = plt.figure(figsize=(10, 7))
@@ -430,6 +442,9 @@ digit dataset through the following steps:
 ```{python}
 
 #| label: fig-unsupervised-pca-noise-digits
+#| fig-alt: "Rows compare original digit images, versions with added \
+#| Gaussian noise, and smoother reconstructions from retained \
+#| principal components."
 #| fig-cap: "Noise filtering using PCA: original, noisy, and reconstructed digit images."
 #| fig-width: 6
 #| fig-height: 6
@@ -562,6 +577,8 @@ rather than a random sample from a specified population.
 
 ```{python}
 #| label: fig-unsupervised-mnist-samples
+#| fig-alt: "A grid of 48 grayscale MNIST handwritten digit images \
+#| sampled at fixed positions in the dataset."
 #| fig-cap: "Forty-eight MNIST images sampled at fixed positions in the dataset."
 fig, axes = plt.subplots(
     6, 8, figsize=(8, 6), subplot_kw={"xticks": [], "yticks": []}
@@ -599,6 +616,9 @@ the labels are added afterward to help interpret the display.
 
 ```{python}
 #| label: fig-unsupervised-isomap-digits
+#| fig-alt: "Two Isomap coordinates for a subsample of MNIST digit \
+#| images, with point colors identifying digit labels after \
+#| fitting."
 #| fig-cap: "Isomap coordinates for every thirtieth MNIST image, colored by digit label after fitting."
 model = Isomap(n_neighbors=5, n_components=2, eigen_solver="dense")
 proj = model.fit_transform(data)
@@ -661,6 +681,9 @@ the coordinate axes are not predefined measurements of those properties.
 
 ```{python}
 #| label: fig-unsupervised-isomap-ones
+#| fig-alt: "Selected thumbnails of handwritten ones overlaid on their \
+#| Isomap coordinates to relate image variation to the fitted \
+#| embedding."
 #| fig-cap: "An Isomap view of handwritten ones, with selected image thumbnails overlaid on the fitted coordinates."
 data_ones = mnist_data[mnist.target == "1"][::4]
 fig, ax = plt.subplots(figsize=(8, 8))
@@ -858,6 +881,8 @@ space.
 
 ```{python}
 #| label: fig-unsupervised-tsne-mnist
+#| fig-alt: "A two-dimensional t-SNE embedding of 2,000 MNIST images, \
+#| colored by digit labels that were not supplied to the fit."
 #| fig-cap: "A t-SNE map of the first 2,000 MNIST images. Digit labels color the points after the unsupervised fit."
 #| fig-format: svg
 
@@ -1007,6 +1032,9 @@ species labels.
 
 ```{python}
 #| label: fig-unsupervised-iris-species
+#| fig-alt: "Iris sepal length and width plotted by known species to show \
+#| the original measurements before examining cluster \
+#| assignments."
 #| fig-cap: "Iris sepal measurements colored by species; these labels do not enter the K-means fit."
 # Scatter plot of true species labels
 fig, ax = plt.subplots()
@@ -1047,6 +1075,9 @@ We plot the centroids along with clustered points.
 
 ```{python}
 #| label: fig-unsupervised-iris-clusters
+#| fig-alt: "Iris sepal measurements colored by their three K-means \
+#| cluster assignments, with the fitted centroids marked \
+#| separately."
 #| fig-cap: "K-means assignments and the three fitted centroids in the original sepal-measurement units."
 # Plot centroids on the scatter plot
 fig, ax = plt.subplots()
@@ -1073,6 +1104,9 @@ without treating the numeric IDs as matched class labels.
 
 ```{python}
 #| label: fig-unsupervised-iris-comparison
+#| fig-alt: "Side-by-side views of the same Iris sepal measurements \
+#| colored by species and by numeric K-means cluster \
+#| membership."
 #| fig-cap: "The same Iris observations colored by species and by cluster membership. Numeric cluster IDs do not identify species."
 # Compare true vs. predicted labels
 fig, axs = plt.subplots(ncols=2, figsize=(12, 5),

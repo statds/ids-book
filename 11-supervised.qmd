@@ -321,6 +321,9 @@ log-price units.
 
 ```{python}
 #| label: fig-supervised-tree-ames
+#| fig-alt: "Held-out predicted log sale prices versus observed log \
+#| prices from the selected Ames regression tree, with an \
+#| identity reference line."
 #| fig-cap: "Observed and predicted log prices for the held-out Ames houses, using the cross-validation-selected regression tree."
 df_pred = pd.DataFrame({"observed": y_test, "predicted": y_pred})
 p = (
@@ -640,6 +643,9 @@ market conditions.
 
 ```{python}
 #| label: fig-supervised-boost-ames
+#| fig-alt: "Held-out predicted log sale prices versus observed log \
+#| prices from the selected boosted-tree model, with an \
+#| identity reference line."
 #| fig-cap: "Observed and predicted log prices for the same held-out Ames houses, using the selected boosted-tree model."
 df_pred_gb = pd.DataFrame({"observed": y_test, "predicted": y_pred_gb})
 p = (
@@ -950,6 +956,9 @@ the next subsection.)
 ```{python}
 #| echo: false
 #| label: fig-supervised-basic-network
+#| fig-alt: "Nodes in input, hidden, and output layers connected by \
+#| directed arrows, showing information flowing forward through \
+#| a neural network."
 #| fig-cap: "A minimal feed-forward neural network with an input layer \
 #|           (3 nodes), one hidden layer (4 nodes), and an output layer \
 #|           (1 node). Edges indicate the direction of information flow."
@@ -1082,6 +1091,8 @@ forward.
 ```{python}
 #| echo: false
 #| label: fig-supervised-deep-network
+#| fig-alt: "A feed-forward network with an input layer, two hidden \
+#| layers, and an output layer connected by directed arrows."
 #| fig-cap: "A feed-forward neural network with two hidden layers. \
 #| Directed arrows represent weighted connections; one example weight \
 #| $w^{(1)}_{32}$ is annotated to indicate its origin and destination neurons."
@@ -1192,9 +1203,12 @@ sigmoid and tanh saturate for large magnitudes.
 ```{python}
 #| echo: false
 #| label: fig-supervised-activation-curves
-#| fig-cap: "Activation functions commonly used in neural networks. \
-#| ReLU and its variants introduce sparsity, while sigmoid and tanh \
-#| are smooth and saturating."
+#| fig-alt: "Curves showing how sigmoid, tanh, ReLU, and leaky ReLU \
+#| transform their input scores into activation outputs."
+#| fig-cap: >
+#|   Activation functions commonly used in neural networks. ReLU is zero for
+#|   negative inputs; leaky ReLU retains a small negative slope. Sigmoid and
+#|   tanh are smooth and saturating.
 #| fig-align: center
 #| fig-format: svg
 #| fig-width: 7
@@ -1283,6 +1297,9 @@ sharp valleys, and numerous local minima, but the intuition of moving
 ```{python}
 #| echo: false
 #| label: fig-supervised-loss-landscape
+#| fig-alt: "Contours of a constructed two-parameter loss surface with an \
+#| illustrative path from a high-loss starting point toward \
+#| lower loss."
 #| fig-cap: "Conceptual illustration of gradient descent. The optimizer \
 #| path illustrates movement across a constructed loss surface; it is not a recorded training trajectory."
 #| fig-align: center
@@ -1333,6 +1350,9 @@ networks or empirical estimates of bias and variance.
 ```{python}
 #| echo: false
 #| label: fig-supervised-overfitting-illustration
+#| fig-alt: "A constructed wiggly curve and a smoother reference trend \
+#| illustrate local fluctuations; neither curve is a fitted \
+#| neural network."
 #| fig-cap: "Constructed wiggly and smooth curves illustrate the idea of regularization; neither curve is a fitted network."
 #| fig-align: center
 #| fig-format: svg
@@ -1458,6 +1478,9 @@ explains why it may be inadequate in other settings.
 
 ```{python}
 #| label: fig-supervised-mlp-training
+#| fig-alt: "Training points from two curved moon-shaped classes overlaid \
+#| on the nonlinear decision regions learned by a multilayer \
+#| perceptron."
 #| fig-cap: "Decision boundary learned by a simple multilayer perceptron on \
 #| the two-moons dataset. The network captures the nonlinear separation \
 #| between the classes."

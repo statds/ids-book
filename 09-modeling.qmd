@@ -990,6 +990,9 @@ quantile bins, so the display can hide variation within each group.
 
 ```{python}
 #| label: fig-model-calibration
+#| fig-alt: "Observed under-one-hour closure rates plotted against \
+#| grouped held-out predicted probabilities, with a diagonal \
+#| reference for perfect calibration."
 #| fig-cap: "Calibration of held-out probabilities for closures under one hour."
 #| fig-format: svg
 import matplotlib.pyplot as plt
@@ -1026,6 +1029,9 @@ The area under this curve is the ROC AUC reported in the score table.
 
 ```{python}
 #| label: fig-model-roc
+#| fig-alt: "Held-out true positive rate versus false positive rate for \
+#| the request and Census-context logistic model, compared with \
+#| the chance diagonal."
 #| fig-cap: "ROC curve for the preliminary request and Census-context model on held-out requests."
 #| fig-format: svg
 from sklearn.metrics import roc_curve

@@ -984,10 +984,13 @@ decision or deepen understanding of NYPD-directed 311 requests? For each
 candidate, identify the observational unit, measurements, comparison, and
 claim that the available evidence could support. State what additional data
 or domain knowledge would strengthen the answer.
+
+
 ## Exercises {.unnumbered}
 
-Problems 5.1 and 5.2 establish the core analysis. Problem 5.3 is an optional
-curation extension that develops selected issues for later data preparation.
+The core analysis is developed in @exr-import-311 and @exr-check-311.
+The optional curation extension in @exr-curate-311 develops selected issues
+for later data preparation.
 Write one `.qmd` file containing your answers, using executable code,
 concise prose, and rendered tables. Put every result in the document rather
 than only in a terminal session: include code where computation is requested,

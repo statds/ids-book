@@ -184,6 +184,9 @@ its sampled action.
 
 ```{python}
 #| label: fig-rl-board-rules
+#| fig-alt: "Three tic-tac-toe boards show square indices, a position \
+#| before crosses plays square 2, and the resulting winning top \
+#| row."
 #| fig-cap: "Square indices, a position before a winning move, and the terminal board after crosses chooses square 2."
 win_board = (1, 1, 0, -1, -1, 0, 0, 0, 0)
 won_board = place(win_board, 2, 1)
@@ -550,6 +553,9 @@ gg.options.figure_format = "svg"
 
 ```{python}
 #| label: fig-rl-learning-curves
+#| fig-alt: "Win, draw, and loss rates against random play at successive \
+#| training checkpoints, with separate panels for wins, draws, \
+#| and losses."
 #| fig-cap: "Frozen-policy evaluation against random play after successive amounts of training. Each checkpoint uses 500 evaluation games."
 curve = learning_history.melt(
     id_vars=["episodes", "games"], value_vars=["wins", "draws", "losses"],
@@ -743,6 +749,9 @@ as integers.
 
 ```{python}
 #| label: fig-rl-recorded-game
+#| fig-alt: "A sequence of tic-tac-toe boards shows one game by the \
+#| frozen learned policy, with each panel labeled by turn and \
+#| reward."
 #| fig-cap: "One game played by the frozen learned policy. Each subsequent panel follows a crosses action and, if needed, a noughts reply."
 boards = [EMPTY] + [transition["next_board"] for transition in trace]
 fig, axes = plt.subplots(1, len(boards), figsize=(2.3 * len(boards), 2.8))

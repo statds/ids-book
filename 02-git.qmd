@@ -336,6 +336,8 @@ Put the exclusion rule in `.gitignore` before creating files that should not be
 tracked. If sensitive information is accidentally committed, deleting the file
 in a later commit does not remove it from the earlier history; change the
 exposed credential and seek help to remove the history safely.
+
+
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems.

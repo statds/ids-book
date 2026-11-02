@@ -609,6 +609,8 @@ Avoid solving an error by repeatedly installing packages, restarting the editor,
 or changing several unrelated lines at once. Make one hypothesis, test it with
 a small example, and record the correction in the source or a concise commit
 message.
+
+
 ## Exercises {.unnumbered}
 
 Write one `.qmd` file containing your answers to all problems. Use the same
